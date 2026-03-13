@@ -6,7 +6,7 @@
 <title>Gaia</title>
 <link href="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.css" rel="stylesheet"/>
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
-<link rel="stylesheet" id="adobeFontsKit" href="">
+<link rel="stylesheet" href="https://use.typekit.net/atn6inh.css">
 <style>
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -45,6 +45,7 @@
 html, body {
   height: 100%; width: 100%;
   overflow: hidden;
+  overscroll-behavior: none;  /* prevent iOS rubber-banding from consuming gestures */
   background: #191510;
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
@@ -234,8 +235,8 @@ html, body {
   flex: 1; min-height: 0;
   overflow-y: hidden;
   overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
+  touch-action: pan-x;  /* mid/collapsed: browser handles horizontal only; JS handles vertical drag */
   /* Pad bottom so content isn't obscured by fixed nav bar in full state */
   padding-bottom: 96px;
 }
@@ -508,10 +509,6 @@ html, body {
     <div>
       <div class="setup-label">Mapbox Public Token</div>
       <input class="setup-input" id="tokenInput" type="text" placeholder="pk.eyJ1Ijoi…"/>
-    </div>
-    <div>
-      <div class="setup-label">Adobe Fonts Kit URL <span style="opacity:.4;font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></div>
-      <input class="setup-input" id="kitInput" type="text" placeholder="https://use.typekit.net/xxxxxxx.css"/>
     </div>
     <button class="setup-btn" id="launchBtn">Launch map →</button>
     <p class="setup-note">Token starts with <code>pk.</code> — <a href="https://account.mapbox.com/access-tokens/" target="_blank">account.mapbox.com</a></p>
@@ -804,6 +801,8 @@ function snapTo(snap) {
 
   const content = document.getElementById('sheet-content');
   content.style.overflowY = snap === 'full' ? 'auto' : 'hidden';
+  // In full: browser handles scrolling; in mid/collapsed: JS handles vertical drag
+  content.style.touchAction = snap === 'full' ? 'auto' : 'pan-x';
   if (snap !== 'full') content.scrollTop = 0;
 
   setTranslate(SNAPS[snap], true);
@@ -919,11 +918,14 @@ function dragEnd() {
   if (drag.intent !== 'sheet') return;
 
   const v = drag.velocity;
+  const dy = currentY - drag.startTranslateY;  // negative = dragged up
   let target;
 
-  if (v < -0.4) {
+  if (v < -0.4 || (v < -0.15 && dy < -40)) {
+    // Fast flick up OR moderate flick + meaningful upward distance
     target = currentSnap === 'collapsed' ? 'mid' : 'full';
-  } else if (v > 0.4) {
+  } else if (v > 0.4 || (v > 0.15 && dy > 40)) {
+    // Fast flick down OR moderate flick + meaningful downward distance
     target = currentSnap === 'full' ? 'mid' : 'collapsed';
   } else {
     const entries = Object.entries(SNAPS);
@@ -1130,11 +1132,7 @@ function initMap() {
     return;
   }
 
-  const kitUrl = document.getElementById('kitInput').value.trim();
-  if (kitUrl) document.getElementById('adobeFontsKit').href = kitUrl;
-
   localStorage.setItem('gaiaToken', token);
-  if (kitUrl) localStorage.setItem('gaiaKit', kitUrl);
 
   document.getElementById('setup-overlay').style.display = 'none';
 
@@ -1180,9 +1178,7 @@ function initMap() {
 // ════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
   const savedToken = localStorage.getItem('gaiaToken');
-  const savedKit   = localStorage.getItem('gaiaKit');
   if (savedToken) document.getElementById('tokenInput').value = savedToken;
-  if (savedKit)   document.getElementById('kitInput').value   = savedKit;
 
   if (savedToken && savedToken.startsWith('pk.')) { initMap(); return; }
 
