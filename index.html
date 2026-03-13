@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Gaia</title>
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.css" rel="stylesheet"/>
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
+<link rel="stylesheet" id="adobeFontsKit" href="">
+<style>
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── DESIGN TOKENS (from Figma) ──────────────────────────── */
+:root {
+  /* Colors */
+  --paper:       #fdfbf4;   /* primary/paper-white/200 */
+  --paper-50:    #fefdf9;   /* nav bar border */
+  --cream:       #fdfbf4;   /* map background */
+  --olive:       #67765b;   /* primary/olive-green/500 */
+  --olive-100:   #e3e7df;   /* primary/olive-green/100  — borders, light fills */
+  --olive-200:   #c8cfbf;   /* primary/olive-green/200 */
+  --olive-400:   #8a9b7e;   /* primary/olive-green/400  — inactive nav text */
+  --handle-clr:  #d9d9db;   /* secondary/blackish-grey/100 — handle pill */
+  --ink:         #252024;
+  --ink-300:     #7d7981;   /* primary/ink-black/300 — section subheads */
+  --grey:        #5b5c61;   /* secondary/blackish-grey/500 */
+  --verm:        #b5493a;   /* secondary/vermillion-red/500 */
+  --shadow-soft: 0px 0px 40px 0px rgba(94,98,98,0.15); /* Soft Shadow */
+  --shadow-nav:  0px 0px 40px 0px rgba(93,77,57,0.25); /* Background Blur shadow */
+
+  /* Typography */
+  --font-serif: "new-spirit","New Spirit",Georgia,serif;
+  --font-sans:  "neue-haas-unica","Neue Haas Unica","Helvetica Neue",system-ui,sans-serif;
+
+  /* Layout */
+  --header-h: 108px;
+  --peek-h:   150px;  /* peek card area (8px pad + 134px card + 8px pad) */
+  --nav-h:    68px;   /* nav pill height */
+  --nav-gap:  12px;   /* bottom margin under nav pill */
+
+  /* Transitions */
+  --spring: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+html, body {
+  height: 100%; width: 100%;
+  overflow: hidden;
+  background: #191510;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── MAP ─────────────────────────────────────────────────── */
+#map { position: fixed; inset: 0; z-index: 0; }
+
+/* ── HEADER ──────────────────────────────────────────────── */
+#header {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: var(--header-h);
+  padding: 56px 16px 0;
+  display: flex; align-items: flex-end; gap: 8px;
+  z-index: 50;
+  pointer-events: none;
+}
+
+/* Search bar — pill shape, 48px tall, Figma border */
+.search-bar {
+  flex: 1; height: 48px;
+  background: var(--paper);
+  border: 0.5px solid var(--olive-100);
+  border-radius: 250px;
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px;
+  box-shadow: var(--shadow-soft);
+  pointer-events: all; cursor: text;
+}
+.search-bar .icon-32 {
+  flex-shrink: 0; width: 32px; height: 32px;
+  background: var(--paper);
+  position: relative; overflow: hidden;
+}
+.search-input {
+  flex: 1;
+  background: transparent;
+  border: none; outline: none;
+  font-family: var(--font-sans);
+  font-size: 17px; font-weight: 400; /* 17px prevents iOS auto-zoom on focus */
+  color: var(--ink);
+  padding: 0; min-width: 0;
+  height: 32px; line-height: 32px;   /* match icon-32 exactly → centers text */
+  -webkit-appearance: none; appearance: none;  /* strip WebKit search chrome */
+}
+.search-input::placeholder { color: var(--grey); opacity: 0.5; }
+.search-input::-webkit-search-decoration,
+.search-input::-webkit-search-cancel-button,
+.search-input::-webkit-search-results-button,
+.search-input::-webkit-search-results-decoration { display: none; }
+
+/* Bell button */
+.bell-btn {
+  width: 48px; height: 48px; border-radius: 250px;
+  background: var(--paper);
+  border: 0.5px solid var(--olive-100);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-soft);
+  cursor: pointer; flex-shrink: 0; pointer-events: all;
+}
+.bell-btn .icon-32 { width: 32px; height: 32px; position: relative; overflow: hidden; flex-shrink: 0; }
+
+/* ── MAP CONTROLS ────────────────────────────────────────── */
+#map-controls {
+  position: fixed; left: 8px;
+  display: flex; align-items: center; gap: 8px;
+  z-index: 35;  /* below sheet (40): sheet covers them in full state; visible above sheet in mid/collapsed */
+  transition: bottom .42s var(--spring), opacity .3s ease;
+}
+
+/* Locate + Filter — round pill buttons */
+.ctrl-btn {
+  width: 48px; height: 48px; border-radius: 250px;
+  background: var(--paper);
+  border: 0.5px solid var(--olive-100);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-soft);
+  cursor: pointer; flex-shrink: 0;
+}
+.ctrl-btn .icon-32 { width: 32px; height: 32px; position: relative; overflow: hidden; }
+
+/* ── SHEET ───────────────────────────────────────────────── */
+#sheet {
+  position: fixed; left: 0; right: 0; bottom: 0;
+  z-index: 40;
+  will-change: transform;
+}
+#sheet-inner {
+  /* Fills #sheet via absolute inset. Inset & border-radius animate during drag
+     (via syncSheetBackground) and snap (via CSS snap classes below). */
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  transition: background .35s var(--spring), border-radius .35s var(--spring),
+              top .35s var(--spring), right .35s var(--spring),
+              bottom .35s var(--spring), left .35s var(--spring);
+}
+/* Collapsed: floating card with side + bottom margins, all-corner 48px radius */
+#sheet.snap-collapsed #sheet-inner {
+  inset: 0 8px 12px;
+  border-radius: 48px;
+}
+/* Mid / Full: edge-to-edge, top corners 48px, bottom flush */
+#sheet.snap-mid #sheet-inner,
+#sheet.snap-full #sheet-inner {
+  background: var(--paper);
+  border-radius: 48px 48px 0 0;
+  box-shadow: var(--shadow-soft);
+  inset: 0;
+}
+
+/* ── DRAG HANDLE (mid / full states only) ────────────────── */
+#drag-handle {
+  height: 24px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  cursor: grab; touch-action: none;
+  user-select: none; -webkit-user-select: none;
+}
+#drag-handle:active { cursor: grabbing; }
+/* Hidden when collapsed — peek-card is the visible drag surface */
+#sheet.snap-collapsed #drag-handle { display: none; }
+
+/* Handle pill — shared between drag-handle and peek-card */
+.handle-pill {
+  /* secondary/blackish-grey/100, 48×4px from Figma */
+  width: 48px; height: 4px;
+  border-radius: 250px;
+  background: var(--handle-clr);
+  flex-shrink: 0;
+}
+
+/* ── PEEK ROW (collapsed state only) ────────────────────── */
+#peek-row {
+  flex-shrink: 0;
+  height: var(--peek-h);   /* 8px top + 134px card + 8px bottom = 150px */
+  overflow: hidden;
+  padding: 8px 4px;        /* horizontal 4px → card fills ~382px on 390px screen */
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  touch-action: none;
+  transition: height .38s var(--spring), opacity .22s ease;
+}
+/* Collapse peek when mid or full */
+#sheet.snap-mid #peek-row,
+#sheet.snap-full #peek-row {
+  height: 0; opacity: 0; padding-top: 0; padding-bottom: 0;
+  pointer-events: none;
+}
+
+/* The visible "floating card" in collapsed state */
+.peek-card {
+  position: relative;            /* so handle pill can be absolute inside */
+  flex: 1;
+  height: 134px;                 /* Figma spec: Map Panel Closed = 134px */
+  background: var(--paper);
+  border: 0.5px solid var(--olive-100);
+  border-radius: 48px;           /* radius/xxl from Figma */
+  /* Top-align content so handle pill + label stay visible above nav bar overlay */
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+  padding-top: 28px;             /* clears the absolute handle pill (12px + 4px pill + 12px gap) */
+  box-shadow: var(--shadow-soft);
+}
+
+/* Handle pill sits inside the card near its top */
+.peek-card .handle-pill {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.peek-label {
+  /* serif/subhead-1: New Spirit, Regular, 16px */
+  font-family: var(--font-serif);
+  font-size: 16px; font-weight: 400;
+  color: var(--olive);
+  line-height: 1.2;
+}
+
+/* ── SHEET CONTENT ───────────────────────────────────────── */
+#sheet-content {
+  flex: 1; min-height: 0;
+  overflow-y: hidden;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  /* Pad bottom so content isn't obscured by fixed nav bar in full state */
+  padding-bottom: 96px;
+}
+#sheet-content::-webkit-scrollbar { display: none; }
+
+/* Hide content in collapsed state so text doesn't show through transparent sheet */
+#sheet.snap-collapsed #sheet-content { visibility: hidden; }
+
+
+/* Nearby heading — New Spirit Medium 32px, olive green (exact Figma: serif/display) */
+.nearby-header {
+  font-family: var(--font-serif);
+  font-size: 32px; font-weight: 500;
+  color: var(--olive);
+  padding: 18px 16px 10px;
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+}
+
+/* Filter tabs */
+.tabs {
+  display: flex; gap: 8px; padding: 0 16px 18px;
+  overflow-x: auto; scrollbar-width: none;
+  touch-action: pan-x;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab-btn {
+  flex-shrink: 0; padding: 7px 15px;
+  border-radius: 250px; border: none;
+  font-family: var(--font-sans); font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: background .18s, color .18s;
+  background: rgba(37,32,36,.06); color: var(--grey);
+  white-space: nowrap;
+}
+.tab-btn.active { background: var(--olive); color: #fff; }
+
+/* Section headers */
+.section-hdr {
+  display: flex; align-items: baseline;
+  justify-content: space-between;
+  padding: 4px 16px 14px;
+}
+/* serif/title-3: New Spirit Regular 20px, ink-300 (#7d7981) — from Figma */
+.section-title {
+  font-family: var(--font-serif);
+  font-size: 20px; font-weight: 400;
+  color: var(--ink-300);
+  line-height: 1.3;
+}
+.see-all { font-size: 13px; color: var(--olive); cursor: pointer; }
+
+/* Projects scroll */
+.projects-scroll {
+  display: flex; gap: 10px;
+  padding: 0 16px 22px;
+  overflow-x: auto; scroll-snap-type: x mandatory;
+  scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
+}
+.projects-scroll::-webkit-scrollbar { display: none; }
+.project-card {
+  flex-shrink: 0; width: 168px; height: 132px; border-radius: 14px;
+  position: relative; overflow: hidden;
+  scroll-snap-align: start; cursor: pointer;
+}
+.project-card::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 35%, rgba(0,0,0,.62));
+}
+.card-tag {
+  position: absolute; top: 10px; left: 10px; z-index: 1;
+  background: rgba(253,251,244,.88); backdrop-filter: blur(4px);
+  border-radius: 250px; padding: 3px 10px;
+  font-size: 11px; font-weight: 600; color: var(--ink);
+}
+.card-info {
+  position: absolute; bottom: 11px; left: 11px; right: 11px; z-index: 1;
+}
+.card-title { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 2px; }
+.card-obs { font-size: 10px; color: rgba(255,255,255,.6); }
+
+/* Finds */
+.finds-hdr {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  padding: 4px 16px 14px;
+}
+/* Same Figma style as Projects heading: serif/title-3, ink-300 */
+.finds-title {
+  font-family: var(--font-serif);
+  font-size: 20px; font-weight: 400;
+  color: var(--ink-300);
+  line-height: 1.3;
+}
+.finds-view-btns { display: flex; gap: 4px; }
+.finds-vb {
+  /* Figma: 32×32 square with 4px radius, Figma-exact colors */
+  width: 32px; height: 32px; border-radius: 4px; border: none;
+  position: relative; overflow: hidden; flex-shrink: 0;
+  background: var(--olive-100); /* inactive: #e3e7df */
+  cursor: pointer; transition: background .18s;
+}
+.finds-vb.active { background: #c2c190; } /* active: muted olive/sand from Figma */
+.finds-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px;
+  padding: 0 16px 32px;
+}
+.find-cell { aspect-ratio: 1; border-radius: 9px; background: var(--olive-100); }
+
+/* ── NAV BAR (fixed pill — always visible, all 3 sheet states) ── */
+#nav-bar {
+  position: fixed;
+  left: 16px; right: 16px;
+  bottom: 12px;
+  z-index: 50;   /* above sheet */
+  height: var(--nav-h);
+  border-radius: 250px;
+  /* Background Blur effect from Figma */
+  backdrop-filter: blur(8.2px);
+  -webkit-backdrop-filter: blur(8.2px);
+  background: rgba(255,255,255,0.65);
+  border: 0.5px solid var(--paper-50);
+  box-shadow: var(--shadow-nav);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px;
+  touch-action: none;  /* we handle all gestures (drag + tap) */
+  /* position: fixed already creates a containing block for .nav-indicator */
+}
+.nav-item {
+  width: 80px; flex-shrink: 0; flex-grow: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 2px; border: none; background: transparent;
+  cursor: pointer; padding: 4px 4px 6px;
+  border-radius: 250px;
+  /* sans/nav-label: 10px, Regular, tracking 0.25px */
+  font-family: var(--font-sans);
+  font-size: 10px; font-weight: 400;
+  letter-spacing: 0.25px;
+  color: var(--olive-400);
+  transition: color .2s;
+  touch-action: none;  /* pointer events handle everything */
+  position: relative; z-index: 1;  /* sits above sliding indicator */
+}
+.nav-item.active {
+  color: var(--olive);  /* indicator div owns the background now */
+}
+/* Sliding active indicator — absolutely positioned within #nav-bar */
+.nav-indicator {
+  position: absolute;
+  left: 0; top: 8px;
+  width: 80px;
+  height: calc(100% - 16px);  /* 68px - 8px top - 8px bottom = 52px */
+  border-radius: 250px;
+  background: var(--olive-100);
+  transition: transform 0.35s cubic-bezier(0.34, 1.4, 0.64, 1);  /* spring */
+  pointer-events: none;
+  z-index: 0;
+  will-change: transform;  /* GPU layer for smooth drag */
+}
+.nav-item .icon-32 {
+  width: 32px; height: 32px;
+  position: relative; overflow: hidden;   /* required for .icon-inset children */
+  margin-bottom: -2px;
+  flex-shrink: 0;
+}
+
+/* ── OBSERVE FAB (fixed circular action button — top-right of nav group) ── */
+#observe-fab {
+  position: fixed;
+  right: 16px;
+  bottom: 92px;          /* 12px nav-bottom + 68px nav-height + 12px gap */
+  width: 64px;
+  height: 64px;
+  border-radius: 250px;
+  background: var(--olive);   /* #67765b — primary/olive-green/500 */
+  border: none;
+  cursor: pointer;
+  z-index: 50;
+  box-shadow: 0px 4px 16.2px 0px rgba(115,115,100,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  touch-action: manipulation;
+}
+#observe-fab .icon-32 {
+  width: 32px; height: 32px;
+  position: relative; overflow: hidden;
+  flex-shrink: 0;
+}
+
+/* ── ICON INSET (Figma-exact absolute positioning within 32×32 frame) ── */
+/* Each icon asset is positioned using the exact CSS inset from Figma.     */
+/* This preserves the icon's true aspect ratio without any max-w/h tricks. */
+.icon-inset {
+  position: absolute;
+  /* inset values come from inline style on each element */
+}
+.icon-inset img {
+  position: absolute;
+  width: 100%; height: 100%;
+  display: block;
+  object-fit: fill;  /* img fills its inset container exactly — no distortion */
+}
+
+/* ── SETUP OVERLAY ───────────────────────────────────────── */
+#setup-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(20,18,14,.98);
+  display: flex; align-items: center; justify-content: center; padding: 24px;
+}
+.setup-card {
+  background: #1e1b14; border: 1px solid rgba(194,193,144,.18);
+  border-radius: 20px; padding: 36px 32px;
+  width: 100%; max-width: 400px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+.setup-logo { font-family: var(--font-serif); font-size: 26px; color: var(--paper); font-weight: 600; }
+.setup-sub { font-size: 13px; color: rgba(252,250,240,.4); line-height: 1.6; }
+.setup-label {
+  font-size: 10.5px; font-weight: 600; letter-spacing: .1em;
+  text-transform: uppercase; color: #c8cfbf; margin-bottom: 8px;
+}
+.setup-input {
+  width: 100%; background: #252018;
+  border: 1.5px solid rgba(194,193,144,.2); color: var(--paper);
+  font-family: var(--font-sans); font-size: 13px;
+  padding: 12px 14px; border-radius: 10px; outline: none;
+  transition: border-color .15s;
+}
+.setup-input:focus { border-color: var(--olive); }
+.setup-input::placeholder { color: rgba(252,250,240,.2); }
+.setup-btn {
+  width: 100%; background: var(--olive); color: var(--paper);
+  border: none; font-family: var(--font-sans);
+  font-size: 14px; font-weight: 600; padding: 13px;
+  border-radius: 10px; cursor: pointer; transition: opacity .15s;
+}
+.setup-btn:hover { opacity: .85; }
+.setup-note { font-size: 10px; color: rgba(252,250,240,.22); line-height: 1.6; }
+.setup-note a { color: #c8cfbf; text-decoration: none; }
+.setup-note code { color: #c8cfbf; }
+
+/* ── MAPBOX OVERRIDES ────────────────────────────────────── */
+.mapboxgl-ctrl-attrib { background: rgba(253,251,244,.7) !important; border-radius: 6px !important; }
+.mapboxgl-popup-content {
+  background: var(--cream) !important; border-radius: 14px !important;
+  padding: 14px 16px !important; font-family: var(--font-sans) !important;
+  box-shadow: 0 8px 28px rgba(37,32,36,.2) !important;
+  border: 1px solid rgba(103,118,91,.2) !important;
+}
+.pop-sp { font-family: var(--font-serif); font-size: 15px; color: var(--ink); margin-bottom: 2px; font-weight: 500; }
+.pop-meta { font-size: 10px; color: var(--grey); margin-bottom: 9px; }
+.pop-st {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  color: var(--olive); background: rgba(103,118,91,.12); padding: 3px 9px; border-radius: 20px;
+}
+.pop-dot { width: 6px; height: 6px; border-radius: 50%; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ SETUP ══════════════════════════════════ -->
+<div id="setup-overlay">
+  <div class="setup-card">
+    <div class="setup-logo">🌿 Gaia</div>
+    <p class="setup-sub">Enter your Mapbox token to load the map. Saved in your browser so you only do this once.</p>
+    <div>
+      <div class="setup-label">Mapbox Public Token</div>
+      <input class="setup-input" id="tokenInput" type="text" placeholder="pk.eyJ1Ijoi…"/>
+    </div>
+    <div>
+      <div class="setup-label">Adobe Fonts Kit URL <span style="opacity:.4;font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></div>
+      <input class="setup-input" id="kitInput" type="text" placeholder="https://use.typekit.net/xxxxxxx.css"/>
+    </div>
+    <button class="setup-btn" id="launchBtn">Launch map →</button>
+    <p class="setup-note">Token starts with <code>pk.</code> — <a href="https://account.mapbox.com/access-tokens/" target="_blank">account.mapbox.com</a></p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ MAP ════════════════════════════════════ -->
+<div id="map"></div>
+
+<!-- ═══════════════════════════ HEADER ════════════════════════════════ -->
+<div id="header">
+  <div class="search-bar">
+    <!-- Search icon: Figma inset 16.67% all sides → ~21.3×21.3px -->
+    <div class="icon-32">
+      <div class="icon-inset" style="inset:16.67%">
+        <img src="https://www.figma.com/api/mcp/asset/aa52b415-2e9a-4ff4-9291-0a65db2bc4b1" alt="">
+      </div>
+    </div>
+    <input
+      class="search-input"
+      type="search"
+      placeholder="Search observations"
+      autocomplete="off"
+      autocorrect="off"
+      autocapitalize="off"
+      spellcheck="false"
+    >
+  </div>
+</div>
+
+<!-- ═══════════════════════════ MAP CONTROLS ══════════════════════════ -->
+<div id="map-controls">
+  <button class="ctrl-btn" id="locateBtn" aria-label="Locate me">
+    <div class="icon-32">
+      <div class="icon-inset" style="top:4.21px;left:4.21px;width:23.298px;height:23.298px">
+        <img src="https://www.figma.com/api/mcp/asset/8bf2a093-8eae-4bf6-8f0f-84ecf7497cad" alt="">
+      </div>
+    </div>
+  </button>
+
+  <button class="ctrl-btn" id="filterBtn" aria-label="Filters">
+    <div class="icon-32">
+      <div class="icon-inset" style="top:50%;left:50%;transform:translate(-50%,-50%);width:19.098px;height:20.031px">
+        <img src="https://www.figma.com/api/mcp/asset/09cbcfba-341d-477c-a5ef-2ea5d1f265f9" alt="">
+      </div>
+    </div>
+  </button>
+</div>
+
+<!-- ═══════════════════════════ SHEET ═════════════════════════════════ -->
+<div id="sheet">
+  <div id="sheet-inner">
+
+    <!-- Drag handle — visible in mid/full, hidden in collapsed (peek card handles drag there) -->
+    <div id="drag-handle">
+      <div class="handle-pill"></div>
+    </div>
+
+    <!-- Peek card — collapsed state only.
+         Handle pill lives INSIDE the card matching Figma's Map Panel Closed spec. -->
+    <div id="peek-row">
+      <div class="peek-card">
+        <div class="handle-pill"></div>
+        <span class="peek-label">3 nearby projects</span>
+      </div>
+    </div>
+
+    <!-- Scrollable content — mid + full states -->
+    <div id="sheet-content">
+      <div class="nearby-header">Nearby</div>
+
+      <!-- Filter tabs -->
+      <div class="tabs">
+        <button class="tab-btn active">Nearby</button>
+        <button class="tab-btn">Needs ID</button>
+        <button class="tab-btn">Projects</button>
+        <button class="tab-btn">Friends</button>
+      </div>
+
+      <!-- Projects -->
+      <div class="section-hdr">
+        <span class="section-title">Projects</span>
+        <span class="see-all">See all</span>
+      </div>
+      <div class="projects-scroll" id="projectsScroll">
+        <div class="project-card" style="background:linear-gradient(145deg,#4a5c3c,#1e2a18)">
+          <div class="card-tag">Wildflowers</div>
+          <div class="card-info">
+            <div class="card-title">Pollinator Corridor</div>
+            <div class="card-obs">24 Observers</div>
+          </div>
+        </div>
+        <div class="project-card" style="background:linear-gradient(145deg,#3a5260,#1a2e38)">
+          <div class="card-tag">Wetland</div>
+          <div class="card-info">
+            <div class="card-title">Creek Recovery</div>
+            <div class="card-obs">12 Observers</div>
+          </div>
+        </div>
+        <div class="project-card" style="background:linear-gradient(145deg,#4a5c3c,#1e2a18)">
+          <div class="card-tag">Wildflowers</div>
+          <div class="card-info">
+            <div class="card-title">Pollinator Corridor</div>
+            <div class="card-obs">24 Observers</div>
+          </div>
+        </div>
+        <div class="project-card" style="background:linear-gradient(145deg,#3a5260,#1a2e38)">
+          <div class="card-tag">Wetland</div>
+          <div class="card-info">
+            <div class="card-title">Creek Recovery</div>
+            <div class="card-obs">12 Observers</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Finds -->
+      <div class="finds-hdr">
+        <span class="finds-title">Finds</span>
+        <div class="finds-view-btns">
+          <!-- Grid view: Figma inset 18.17% 18.75% 18.38% 18.22% → active olive/sand bg -->
+          <button class="finds-vb active" id="fvGrid">
+            <div class="icon-inset" style="inset:18.17% 18.75% 18.38% 18.22%">
+              <img src="https://www.figma.com/api/mcp/asset/a3479eda-020a-4b40-a748-c42e2da51031" alt="">
+            </div>
+          </button>
+          <!-- List view: Figma inset 23.68% 12.5% 23.89% 11.97% → inactive light olive bg -->
+          <button class="finds-vb" id="fvList">
+            <div class="icon-inset" style="inset:23.68% 12.5% 23.89% 11.97%">
+              <img src="https://www.figma.com/api/mcp/asset/fa58d092-6b75-42d3-9802-79acfb7d0eee" alt="">
+            </div>
+          </button>
+        </div>
+      </div>
+      <div class="finds-grid">
+        <div class="find-cell"></div>
+        <div class="find-cell"></div>
+        <div class="find-cell"></div>
+        <div class="find-cell"></div>
+        <div class="find-cell"></div>
+        <div class="find-cell"></div>
+      </div>
+    </div><!-- /sheet-content -->
+
+  </div><!-- /sheet-inner -->
+</div><!-- /sheet -->
+
+<!-- ══ NAV BAR — fixed, always visible in all 3 sheet states ══════════ -->
+<!-- Icon assets + insets taken directly from Figma design context (node 289:2265).   -->
+<!-- Each .icon-inset div uses the exact CSS inset from Figma to position the asset   -->
+<!-- within its 32×32 frame — no squishing or stretching possible.                   -->
+<div id="nav-bar">
+  <div class="nav-indicator"></div>
+  <button class="nav-item active" data-nav="explore">
+    <!-- Explore: inset 16.02% top, 15.76% right, 15.76% bottom, 16.02% left → ~21.8×21.8px -->
+    <div class="icon-32">
+      <div class="icon-inset" style="inset:16.02% 15.76% 15.76% 16.02%">
+        <img src="https://www.figma.com/api/mcp/asset/af13340f-129c-45a9-ae74-b3008f677617" alt="">
+      </div>
+    </div>
+    Explore
+  </button>
+  <button class="nav-item" data-nav="activity">
+    <!-- Activity: inset 13.38% top, 18.75% right, 13.58% bottom, 18.22% left (Figma updated) -->
+    <div class="icon-32">
+      <div class="icon-inset" style="inset:13.38% 18.75% 13.58% 18.22%">
+        <img src="https://www.figma.com/api/mcp/asset/651e66db-3101-45a3-b5a4-450d484400c0" alt="">
+      </div>
+    </div>
+    Activity
+  </button>
+  <button class="nav-item" data-nav="profile">
+    <!-- Profile: absolute px values from Figma → top:5.61px left:5.61px w:20.63px h:20.73px -->
+    <div class="icon-32">
+      <div class="icon-inset" style="top:5.61px;left:5.61px;width:20.632px;height:20.733px">
+        <img src="https://www.figma.com/api/mcp/asset/55a904e5-989f-4b21-b8c2-6d94134059b1" alt="">
+      </div>
+    </div>
+    Profile
+  </button>
+</div>
+
+<!-- ══════════════════════════ OBSERVE FAB ════════════════════════════ -->
+<!-- 64×64px circular FAB — right-aligned above nav pill (gap: 12px).  -->
+<!-- bg: olive-500 (#67765b), binoculars icon from Figma node 333:3507. -->
+<button id="observe-fab" aria-label="Observe">
+  <div class="icon-32">
+    <div class="icon-inset" style="inset:22.81% 12.28% 22.81% 11.4%;overflow:hidden">
+      <img src="https://www.figma.com/api/mcp/asset/09bdd434-0dd0-420f-bee0-e04af017f17c" alt="">
+    </div>
+  </div>
+</button>
+
+<script>
+// ════════════════════════════════════════════════
+//  CONSTANTS  (keep in sync with :root CSS vars)
+// ════════════════════════════════════════════════
+const HEADER_H = 108;
+const PEEK_H   = 150;  // 8px top + 134px card (Figma spec) + 8px bottom
+const NAV_H    = 80;   // nav pill (68px) + bottom gap (12px) — used for mid snap calc
+const SPRING   = 'cubic-bezier(0.32,0.72,0,1)';
+
+// ════════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════════
+let map         = null;
+let currentSnap = 'collapsed';
+let currentY    = 0;
+
+let SNAPS = {};
+
+function calcSnaps() {
+  const sh = window.innerHeight - HEADER_H;
+  SNAPS = {
+    full:      16, /* 16px gap between header bottom and sheet top (matches Figma Map Full Fold) */
+    mid:       Math.round(sh * 0.47),
+    // Collapsed: peek card extends to the viewport bottom.
+    // The fixed nav bar (z-index 50) overlays the lower portion of the card,
+    // matching the Figma Map Folded design where nav sits inside the peek card area.
+    collapsed: sh - PEEK_H
+  };
+}
+
+// ════════════════════════════════════════════════
+//  SHEET LAYOUT INIT
+// ════════════════════════════════════════════════
+function initSheetLayout() {
+  calcSnaps();
+  const sh = window.innerHeight - HEADER_H;
+  const sheet = document.getElementById('sheet');
+  sheet.style.height = sh + 'px';
+}
+
+// ════════════════════════════════════════════════
+//  TRANSLATE (raw, no snap)
+// ════════════════════════════════════════════════
+function setTranslate(y, animated) {
+  const clamped = Math.max(-20, Math.min(SNAPS.collapsed + 20, y));
+  currentY = clamped;
+  const sheet = document.getElementById('sheet');
+  sheet.style.transition = animated ? `transform .42s ${SPRING}` : 'none';
+  sheet.style.transform  = `translateY(${clamped}px)`;
+  syncMapControls(clamped);
+  if (drag.active) syncSheetBackground(clamped);
+}
+
+// ════════════════════════════════════════════════
+//  SHEET BACKGROUND SYNC (drag only)
+// ════════════════════════════════════════════════
+function syncSheetBackground(translateY) {
+  const inner = document.getElementById('sheet-inner');
+  // Alpha: 0 at collapsed, 1 at mid (and above)
+  const range = Math.max(1, SNAPS.collapsed - SNAPS.mid);
+  const alpha = Math.max(0, Math.min(1, (SNAPS.collapsed - translateY) / range));
+
+  // Margins: 8px sides + 12px bottom at collapsed → 0 at mid
+  const mH = Math.round(8  * (1 - alpha));
+  const mB = Math.round(12 * (1 - alpha));
+  // Bottom corner radius: 48px at collapsed (floating card) → 0 at mid (flush sheet)
+  // Top corners always stay at 48px
+  const rB = Math.round(48 * (1 - alpha));
+
+  inner.style.backgroundColor = `rgba(253, 251, 244, ${alpha.toFixed(3)})`;
+  inner.style.borderRadius    = `48px 48px ${rB}px ${rB}px`;
+  inner.style.top             = '0';
+  inner.style.right           = `${mH}px`;
+  inner.style.bottom          = `${mB}px`;
+  inner.style.left            = `${mH}px`;
+  inner.style.boxShadow       = alpha > 0.02 ? 'var(--shadow-soft)' : 'none';
+}
+
+// ════════════════════════════════════════════════
+//  SNAP TO POSITION
+// ════════════════════════════════════════════════
+function snapTo(snap) {
+  currentSnap = snap;
+  const sheet = document.getElementById('sheet');
+  sheet.classList.remove('snap-full', 'snap-mid', 'snap-collapsed');
+  sheet.classList.add('snap-' + snap);
+
+  // Clear any inline background/radius/shadow set during drag so CSS snap
+  // classes take over cleanly (with their own CSS transitions).
+  const inner = document.getElementById('sheet-inner');
+  inner.style.backgroundColor = '';
+  inner.style.borderRadius    = '';
+  inner.style.boxShadow       = '';
+  inner.style.top             = '';
+  inner.style.right           = '';
+  inner.style.bottom          = '';
+  inner.style.left            = '';
+
+  const content = document.getElementById('sheet-content');
+  content.style.overflowY = snap === 'full' ? 'auto' : 'hidden';
+  if (snap !== 'full') content.scrollTop = 0;
+
+  setTranslate(SNAPS[snap], true);
+}
+
+// ════════════════════════════════════════════════
+//  MAP CONTROLS POSITION
+// ════════════════════════════════════════════════
+function syncMapControls(translateY) {
+  const ctrl = document.getElementById('map-controls');
+  const sh   = window.innerHeight - HEADER_H;
+
+  // Controls always visible in all 3 states (full, mid, collapsed).
+  ctrl.style.opacity       = '1';
+  ctrl.style.pointerEvents = 'all';
+
+  let bottomPx;
+
+  if (translateY <= SNAPS.mid) {
+    // Full (translateY=0): anchor just above nav bar (NAV_H+16 from bottom).
+    // Mid  (translateY=SNAPS.mid): float just above sheet top (visH+14 from bottom).
+    const aboveNav   = NAV_H + 16;                    // ~96px — above nav bar at full fold
+    const aboveSheet = (sh - SNAPS.mid) + 14;         // ~387px — above sheet top at mid fold
+    const t          = translateY / SNAPS.mid;         // 0 = full, 1 = mid
+    bottomPx = Math.round(aboveNav + t * (aboveSheet - aboveNav));
+  } else {
+    // Collapsed: follow sheet top directly (just above the peek card)
+    bottomPx = (sh - translateY) + 14;
+  }
+
+  ctrl.style.bottom = bottomPx + 'px';
+}
+
+// ════════════════════════════════════════════════
+//  DRAG ENGINE
+// ════════════════════════════════════════════════
+const drag = {
+  active:          false,
+  startClientY:    0,
+  startClientX:    0,
+  startTranslateY: 0,
+  lastClientY:     0,
+  lastTime:        0,
+  velocity:        0,
+  intent:          null   // 'sheet' | 'scroll' | 'hscroll'
+};
+
+function dragStart(e) {
+  const t              = e.touches ? e.touches[0] : e;
+  drag.active          = true;
+  drag.startClientY    = t.clientY;
+  drag.startClientX    = t.clientX;
+  drag.startTranslateY = currentY;
+  drag.lastClientY     = t.clientY;
+  drag.lastTime        = performance.now();
+  drag.velocity        = 0;
+  drag.intent          = null;
+
+  const sheet = document.getElementById('sheet');
+  sheet.style.transition = 'none';
+
+  // Disable sheet-inner transition for the duration of the drag so background
+  // alpha updates happen frame-by-frame without CSS easing lag.
+  // Restored in dragEnd before snapTo() so the snap animation works.
+  const inner = document.getElementById('sheet-inner');
+  inner.style.transition = 'none';
+}
+
+function dragMove(e) {
+  if (!drag.active) return;
+
+  const t       = e.touches ? e.touches[0] : e;
+  const now     = performance.now();
+  const elapsed = now - drag.lastTime;
+
+  if (elapsed > 0) {
+    const raw     = (t.clientY - drag.lastClientY) / elapsed;
+    drag.velocity = drag.velocity * 0.6 + raw * 0.4;
+  }
+  drag.lastClientY = t.clientY;
+  drag.lastTime    = now;
+
+  const dy = t.clientY - drag.startClientY;
+  const dx = t.clientX - drag.startClientX;
+
+  if (drag.intent === null && (Math.abs(dy) > 4 || Math.abs(dx) > 4)) {
+    const onContent  = e.target && e.target.closest && e.target.closest('#sheet-content');
+    const onProjects = e.target && e.target.closest && e.target.closest('#projectsScroll');
+    const scrollTop  = document.getElementById('sheet-content').scrollTop;
+
+    if (onProjects && Math.abs(dx) > Math.abs(dy)) {
+      drag.intent = 'hscroll';
+    } else if (currentSnap === 'full' && onContent) {
+      drag.intent = (scrollTop > 2 || dy < 0) ? 'scroll' : 'sheet';
+    } else {
+      drag.intent = 'sheet';
+    }
+  }
+
+  if (drag.intent === 'sheet') {
+    e.preventDefault();
+    setTranslate(drag.startTranslateY + dy, false);
+  }
+}
+
+function dragEnd() {
+  if (!drag.active) return;
+  drag.active = false;
+
+  // Restore sheet-inner CSS transition so snap animations work smoothly.
+  document.getElementById('sheet-inner').style.transition = '';
+
+  if (drag.intent !== 'sheet') return;
+
+  const v = drag.velocity;
+  let target;
+
+  if (v < -0.4) {
+    target = currentSnap === 'collapsed' ? 'mid' : 'full';
+  } else if (v > 0.4) {
+    target = currentSnap === 'full' ? 'mid' : 'collapsed';
+  } else {
+    const entries = Object.entries(SNAPS);
+    entries.sort((a, b) => Math.abs(currentY - a[1]) - Math.abs(currentY - b[1]));
+    target = entries[0][0];
+  }
+
+  snapTo(target);
+}
+
+// ════════════════════════════════════════════════
+//  NAV INDICATOR
+// ════════════════════════════════════════════════
+function moveNavIndicator(btn) {
+  const ind = document.querySelector('.nav-indicator');
+  if (ind && btn) ind.style.transform = `translateX(${btn.offsetLeft}px)`;
+}
+
+// --- NAV DRAG (Liquid Glass-inspired) ---
+let navDrag = null;   // null when inactive
+let tabSlots = [];    // [{left, center, btn}, ...]
+
+function cacheTabSlots() {
+  tabSlots = [...document.querySelectorAll('.nav-item')].map(btn => ({
+    left: btn.offsetLeft,
+    center: btn.offsetLeft + 40,  // 40 = half of 80px
+    btn
+  }));
+}
+
+function nearestSlot(x) {
+  const cx = x + 40;
+  return tabSlots.reduce((best, s) =>
+    Math.abs(s.center - cx) < Math.abs(best.center - cx) ? s : best
+  );
+}
+
+function navPointerDown(e) {
+  const btn = e.target.closest('.nav-item');
+  if (!btn) return;
+  const ind = document.querySelector('.nav-indicator');
+  const m = ind.style.transform.match(/translateX\((.+?)px\)/);
+  navDrag = { startX: e.clientX, startTx: m ? parseFloat(m[1]) : 0,
+              dragging: false, tapBtn: btn };
+  cacheTabSlots();
+}
+
+function navPointerMove(e) {
+  if (!navDrag) return;
+  const dx = e.clientX - navDrag.startX;
+
+  // Enter drag mode after 5px threshold
+  if (!navDrag.dragging && Math.abs(dx) > 5) {
+    navDrag.dragging = true;
+    document.querySelector('.nav-indicator').style.transition = 'none';
+  }
+  if (!navDrag.dragging) return;
+  e.preventDefault();
+
+  let x = navDrag.startTx + dx;
+  const minX = tabSlots[0].left;
+  const maxX = tabSlots[tabSlots.length - 1].left;
+
+  // Rubber band at edges
+  if (x < minX) x = minX - (minX - x) * 0.3;
+  else if (x > maxX) x = maxX + (x - maxX) * 0.3;
+
+  // Magnetic pull toward nearest tab (quadratic ease)
+  const near = nearestSlot(x);
+  const dist = Math.abs((x + 40) - near.center);
+  const zone = 35;
+  if (dist < zone) {
+    const pull = Math.pow(1 - dist / zone, 2) * 0.4;
+    x += (near.left - x) * pull;
+  }
+
+  document.querySelector('.nav-indicator').style.transform = `translateX(${x}px)`;
+
+  // Update active tab in real time
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  near.btn.classList.add('active');
+}
+
+function navPointerUp() {
+  if (!navDrag) return;
+  const state = navDrag;
+  navDrag = null;
+
+  if (!state.dragging) {
+    // Simple tap — switch to tapped button
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    state.tapBtn.classList.add('active');
+    moveNavIndicator(state.tapBtn);
+    return;
+  }
+
+  // Drag release — spring-snap to nearest tab
+  const ind = document.querySelector('.nav-indicator');
+  ind.style.transition = '';  // re-enable CSS spring
+  const m = ind.style.transform.match(/translateX\((.+?)px\)/);
+  const nearest = nearestSlot(m ? parseFloat(m[1]) : 0);
+  moveNavIndicator(nearest.btn);
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  nearest.btn.classList.add('active');
+}
+
+// ════════════════════════════════════════════════
+//  EVENT WIRING
+// ════════════════════════════════════════════════
+function setupEvents() {
+  const sheet   = document.getElementById('sheet');
+  const handle  = document.getElementById('drag-handle');
+  const peek    = document.getElementById('peek-row');
+  const content = document.getElementById('sheet-content');
+
+  // Touch drag
+  [handle, peek].forEach(el => el.addEventListener('touchstart', dragStart, { passive: true }));
+  sheet.addEventListener('touchstart', e => { if (currentSnap !== 'full') dragStart(e); }, { passive: true });
+  content.addEventListener('touchstart', e => { if (currentSnap === 'full' && content.scrollTop < 2) dragStart(e); }, { passive: true });
+  document.addEventListener('touchmove', dragMove, { passive: false });
+  document.addEventListener('touchend',    dragEnd, { passive: true });
+  document.addEventListener('touchcancel', dragEnd, { passive: true });
+
+  // Mouse drag (desktop testing)
+  sheet.addEventListener('mousedown', dragStart);
+  document.addEventListener('mousemove', dragMove);
+  document.addEventListener('mouseup',   dragEnd);
+
+  // Peek row tap → expand to mid
+  peek.addEventListener('click', () => { if (currentSnap === 'collapsed') snapTo('mid'); });
+
+  // Filter tabs
+  document.querySelector('.tabs').addEventListener('click', e => {
+    const btn = e.target.closest('.tab-btn');
+    if (!btn) return;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+
+  // Finds toggle
+  document.getElementById('fvGrid').addEventListener('click', function() {
+    this.classList.add('active'); document.getElementById('fvList').classList.remove('active');
+  });
+  document.getElementById('fvList').addEventListener('click', function() {
+    this.classList.add('active'); document.getElementById('fvGrid').classList.remove('active');
+  });
+
+  // Nav bar — pointer-based drag + tap (Liquid Glass-inspired)
+  const navBar = document.getElementById('nav-bar');
+  navBar.addEventListener('pointerdown', navPointerDown);
+  document.addEventListener('pointermove', navPointerMove, { passive: false });
+  document.addEventListener('pointerup', navPointerUp);
+  document.addEventListener('pointercancel', navPointerUp);
+
+  // Position indicator for the initially active tab (no transition on load)
+  const initTab = document.querySelector('.nav-item.active');
+  if (initTab) {
+    const ind = document.querySelector('.nav-indicator');
+    if (ind) { ind.style.transition = 'none'; moveNavIndicator(initTab);
+      requestAnimationFrame(() => { ind.style.transition = ''; }); }
+  }
+
+  // Locate
+  document.getElementById('locateBtn').addEventListener('click', () => {
+    if (!map) return;
+    navigator.geolocation.getCurrentPosition(
+      pos => map.flyTo({ center: [pos.coords.longitude, pos.coords.latitude], zoom: 14, speed: 1.4 }),
+      () => {}
+    );
+  });
+
+  // Resize
+  window.addEventListener('resize', () => {
+    initSheetLayout(); snapTo(currentSnap);
+    cacheTabSlots();
+    const at = document.querySelector('.nav-item.active');
+    if (at) moveNavIndicator(at);
+  });
+}
+
+// ════════════════════════════════════════════════
+//  MAP STYLE
+// ════════════════════════════════════════════════
+const GAIA_STYLE = {"version":8,"name":"Gaia — Light Editorial v5","sprite":"mapbox://sprites/mapbox/light-v11","glyphs":"mapbox://fonts/mapbox/{fontstack}/{range}","sources":{"mapbox-dem":{"type":"raster-dem","url":"mapbox://mapbox.mapbox-terrain-dem-v1","tileSize":512,"maxzoom":14},"composite":{"type":"vector","url":"mapbox://mapbox.mapbox-streets-v8"}},"terrain":{"source":"mapbox-dem","exaggeration":0.45},"layers":[{"id":"background","type":"background","paint":{"background-color":"#fdfbf4"}},{"id":"landuse-urban","type":"fill","source":"composite","source-layer":"landuse","filter":["match",["get","class"],["residential","commercial","industrial","parking"],true,false],"paint":{"fill-color":"#fdfbf4","fill-opacity":0.85}},{"id":"landuse-park","type":"fill","source":"composite","source-layer":"landuse","filter":["match",["get","class"],["park","grass","scrub","wetland"],true,false],"paint":{"fill-color":"#C2C190","fill-opacity":0.72}},{"id":"landuse-forest","type":"fill","source":"composite","source-layer":"landuse","filter":["==",["get","class"],"forest"],"paint":{"fill-color":"#8A9B7E","fill-opacity":0.58}},{"id":"landuse-nature-reserve","type":"fill","source":"composite","source-layer":"landuse","filter":["match",["get","class"],["national_park","nature_reserve"],true,false],"paint":{"fill-color":"#67765B","fill-opacity":0.52}},{"id":"water","type":"fill","source":"composite","source-layer":"water","paint":{"fill-color":"#4F638D","fill-opacity":1.0}},{"id":"waterway","type":"line","source":"composite","source-layer":"waterway","paint":{"line-color":"#4F638D","line-width":["interpolate",["linear"],["zoom"],8,1.5,14,5],"line-opacity":1.0}},{"id":"hillshade","type":"hillshade","source":"mapbox-dem","paint":{"hillshade-shadow-color":"#8a9b7e","hillshade-highlight-color":"#fdfbf4","hillshade-accent-color":"#67765B","hillshade-illumination-direction":335,"hillshade-exaggeration":0.45}},{"id":"road-path","type":"line","source":"composite","source-layer":"road","filter":["match",["get","class"],["path","pedestrian","footway","cycleway"],true,false],"paint":{"line-color":"#c8cfbf","line-opacity":0.85,"line-width":["interpolate",["linear"],["zoom"],12,0.8,18,2.5],"line-dasharray":[2,2]}},{"id":"road-minor","type":"line","source":"composite","source-layer":"road","filter":["match",["get","class"],["street","street_limited","service","track"],true,false],"paint":{"line-color":"#c8cfbf","line-width":["interpolate",["linear"],["zoom"],11,0.8,16,5]}},{"id":"road-secondary","type":"line","source":"composite","source-layer":"road","filter":["match",["get","class"],["secondary","tertiary"],true,false],"paint":{"line-color":"#c8cfbf","line-width":["interpolate",["linear"],["zoom"],9,1.2,16,8]}},{"id":"road-primary","type":"line","source":"composite","source-layer":"road","filter":["==",["get","class"],"primary"],"paint":{"line-color":"#BFA98F","line-width":["interpolate",["linear"],["zoom"],8,1.8,16,12]}},{"id":"road-motorway","type":"line","source":"composite","source-layer":"road","filter":["match",["get","class"],["motorway","trunk"],true,false],"paint":{"line-color":"#BFA98F","line-width":["interpolate",["linear"],["zoom"],6,1.5,16,14]}},{"id":"building","type":"fill","source":"composite","source-layer":"building","paint":{"fill-color":"#f2f4f0","fill-opacity":["interpolate",["linear"],["zoom"],13,0,15,0.9]}},{"id":"building-outline","type":"line","source":"composite","source-layer":"building","paint":{"line-color":"#e3e7df","line-width":0.6,"line-opacity":["interpolate",["linear"],["zoom"],13,0,15,0.65]}},{"id":"label-water-body","type":"symbol","source":"composite","source-layer":"natural_label","filter":["match",["get","class"],["ocean","sea","lake","bay","river","reservoir","water"],true,false],"layout":{"text-field":["get","name_en"],"text-font":["DIN Pro Bold Italic","Arial Unicode MS Regular"],"text-size":["interpolate",["linear"],["zoom"],6,13,14,20]},"paint":{"text-color":"#FCFAF0","text-halo-color":"#3B4A6A","text-halo-width":2}},{"id":"label-neighborhood","type":"symbol","source":"composite","source-layer":"place_label","filter":["match",["get","class"],["settlement_subdivision","locality","suburb"],true,false],"minzoom":11,"layout":{"text-field":["get","name_en"],"text-font":["DIN Pro Bold","Arial Unicode MS Regular"],"text-size":["interpolate",["linear"],["zoom"],11,13,16,18],"text-letter-spacing":0.15,"text-transform":"uppercase"},"paint":{"text-color":"#252024","text-halo-color":"#fdfbf4","text-halo-width":4}},{"id":"label-town","type":"symbol","source":"composite","source-layer":"place_label","filter":["match",["get","class"],["town","village","hamlet"],true,false],"layout":{"text-field":["get","name_en"],"text-font":["DIN Pro Bold","Arial Unicode MS Regular"],"text-size":["interpolate",["linear"],["zoom"],8,13,14,18]},"paint":{"text-color":"#252024","text-halo-color":"#fdfbf4","text-halo-width":4}},{"id":"label-city","type":"symbol","source":"composite","source-layer":"place_label","filter":["==",["get","class"],"city"],"layout":{"text-field":["get","name_en"],"text-font":["DIN Pro Bold","Arial Unicode MS Regular"],"text-size":["interpolate",["linear"],["zoom"],5,14,10,20,14,24]},"paint":{"text-color":"#252024","text-halo-color":"#fdfbf4","text-halo-width":4}}]};
+
+const OBSERVATIONS = {type:'FeatureCollection',features:[
+  {type:'Feature',properties:{species:'Acer rubrum',common:'Red Maple',status:'Research grade',age:'2 days ago',color:'#67765B'},geometry:{type:'Point',coordinates:[-122.4174,37.7699]}},
+  {type:'Feature',properties:{species:'Danaus plexippus',common:'Monarch Butterfly',status:'Research grade',age:'5 days ago',color:'#67765B'},geometry:{type:'Point',coordinates:[-122.4094,37.7649]}},
+  {type:'Feature',properties:{species:'Unknown fungus',common:'Needs ID',status:'Needs ID',age:'1 day ago',color:'#B5493A'},geometry:{type:'Point',coordinates:[-122.4154,37.7749]}},
+  {type:'Feature',properties:{species:'Quercus agrifolia',common:'Coast Live Oak',status:'Community ID',age:'3 days ago',color:'#4F638D'},geometry:{type:'Point',coordinates:[-122.4054,37.7719]}},
+  {type:'Feature',properties:{species:'Procyon lotor',common:'Raccoon',status:'Research grade',age:'1 week ago',color:'#67765B'},geometry:{type:'Point',coordinates:[-122.4214,37.7669]}},
+]};
+
+// ════════════════════════════════════════════════
+//  MAP INIT
+// ════════════════════════════════════════════════
+function initMap() {
+  const tokenEl = document.getElementById('tokenInput');
+  const token   = tokenEl.value.trim();
+
+  if (!token || !token.startsWith('pk.')) {
+    tokenEl.style.borderColor = '#b5493a';
+    setTimeout(() => tokenEl.style.borderColor = '', 800);
+    return;
+  }
+
+  const kitUrl = document.getElementById('kitInput').value.trim();
+  if (kitUrl) document.getElementById('adobeFontsKit').href = kitUrl;
+
+  localStorage.setItem('gaiaToken', token);
+  if (kitUrl) localStorage.setItem('gaiaKit', kitUrl);
+
+  document.getElementById('setup-overlay').style.display = 'none';
+
+  mapboxgl.accessToken = token;
+  map = new mapboxgl.Map({ container: 'map', style: GAIA_STYLE, center: [-122.4194, 37.7749], zoom: 12, pitch: 0 });
+
+  map.on('load', () => {
+    [{id:'pin-ok',color:'#67765B'},{id:'pin-unk',color:'#B5493A'},{id:'pin-com',color:'#4F638D'}].forEach(({id,color}) => {
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36"><path d="M14 0C6.268 0 0 6.268 0 14c0 9.333 14 22 14 22S28 23.333 28 14C28 6.268 21.732 0 14 0z" fill="${color}"/><circle cx="14" cy="14" r="5" fill="white" opacity="0.9"/></svg>`;
+      const img = new Image(28, 36);
+      img.onload = () => { if (!map.hasImage(id)) map.addImage(id, img); };
+      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+    });
+    map.addSource('observations', { type: 'geojson', data: OBSERVATIONS });
+    map.addLayer({
+      id: 'obs-pins', type: 'symbol', source: 'observations',
+      layout: {
+        'icon-image': ['match',['get','status'],'Research grade','pin-ok','Community ID','pin-com','pin-unk'],
+        'icon-size': 0.85, 'icon-anchor': 'bottom', 'icon-allow-overlap': true,
+        'text-field': ['get','common'], 'text-font': ['DIN Pro Bold','Arial Unicode MS Regular'],
+        'text-size': 11, 'text-anchor': 'top', 'text-offset': [0, 0.2], 'text-allow-overlap': false
+      },
+      paint: { 'text-color': '#252024', 'text-halo-color': '#fdfbf4', 'text-halo-width': 3 }
+    });
+    map.on('click', 'obs-pins', e => {
+      const p = e.features[0].properties;
+      new mapboxgl.Popup({ offset: [0,-32], closeButton: true })
+        .setLngLat(e.features[0].geometry.coordinates)
+        .setHTML(`<div class="pop-sp">${p.species}</div><div class="pop-meta">${p.common} · ${p.age}</div><div class="pop-st"><div class="pop-dot" style="background:${p.color}"></div>${p.status}</div>`)
+        .addTo(map);
+    });
+    map.on('mouseenter', 'obs-pins', () => map.getCanvas().style.cursor = 'pointer');
+    map.on('mouseleave', 'obs-pins', () => map.getCanvas().style.cursor = '');
+  });
+
+  initSheetLayout();
+  setupEvents();
+  snapTo('collapsed');
+}
+
+// ════════════════════════════════════════════════
+//  BOOT
+// ════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  const savedToken = localStorage.getItem('gaiaToken');
+  const savedKit   = localStorage.getItem('gaiaKit');
+  if (savedToken) document.getElementById('tokenInput').value = savedToken;
+  if (savedKit)   document.getElementById('kitInput').value   = savedKit;
+
+  if (savedToken && savedToken.startsWith('pk.')) { initMap(); return; }
+
+  document.getElementById('launchBtn').addEventListener('click', initMap);
+  document.getElementById('tokenInput').addEventListener('keydown', e => { if (e.key === 'Enter') initMap(); });
+});
+</script>
+</body>
+</html>
