@@ -497,6 +497,29 @@ html, body {
   color: var(--olive); background: rgba(103,118,91,.12); padding: 3px 9px; border-radius: 20px;
 }
 .pop-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+/* ── USER LOCATION DOT ──────────────────────────────────── */
+.user-dot {
+  width: 16px; height: 16px;
+  background: var(--olive);
+  border: 2.5px solid var(--paper);
+  border-radius: 50%;
+  box-shadow: 0 0 0 0 rgba(103,118,91,0.4);
+  cursor: pointer;
+}
+.user-dot.pulse {
+  animation: loc-pulse 1.8s ease-out infinite;
+}
+@keyframes loc-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(103,118,91,0.45); }
+  70%  { box-shadow: 0 0 0 14px rgba(103,118,91,0); }
+  100% { box-shadow: 0 0 0 0 rgba(103,118,91,0); }
+}
+/* Locate button active state while fetching */
+.ctrl-btn.locating {
+  opacity: 0.6;
+  pointer-events: none;
+}
 </style>
 </head>
 <body>
@@ -1088,12 +1111,37 @@ function setupEvents() {
       requestAnimationFrame(() => { ind.style.transition = ''; }); }
   }
 
-  // Locate
-  document.getElementById('locateBtn').addEventListener('click', () => {
+  // Locate — fly to current position + show pulsing dot
+  let userMarker = null;
+  const locBtn = document.getElementById('locateBtn');
+  locBtn.addEventListener('click', () => {
     if (!map) return;
+    locBtn.classList.add('locating');
+
     navigator.geolocation.getCurrentPosition(
-      pos => map.flyTo({ center: [pos.coords.longitude, pos.coords.latitude], zoom: 14, speed: 1.4 }),
-      () => {}
+      pos => {
+        const lngLat = [pos.coords.longitude, pos.coords.latitude];
+        map.flyTo({ center: lngLat, zoom: 15, speed: 1.4 });
+
+        // Create or update user location marker
+        if (userMarker) {
+          userMarker.setLngLat(lngLat);
+        } else {
+          const dot = document.createElement('div');
+          dot.className = 'user-dot pulse';
+          userMarker = new mapboxgl.Marker({ element: dot, anchor: 'center' })
+            .setLngLat(lngLat)
+            .addTo(map);
+        }
+        locBtn.classList.remove('locating');
+      },
+      err => {
+        locBtn.classList.remove('locating');
+        // Brief red flash on the button to signal failure
+        locBtn.style.borderColor = 'var(--verm)';
+        setTimeout(() => { locBtn.style.borderColor = ''; }, 1200);
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
     );
   });
 
