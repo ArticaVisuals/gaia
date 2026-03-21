@@ -718,8 +718,6 @@ html, body {
   opacity: 0 !important; pointer-events: none !important;
   transition: opacity 0.25s ease;
   will-change: transform;
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
 }
 .gaia-pin--photo.pin-visible { opacity: 1 !important; pointer-events: auto !important; }
 .gaia-pin--photo svg { overflow: visible; display: block; }
@@ -749,6 +747,7 @@ html, body {
   z-index: 0;
   opacity: 0;
   transition: opacity 0.32s ease;
+  border-radius: 50%;
 }
 .gaia-pin.is-active  .gaia-pin__glowCanvas,
 .gaia-pin.is-hovered .gaia-pin__glowCanvas {
@@ -2564,14 +2563,16 @@ document.addEventListener('click', (e) => {
 });
 
 function buildPhotoPinEl(id, imgUrl) {
-  // SVG teardrop pin — pixel-matched to Figma nodes 534:1397 + 534:1360
-  // Pin body: 73.138×83.762 at (3.43,3.43) in 80px frame
-  // Image circle: 67.5×67.5 at (6.25,6.25) → center (40,40), r=33.75
-  // Tail tip at y=88 (bottom of element for clean anchor:bottom)
-  const W = 80, H = 88;
-  const GS = 107;   // glow canvas size — Figma glow extends 33.59% beyond 80px
-  const gL = Math.round((W - GS) / 2);   // -14
-  const gT = Math.round(40 - GS / 2);    // -14
+  // Exact SVG from Figma export (Frame 297.svg / node 534:1397)
+  // ViewBox: 0 0 74 85 — teardrop with circle cutout for photo
+  // Circle center: (36.57, 36.57), inner radius: 32.4, outer radius: 36.57
+  // Tail tip at ~y=84.45
+  const W = 74, H = 85;
+  // Glow canvas: circle centered on pin circle, extending ~10px beyond
+  const GS = 86;
+  const CX = 36.57, CY = 36.57; // pin circle center
+  const gL = Math.round(CX - GS / 2);   // ~-6
+  const gT = Math.round(CY - GS / 2);   // ~-6
 
   const btn = document.createElement('button');
   btn.className = 'gaia-pin gaia-pin--photo';
@@ -2590,26 +2591,24 @@ function buildPhotoPinEl(id, imgUrl) {
   gc.style.cssText = `left:${gL}px;top:${gT}px;width:${GS}px;height:${GS}px;`;
   gc._ctx2d = gc.getContext('2d');
 
-  // SVG pin body
+  // SVG pin body — exact Figma path from Frame 297.svg
   const svgNS = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(svgNS, 'svg');
-  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.setAttribute('viewBox', '0 0 74 85');
   svg.setAttribute('width', W);
   svg.setAttribute('height', H);
+  svg.setAttribute('fill', 'none');
   svg.style.cssText = 'position:relative;z-index:1;display:block;';
 
-  // Figma teardrop path: arc radius 36.57 (half of 73.138 body width)
-  // Smooth cubic bezier curves from circle to tail tip
   const clipId = 'clip-' + id;
   svg.innerHTML = [
     '<defs>',
-    `<clipPath id="${clipId}"><circle cx="40" cy="40" r="33.75"/></clipPath>`,
+    `<clipPath id="${clipId}"><circle cx="36.5684" cy="36.5684" r="32.4"/></clipPath>`,
     '</defs>',
-    // Cream teardrop body — matches Figma pin body dimensions exactly
-    '<path d="M40 88 C38 78, 3.43 63, 3.43 40 A36.57 36.57 0 1 1 76.57 40 C76.57 63, 42 78, 40 88 Z"',
-    '  fill="#fefdf9" stroke="rgba(200,207,191,0.25)" stroke-width="0.5"/>',
-    // Photo image clipped to circle (67.5px diameter, centered at 40,40)
-    `<image href="${imgUrl}" x="6.25" y="6.25" width="67.5" height="67.5" clip-path="url(#${clipId})" preserveAspectRatio="xMidYMid slice"/>`,
+    // Photo image clipped to inner circle (drawn first, behind the pin body)
+    `<image href="${imgUrl}" x="4.17" y="4.17" width="64.8" height="64.8" clip-path="url(#${clipId})" preserveAspectRatio="xMidYMid slice"/>`,
+    // Pin body — exact Figma SVG path with cutout (outer teardrop + inner circle hole)
+    '<path d="M36.5684 0C56.7646 0 73.1375 16.3722 73.1377 36.5684C73.1377 54.1338 60.7521 68.8045 44.2383 72.3291C44.1986 72.6453 44.0983 72.9605 43.9238 73.2627L38.4277 82.7832C37.4655 84.4497 35.06 84.4495 34.0977 82.7832L28.5752 73.2178C28.3828 72.8846 28.2794 72.5356 28.25 72.1865C12.0616 68.4206 0 53.9031 0 36.5684C0.000198675 16.3723 16.3723 0.000198679 36.5684 0ZM36.5684 4.16895C18.6747 4.16914 4.16914 18.6747 4.16895 36.5684C4.16895 50.027 12.375 61.569 24.0566 66.4639C24.3896 66.6034 24.7259 66.7376 25.0645 66.8662C28.6394 68.2244 32.517 68.9687 36.5684 68.9688C40.3284 68.9688 43.9392 68.3282 47.2969 67.1504C47.6205 67.0369 47.9419 66.9183 48.2607 66.7949C60.3766 62.1051 68.9688 50.3398 68.9688 36.5684C68.9686 18.6746 54.4622 4.16895 36.5684 4.16895Z" fill="#F8F8EE"/>',
   ].join('');
 
   btn.appendChild(shadow);
@@ -2808,7 +2807,7 @@ void main(){
 
 let _glowGL, _glowProg, _glowULocs, _glowCanvas;
 let _glowAnimId = null;
-const GLOW_SZ = 107;
+const GLOW_SZ = 86;
 
 function initGlowShader() {
   const c = document.createElement('canvas');
@@ -2856,26 +2855,26 @@ function initGlowShader() {
   _glowULocs.u_colors = [];
   for (let i = 0; i < 5; i++) _glowULocs.u_colors.push(gl.getUniformLocation(prog, `u_colors[${i}]`));
 
-  // Set static uniforms — olive/cream circular glow
+  // Set static uniforms — olive/cream circular glow, tight around pin
   gl.uniform4f(_glowULocs.u_colorBack, 0, 0, 0, 0);     // transparent bg
-  gl.uniform4f(_glowULocs.u_colors[0], 0.784, 0.812, 0.749, 0.85); // olive-200ish
-  gl.uniform4f(_glowULocs.u_colors[1], 0.635, 0.678, 0.580, 0.70); // olive-300ish
-  gl.uniform4f(_glowULocs.u_colors[2], 0.404, 0.463, 0.357, 0.55); // olive-500
+  gl.uniform4f(_glowULocs.u_colors[0], 0.784, 0.812, 0.749, 0.65); // olive-200ish
+  gl.uniform4f(_glowULocs.u_colors[1], 0.635, 0.678, 0.580, 0.50); // olive-300ish
+  gl.uniform4f(_glowULocs.u_colors[2], 0.404, 0.463, 0.357, 0.35); // olive-500
   for (let i = 3; i < 5; i++) gl.uniform4f(_glowULocs.u_colors[i], 0, 0, 0, 0);
   gl.uniform1f(_glowULocs.u_colorsCount, 3);
   gl.uniform1f(_glowULocs.u_roundness, 1.0);        // circle
-  gl.uniform1f(_glowULocs.u_thickness, 0.12);
-  gl.uniform1f(_glowULocs.u_marginLeft, 0);
-  gl.uniform1f(_glowULocs.u_marginRight, 0);
-  gl.uniform1f(_glowULocs.u_marginTop, 0);
-  gl.uniform1f(_glowULocs.u_marginBottom, 0);
+  gl.uniform1f(_glowULocs.u_thickness, 0.08);       // thinner ring, hugs pin tighter
+  gl.uniform1f(_glowULocs.u_marginLeft, 0.08);      // margins push glow ring inward
+  gl.uniform1f(_glowULocs.u_marginRight, 0.08);
+  gl.uniform1f(_glowULocs.u_marginTop, 0.08);
+  gl.uniform1f(_glowULocs.u_marginBottom, 0.08);
   gl.uniform1f(_glowULocs.u_aspectRatio, 1);         // square canvas
-  gl.uniform1f(_glowULocs.u_softness, 0.65);
-  gl.uniform1f(_glowULocs.u_intensity, 0.9);
-  gl.uniform1f(_glowULocs.u_bloom, 0.4);
-  gl.uniform1f(_glowULocs.u_spotSize, 0.35);
+  gl.uniform1f(_glowULocs.u_softness, 0.75);         // softer edges
+  gl.uniform1f(_glowULocs.u_intensity, 0.7);         // subtler
+  gl.uniform1f(_glowULocs.u_bloom, 0.5);
+  gl.uniform1f(_glowULocs.u_spotSize, 0.30);
   gl.uniform1f(_glowULocs.u_spots, 2);
-  gl.uniform1f(_glowULocs.u_pulse, 0.25);
+  gl.uniform1f(_glowULocs.u_pulse, 0.20);
   gl.uniform1f(_glowULocs.u_smoke, 0);
   gl.uniform1f(_glowULocs.u_smokeSize, 1);
   gl.uniform1i(_glowULocs.u_noiseTexture, 0);
@@ -2915,16 +2914,39 @@ function startGlowLoop() {
   _glowAnimId = requestAnimationFrame(glowLoop);
 }
 
+// Pin container — direct child of map, manually positioned for zero-lag
+let _pinContainer;
+
 function initPhotoMarkers() {
+  // Create a container that sits inside the map div for manual positioning
+  _pinContainer = document.createElement('div');
+  _pinContainer.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;overflow:hidden;';
+  document.getElementById('map').appendChild(_pinContainer);
+
   PINS_DATA.forEach(p => {
     const btn = buildPhotoPinEl(p.id, p.img);
-    // anchor:'bottom' places btn bottom edge at geo coordinate
-    // tail tip is at y=88 = bottom of element → perfect alignment
-    const marker = new mapboxgl.Marker({ element: btn, anchor: 'bottom' })
-      .setLngLat([p.lng, p.lat])
-      .addTo(map);
-    photoMarkers[p.id] = { marker, el: btn };
+    // Enable pointer events on individual pins
+    btn.style.pointerEvents = 'auto';
+    btn.style.position = 'absolute';
+    btn.style.left = '0';
+    btn.style.top = '0';
+    _pinContainer.appendChild(btn);
+    photoMarkers[p.id] = { el: btn, lng: p.lng, lat: p.lat };
   });
+
+  // Sync pin screen positions on every render frame — no lag, no shifting
+  map.on('render', syncPinPositions);
+}
+
+function syncPinPositions() {
+  if (!pinsPhotoMode) return;
+  const W = 74, H = 85; // pin element size
+  for (const id of Object.keys(photoMarkers)) {
+    const pm = photoMarkers[id];
+    const pos = map.project([pm.lng, pm.lat]);
+    // Position so tail tip (bottom-center) lands on the geo coordinate
+    pm.el.style.transform = `translate(${pos.x - W / 2}px, ${pos.y - H}px)`;
+  }
 }
 
 let clusterMarkers = {}; // key → { marker, el }
@@ -2992,6 +3014,8 @@ function setPinMode(photoMode) {
   for (const { el } of Object.values(photoMarkers)) {
     el.classList.toggle('pin-visible', photoMode);
   }
+  // Position pins immediately when entering photo mode
+  if (photoMode) syncPinPositions();
   // Toggle cluster markers
   for (const { el } of Object.values(clusterMarkers)) {
     el.classList.toggle('cluster-hidden', photoMode);
