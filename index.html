@@ -760,28 +760,38 @@ html, body {
 
 /* ── FIND DETAILS ──────────────────────────────────────── */
 #find-details { display: none; }
-#find-details.visible { display: block; }
+#find-details.visible { display: block; margin-top: -24px; /* bleed up behind drag handle */ }
 
 .fd-hero {
-  position: relative; width: 100%; height: 262px;
+  position: relative; width: 100%; height: 286px; /* 262 + 24 for bleed */
   border-radius: 0 0 var(--radius-md) var(--radius-md);
   overflow: hidden;
   box-shadow: 0px 4px 16.2px 0px rgba(115,115,100,0.5);
 }
-.fd-hero img {
+.fd-hero img#fd-hero-img {
   width: 100%; height: 100%; object-fit: cover; display: block;
 }
-/* Progressive blur — blur intensity increases from top to bottom via mask */
+/* Translucent drag handle overlaid on hero top */
+.fd-hero-handle {
+  position: absolute; top: 0; left: 0; right: 0; height: 24px;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 5; cursor: grab;
+}
+.fd-hero-handle .handle-pill {
+  width: 88px; height: 4px; border-radius: var(--radius-full);
+  background: rgba(255,255,255,0.5);
+}
+/* Progressive blur — multiple layers for smooth transition */
 .fd-hero-overlay {
-  position: absolute; bottom: 0; left: 0; right: 0; height: 141px;
-  backdrop-filter: blur(12.95px); -webkit-backdrop-filter: blur(12.95px);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 60%);
-  mask-image: linear-gradient(to bottom, transparent 0%, black 60%);
+  position: absolute; bottom: 0; left: 0; right: 0; height: 60%;
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, transparent 30%, rgba(0,0,0,0.15) 45%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.7) 75%, black 90%);
+  mask-image: linear-gradient(to bottom, transparent 0%, transparent 30%, rgba(0,0,0,0.15) 45%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.7) 75%, black 90%);
 }
 /* Dark gradient on top of blur for text readability */
 .fd-hero-overlay::after {
   content: ''; position: absolute; inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.50) 0%, rgba(0,0,0,0.15) 40%, transparent 100%);
+  background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.20) 35%, rgba(0,0,0,0.05) 55%, transparent 100%);
 }
 .fd-hero-text {
   position: absolute; bottom: 16px; left: 15px; color: var(--paper-50);
@@ -885,6 +895,7 @@ html, body {
 }
 .fd-expand-btn img {
   position: relative; z-index: 1; width: 34px; height: 34px;
+  object-fit: contain;
 }
 /* Location bar on map */
 .fd-location-bar {
@@ -902,7 +913,7 @@ html, body {
 .fd-location-row {
   display: flex; align-items: center; gap: 4px;
 }
-.fd-location-icon { width: 10px; height: 21px; flex-shrink: 0; }
+.fd-location-icon { width: 10px; height: 21px; flex-shrink: 0; object-fit: contain; }
 .fd-location-text {
   font-family: var(--font-sans); font-size: 15px; line-height: 1.3;
   color: #454649; letter-spacing: 0.5px;
@@ -965,6 +976,7 @@ html, body {
 }
 .fd-weather-wave {
   position: absolute; bottom: 0; left: 0; width: 130%; opacity: 0.3;
+  object-fit: contain;
 }
 .fd-condition-meta {
   display: flex; align-items: flex-start; justify-content: space-between;
@@ -1006,7 +1018,7 @@ html, body {
   display: flex; flex-direction: column; align-items: center;
   gap: 4px; width: 91px;
 }
-.fd-quality-item img { width: 40px; height: 40px; }
+.fd-quality-item img { width: 40px; height: 40px; object-fit: contain; }
 .fd-quality-item span {
   font-family: var(--font-sans); font-size: 10px; line-height: 1.3;
   color: #b1b2b5; letter-spacing: 0.25px; text-align: center;
@@ -1086,7 +1098,7 @@ html, body {
   line-height: 18px;
 }
 .fd-contrib-icon {
-  width: 32px; height: 32px; opacity: 0.5;
+  width: 32px; height: 32px; opacity: 0.5; object-fit: contain;
 }
 
 /* Action buttons row */
@@ -1793,7 +1805,8 @@ html, body {
     <div id="find-details">
       <!-- Hero image — Figma asset from node 459:2114 -->
       <div class="fd-hero">
-        <img id="fd-hero-img" src="https://www.figma.com/api/mcp/asset/e367c358-0b9d-4506-b38b-12e3f6a9291d" alt="">
+        <div class="fd-hero-handle"><div class="handle-pill"></div></div>
+        <img id="fd-hero-img" src="https://www.figma.com/api/mcp/asset/8128e0eb-762b-468d-be28-0e3e90ab1cf7" alt="">
         <div class="fd-hero-overlay"></div>
         <div class="fd-hero-text">
           <div class="fd-hero-title">Coast Live Oak</div>
@@ -1820,23 +1833,23 @@ html, body {
       <div class="fd-panel fd-find-panel active" data-fd-panel="find">
         <!-- Map section -->
         <div class="fd-map-section">
-          <img class="fd-map-bg" src="https://www.figma.com/api/mcp/asset/093fbc3c-5954-4483-839d-d11efaa73c75" alt="">
+          <img class="fd-map-bg" src="https://www.figma.com/api/mcp/asset/9070b647-28a2-4cf2-a578-0d40c69d5034" alt="">
           <div class="fd-map-top">
             <div class="fd-profile-card">
-              <img class="fd-profile-avatar" src="https://www.figma.com/api/mcp/asset/84fa190f-535f-4b39-8930-b3302288217c" alt="">
+              <img class="fd-profile-avatar" src="https://www.figma.com/api/mcp/asset/09ee5dd6-7d36-476a-b0fe-d584a1573580" alt="">
               <div class="fd-profile-info">
                 <span class="fd-profile-name">Alice Edwards</span>
                 <span class="fd-profile-finds">127 finds</span>
               </div>
             </div>
             <button class="fd-expand-btn" aria-label="Expand map">
-              <img src="https://www.figma.com/api/mcp/asset/8f839158-0830-4154-8efb-9c5e0a28ff47" alt="">
+              <img src="https://www.figma.com/api/mcp/asset/9ac8e966-c6ff-4617-aa96-78ad8d25ff5e" alt="">
             </button>
           </div>
           <div style="height:151px;"></div>
           <div class="fd-location-bar">
             <div class="fd-location-row">
-              <img class="fd-location-icon" src="https://www.figma.com/api/mcp/asset/c9bb5fe2-6adc-4461-869a-5a86d9ea31b7" alt="">
+              <img class="fd-location-icon" src="https://www.figma.com/api/mcp/asset/3b068046-0d35-4cb7-a35c-c41c6ef12da1" alt="">
               <span class="fd-location-text">Avila Beach, CA, United States of America</span>
             </div>
             <span class="fd-location-date">July 10, 2025, 10:19 AM</span>
@@ -1854,7 +1867,7 @@ html, body {
               <div class="fd-condition-cell">
                 <span class="fd-condition-label">Biome</span>
                 <div class="fd-biome-img-wrap">
-                  <img src="https://www.figma.com/api/mcp/asset/eb5b2ca6-87f6-4150-94e5-9fa8eef2910d" alt="Riparian Edge">
+                  <img src="https://www.figma.com/api/mcp/asset/21f072a0-d06a-4e2a-bd51-7eea518c38e1" alt="Riparian Edge">
                 </div>
                 <div class="fd-condition-meta">
                   <div>
@@ -1869,7 +1882,7 @@ html, body {
                 <span class="fd-condition-label">Weather</span>
                 <div class="fd-weather-box">
                   <span class="fd-weather-temp">54º</span>
-                  <img class="fd-weather-wave" src="https://www.figma.com/api/mcp/asset/ad101cea-a7eb-4be3-9f99-8eec1e31459c" alt="">
+                  <img class="fd-weather-wave" src="https://www.figma.com/api/mcp/asset/f4ac04cf-4408-4dde-abed-ecfdeb9174e9" alt="">
                 </div>
                 <div class="fd-condition-meta">
                   <div>
@@ -1887,15 +1900,15 @@ html, body {
             <div class="fd-quality-header"><span>Data Quality</span></div>
             <div class="fd-quality-circles">
               <div class="fd-quality-item">
-                <img src="https://www.figma.com/api/mcp/asset/65d4f31a-646e-4da8-9b2e-e25a51b5393e" alt="">
+                <img src="https://www.figma.com/api/mcp/asset/dab70d1c-43fe-4d15-b163-c3accddb52a8" alt="">
                 <span>Casual Grade</span>
               </div>
               <div class="fd-quality-item">
-                <img src="https://www.figma.com/api/mcp/asset/6067ec43-6e07-4383-b59b-d1f3fe768854" alt="">
+                <img src="https://www.figma.com/api/mcp/asset/3ae476ea-3b37-4bed-9de6-8beab317a17d" alt="">
                 <span>Needs ID</span>
               </div>
               <div class="fd-quality-item">
-                <img src="https://www.figma.com/api/mcp/asset/32edacfc-fa4b-4e0b-92d7-7ac8c4b68519" alt="">
+                <img src="https://www.figma.com/api/mcp/asset/d281ef11-eccc-482d-9ac5-ceec0e3a7760" alt="">
                 <span>Research Grade</span>
               </div>
             </div>
@@ -1934,39 +1947,39 @@ html, body {
             <div class="fd-contrib-left">
               <span class="fd-contrib-rank">1</span>
               <div class="fd-contrib-user">
-                <img class="fd-contrib-avatar" src="https://www.figma.com/api/mcp/asset/0b167cbb-803b-427c-8937-929ba0a7f5ad" alt="">
+                <img class="fd-contrib-avatar" src="https://www.figma.com/api/mcp/asset/c228b073-32c4-460d-99ea-d0c32aacadad" alt="">
                 <span class="fd-contrib-name">Alice Edwards</span>
               </div>
             </div>
             <div class="fd-contrib-right">
               <span class="fd-contrib-count">6</span>
-              <img class="fd-contrib-icon" src="https://www.figma.com/api/mcp/asset/1e6f3d1f-dd37-43f7-9155-d6a91d6e9bcc" alt="">
+              <img class="fd-contrib-icon" src="https://www.figma.com/api/mcp/asset/de985c1f-b7ac-41b1-924c-47695b32b271" alt="">
             </div>
           </div>
           <div class="fd-contrib-row">
             <div class="fd-contrib-left">
               <span class="fd-contrib-rank">2</span>
               <div class="fd-contrib-user">
-                <img class="fd-contrib-avatar" src="https://www.figma.com/api/mcp/asset/be857ffc-4cc6-49ed-8c83-cec70249d22c" alt="">
+                <img class="fd-contrib-avatar" src="https://www.figma.com/api/mcp/asset/254025d8-ccc5-42c0-acde-e09e66d9010c" alt="">
                 <span class="fd-contrib-name">Maya Chen</span>
               </div>
             </div>
             <div class="fd-contrib-right">
               <span class="fd-contrib-count">3</span>
-              <img class="fd-contrib-icon" src="https://www.figma.com/api/mcp/asset/1e6f3d1f-dd37-43f7-9155-d6a91d6e9bcc" alt="">
+              <img class="fd-contrib-icon" src="https://www.figma.com/api/mcp/asset/de985c1f-b7ac-41b1-924c-47695b32b271" alt="">
             </div>
           </div>
           <div class="fd-contrib-row">
             <div class="fd-contrib-left">
               <span class="fd-contrib-rank">3</span>
               <div class="fd-contrib-user">
-                <img class="fd-contrib-avatar" src="https://www.figma.com/api/mcp/asset/a9514732-7f50-41c9-8561-09b38736dfee" alt="">
+                <img class="fd-contrib-avatar" src="https://www.figma.com/api/mcp/asset/4f0f6c5d-2488-4a13-a427-aae284a52a41" alt="">
                 <span class="fd-contrib-name">Jules Kim</span>
               </div>
             </div>
             <div class="fd-contrib-right">
               <span class="fd-contrib-count">1</span>
-              <img class="fd-contrib-icon" src="https://www.figma.com/api/mcp/asset/1e6f3d1f-dd37-43f7-9155-d6a91d6e9bcc" alt="">
+              <img class="fd-contrib-icon" src="https://www.figma.com/api/mcp/asset/de985c1f-b7ac-41b1-924c-47695b32b271" alt="">
             </div>
           </div>
         </div>
@@ -1980,7 +1993,7 @@ html, body {
         <!-- Alice suggested an ID -->
         <div class="fd-activity-card">
           <div class="fd-activity-header">
-            <img class="fd-activity-avatar" src="https://www.figma.com/api/mcp/asset/bc501c61-17d8-4146-8aea-1b7933c66496" alt="">
+            <img class="fd-activity-avatar" src="https://www.figma.com/api/mcp/asset/c228b073-32c4-460d-99ea-d0c32aacadad" alt="">
             <div class="fd-activity-meta">
               <div class="fd-activity-info">
                 <span class="fd-activity-name">Alice Edwards</span>
@@ -1991,7 +2004,7 @@ html, body {
           </div>
           <div class="fd-activity-body">
             <div class="fd-activity-suggestion">
-              <img class="fd-activity-thumb" src="https://www.figma.com/api/mcp/asset/cabe987b-e67c-4da0-82bd-1e46dfc4a4c0" alt="">
+              <img class="fd-activity-thumb" src="https://www.figma.com/api/mcp/asset/05d7069e-201f-4c1c-b190-20655344ad29" alt="">
               <div>
                 <div class="fd-activity-id-name">Quercus agrifolia</div>
                 <div class="fd-activity-id-note">Original suggested ID</div>
@@ -2011,7 +2024,7 @@ html, body {
             <!-- Maya commented -->
             <div class="fd-activity-card">
               <div class="fd-activity-header">
-                <img class="fd-activity-avatar" src="https://www.figma.com/api/mcp/asset/be857ffc-4cc6-49ed-8c83-cec70249d22c" alt="">
+                <img class="fd-activity-avatar" src="https://www.figma.com/api/mcp/asset/254025d8-ccc5-42c0-acde-e09e66d9010c" alt="">
                 <div class="fd-activity-meta">
                   <div class="fd-activity-info">
                     <span class="fd-activity-name">Maya Chen</span>
@@ -2027,7 +2040,7 @@ html, body {
             <!-- Jules commented -->
             <div class="fd-activity-card">
               <div class="fd-activity-header">
-                <img class="fd-activity-avatar" src="https://www.figma.com/api/mcp/asset/a9514732-7f50-41c9-8561-09b38736dfee" alt="">
+                <img class="fd-activity-avatar" src="https://www.figma.com/api/mcp/asset/4f0f6c5d-2488-4a13-a427-aae284a52a41" alt="">
                 <div class="fd-activity-meta">
                   <div class="fd-activity-info">
                     <span class="fd-activity-name">Jules Kim</span>
@@ -2880,9 +2893,16 @@ function showFindDetails(pinId, imgUrl) {
 
   // Hero image stays as Figma asset (Coast Live Oak acorns)
 
-  // Hide main sheet content, show find details
+  // Hide main sheet content + main drag handle, show find details
   sc.style.display = 'none';
+  document.getElementById('drag-handle').style.display = 'none';
   fd.classList.add('visible');
+
+  // Reset to Find tab on open
+  fd.querySelectorAll('.fd-tab').forEach(t => t.classList.remove('active'));
+  fd.querySelector('.fd-tab[data-fd-tab="find"]').classList.add('active');
+  fd.querySelectorAll('.fd-panel').forEach(p => p.classList.remove('active'));
+  fd.querySelector('.fd-panel[data-fd-panel="find"]').classList.add('active');
 
   // Snap sheet to full
   snapTo('full');
@@ -2894,6 +2914,7 @@ function hideFindDetails() {
   if (!fd || !sc) return;
   fd.classList.remove('visible');
   sc.style.display = '';
+  document.getElementById('drag-handle').style.display = '';
 }
 
 // Wire up fd-tab clicks — switch both tab highlight and panel visibility
