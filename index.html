@@ -771,10 +771,17 @@ html, body {
 .fd-hero img {
   width: 100%; height: 100%; object-fit: cover; display: block;
 }
+/* Progressive blur — blur intensity increases from top to bottom via mask */
 .fd-hero-overlay {
   position: absolute; bottom: 0; left: 0; right: 0; height: 141px;
-  background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 100%);
   backdrop-filter: blur(12.95px); -webkit-backdrop-filter: blur(12.95px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 60%);
+  mask-image: linear-gradient(to bottom, transparent 0%, black 60%);
+}
+/* Dark gradient on top of blur for text readability */
+.fd-hero-overlay::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.50) 0%, rgba(0,0,0,0.15) 40%, transparent 100%);
 }
 .fd-hero-text {
   position: absolute; bottom: 16px; left: 15px; color: var(--paper-50);
@@ -1567,9 +1574,9 @@ html, body {
 
     <!-- ══ FIND DETAILS (shown when a pin is tapped) ══════════════ -->
     <div id="find-details">
-      <!-- Hero image -->
+      <!-- Hero image — Figma asset from node 459:2114 -->
       <div class="fd-hero">
-        <img id="fd-hero-img" src="https://picsum.photos/seed/oak1/800/520" alt="">
+        <img id="fd-hero-img" src="https://www.figma.com/api/mcp/asset/e367c358-0b9d-4506-b38b-12e3f6a9291d" alt="">
         <div class="fd-hero-overlay"></div>
         <div class="fd-hero-text">
           <div class="fd-hero-title">Coast Live Oak</div>
@@ -1601,39 +1608,39 @@ html, body {
             <div class="fd-contrib-left">
               <span class="fd-contrib-rank">1</span>
               <div class="fd-contrib-user">
-                <img class="fd-contrib-avatar" src="https://i.pravatar.cc/64?u=alice" alt="">
+                <img class="fd-contrib-avatar" src="https://www.figma.com/api/mcp/asset/0b167cbb-803b-427c-8937-929ba0a7f5ad" alt="">
                 <span class="fd-contrib-name">Alice Edwards</span>
               </div>
             </div>
             <div class="fd-contrib-right">
               <span class="fd-contrib-count">6</span>
-              <svg class="fd-contrib-icon" viewBox="0 0 32 32"><path d="M8.2 8.2c0-1.2 1-2.2 2.2-2.2h1.8c.6 0 1.2.3 1.6.7l.7.8c.4.4 1 .7 1.6.7h5.5c1.2 0 2.2 1 2.2 2.2v10c0 1.2-1 2.2-2.2 2.2H10.4c-1.2 0-2.2-1-2.2-2.2V8.2z" fill="none" stroke="#6d6e73" stroke-width="1.2"/></svg>
+              <img class="fd-contrib-icon" src="https://www.figma.com/api/mcp/asset/1e6f3d1f-dd37-43f7-9155-d6a91d6e9bcc" alt="">
             </div>
           </div>
           <div class="fd-contrib-row">
             <div class="fd-contrib-left">
               <span class="fd-contrib-rank">2</span>
               <div class="fd-contrib-user">
-                <img class="fd-contrib-avatar" src="https://i.pravatar.cc/64?u=maya" alt="">
+                <img class="fd-contrib-avatar" src="https://www.figma.com/api/mcp/asset/be857ffc-4cc6-49ed-8c83-cec70249d22c" alt="">
                 <span class="fd-contrib-name">Maya Chen</span>
               </div>
             </div>
             <div class="fd-contrib-right">
               <span class="fd-contrib-count">3</span>
-              <svg class="fd-contrib-icon" viewBox="0 0 32 32"><path d="M8.2 8.2c0-1.2 1-2.2 2.2-2.2h1.8c.6 0 1.2.3 1.6.7l.7.8c.4.4 1 .7 1.6.7h5.5c1.2 0 2.2 1 2.2 2.2v10c0 1.2-1 2.2-2.2 2.2H10.4c-1.2 0-2.2-1-2.2-2.2V8.2z" fill="none" stroke="#6d6e73" stroke-width="1.2"/></svg>
+              <img class="fd-contrib-icon" src="https://www.figma.com/api/mcp/asset/1e6f3d1f-dd37-43f7-9155-d6a91d6e9bcc" alt="">
             </div>
           </div>
           <div class="fd-contrib-row">
             <div class="fd-contrib-left">
               <span class="fd-contrib-rank">3</span>
               <div class="fd-contrib-user">
-                <img class="fd-contrib-avatar" src="https://i.pravatar.cc/64?u=jules" alt="">
+                <img class="fd-contrib-avatar" src="https://www.figma.com/api/mcp/asset/a9514732-7f50-41c9-8561-09b38736dfee" alt="">
                 <span class="fd-contrib-name">Jules Kim</span>
               </div>
             </div>
             <div class="fd-contrib-right">
               <span class="fd-contrib-count">1</span>
-              <svg class="fd-contrib-icon" viewBox="0 0 32 32"><path d="M8.2 8.2c0-1.2 1-2.2 2.2-2.2h1.8c.6 0 1.2.3 1.6.7l.7.8c.4.4 1 .7 1.6.7h5.5c1.2 0 2.2 1 2.2 2.2v10c0 1.2-1 2.2-2.2 2.2H10.4c-1.2 0-2.2-1-2.2-2.2V8.2z" fill="none" stroke="#6d6e73" stroke-width="1.2"/></svg>
+              <img class="fd-contrib-icon" src="https://www.figma.com/api/mcp/asset/1e6f3d1f-dd37-43f7-9155-d6a91d6e9bcc" alt="">
             </div>
           </div>
         </div>
@@ -1647,7 +1654,7 @@ html, body {
         <!-- Alice suggested an ID -->
         <div class="fd-activity-card">
           <div class="fd-activity-header">
-            <img class="fd-activity-avatar" src="https://i.pravatar.cc/96?u=alice" alt="">
+            <img class="fd-activity-avatar" src="https://www.figma.com/api/mcp/asset/bc501c61-17d8-4146-8aea-1b7933c66496" alt="">
             <div class="fd-activity-meta">
               <div class="fd-activity-info">
                 <span class="fd-activity-name">Alice Edwards</span>
@@ -1658,7 +1665,7 @@ html, body {
           </div>
           <div class="fd-activity-body">
             <div class="fd-activity-suggestion">
-              <img class="fd-activity-thumb" src="https://picsum.photos/seed/oak2/132/132" alt="">
+              <img class="fd-activity-thumb" src="https://www.figma.com/api/mcp/asset/cabe987b-e67c-4da0-82bd-1e46dfc4a4c0" alt="">
               <div>
                 <div class="fd-activity-id-name">Quercus agrifolia</div>
                 <div class="fd-activity-id-note">Original suggested ID</div>
@@ -1678,7 +1685,7 @@ html, body {
             <!-- Maya commented -->
             <div class="fd-activity-card">
               <div class="fd-activity-header">
-                <img class="fd-activity-avatar" src="https://i.pravatar.cc/96?u=maya" alt="">
+                <img class="fd-activity-avatar" src="https://www.figma.com/api/mcp/asset/be857ffc-4cc6-49ed-8c83-cec70249d22c" alt="">
                 <div class="fd-activity-meta">
                   <div class="fd-activity-info">
                     <span class="fd-activity-name">Maya Chen</span>
@@ -1694,7 +1701,7 @@ html, body {
             <!-- Jules commented -->
             <div class="fd-activity-card">
               <div class="fd-activity-header">
-                <img class="fd-activity-avatar" src="https://i.pravatar.cc/96?u=jules" alt="">
+                <img class="fd-activity-avatar" src="https://www.figma.com/api/mcp/asset/a9514732-7f50-41c9-8561-09b38736dfee" alt="">
                 <div class="fd-activity-meta">
                   <div class="fd-activity-info">
                     <span class="fd-activity-name">Jules Kim</span>
@@ -2534,9 +2541,7 @@ function showFindDetails(pinId, imgUrl) {
   const sc = document.getElementById('sheet-content');
   if (!fd || !sc) return;
 
-  // Update hero image with pin's image (larger version)
-  const heroImg = document.getElementById('fd-hero-img');
-  if (heroImg) heroImg.src = imgUrl.replace('120/120', '800/520');
+  // Hero image stays as Figma asset (Coast Live Oak acorns)
 
   // Hide main sheet content, show find details
   sc.style.display = 'none';
