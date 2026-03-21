@@ -209,43 +209,39 @@ html, body {
   transition: bottom .42s var(--spring), opacity .3s ease;
 }
 
-/* Locate — single round glass button (Liquid Glass treatment) */
+/* Locate — single round glass button (Figma glass treatment) */
 .ctrl-btn {
-  width: 44px; height: 44px; border-radius: 250px;
+  width: 44px; height: 44px; border-radius: 296px;
   position: relative;
   display: flex; align-items: center; justify-content: center;
   box-shadow: 0px 8px 40px 0px rgba(0,0,0,0.12);
   cursor: pointer; flex-shrink: 0;
-  background: transparent; border: none;  /* remove default button styles */
+  background: rgba(255,255,255,0.65); border: none;
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
   isolation: isolate;
   overflow: hidden;
 }
-/* Glass: frosted translucent backdrop */
+/* Glass layer 2: #ddd color-burn */
 .ctrl-btn::before {
   content: '';
   position: absolute; inset: 0;
-  border-radius: 250px;
-  background: rgba(255,255,255,0.65);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  pointer-events: none; z-index: 0;
-}
-/* Glass overlay: color-burn tint */
-.ctrl-btn::after {
-  content: '';
-  position: absolute; inset: 0;
-  border-radius: 250px;
-  background: var(--cream-50);
+  border-radius: 296px;
+  background: #ddd;
   mix-blend-mode: color-burn;
   pointer-events: none; z-index: 0;
 }
-/* Glass fill layers (extra Figma-matching overlays) */
-.ctrl-btn-glass {
+/* Glass layer 3: #f7f7f7 darken */
+.ctrl-btn::after {
+  content: '';
   position: absolute; inset: 0;
-  border-radius: 250px;
-  background: var(--cream-50);
+  border-radius: 296px;
+  background: #f7f7f7;
   mix-blend-mode: darken;
   pointer-events: none; z-index: 0;
+}
+/* Legacy glass div (no longer needed but kept for HTML compat) */
+.ctrl-btn-glass {
+  display: none;
 }
 .ctrl-btn .icon-32 { width: 32px; height: 32px; position: relative; overflow: hidden; z-index: 1; }
 
@@ -790,33 +786,22 @@ html, body {
   width: 88px; height: 4px; border-radius: var(--radius-full);
   background: rgba(255,255,255,0.5);
 }
-/* Progressive blur — stacked layers for truly smooth transition */
-.fd-hero-blur1 {
-  position: absolute; bottom: 0; left: 0; right: 0; height: 50%;
-  backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
+/* Progressive blur — single Figma-matched element (7.5px blur, masked gradient)
+   Figma node 447:702: backdrop-blur 7.5px, gradient from transparent(40%) to rgba(0,0,0,0.5),
+   height 154/262 ≈ 59%, starts at y=108/262 ≈ 41% from top.
+   mask-image fades the blur smoothly; overlay provides the dark gradient separately. */
+.fd-hero-blur {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 59%;
+  backdrop-filter: blur(7.5px); -webkit-backdrop-filter: blur(7.5px);
   -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 100%);
   mask-image: linear-gradient(to bottom, transparent 0%, black 100%);
   z-index: 1;
 }
-.fd-hero-blur2 {
-  position: absolute; bottom: 0; left: 0; right: 0; height: 40%;
-  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 100%);
-  mask-image: linear-gradient(to bottom, transparent 0%, black 100%);
-  z-index: 2;
-}
-.fd-hero-blur3 {
-  position: absolute; bottom: 0; left: 0; right: 0; height: 30%;
-  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 100%);
-  mask-image: linear-gradient(to bottom, transparent 0%, black 100%);
-  z-index: 3;
-}
-/* Dark gradient on top of blur for text readability */
+/* Dark gradient overlay for text readability — matches Figma gradient */
 .fd-hero-overlay {
-  position: absolute; bottom: 0; left: 0; right: 0; height: 60%;
-  background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.20) 40%, transparent 100%);
-  z-index: 4;
+  position: absolute; bottom: 0; left: 0; right: 0; height: 59%;
+  background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.5) 100%);
+  z-index: 2;
 }
 .fd-hero-text {
   position: absolute; bottom: 16px; left: 15px; color: var(--paper-50);
@@ -885,21 +870,31 @@ html, body {
   position: relative; z-index: 1;
   display: flex; align-items: flex-start; justify-content: space-between;
 }
-/* Profile card on map — layered glass effect from Figma */
+/* ── GLASS EFFECT (Figma "Fill + Shadow" component) ─────────────────
+   3-layer stack from Figma:
+     1. background: rgba(255,255,255,0.65)  — translucent white base
+     2. ::before:   #ddd; color-burn         — subtle warm tint
+     3. ::after:    #f7f7f7; darken          — neutralizes highlights
+   Plus: backdrop-filter: blur(); box-shadow; isolation: isolate; overflow: hidden
+   ──────────────────────────────────────────────────────────────────── */
+
+/* Profile card on map */
 .fd-profile-card {
   display: flex; align-items: center; gap: 8px;
   padding: 8px; border-radius: 8px; overflow: hidden;
   width: 209px; height: 64px; position: relative;
+  background: rgba(255,255,255,0.65);
   backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
   box-shadow: 0px 8px 40px rgba(0,0,0,0.12);
+  isolation: isolate;
 }
 .fd-profile-card::before {
   content: ''; position: absolute; inset: 0; border-radius: 8px;
-  background: rgba(255,255,255,0.65);
+  background: #ddd; mix-blend-mode: color-burn; pointer-events: none;
 }
 .fd-profile-card::after {
   content: ''; position: absolute; inset: 0; border-radius: 8px;
-  background: #f7f7f7; mix-blend-mode: darken;
+  background: #f7f7f7; mix-blend-mode: darken; pointer-events: none;
 }
 .fd-profile-card > * { position: relative; z-index: 1; }
 .fd-profile-avatar {
@@ -917,20 +912,21 @@ html, body {
 }
 /* Expand button — glass effect */
 .fd-expand-btn {
-  width: 44px; height: 44px; border-radius: 50%; border: none;
+  width: 44px; height: 44px; border-radius: 296px; border: none;
   position: relative; cursor: pointer; display: flex;
-  align-items: center; justify-content: center; background: none;
+  align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.65);
   backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
   box-shadow: 0px 8px 40px rgba(0,0,0,0.12);
-  overflow: hidden;
+  overflow: hidden; isolation: isolate;
 }
 .fd-expand-btn::before {
-  content: ''; position: absolute; inset: 0; border-radius: 50%;
-  background: rgba(255,255,255,0.65);
+  content: ''; position: absolute; inset: 0; border-radius: 296px;
+  background: #ddd; mix-blend-mode: color-burn; pointer-events: none;
 }
 .fd-expand-btn::after {
-  content: ''; position: absolute; inset: 0; border-radius: 50%;
-  background: #f7f7f7; mix-blend-mode: darken;
+  content: ''; position: absolute; inset: 0; border-radius: 296px;
+  background: #f7f7f7; mix-blend-mode: darken; pointer-events: none;
 }
 .fd-expand-btn img {
   position: relative; z-index: 1; width: 19px; height: 19px;
@@ -942,16 +938,18 @@ html, body {
   display: flex; flex-direction: column; gap: 2px;
   padding: 8px; border-radius: 8px;
   margin-top: auto; overflow: hidden;
+  background: rgba(255,255,255,0.65);
   backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
   box-shadow: 0px 8px 40px rgba(0,0,0,0.12);
+  isolation: isolate;
 }
 .fd-location-bar::before {
   content: ''; position: absolute; inset: 0; border-radius: 8px;
-  background: rgba(255,255,255,0.65);
+  background: #ddd; mix-blend-mode: color-burn; pointer-events: none;
 }
 .fd-location-bar::after {
   content: ''; position: absolute; inset: 0; border-radius: 8px;
-  background: #f7f7f7; mix-blend-mode: darken;
+  background: #f7f7f7; mix-blend-mode: darken; pointer-events: none;
 }
 .fd-location-bar > * { position: relative; z-index: 1; }
 .fd-location-row {
@@ -1342,35 +1340,30 @@ html, body {
   pointer-events: none; /* let taps through except buttons */
 }
 .profile-toolbar-btn {
-  width: 48px; height: 48px; border-radius: 250px;
+  width: 48px; height: 48px; border-radius: 296px;
   position: relative;
   display: flex; align-items: center; justify-content: center;
   box-shadow: 0px 8px 40px 0px rgba(0,0,0,0.12);
   cursor: pointer; flex-shrink: 0;
   isolation: isolate; overflow: hidden;
   pointer-events: all;
-  border: none; background: transparent;
+  border: none;
+  background: rgba(255,255,255,0.65);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
 }
 .profile-toolbar-btn::before {
   content: ''; position: absolute; inset: 0;
-  border-radius: 250px; background: white;
-  mix-blend-mode: multiply; pointer-events: none;
+  border-radius: 296px; background: #ddd;
+  mix-blend-mode: color-burn; pointer-events: none;
 }
-.profile-toolbar-btn-glass {
-  position: absolute; inset: 0; border-radius: 250px; pointer-events: none;
-}
-.profile-toolbar-btn-glass::before {
+.profile-toolbar-btn::after {
   content: ''; position: absolute; inset: 0;
-  border-radius: 250px; background: rgba(255,255,255,0.65);
+  border-radius: 296px; background: #f7f7f7;
+  mix-blend-mode: darken; pointer-events: none;
 }
-.profile-toolbar-btn-glass::after {
-  content: ''; position: absolute; inset: 0;
-  border-radius: 250px; background: #ddd; mix-blend-mode: color-burn;
-}
-.profile-toolbar-btn-darken {
-  position: absolute; inset: 0; border-radius: 250px;
-  background: #f7f7f7; mix-blend-mode: darken; pointer-events: none;
-}
+/* Legacy inner glass divs — no longer needed, hidden */
+.profile-toolbar-btn-glass { display: none; }
+.profile-toolbar-btn-darken { display: none; }
 .profile-toolbar-btn .icon-36 {
   width: 36px; height: 36px; position: relative; overflow: hidden; z-index: 1;
 }
@@ -1851,9 +1844,7 @@ html, body {
       <div class="fd-hero">
         <div class="fd-hero-handle"><div class="handle-pill"></div></div>
         <img id="fd-hero-img" src="https://www.figma.com/api/mcp/asset/8128e0eb-762b-468d-be28-0e3e90ab1cf7" alt="">
-        <div class="fd-hero-blur1"></div>
-        <div class="fd-hero-blur2"></div>
-        <div class="fd-hero-blur3"></div>
+        <div class="fd-hero-blur"></div>
         <div class="fd-hero-overlay"></div>
         <div class="fd-hero-text">
           <div class="fd-hero-title">Coast Live Oak</div>
