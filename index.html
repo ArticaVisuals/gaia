@@ -12,33 +12,97 @@
 
 /* ── DESIGN TOKENS (from Figma) ──────────────────────────── */
 :root {
-  /* Colors */
-  --paper:       #fdfbf4;   /* primary/paper-white/200 */
-  --paper-50:    #fefdf9;   /* nav bar border */
-  --cream:       #fdfbf4;   /* map background */
-  --olive:       #67765b;   /* primary/olive-green/500 */
-  --olive-100:   #e3e7df;   /* primary/olive-green/100  — borders, light fills */
-  --olive-200:   #c8cfbf;   /* primary/olive-green/200 */
-  --olive-400:   #8a9b7e;   /* primary/olive-green/400  — inactive nav text */
-  --handle-clr:  #d9d9db;   /* secondary/blackish-grey/100 — handle pill */
-  --ink:         #252024;
-  --ink-300:     #7d7981;   /* primary/ink-black/300 — section subheads */
-  --grey:        #5b5c61;   /* secondary/blackish-grey/500 */
-  --verm:        #b5493a;   /* secondary/vermillion-red/500 */
-  --shadow-soft: 0px 0px 40px 0px rgba(94,98,98,0.15); /* Soft Shadow */
-  --shadow-nav:  0px 0px 40px 0px rgba(93,77,57,0.25); /* Background Blur shadow */
+  /* ── Colors: Olive Green ── */
+  --olive-50:    #f2f4f0;   /* primary/olive-green/50  — building fills */
+  --olive-100:   #e3e7df;   /* primary/olive-green/100 — borders, light fills */
+  --olive-200:   #c8cfbf;   /* primary/olive-green/200 — secondary roads */
+  --olive-400:   #8a9b7e;   /* primary/olive-green/400 — inactive nav text, hillshade */
+  --olive:       #67765b;   /* primary/olive-green/500 — brand primary */
 
-  /* Typography */
+  /* ── Colors: Paper White / Cream ── */
+  --cream-50:    #fefdf9;   /* paper-white/50  — lightest */
+  --cream-100:   #fefcf7;   /* paper-white/100 — bottom sheet bg */
+  --cream-200:   #fdfbf4;   /* paper-white/200 — base cream */
+  --cream-300:   #fbf7eb;   /* interpolated    — warm light */
+  --cream-400:   #f6f0dd;   /* interpolated    — warm medium */
+  --cream-500:   #f0e8ce;   /* interpolated    — warm dark */
+  --cream-600:   #e9dfbf;   /* interpolated    — warmest */
+  --paper:       var(--cream-200);
+  --paper-50:    var(--cream-50);
+  --cream:       var(--cream-200);
+
+  /* ── Colors: Broccoli Brown ── */
+  --brown-50:    #F6F2EE;
+  --brown-100:   #EDE5DC;
+  --brown-200:   #D8C9B8;
+  --brown-300:   #BFA98F;
+  --brown-400:   #AC9479;
+  --brown-500:   #9B856B;
+  --brown-600:   #89755E;
+
+  /* ── Colors: Ink Black ── */
+  --ink:         #252024;   /* ink-black       — primary text */
+  --ink-300:     #7d7981;   /* ink-black/300   — section subheads */
+  --ink-700:     #1b181b;   /* ink-black/700   — card tag text */
+
+  /* ── Colors: Blackish Grey ── */
+  --grey-50:     #ededee;   /* blackish-grey/50  — card fallback bg */
+  --grey-100:    #d9d9db;   /* blackish-grey/100 — handle pill */
+  --grey:        #5b5c61;   /* blackish-grey/500 — secondary text */
+  --handle-clr:  var(--grey-100);
+
+  /* ── Colors: Accent ── */
+  --verm:        #b5493a;   /* secondary/vermillion-red/500 */
+  --water:       #4F638D;   /* map water — outside Figma palette (intentional) */
+
+  /* ── Colors: Semantic ── */
+  --border-default:    var(--brown-200);   /* semantic/border-default */
+  --fill-vibrant-tert: #e6ede3;            /* fills-vibrant/tertiary — nav selection bg */
+
+  /* ── Shadows: 3-tier system (broccoli-brown tinted) ── */
+  /* sm = chips, tags, small buttons */
+  --shadow-sm:   0px 2px 8px 0px rgba(155,133,107, 0.10);
+  /* md = cards, search bar, inputs */
+  --shadow-md:   0px 4px 20px 0px rgba(155,133,107, 0.16);
+  /* lg = nav, sheet, modals */
+  --shadow-lg:   0px 8px 40px 0px rgba(155,133,107, 0.24);
+
+  /* Named aliases (from Figma effect styles) */
+  --shadow-soft:  0px 0px 20px 25px rgba(94,98,98,0.20);   /* Soft Shadow */
+  --shadow-small: 0px 4px 20px 0px rgba(128,105,38,0.09);  /* Small Shadow */
+  --shadow-dark:  0px 4px 20px 0px rgba(50,40,8,0.35);     /* Dark Shadow */
+  --shadow-nav:   0px 8px 40px 0px rgba(0,0,0,0.12);       /* Nav Shadow */
+
+  /* ── Typography ── */
   --font-serif: "new-spirit","New Spirit",Georgia,serif;
   --font-sans:  "neue-haas-unica","Neue Haas Unica","Helvetica Neue",system-ui,sans-serif;
 
-  /* Layout */
-  --header-h: 108px;
-  --peek-h:   150px;  /* peek card area (8px pad + 134px card + 8px pad) */
-  --nav-h:    68px;   /* nav pill height */
-  --nav-gap:  12px;   /* bottom margin under nav pill */
+  /* ── Spacing (matches Figma spacing variables) ── */
+  --space-0: 0px;
+  --space-1: 2px;
+  --space-2: 4px;
+  --space-3: 8px;
+  --space-4: 12px;
+  --space-5: 16px;
+  --space-6: 20px;
+  --space-7: 24px;
+  --space-8: 32px;
 
-  /* Transitions */
+  /* ── Radius ── */
+  --radius-sm:  4px;
+  --radius-md:  8px;
+  --radius-lg:  14px;
+  --radius-xl:  24px;
+  --radius-xxl: 48px;
+  --radius-full: 250px;
+
+  /* ── Layout ── */
+  --header-h: 108px;
+  --peek-h:   150px;
+  --nav-h:    68px;
+  --nav-gap:  12px;
+
+  /* ── Transitions ── */
   --spring: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
@@ -64,20 +128,39 @@ html, body {
   pointer-events: none;
 }
 
-/* Search bar — pill shape, 48px tall, Figma border */
+/* Search bar — Liquid Glass pill (matches Figma node 467:2841) */
 .search-bar {
   flex: 1; height: 48px;
-  background: var(--paper);
-  border: 0.5px solid var(--olive-100);
+  /* Liquid Glass base layer */
+  background: rgba(255,255,255,0.65);
   border-radius: 250px;
   display: flex; align-items: center; gap: 8px;
-  padding: 8px;
-  box-shadow: var(--shadow-soft);
+  padding: 8px 8px 8px 8px;
+  box-shadow: 0px 8px 40px 0px rgba(0,0,0,0.12);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   pointer-events: all; cursor: text;
+  position: relative; overflow: hidden;
+  isolation: isolate;
+}
+/* Liquid Glass blend layers — matches Figma's color-burn + darken stack */
+.search-bar::before {
+  content: ''; position: absolute; inset: 0;
+  border-radius: 250px;
+  background: #dddddd;
+  mix-blend-mode: color-burn;
+  pointer-events: none;
+}
+.search-bar::after {
+  content: ''; position: absolute; inset: 0;
+  border-radius: 250px;
+  background: #f7f7f7;
+  mix-blend-mode: darken;
+  pointer-events: none;
 }
 .search-bar .icon-32 {
   flex-shrink: 0; width: 32px; height: 32px;
-  background: var(--paper);
+  background: transparent;
   position: relative; overflow: hidden;
 }
 .search-input {
@@ -97,13 +180,23 @@ html, body {
 .search-input::-webkit-search-results-button,
 .search-input::-webkit-search-results-decoration { display: none; }
 
+/* Mic button — right side of search bar */
+.search-mic {
+  flex-shrink: 0; width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent; border: none;
+  cursor: pointer; padding: 0; pointer-events: all;
+  color: var(--grey);
+}
+.search-mic svg { display: block; }
+
 /* Bell button */
 .bell-btn {
   width: 48px; height: 48px; border-radius: 250px;
   background: var(--paper);
   border: 0.5px solid var(--olive-100);
   display: flex; align-items: center; justify-content: center;
-  box-shadow: var(--shadow-soft);
+  box-shadow: var(--shadow-md);
   cursor: pointer; flex-shrink: 0; pointer-events: all;
 }
 .bell-btn .icon-32 { width: 32px; height: 32px; position: relative; overflow: hidden; flex-shrink: 0; }
@@ -116,16 +209,45 @@ html, body {
   transition: bottom .42s var(--spring), opacity .3s ease;
 }
 
-/* Locate + Filter — round pill buttons */
+/* Locate — single round glass button (Liquid Glass treatment) */
 .ctrl-btn {
-  width: 48px; height: 48px; border-radius: 250px;
-  background: var(--paper);
-  border: 0.5px solid var(--olive-100);
+  width: 44px; height: 44px; border-radius: 250px;
+  position: relative;
   display: flex; align-items: center; justify-content: center;
-  box-shadow: var(--shadow-soft);
+  box-shadow: 0px 8px 40px 0px rgba(0,0,0,0.12);
   cursor: pointer; flex-shrink: 0;
+  background: transparent; border: none;  /* remove default button styles */
+  isolation: isolate;
+  overflow: hidden;
 }
-.ctrl-btn .icon-32 { width: 32px; height: 32px; position: relative; overflow: hidden; }
+/* Glass: frosted translucent backdrop */
+.ctrl-btn::before {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: 250px;
+  background: rgba(255,255,255,0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  pointer-events: none; z-index: 0;
+}
+/* Glass overlay: color-burn tint */
+.ctrl-btn::after {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: 250px;
+  background: var(--cream-50);
+  mix-blend-mode: color-burn;
+  pointer-events: none; z-index: 0;
+}
+/* Glass fill layers (extra Figma-matching overlays) */
+.ctrl-btn-glass {
+  position: absolute; inset: 0;
+  border-radius: 250px;
+  background: var(--cream-50);
+  mix-blend-mode: darken;
+  pointer-events: none; z-index: 0;
+}
+.ctrl-btn .icon-32 { width: 32px; height: 32px; position: relative; overflow: hidden; z-index: 1; }
 
 /* ── SHEET ───────────────────────────────────────────────── */
 #sheet {
@@ -149,15 +271,16 @@ html, body {
 }
 /* Collapsed: floating card with side + bottom margins, all-corner 48px radius */
 #sheet.snap-collapsed #sheet-inner {
-  inset: 0 8px 12px;
-  border-radius: 48px;
+  inset: 0 var(--space-3) var(--space-4);
+  border-radius: var(--radius-xxl);
 }
 /* Mid / Full: edge-to-edge, top corners 48px, bottom flush */
 #sheet.snap-mid #sheet-inner,
 #sheet.snap-full #sheet-inner {
-  background: var(--paper);
-  border-radius: 48px 48px 0 0;
-  box-shadow: var(--shadow-soft);
+  background: var(--cream-100);
+  border: 0.5px solid var(--olive-100);
+  border-radius: var(--radius-xxl) var(--radius-xxl) 0 0;
+  box-shadow: var(--shadow-lg);
   inset: 0;
 }
 
@@ -174,12 +297,13 @@ html, body {
 
 /* Handle pill — shared between drag-handle and peek-card */
 .handle-pill {
-  /* secondary/blackish-grey/100, 48×4px from Figma */
-  width: 48px; height: 4px;
-  border-radius: 250px;
-  background: var(--handle-clr);
+  width: 88px; height: 4px;   /* 88px from Figma mid/full designs */
+  border-radius: var(--radius-full);
+  background: rgba(94,98,98, 0.25);  /* matches Figma handle color */
   flex-shrink: 0;
 }
+/* Collapsed peek card uses narrower 48px handle */
+.peek-card .handle-pill { width: 48px; background: var(--handle-clr); }
 
 /* ── PEEK ROW (collapsed state only) ────────────────────── */
 #peek-row {
@@ -211,7 +335,7 @@ html, body {
   /* Top-align content so handle pill + label stay visible above nav bar overlay */
   display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
   padding-top: 28px;             /* clears the absolute handle pill (12px + 4px pill + 12px gap) */
-  box-shadow: var(--shadow-soft);
+  box-shadow: var(--shadow-md);
 }
 
 /* Handle pill sits inside the card near its top */
@@ -264,14 +388,15 @@ html, body {
 }
 .tabs::-webkit-scrollbar { display: none; }
 .tab-btn {
-  flex-shrink: 0; padding: 7px 15px;
-  border-radius: 250px; border: none;
-  font-family: var(--font-sans); font-size: 13px; font-weight: 500;
+  flex-shrink: 0; padding: 4px 10px;
+  border-radius: var(--radius-full); border: none;
+  font-family: var(--font-sans); font-size: 13px; font-weight: 400;
+  line-height: 1.2;
   cursor: pointer; transition: background .18s, color .18s;
-  background: rgba(37,32,36,.06); color: var(--grey);
-  white-space: nowrap;
+  background: rgba(103,118,91, 0.10); color: var(--ink);
+  white-space: nowrap; min-height: 28px;
 }
-.tab-btn.active { background: var(--olive); color: #fff; }
+.tab-btn.active { background: var(--olive); color: var(--cream-50); }
 
 /* Section headers */
 .section-hdr {
@@ -288,35 +413,80 @@ html, body {
 }
 .see-all { font-size: 13px; color: var(--olive); cursor: pointer; }
 
-/* Projects scroll */
+/* Projects scroll — horizontal, center-snap on swipe */
 .projects-scroll {
   display: flex; gap: 10px;
   padding: 0 16px 22px;
   overflow-x: auto; scroll-snap-type: x mandatory;
+  scroll-padding-inline: 16px;   /* aligns snap point with container padding */
   scrollbar-width: none; -webkit-overflow-scrolling: touch;
   touch-action: pan-x;
 }
 .projects-scroll::-webkit-scrollbar { display: none; }
+/* ── PROJECT CARD — Figma node 465:2606 ───────────────────────────────────
+   Card: 181×133px. All children absolutely positioned over the photo.
+   Progressive blur via backdrop-filter + gradient mask.                    */
 .project-card {
-  flex-shrink: 0; width: 168px; height: 132px; border-radius: 14px;
-  position: relative; overflow: hidden;
-  scroll-snap-align: start; cursor: pointer;
+  flex-shrink: 0; width: 181px; height: 133px;
+  border-radius: var(--radius-md); overflow: hidden;
+  position: relative;
+  scroll-snap-align: center; cursor: pointer;
+  border: 0.5px solid var(--border-default);
+  box-shadow: 0px 4px 20px 0px rgba(128,105,38,0.09);
 }
+/* Photo — sharp base layer */
+.card-bg {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+  pointer-events: none;
+}
+/* Blurred duplicate — masked so blur fades in from top→bottom */
+.card-bg-blur {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+  pointer-events: none;
+  filter: blur(4px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 20%, black 75%);
+  mask-image: linear-gradient(to bottom, transparent 20%, black 75%);
+}
+/* Dark gradient overlay */
 .project-card::after {
   content: ''; position: absolute; inset: 0;
-  background: linear-gradient(to bottom, transparent 35%, rgba(0,0,0,.62));
+  background: linear-gradient(to bottom, transparent 35%, rgba(0,0,0,0.55));
+  pointer-events: none;
 }
+/* Tag chip — paper-white/100, Regular 10px, ink-black/700 */
 .card-tag {
-  position: absolute; top: 10px; left: 10px; z-index: 1;
-  background: rgba(253,251,244,.88); backdrop-filter: blur(4px);
+  position: absolute; top: 8px; left: 8px; z-index: 2;
+  background: #fefcf7;
   border-radius: 250px; padding: 3px 10px;
-  font-size: 11px; font-weight: 600; color: var(--ink);
+  font-family: var(--font-sans); font-size: 10px; font-weight: 400;
+  letter-spacing: 0.25px; color: #1b181b;
+  white-space: nowrap;
 }
+/* Info section — pinned to bottom of card, overlays gradient */
 .card-info {
-  position: absolute; bottom: 11px; left: 11px; right: 11px; z-index: 1;
+  position: absolute; bottom: 0; left: 0; right: 0;
+  display: flex; flex-direction: column; gap: 4px;
+  padding: 12px;
+  z-index: 2;
 }
-.card-title { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 2px; }
-.card-obs { font-size: 10px; color: rgba(255,255,255,.6); }
+/* serif/subhead-1: New Spirit Regular 16px, 18px lineHeight, paper-white/50 */
+.card-title {
+  font-family: var(--font-serif);
+  font-size: 16px; font-weight: 400; line-height: 18px;
+  color: var(--paper-50);
+}
+/* sans/nav-label: 10px Regular, paper-white/50, 2px gap */
+.card-obs {
+  font-family: var(--font-sans); font-size: 10px; font-weight: 400;
+  letter-spacing: 0.25px; color: var(--paper-50);
+  display: flex; align-items: center; gap: 2px;
+}
+/* Binoculars icon: 14×9.977px (exact Figma size) */
+.card-obs img { display: block; flex-shrink: 0; width: 14px; height: 9.977px; object-fit: contain; }
 
 /* Finds */
 .finds-hdr {
@@ -339,12 +509,39 @@ html, body {
   background: var(--olive-100); /* inactive: #e3e7df */
   cursor: pointer; transition: background .18s;
 }
-.finds-vb.active { background: #c2c190; } /* active: muted olive/sand from Figma */
+.finds-vb.active { background: var(--olive); } /* active: olive-500 from Figma */
 .finds-grid {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px;
   padding: 0 16px 32px;
 }
-.find-cell { aspect-ratio: 1; border-radius: 9px; background: var(--olive-100); }
+.find-cell {
+  aspect-ratio: 1; border-radius: var(--radius-md); background: var(--olive-100);
+  border: 0.5px solid var(--border-default);
+  box-shadow: var(--shadow-small);
+  overflow: hidden; position: relative;
+}
+.find-cell > img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+.find-cell::after {
+  content: ''; position: absolute; inset: 0;
+  /* Figma: gradient from transparent → rgba(0,0,0,0.75) + Soft Shadow */
+  background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.75));
+  pointer-events: none;
+}
+.find-label {
+  /* Figma: absolute, left 8.5px, bottom ~7.5px (top 110.5px -translateY(100%) on 118px card) */
+  position: absolute; bottom: 7.5px; left: 8.5px;
+  width: 100px; height: 33px;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  z-index: 1;
+  /* Figma: serif/subhead-1 — New Spirit Regular 16px, lineHeight 18px, white */
+  font-family: var(--font-serif);
+  font-size: 16px; font-weight: 400; line-height: 18px;
+  color: #fff;
+}
 
 /* ── NAV BAR (fixed pill — always visible, all 3 sheet states) ── */
 #nav-bar {
@@ -354,80 +551,83 @@ html, body {
   z-index: 50;   /* above sheet */
   height: var(--nav-h);
   border-radius: 250px;
-  /* Background Blur effect from Figma */
-  backdrop-filter: blur(8.2px);
-  -webkit-backdrop-filter: blur(8.2px);
+  /* Liquid Glass — matches Figma node 451:3691 blend stack */
   background: rgba(255,255,255,0.65);
-  border: 0.5px solid var(--paper-50);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   box-shadow: var(--shadow-nav);
   display: flex; align-items: center; justify-content: space-between;
   padding: 8px;
-  touch-action: none;  /* we handle all gestures (drag + tap) */
-  /* position: fixed already creates a containing block for .nav-indicator */
+  touch-action: none;
+  isolation: isolate;
+  overflow: hidden;
+}
+/* Liquid Glass blend layers behind nav items + indicator */
+#nav-bar::before {
+  content: ''; position: absolute; inset: 0;
+  border-radius: 250px;
+  background: var(--paper-50);   /* #fefdf9 — paper-white/50 */
+  mix-blend-mode: color-burn;
+  pointer-events: none; z-index: 0;
+}
+#nav-bar::after {
+  content: ''; position: absolute; inset: 0;
+  border-radius: 250px;
+  background: var(--paper-50);   /* #fefdf9 */
+  mix-blend-mode: darken;
+  pointer-events: none; z-index: 0;
 }
 .nav-item {
-  width: 80px; flex-shrink: 0; flex-grow: 0;
+  flex: 1 0 0; min-width: 1px;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  gap: 2px; border: none; background: transparent;
-  cursor: pointer; padding: 4px 4px 6px;
+  gap: 0; border: none; background: transparent;
+  cursor: pointer; padding: 2px 4px 4px;
   border-radius: 250px;
-  /* sans/nav-label: 10px, Regular, tracking 0.25px */
   font-family: var(--font-sans);
   font-size: 10px; font-weight: 400;
   letter-spacing: 0.25px;
-  color: var(--olive-400);
-  transition: color .2s;
-  touch-action: none;  /* pointer events handle everything */
-  position: relative; z-index: 1;  /* sits above sliding indicator */
+  /* Figma: all labels use olive-500 (#67765b) regardless of active/inactive state */
+  color: var(--olive);
+  overflow: hidden;
+  /* Figma: negative right margin prevents items from squishing on narrow screens */
+  margin-right: -8px;
+  touch-action: none;
+  position: relative; z-index: 1;
+  white-space: nowrap;
 }
+.nav-item:last-child { margin-right: 0; }
 .nav-item.active {
-  color: var(--olive);  /* indicator div owns the background now */
+  color: var(--olive);  /* same color — indicator pill owns the visual active state */
 }
-/* Sliding active indicator — absolutely positioned within #nav-bar */
+/* Sliding active indicator — width set dynamically by JS to match button */
 .nav-indicator {
   position: absolute;
   left: 0; top: 8px;
-  width: 80px;
-  height: calc(100% - 16px);  /* 68px - 8px top - 8px bottom = 52px */
+  width: 72px;   /* fallback; JS overrides with btn.offsetWidth on load */
+  height: calc(100% - 16px);
   border-radius: 250px;
-  background: var(--olive-100);
-  transition: transform 0.35s cubic-bezier(0.34, 1.4, 0.64, 1);  /* spring */
+  background: var(--fill-vibrant-tert);  /* #e6ede3 from Figma */
+  transition: transform 0.35s cubic-bezier(0.34, 1.4, 0.64, 1),
+              width   0.35s cubic-bezier(0.34, 1.4, 0.64, 1);
   pointer-events: none;
   z-index: 0;
-  will-change: transform;  /* GPU layer for smooth drag */
+  will-change: transform, width;
 }
 .nav-item .icon-32 {
   width: 32px; height: 32px;
   position: relative; overflow: hidden;   /* required for .icon-inset children */
-  margin-bottom: -2px;
   flex-shrink: 0;
+}
+/* Nav label — constrained width matches Figma's w-[44px] spec */
+.nav-label {
+  display: block;
+  width: 44px;
+  text-align: center;
+  line-height: 1.3;
+  overflow: hidden;
 }
 
-/* ── OBSERVE FAB (fixed circular action button — top-right of nav group) ── */
-#observe-fab {
-  position: fixed;
-  right: 16px;
-  bottom: 92px;          /* 12px nav-bottom + 68px nav-height + 12px gap */
-  width: 64px;
-  height: 64px;
-  border-radius: 250px;
-  background: var(--olive);   /* #67765b — primary/olive-green/500 */
-  border: none;
-  cursor: pointer;
-  z-index: 50;
-  box-shadow: 0px 4px 16.2px 0px rgba(115,115,100,0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  touch-action: manipulation;
-}
-#observe-fab .icon-32 {
-  width: 32px; height: 32px;
-  position: relative; overflow: hidden;
-  flex-shrink: 0;
-}
 
 /* ── ICON INSET (Figma-exact absolute positioning within 32×32 frame) ── */
 /* Each icon asset is positioned using the exact CSS inset from Figma.     */
@@ -440,7 +640,7 @@ html, body {
   position: absolute;
   width: 100%; height: 100%;
   display: block;
-  object-fit: fill;  /* img fills its inset container exactly — no distortion */
+  object-fit: contain;  /* preserve aspect ratio — no distortion */
 }
 
 /* ── SETUP OVERLAY ───────────────────────────────────────── */
@@ -520,6 +720,410 @@ html, body {
   opacity: 0.6;
   pointer-events: none;
 }
+
+/* ── TYPOGRAPHY SYSTEM ───────────────────────────────────── */
+/* Serif scale (New Spirit) */
+.t-serif-display     { font-family: var(--font-serif); font-size: 32px; line-height: 1.1; letter-spacing: -0.5px; }
+.t-serif-title-1     { font-family: var(--font-serif); font-size: 28px; line-height: 1.15; letter-spacing: -0.3px; }
+.t-serif-title-2     { font-family: var(--font-serif); font-size: 24px; line-height: 1.2; letter-spacing: -0.2px; }
+.t-serif-title-3     { font-family: var(--font-serif); font-size: 20px; line-height: 1.3; }
+.t-serif-subhead-1   { font-family: var(--font-serif); font-size: 16px; line-height: 18px; }
+.t-serif-body        { font-family: var(--font-serif); font-size: 14px; line-height: 1.4; }
+
+/* Sans scale (Neue Haas Unica) */
+.t-sans-headline     { font-family: var(--font-sans); font-size: 17px; line-height: 1.3; }
+.t-sans-body         { font-family: var(--font-sans); font-size: 15px; line-height: 1.35; }
+.t-sans-button-sm    { font-family: var(--font-sans); font-size: 13px; line-height: 1.2; }
+.t-sans-link-sm      { font-family: var(--font-sans); font-size: 12px; line-height: 20px; }
+.t-sans-nav-label    { font-family: var(--font-sans); font-size: 10px; line-height: 1.3; letter-spacing: 0.25px; }
+.t-sans-caption      { font-family: var(--font-sans); font-size: 10px; line-height: 1.3; letter-spacing: 0.25px; }
+
+/* Weight modifiers */
+.w-regular { font-weight: 400; }
+.w-medium  { font-weight: 500; }
+.w-bold    { font-weight: 700; }
+
+/* ── BUTTON SYSTEM (Apple HIG-inspired) ──────────────────── */
+/* Base button reset */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 3px; border: none; cursor: pointer;
+  font-family: var(--font-sans); font-weight: 400;
+  border-radius: var(--radius-full);
+  transition: opacity 0.15s ease, transform 0.1s ease, background 0.15s ease;
+  white-space: nowrap; position: relative;
+}
+.btn:active { transform: scale(0.97); }
+
+/* Sizes */
+.btn-sm { font-size: 13px; line-height: 1.2; padding: 4px 10px; min-height: 28px; }
+.btn-md { font-size: 15px; line-height: 1.3; padding: 7px 16px; min-height: 34px; }
+.btn-lg { font-size: 17px; line-height: 1.3; padding: 10px 22px; min-height: 50px; }
+
+/* Bordered Prominent — filled olive bg */
+.btn-prominent { background: var(--olive); color: var(--cream-50); }
+.btn-prominent:hover { opacity: 0.88; }
+.btn-prominent:disabled { background: var(--olive-200); color: var(--cream-200); cursor: default; }
+
+/* Bordered — subtle olive bg with olive text */
+.btn-bordered { background: rgba(103,118,91, 0.12); color: var(--olive); }
+.btn-bordered:hover { background: rgba(103,118,91, 0.20); }
+.btn-bordered:disabled { background: rgba(103,118,91, 0.06); color: var(--olive-200); cursor: default; }
+
+/* Bordered Secondary — subtle brown bg */
+.btn-secondary { background: rgba(155,133,107, 0.12); color: var(--brown-500); }
+.btn-secondary:hover { background: rgba(155,133,107, 0.20); }
+.btn-secondary:disabled { background: rgba(155,133,107, 0.06); color: var(--brown-200); cursor: default; }
+
+/* Borderless — transparent */
+.btn-borderless { background: transparent; color: var(--olive); }
+.btn-borderless:hover { background: rgba(103,118,91, 0.08); }
+.btn-borderless:disabled { color: var(--brown-200); cursor: default; }
+
+/* Destructive modifier */
+.btn-destructive.btn-prominent { background: var(--verm); }
+.btn-destructive.btn-bordered { color: var(--verm); background: rgba(181,73,58, 0.12); }
+.btn-destructive.btn-bordered:hover { background: rgba(181,73,58, 0.20); }
+.btn-destructive.btn-borderless { color: var(--verm); }
+
+/* ── PROFILE PAGE ─────────────────────────────────────────── */
+#profile-page {
+  position: fixed; inset: 0;
+  z-index: 45; /* above sheet (40), below nav (50) */
+  background: var(--cream-50);
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  display: none; /* hidden by default; shown when Profile tab active */
+  flex-direction: column;
+}
+#profile-page.visible { display: flex; }
+/* Hide main header when profile page is active */
+#header.profile-hidden { display: none; }
+
+/* Profile toolbar (top-right glass buttons) */
+.profile-toolbar {
+  position: sticky; top: 0; z-index: 2;
+  display: flex; justify-content: flex-end; gap: 8px;
+  padding: 55px 16px 8px;
+  pointer-events: none; /* let taps through except buttons */
+}
+.profile-toolbar-btn {
+  width: 48px; height: 48px; border-radius: 250px;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0px 8px 40px 0px rgba(0,0,0,0.12);
+  cursor: pointer; flex-shrink: 0;
+  isolation: isolate; overflow: hidden;
+  pointer-events: all;
+  border: none; background: transparent;
+}
+.profile-toolbar-btn::before {
+  content: ''; position: absolute; inset: 0;
+  border-radius: 250px; background: white;
+  mix-blend-mode: multiply; pointer-events: none;
+}
+.profile-toolbar-btn-glass {
+  position: absolute; inset: 0; border-radius: 250px; pointer-events: none;
+}
+.profile-toolbar-btn-glass::before {
+  content: ''; position: absolute; inset: 0;
+  border-radius: 250px; background: rgba(255,255,255,0.65);
+}
+.profile-toolbar-btn-glass::after {
+  content: ''; position: absolute; inset: 0;
+  border-radius: 250px; background: #ddd; mix-blend-mode: color-burn;
+}
+.profile-toolbar-btn-darken {
+  position: absolute; inset: 0; border-radius: 250px;
+  background: #f7f7f7; mix-blend-mode: darken; pointer-events: none;
+}
+.profile-toolbar-btn .icon-36 {
+  width: 36px; height: 36px; position: relative; overflow: hidden; z-index: 1;
+}
+.profile-toolbar-btn .icon-36 img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+
+/* Profile content scroll area */
+.profile-content {
+  flex: 1;
+  display: flex; flex-direction: column; gap: 24px;
+  padding: 0 16px 120px; /* bottom padding for nav bar */
+  margin-top: -56px; /* overlap toolbar so avatar sits at top */
+}
+
+/* Profile header */
+.profile-header {
+  display: flex; flex-direction: column; gap: 16px;
+  align-items: center; padding-top: 96px;
+}
+.profile-user-row {
+  display: flex; align-items: center; gap: 12px; width: 100%;
+}
+.profile-avatar {
+  width: 72px; height: 72px; border-radius: 250px; flex-shrink: 0;
+  border: 0.5px solid var(--olive-100);
+  overflow: hidden; position: relative;
+  background: var(--grey-100);
+}
+.profile-avatar img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+}
+.profile-name-col { display: flex; flex-direction: column; }
+.profile-name {
+  font-family: var(--font-serif); font-weight: 500; font-size: 28px;
+  line-height: 1.2; letter-spacing: -0.25px;
+  color: var(--olive);
+}
+.profile-finds {
+  font-family: var(--font-sans); font-size: 15px; font-weight: 400;
+  line-height: 1.3; letter-spacing: 0.5px;
+  color: #b1b2b5; /* grey-200 */
+}
+
+/* Profile tab switcher */
+.profile-tabs {
+  display: flex; align-items: center;
+  border-bottom: 1px solid #b1b2b5;
+  width: calc(100% + 32px); /* bleed to edges */
+  margin-left: -16px;
+}
+.profile-tab {
+  flex: 1; text-align: center;
+  padding: 16px 18px;
+  font-family: var(--font-sans); font-size: 17px; font-weight: 400;
+  line-height: 1.3; color: #b1b2b5;
+  border: none; background: none; cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+}
+.profile-tab.active {
+  color: var(--olive);
+  border-bottom-color: var(--olive);
+}
+
+/* ── Level card ── */
+.level-card {
+  background: var(--olive);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex; flex-direction: column; gap: 16px;
+  box-shadow: var(--shadow-small);
+}
+.level-card-top {
+  display: flex; align-items: flex-start; justify-content: space-between;
+}
+.level-col { display: flex; flex-direction: column; gap: 12px; }
+.level-label {
+  font-family: var(--font-sans); font-size: 10px; font-weight: 400;
+  letter-spacing: 1.2px; text-transform: uppercase;
+  color: var(--olive-200); line-height: 1.3;
+}
+.level-number {
+  font-family: var(--font-serif); font-size: 48px; font-weight: 400;
+  line-height: 1.1; letter-spacing: -0.5px;
+  color: var(--cream-50);
+}
+.level-next-col {
+  display: flex; flex-direction: column; gap: 4px;
+  align-items: flex-end;
+}
+.level-next-label {
+  font-family: var(--font-sans); font-size: 10px; letter-spacing: 1.2px;
+  text-transform: uppercase; color: var(--olive-200); line-height: 1.3;
+  text-align: right;
+}
+.level-next-number {
+  font-family: var(--font-serif); font-size: 24px; font-weight: 300;
+  letter-spacing: -0.25px; color: var(--olive-200); line-height: 1.2;
+}
+.level-progress-section { display: flex; flex-direction: column; gap: 12px; }
+.level-bar-track {
+  background: var(--olive-400); height: 8px; border-radius: 250px;
+  overflow: hidden; width: 100%;
+}
+.level-bar-fill {
+  background: var(--cream-50); height: 8px; border-radius: 250px;
+  width: 55%; /* 55% progress */
+}
+.level-bar-footer {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.level-bar-label {
+  font-family: var(--font-sans); font-size: 12px; font-weight: 400;
+  letter-spacing: 0.2px; color: var(--olive-200); line-height: 1.3;
+}
+.level-pct-pill {
+  background: var(--olive-400);
+  border-radius: 250px; padding: 5px 6px;
+  font-family: var(--font-sans); font-size: 10px; font-weight: 400;
+  letter-spacing: 0.25px; color: var(--olive-200); line-height: 1.3;
+  text-align: center;
+}
+
+/* ── Monthly summary card ── */
+.monthly-card {
+  background: var(--cream-50);
+  border: 0.5px solid var(--brown-200);
+  border-radius: var(--radius-md);
+  padding: 24px 16px 32px;
+  display: flex; flex-direction: column; gap: 12px;
+  box-shadow: var(--shadow-small);
+}
+.monthly-label {
+  font-family: var(--font-sans); font-size: 10px; font-weight: 400;
+  letter-spacing: 1.2px; text-transform: uppercase;
+  color: var(--brown-500); line-height: 1.3;
+}
+.monthly-text {
+  font-family: var(--font-serif); font-size: 24px; font-weight: 300;
+  line-height: 1.2; letter-spacing: -0.25px;
+  color: var(--ink-300);
+}
+.monthly-text strong.species { color: var(--olive); font-weight: 600; }
+.monthly-text strong.contrib { color: var(--brown-500); font-weight: 600; }
+
+/* ── Quick stats ── */
+.profile-section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 8px;
+}
+.profile-section-title {
+  font-family: var(--font-serif); font-size: 16px; font-weight: 400;
+  line-height: 18px; color: var(--ink-300);
+}
+.profile-section-action {
+  font-family: var(--font-sans); font-size: 12px; font-weight: 400;
+  letter-spacing: 0.2px; color: #b0adb3;
+}
+.stats-card {
+  background: var(--cream-50);
+  border: 0.5px solid var(--brown-200);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: var(--shadow-small);
+}
+.stat-item { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.stat-label {
+  font-family: var(--font-sans); font-size: 11px; font-weight: 400;
+  letter-spacing: 0.1px; color: #b1b2b5; line-height: 1.3;
+}
+.stat-value {
+  font-family: var(--font-serif); font-size: 30px; font-weight: 400;
+  line-height: 1.14; color: var(--olive);
+}
+.stat-divider {
+  width: 1px; height: 56px;
+  background: var(--brown-200);
+  flex-shrink: 0; margin: 0 8px;
+}
+
+/* ── Working on section ── */
+.working-card {
+  background: var(--cream-50);
+  border: 0.5px solid var(--brown-200);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex; flex-direction: column; gap: 12px;
+  box-shadow: var(--shadow-small);
+}
+.working-card-top {
+  display: flex; align-items: flex-start; justify-content: space-between;
+}
+.working-title {
+  font-family: var(--font-serif); font-size: 22px; font-weight: 400;
+  line-height: 1.2; letter-spacing: -0.25px;
+  color: var(--olive);
+}
+.working-title.brown { color: var(--brown-500); }
+.working-pill {
+  background: var(--olive-100);
+  border-radius: 250px; padding: 5px 6px;
+  font-family: var(--font-sans); font-size: 10px; font-weight: 400;
+  letter-spacing: 0.25px; color: var(--olive); line-height: 1.3;
+  text-align: center; white-space: nowrap; flex-shrink: 0;
+}
+.working-pill.brown {
+  background: var(--brown-100); color: var(--brown-500);
+}
+.working-progress-track {
+  background: var(--grey-50); height: 6px; border-radius: 250px;
+  overflow: hidden; width: 100%;
+}
+.working-progress-fill {
+  height: 6px; border-radius: 250px; background: var(--olive);
+}
+.working-progress-fill.brown { background: var(--brown-500); }
+
+/* ── Your impact ── */
+.impact-card {
+  background: var(--cream-50);
+  border: 0.5px solid var(--brown-200);
+  border-radius: var(--radius-md);
+  height: 193px;
+  display: flex; align-items: flex-end;
+  padding: 8px;
+  box-shadow: var(--shadow-small);
+  position: relative;
+  overflow: hidden;
+}
+.impact-card-meta {
+  display: flex; gap: 16px; align-items: center;
+  font-family: var(--font-sans); font-size: 10px; font-weight: 400;
+  letter-spacing: 0.25px; color: #b1b2b5; line-height: 1.3;
+}
+/* Placeholder chart bars */
+.impact-bars {
+  position: absolute; bottom: 36px; left: 16px; right: 16px;
+  display: flex; align-items: flex-end; gap: 6px; height: 120px;
+}
+.impact-bar {
+  flex: 1; border-radius: 3px 3px 0 0;
+  background: var(--olive-100);
+}
+.impact-bar.active { background: var(--olive-400); }
+
+/* ── Medals ── */
+.medals-row {
+  display: flex; gap: 17px; align-items: flex-start;
+  overflow-x: auto; padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.medals-row::-webkit-scrollbar { display: none; }
+.medal-item {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 3.29px; flex-shrink: 0; width: 59.807px;
+  position: relative;
+}
+.medal-badge {
+  width: 59.807px; height: 58.954px;
+  position: relative; overflow: hidden;
+  flex-shrink: 0;
+}
+.medal-badge img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain;
+}
+.medal-label {
+  font-family: var(--font-sans); font-size: 8.555px; font-weight: 400;
+  letter-spacing: 0.329px; text-transform: uppercase;
+  text-align: center; line-height: 1.3;
+  color: var(--brown-500); white-space: nowrap;
+}
+.medal-label.dim { color: var(--brown-200); }
+.medal-count {
+  position: absolute; top: 44.78px; left: 45.43px;
+  background: var(--olive);
+  border: 2px solid var(--cream-200);
+  border-radius: 250px;
+  width: 16.452px; height: 16.452px;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.medal-count span {
+  font-family: var(--font-serif); font-size: 10.529px; font-weight: 400;
+  line-height: 1; color: white; text-align: center;
+}
 </style>
 </head>
 <body>
@@ -544,38 +1148,40 @@ html, body {
 <!-- ═══════════════════════════ HEADER ════════════════════════════════ -->
 <div id="header">
   <div class="search-bar">
-    <!-- Search icon: Figma inset 16.67% all sides → ~21.3×21.3px -->
+    <!-- Search icon — inset 15.62% all sides (node I467:2849;215:439) -->
     <div class="icon-32">
-      <div class="icon-inset" style="inset:16.67%">
-        <img src="https://www.figma.com/api/mcp/asset/aa52b415-2e9a-4ff4-9291-0a65db2bc4b1" alt="">
+      <div class="icon-inset" style="inset:15.62%">
+        <img src="https://www.figma.com/api/mcp/asset/926010c8-edc7-450b-8c85-cb72509647aa" alt="">
       </div>
     </div>
     <input
       class="search-input"
       type="search"
-      placeholder="Search observations"
+      placeholder="Search finds"
       autocomplete="off"
       autocorrect="off"
       autocapitalize="off"
       spellcheck="false"
     >
+    <button class="search-mic" aria-label="Search by voice">
+      <svg width="18" height="22" viewBox="0 0 18 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="5.5" y="1" width="7" height="12" rx="3.5" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M1 10C1 14.4183 4.58172 18 9 18C13.4183 18 17 14.4183 17 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="9" y1="18" x2="9" y2="21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="6" y1="21" x2="12" y2="21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </button>
   </div>
 </div>
 
 <!-- ═══════════════════════════ MAP CONTROLS ══════════════════════════ -->
 <div id="map-controls">
+  <!-- Locate — glass pill button (node I333:4708;294:1371;521:1592) -->
   <button class="ctrl-btn" id="locateBtn" aria-label="Locate me">
+    <div class="ctrl-btn-glass"></div>
     <div class="icon-32">
-      <div class="icon-inset" style="top:4.21px;left:4.21px;width:23.298px;height:23.298px">
-        <img src="https://www.figma.com/api/mcp/asset/8bf2a093-8eae-4bf6-8f0f-84ecf7497cad" alt="">
-      </div>
-    </div>
-  </button>
-
-  <button class="ctrl-btn" id="filterBtn" aria-label="Filters">
-    <div class="icon-32">
-      <div class="icon-inset" style="top:50%;left:50%;transform:translate(-50%,-50%);width:19.098px;height:20.031px">
-        <img src="https://www.figma.com/api/mcp/asset/09cbcfba-341d-477c-a5ef-2ea5d1f265f9" alt="">
+      <div class="icon-inset" style="inset:12.5%">
+        <img src="https://www.figma.com/api/mcp/asset/97fa0903-6476-4692-8845-6aab96a78f26" alt="">
       </div>
     </div>
   </button>
@@ -605,9 +1211,8 @@ html, body {
 
       <!-- Filter tabs -->
       <div class="tabs">
-        <button class="tab-btn active">Nearby</button>
+        <button class="tab-btn active">Trending</button>
         <button class="tab-btn">Needs ID</button>
-        <button class="tab-btn">Projects</button>
         <button class="tab-btn">Friends</button>
       </div>
 
@@ -617,32 +1222,46 @@ html, body {
         <span class="see-all">See all</span>
       </div>
       <div class="projects-scroll" id="projectsScroll">
-        <div class="project-card" style="background:linear-gradient(145deg,#4a5c3c,#1e2a18)">
-          <div class="card-tag">Wildflowers</div>
-          <div class="card-info">
-            <div class="card-title">Pollinator Corridor</div>
-            <div class="card-obs">24 Observers</div>
-          </div>
-        </div>
-        <div class="project-card" style="background:linear-gradient(145deg,#3a5260,#1a2e38)">
+
+        <!-- Creek Recovery — Wetland -->
+        <div class="project-card">
+          <img class="card-bg" src="https://www.figma.com/api/mcp/asset/cdf4defa-2aa6-4897-adf6-41bdb1668c39" alt="Creek Recovery">
+          <img class="card-bg-blur" src="https://www.figma.com/api/mcp/asset/cdf4defa-2aa6-4897-adf6-41bdb1668c39" alt="">
           <div class="card-tag">Wetland</div>
           <div class="card-info">
             <div class="card-title">Creek Recovery</div>
-            <div class="card-obs">12 Observers</div>
+            <div class="card-obs">
+              <img src="https://www.figma.com/api/mcp/asset/170ddb6c-0e33-4003-a4d6-8f20c05e61db" alt="">
+              12
+            </div>
           </div>
         </div>
-        <div class="project-card" style="background:linear-gradient(145deg,#4a5c3c,#1e2a18)">
-          <div class="card-tag">Wildflowers</div>
+
+        <!-- Pollinator Corridor — Garden -->
+        <div class="project-card">
+          <img class="card-bg" src="https://www.figma.com/api/mcp/asset/4d177517-9e55-49ac-8b31-72e1a4b39209" alt="Pollinator Corridor">
+          <img class="card-bg-blur" src="https://www.figma.com/api/mcp/asset/4d177517-9e55-49ac-8b31-72e1a4b39209" alt="">
+          <div class="card-tag">Garden</div>
           <div class="card-info">
             <div class="card-title">Pollinator Corridor</div>
-            <div class="card-obs">24 Observers</div>
+            <div class="card-obs">
+              <img src="https://www.figma.com/api/mcp/asset/170ddb6c-0e33-4003-a4d6-8f20c05e61db" alt="">
+              12
+            </div>
           </div>
         </div>
-        <div class="project-card" style="background:linear-gradient(145deg,#3a5260,#1a2e38)">
-          <div class="card-tag">Wetland</div>
+
+        <!-- Sea Creatures — Ocean -->
+        <div class="project-card">
+          <img class="card-bg" src="https://www.figma.com/api/mcp/asset/cca4cb92-412d-464d-8592-8931eba87e2c" alt="Sea Creatures">
+          <img class="card-bg-blur" src="https://www.figma.com/api/mcp/asset/cca4cb92-412d-464d-8592-8931eba87e2c" alt="">
+          <div class="card-tag">Ocean</div>
           <div class="card-info">
-            <div class="card-title">Creek Recovery</div>
-            <div class="card-obs">12 Observers</div>
+            <div class="card-title">Sea Creatures</div>
+            <div class="card-obs">
+              <img src="https://www.figma.com/api/mcp/asset/170ddb6c-0e33-4003-a4d6-8f20c05e61db" alt="">
+              12
+            </div>
           </div>
         </div>
       </div>
@@ -651,32 +1270,256 @@ html, body {
       <div class="finds-hdr">
         <span class="finds-title">Finds</span>
         <div class="finds-view-btns">
-          <!-- Grid view: Figma inset 18.17% 18.75% 18.38% 18.22% → active olive/sand bg -->
+          <!-- Grid view icon: fresh Figma asset -->
           <button class="finds-vb active" id="fvGrid">
-            <div class="icon-inset" style="inset:18.17% 18.75% 18.38% 18.22%">
-              <img src="https://www.figma.com/api/mcp/asset/a3479eda-020a-4b40-a748-c42e2da51031" alt="">
+            <div class="icon-inset" style="inset:21.67% 22.22% 21.88% 21.69%">
+              <img src="https://www.figma.com/api/mcp/asset/a1199383-663d-46a9-8187-f42a548fca5a" alt="">
             </div>
           </button>
-          <!-- List view: Figma inset 23.68% 12.5% 23.89% 11.97% → inactive light olive bg -->
+          <!-- List view icon: fresh Figma asset -->
           <button class="finds-vb" id="fvList">
-            <div class="icon-inset" style="inset:23.68% 12.5% 23.89% 11.97%">
-              <img src="https://www.figma.com/api/mcp/asset/fa58d092-6b75-42d3-9802-79acfb7d0eee" alt="">
+            <div class="icon-inset" style="inset:26.03% 15.89% 26.24% 15.36%">
+              <img src="https://www.figma.com/api/mcp/asset/67e5e6cb-0414-49cf-ac4f-811605502b49" alt="">
             </div>
           </button>
         </div>
       </div>
       <div class="finds-grid">
-        <div class="find-cell"></div>
-        <div class="find-cell"></div>
-        <div class="find-cell"></div>
-        <div class="find-cell"></div>
-        <div class="find-cell"></div>
-        <div class="find-cell"></div>
+        <div class="find-cell">
+          <img src="https://www.figma.com/api/mcp/asset/3e6f5cee-a269-4ba6-9bd2-d7b62844297f" alt="Cacti">
+          <span class="find-label">Cacti</span>
+        </div>
+        <div class="find-cell">
+          <img src="https://www.figma.com/api/mcp/asset/6aaf4887-7da2-456d-9c6c-06111591d76e" alt="Indian Cormorant">
+          <span class="find-label">Indian Cormorant</span>
+        </div>
+        <div class="find-cell">
+          <img src="https://www.figma.com/api/mcp/asset/eb95ad21-2d58-4897-91d8-71c1da97f541" alt="European Roller">
+          <span class="find-label">European Roller</span>
+        </div>
+        <div class="find-cell">
+          <img src="https://www.figma.com/api/mcp/asset/89c1dd3f-3290-4998-bd3a-69dcff9de49d" alt="Bindweed Tribe">
+          <span class="find-label">Bindweed Tribe</span>
+        </div>
+        <div class="find-cell">
+          <img src="https://www.figma.com/api/mcp/asset/f0907f22-ce77-4efe-8e26-f75443fae879" alt="Emperor Gum Moth">
+          <span class="find-label">Emperor Gum Moth</span>
+        </div>
+        <div class="find-cell">
+          <img src="https://www.figma.com/api/mcp/asset/8e9dee94-0ce5-4322-b708-ac2d3aea6918" alt="Garden Orbweaver">
+          <span class="find-label">Garden Orbweaver</span>
+        </div>
       </div>
     </div><!-- /sheet-content -->
 
   </div><!-- /sheet-inner -->
 </div><!-- /sheet -->
+
+<!-- ══ PROFILE PAGE ══════════════════════════════════════════════════ -->
+<div id="profile-page">
+
+  <!-- Sticky toolbar: settings + more -->
+  <div class="profile-toolbar">
+    <button class="profile-toolbar-btn" aria-label="Settings">
+      <div class="profile-toolbar-btn-glass"></div>
+      <div class="profile-toolbar-btn-darken"></div>
+      <div class="icon-36">
+        <img src="https://www.figma.com/api/mcp/asset/b90b2f7e-42d0-43fd-b511-17039a54d868" alt="">
+      </div>
+    </button>
+    <button class="profile-toolbar-btn" aria-label="More options">
+      <div class="profile-toolbar-btn-glass"></div>
+      <div class="profile-toolbar-btn-darken"></div>
+      <div class="icon-36" style="display:flex;align-items:center;justify-content:center;gap:3.79px">
+        <div style="width:4.06px;height:4.06px;border-radius:50%;background:var(--ink)"></div>
+        <div style="width:4.06px;height:4.06px;border-radius:50%;background:var(--ink)"></div>
+        <div style="width:4.06px;height:4.06px;border-radius:50%;background:var(--ink)"></div>
+      </div>
+    </button>
+  </div>
+
+  <!-- Scrollable content -->
+  <div class="profile-content">
+
+    <!-- Header -->
+    <div class="profile-header">
+      <div class="profile-user-row">
+        <div class="profile-avatar">
+          <img src="https://www.figma.com/api/mcp/asset/b09e4255-dca9-405c-b49f-bb5886f5979f" alt="Alice Edwards">
+        </div>
+        <div class="profile-name-col">
+          <div class="profile-name">Alice Edwards</div>
+          <div class="profile-finds">127 finds</div>
+        </div>
+      </div>
+
+      <!-- Tab switcher -->
+      <div class="profile-tabs">
+        <button class="profile-tab active">Impact</button>
+        <button class="profile-tab">Log</button>
+        <button class="profile-tab">Community</button>
+      </div>
+    </div>
+
+    <!-- Level card -->
+    <div class="level-card">
+      <div class="level-card-top">
+        <div class="level-col">
+          <div class="level-label">Current Level</div>
+          <div class="level-number">3</div>
+        </div>
+        <div class="level-next-col">
+          <div class="level-next-label">Next</div>
+          <div class="level-next-number">4</div>
+        </div>
+      </div>
+      <div class="level-progress-section">
+        <div class="level-bar-track">
+          <div class="level-bar-fill"></div>
+        </div>
+        <div class="level-bar-footer">
+          <div class="level-bar-label">12 finds to level 4</div>
+          <div class="level-pct-pill">55% there</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Monthly summary -->
+    <div class="monthly-card">
+      <div class="monthly-label">March 2026</div>
+      <div class="monthly-text">You discovered <strong class="species">3 new species</strong> and made <strong class="contrib">4 contributions</strong> this month.</div>
+    </div>
+
+    <!-- Quick stats -->
+    <div>
+      <div class="profile-section-header">
+        <div class="profile-section-title">Quick stats</div>
+      </div>
+      <div class="stats-card">
+        <div class="stat-item">
+          <div class="stat-label">Species</div>
+          <div class="stat-value">63</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-label">IDs Labeled</div>
+          <div class="stat-value">23</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-label">Projects</div>
+          <div class="stat-value">4</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- What you're working on -->
+    <div>
+      <div class="profile-section-header">
+        <div class="profile-section-title">What you're working on</div>
+        <div class="profile-section-action">2 active</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <!-- Urban Fungi Challenge -->
+        <div class="working-card">
+          <div class="working-card-top">
+            <div class="working-title">Urban Fungi Challenge</div>
+            <div class="working-pill">2 of 5 finds</div>
+          </div>
+          <div class="working-progress-track">
+            <div class="working-progress-fill" style="width:40%"></div>
+          </div>
+        </div>
+        <!-- ID Support Goal -->
+        <div class="working-card">
+          <div class="working-card-top">
+            <div class="working-title brown">ID Support Goal</div>
+            <div class="working-pill brown">3 of 5 finds</div>
+          </div>
+          <div class="working-progress-track">
+            <div class="working-progress-fill brown" style="width:60%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Your impact -->
+    <div>
+      <div class="profile-section-header">
+        <div class="profile-section-title">Your impact</div>
+      </div>
+      <div class="impact-card">
+        <!-- Placeholder bar chart -->
+        <div class="impact-bars">
+          <div class="impact-bar" style="height:30%"></div>
+          <div class="impact-bar" style="height:50%"></div>
+          <div class="impact-bar active" style="height:75%"></div>
+          <div class="impact-bar" style="height:45%"></div>
+          <div class="impact-bar" style="height:60%"></div>
+          <div class="impact-bar" style="height:35%"></div>
+          <div class="impact-bar active" style="height:80%"></div>
+          <div class="impact-bar" style="height:55%"></div>
+          <div class="impact-bar" style="height:40%"></div>
+        </div>
+        <div class="impact-card-meta">
+          <span>9 finds</span>
+          <span>Pasadena, CA</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Medals -->
+    <div>
+      <div class="profile-section-header">
+        <div class="profile-section-title">Medals</div>
+        <div class="profile-section-action">View all</div>
+      </div>
+      <div class="medals-row">
+        <!-- Plant — 12 -->
+        <div class="medal-item">
+          <div class="medal-badge">
+            <img src="https://www.figma.com/api/mcp/asset/e00a24b2-6acb-4b4d-a6c3-a7e35ca9a7ac" alt="Plant badge">
+          </div>
+          <div class="medal-label">Plant</div>
+          <div class="medal-count"><span>12</span></div>
+        </div>
+        <!-- Mammal — 10 -->
+        <div class="medal-item">
+          <div class="medal-badge">
+            <img src="https://www.figma.com/api/mcp/asset/e12ec30e-cc21-4806-bb83-151c4be08003" alt="Mammal badge">
+          </div>
+          <div class="medal-label dim">Mammal</div>
+          <div class="medal-count"><span>10</span></div>
+        </div>
+        <!-- Fungus — 4 -->
+        <div class="medal-item">
+          <div class="medal-badge">
+            <img src="https://www.figma.com/api/mcp/asset/ed033ae8-62b7-4e23-9e27-aca87b8cca5f" alt="Fungus badge">
+          </div>
+          <div class="medal-label dim">Fungus</div>
+          <div class="medal-count"><span>4</span></div>
+        </div>
+        <!-- Insect — 3 -->
+        <div class="medal-item">
+          <div class="medal-badge">
+            <img src="https://www.figma.com/api/mcp/asset/7b82c050-b8de-44ce-8351-42edbe48d0ec" alt="Insect badge">
+          </div>
+          <div class="medal-label dim">Insect</div>
+          <div class="medal-count"><span>3</span></div>
+        </div>
+        <!-- Reptile — 2 -->
+        <div class="medal-item">
+          <div class="medal-badge">
+            <img src="https://www.figma.com/api/mcp/asset/f6b72964-8e18-4509-b0fc-b52d7e6a0900" alt="Reptile badge">
+          </div>
+          <div class="medal-label dim">Reptile</div>
+          <div class="medal-count"><span>2</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /profile-content -->
+</div><!-- /profile-page -->
 
 <!-- ══ NAV BAR — fixed, always visible in all 3 sheet states ══════════ -->
 <!-- Icon assets + insets taken directly from Figma design context (node 289:2265).   -->
@@ -684,45 +1527,58 @@ html, body {
 <!-- within its 32×32 frame — no squishing or stretching possible.                   -->
 <div id="nav-bar">
   <div class="nav-indicator"></div>
+
+  <!-- Explore — compass icon (node I451:3716;215:513), inset 15.76% 15.49% 15.49% 15.76% -->
   <button class="nav-item active" data-nav="explore">
-    <!-- Explore: inset 16.02% top, 15.76% right, 15.76% bottom, 16.02% left → ~21.8×21.8px -->
     <div class="icon-32">
-      <div class="icon-inset" style="inset:16.02% 15.76% 15.76% 16.02%">
-        <img src="https://www.figma.com/api/mcp/asset/af13340f-129c-45a9-ae74-b3008f677617" alt="">
+      <div class="icon-inset" style="inset:15.76% 15.49% 15.49% 15.76%">
+        <img src="https://www.figma.com/api/mcp/asset/09b98f0b-a6b2-4e99-b9d1-d64ddf88d7ed" alt="">
       </div>
     </div>
-    Explore
+    <span class="nav-label">Explore</span>
   </button>
+
+  <!-- Log — notebook/log icon (node I452:3805;451:3716;496:2727) -->
+  <button class="nav-item" data-nav="log">
+    <div class="icon-32">
+      <div class="icon-inset" style="inset:15.63% 20.95% 15.83% 18.39%">
+        <img src="https://www.figma.com/api/mcp/asset/47d31587-7492-45af-bec4-7b37a89e0f92" alt="">
+      </div>
+    </div>
+    <span class="nav-label">Log</span>
+  </button>
+
+  <!-- Observe — binoculars icon (node I452:3813;451:3716;215:457), inset 25.5% 16.06% 25.5% 15.19% -->
+  <button class="nav-item" data-nav="observe">
+    <div class="icon-32">
+      <div class="icon-inset" style="inset:25.5% 16.06% 25.5% 15.19%">
+        <img src="https://www.figma.com/api/mcp/asset/278d2152-41ac-4957-9b68-567398a6c04d" alt="">
+      </div>
+    </div>
+    <span class="nav-label">Observe</span>
+  </button>
+
+  <!-- Activity — bell icon (node I452:3824;451:3716;226:1056), inset 15.52% 20.6% 15.73% 20.07% -->
   <button class="nav-item" data-nav="activity">
-    <!-- Activity: inset 13.38% top, 18.75% right, 13.58% bottom, 18.22% left (Figma updated) -->
     <div class="icon-32">
-      <div class="icon-inset" style="inset:13.38% 18.75% 13.58% 18.22%">
-        <img src="https://www.figma.com/api/mcp/asset/651e66db-3101-45a3-b5a4-450d484400c0" alt="">
+      <div class="icon-inset" style="inset:15.52% 20.6% 15.73% 20.07%">
+        <img src="https://www.figma.com/api/mcp/asset/4b0f6861-1a6a-484a-83e9-3e98a4c6643d" alt="">
       </div>
     </div>
-    Activity
+    <span class="nav-label">Activity</span>
   </button>
+
+  <!-- Profile — person icon (node I452:3834;451:3716;215:445), 22×22.108px at top/left 4.93px -->
   <button class="nav-item" data-nav="profile">
-    <!-- Profile: absolute px values from Figma → top:5.61px left:5.61px w:20.63px h:20.73px -->
     <div class="icon-32">
-      <div class="icon-inset" style="top:5.61px;left:5.61px;width:20.632px;height:20.733px">
-        <img src="https://www.figma.com/api/mcp/asset/55a904e5-989f-4b21-b8c2-6d94134059b1" alt="">
+      <div class="icon-inset" style="top:4.93px; left:4.93px; width:22px; height:22.108px">
+        <img src="https://www.figma.com/api/mcp/asset/891580cd-3cc0-43ce-9253-5cb672f5c66d" alt="">
       </div>
     </div>
-    Profile
+    <span class="nav-label">Profile</span>
   </button>
 </div>
 
-<!-- ══════════════════════════ OBSERVE FAB ════════════════════════════ -->
-<!-- 64×64px circular FAB — right-aligned above nav pill (gap: 12px).  -->
-<!-- bg: olive-500 (#67765b), binoculars icon from Figma node 333:3507. -->
-<button id="observe-fab" aria-label="Observe">
-  <div class="icon-32">
-    <div class="icon-inset" style="inset:22.81% 12.28% 22.81% 11.4%;overflow:hidden">
-      <img src="https://www.figma.com/api/mcp/asset/09bdd434-0dd0-420f-bee0-e04af017f17c" alt="">
-    </div>
-  </div>
-</button>
 
 <script>
 // ════════════════════════════════════════════════
@@ -730,7 +1586,7 @@ html, body {
 // ════════════════════════════════════════════════
 const HEADER_H = 108;
 const PEEK_H   = 150;  // 8px top + 134px card (Figma spec) + 8px bottom
-const NAV_H    = 80;   // nav pill (68px) + bottom gap (12px) — used for mid snap calc
+const NAV_H    = 80;   // nav pill (68px) + bottom gap (12px)
 const SPRING   = 'cubic-bezier(0.32,0.72,0,1)';
 
 // ════════════════════════════════════════════════
@@ -793,13 +1649,13 @@ function syncSheetBackground(translateY) {
   // Top corners always stay at 48px
   const rB = Math.round(48 * (1 - alpha));
 
-  inner.style.backgroundColor = `rgba(253, 251, 244, ${alpha.toFixed(3)})`;
+  inner.style.backgroundColor = `rgba(254, 252, 247, ${alpha.toFixed(3)})`;  /* cream-100 with alpha */
   inner.style.borderRadius    = `48px 48px ${rB}px ${rB}px`;
   inner.style.top             = '0';
   inner.style.right           = `${mH}px`;
   inner.style.bottom          = `${mB}px`;
   inner.style.left            = `${mH}px`;
-  inner.style.boxShadow       = alpha > 0.02 ? 'var(--shadow-soft)' : 'none';
+  inner.style.boxShadow       = alpha > 0.02 ? 'var(--shadow-lg)' : 'none';
 }
 
 // ════════════════════════════════════════════════
@@ -964,7 +1820,10 @@ function dragEnd() {
 // ════════════════════════════════════════════════
 function moveNavIndicator(btn) {
   const ind = document.querySelector('.nav-indicator');
-  if (ind && btn) ind.style.transform = `translateX(${btn.offsetLeft}px)`;
+  if (!ind || !btn) return;
+  // Match indicator width exactly to the button, align left edges
+  ind.style.width = btn.offsetWidth + 'px';
+  ind.style.transform = `translateX(${btn.offsetLeft}px)`;
 }
 
 // --- NAV DRAG (Liquid Glass-inspired) ---
@@ -972,15 +1831,21 @@ let navDrag = null;   // null when inactive
 let tabSlots = [];    // [{left, center, btn}, ...]
 
 function cacheTabSlots() {
-  tabSlots = [...document.querySelectorAll('.nav-item')].map(btn => ({
-    left: btn.offsetLeft,
-    center: btn.offsetLeft + 40,  // 40 = half of 80px
-    btn
-  }));
+  tabSlots = [...document.querySelectorAll('.nav-item')].map(btn => {
+    return {
+      left:   btn.offsetLeft,                         // indicator left edge aligns here
+      center: btn.offsetLeft + btn.offsetWidth / 2,   // used for nearest-slot math
+      width:  btn.offsetWidth,
+      btn
+    };
+  });
 }
 
 function nearestSlot(x) {
-  const cx = x + 40;
+  // x = current indicator translateX (its left edge)
+  // find the slot whose center is closest to the indicator's center
+  const indW = document.querySelector('.nav-indicator')?.offsetWidth || 72;
+  const cx = x + indW / 2;
   return tabSlots.reduce((best, s) =>
     Math.abs(s.center - cx) < Math.abs(best.center - cx) ? s : best
   );
@@ -1009,8 +1874,8 @@ function navPointerMove(e) {
   e.preventDefault();
 
   let x = navDrag.startTx + dx;
-  const minX = tabSlots[0].left;
-  const maxX = tabSlots[tabSlots.length - 1].left;
+  const minX = tabSlots[0].left;                         // first tab's offsetLeft
+  const maxX = tabSlots[tabSlots.length - 1].left;       // last tab's offsetLeft
 
   // Rubber band at edges
   if (x < minX) x = minX - (minX - x) * 0.3;
@@ -1030,6 +1895,11 @@ function navPointerMove(e) {
   // Update active tab in real time
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
   near.btn.classList.add('active');
+  // Show/hide profile page during drag
+  const profilePage = document.getElementById('profile-page');
+  const isProfileDrag = near.btn.dataset.nav === 'profile';
+  if (profilePage) profilePage.classList.toggle('visible', isProfileDrag);
+  document.getElementById('header')?.classList.toggle('profile-hidden', isProfileDrag);
 }
 
 function navPointerUp() {
@@ -1042,12 +1912,17 @@ function navPointerUp() {
     document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
     state.tapBtn.classList.add('active');
     moveNavIndicator(state.tapBtn);
+    // Show/hide profile page
+    const isProfile = state.tapBtn.dataset.nav === 'profile';
+    const profilePage = document.getElementById('profile-page');
+    if (profilePage) profilePage.classList.toggle('visible', isProfile);
+    document.getElementById('header')?.classList.toggle('profile-hidden', isProfile);
     return;
   }
 
-  // Drag release — spring-snap to nearest tab
+  // Drag release — spring-snap to nearest tab (width + position animate together)
   const ind = document.querySelector('.nav-indicator');
-  ind.style.transition = '';  // re-enable CSS spring
+  ind.style.transition = '';  // re-enable CSS spring for both transform and width
   const m = ind.style.transform.match(/translateX\((.+?)px\)/);
   const nearest = nearestSlot(m ? parseFloat(m[1]) : 0);
   moveNavIndicator(nearest.btn);
@@ -1113,13 +1988,28 @@ function setupEvents() {
 
   // Locate — fly to current position + show pulsing dot
   let userMarker = null;
+  let locatePending = false;  // debounce guard
   const locBtn = document.getElementById('locateBtn');
-  locBtn.addEventListener('click', () => {
-    if (!map) return;
-    locBtn.classList.add('locating');
+
+  locBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    if (!map || locatePending) return;
+    locatePending = true;
+
+    // Check secure context (geolocation requires HTTPS or localhost)
+    if (!window.isSecureContext) {
+      console.warn('Geolocation blocked: page must be served over HTTPS or localhost.');
+      locBtn.style.boxShadow = '0 0 0 3px var(--verm)';
+      setTimeout(() => { locBtn.style.boxShadow = ''; locatePending = false; }, 1500);
+      return;
+    }
+
+    locBtn.style.opacity = '0.6';
 
     navigator.geolocation.getCurrentPosition(
       pos => {
+        locatePending = false;
+        locBtn.style.opacity = '';
         const lngLat = [pos.coords.longitude, pos.coords.latitude];
         map.flyTo({ center: lngLat, zoom: 15, speed: 1.4 });
 
@@ -1133,15 +2023,19 @@ function setupEvents() {
             .setLngLat(lngLat)
             .addTo(map);
         }
-        locBtn.classList.remove('locating');
+        // Success flash — green ring
+        locBtn.style.boxShadow = '0 0 0 3px var(--olive)';
+        setTimeout(() => { locBtn.style.boxShadow = ''; }, 800);
       },
       err => {
-        locBtn.classList.remove('locating');
-        // Brief red flash on the button to signal failure
-        locBtn.style.borderColor = 'var(--verm)';
-        setTimeout(() => { locBtn.style.borderColor = ''; }, 1200);
+        locatePending = false;
+        locBtn.style.opacity = '';
+        console.warn('Geolocation error:', err.code, err.message);
+        // Error flash — red ring
+        locBtn.style.boxShadow = '0 0 0 3px var(--verm)';
+        setTimeout(() => { locBtn.style.boxShadow = ''; }, 1500);
       },
-      { enableHighAccuracy: true, timeout: 10000 }
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 }
     );
   });
 
@@ -1157,7 +2051,9 @@ function setupEvents() {
 // ════════════════════════════════════════════════
 //  MAP STYLE
 // ════════════════════════════════════════════════
-const GAIA_STYLE = {"version":8,"name":"Gaia — Light Editorial v5","sprite":"mapbox://sprites/mapbox/light-v11","glyphs":"mapbox://fonts/mapbox/{fontstack}/{range}","sources":{"mapbox-dem":{"type":"raster-dem","url":"mapbox://mapbox.mapbox-terrain-dem-v1","tileSize":512,"maxzoom":14},"composite":{"type":"vector","url":"mapbox://mapbox.mapbox-streets-v8"}},"terrain":{"source":"mapbox-dem","exaggeration":0.45},"layers":[{"id":"background","type":"background","paint":{"background-color":"#fdfbf4"}},{"id":"landuse-urban","type":"fill","source":"composite","source-layer":"landuse","filter":["match",["get","class"],["residential","commercial","industrial","parking"],true,false],"paint":{"fill-color":"#fdfbf4","fill-opacity":0.85}},{"id":"landuse-park","type":"fill","source":"composite","source-layer":"landuse","filter":["match",["get","class"],["park","grass","scrub","wetland"],true,false],"paint":{"fill-color":"#C2C190","fill-opacity":0.72}},{"id":"landuse-forest","type":"fill","source":"composite","source-layer":"landuse","filter":["==",["get","class"],"forest"],"paint":{"fill-color":"#8A9B7E","fill-opacity":0.58}},{"id":"landuse-nature-reserve","type":"fill","source":"composite","source-layer":"landuse","filter":["match",["get","class"],["national_park","nature_reserve"],true,false],"paint":{"fill-color":"#67765B","fill-opacity":0.52}},{"id":"water","type":"fill","source":"composite","source-layer":"water","paint":{"fill-color":"#4F638D","fill-opacity":1.0}},{"id":"waterway","type":"line","source":"composite","source-layer":"waterway","paint":{"line-color":"#4F638D","line-width":["interpolate",["linear"],["zoom"],8,1.5,14,5],"line-opacity":1.0}},{"id":"hillshade","type":"hillshade","source":"mapbox-dem","paint":{"hillshade-shadow-color":"#8a9b7e","hillshade-highlight-color":"#fdfbf4","hillshade-accent-color":"#67765B","hillshade-illumination-direction":335,"hillshade-exaggeration":0.45}},{"id":"road-path","type":"line","source":"composite","source-layer":"road","filter":["match",["get","class"],["path","pedestrian","footway","cycleway"],true,false],"paint":{"line-color":"#c8cfbf","line-opacity":0.85,"line-width":["interpolate",["linear"],["zoom"],12,0.8,18,2.5],"line-dasharray":[2,2]}},{"id":"road-minor","type":"line","source":"composite","source-layer":"road","filter":["match",["get","class"],["street","street_limited","service","track"],true,false],"paint":{"line-color":"#c8cfbf","line-width":["interpolate",["linear"],["zoom"],11,0.8,16,5]}},{"id":"road-secondary","type":"line","source":"composite","source-layer":"road","filter":["match",["get","class"],["secondary","tertiary"],true,false],"paint":{"line-color":"#c8cfbf","line-width":["interpolate",["linear"],["zoom"],9,1.2,16,8]}},{"id":"road-primary","type":"line","source":"composite","source-layer":"road","filter":["==",["get","class"],"primary"],"paint":{"line-color":"#BFA98F","line-width":["interpolate",["linear"],["zoom"],8,1.8,16,12]}},{"id":"road-motorway","type":"line","source":"composite","source-layer":"road","filter":["match",["get","class"],["motorway","trunk"],true,false],"paint":{"line-color":"#BFA98F","line-width":["interpolate",["linear"],["zoom"],6,1.5,16,14]}},{"id":"building","type":"fill","source":"composite","source-layer":"building","paint":{"fill-color":"#f2f4f0","fill-opacity":["interpolate",["linear"],["zoom"],13,0,15,0.9]}},{"id":"building-outline","type":"line","source":"composite","source-layer":"building","paint":{"line-color":"#e3e7df","line-width":0.6,"line-opacity":["interpolate",["linear"],["zoom"],13,0,15,0.65]}},{"id":"label-water-body","type":"symbol","source":"composite","source-layer":"natural_label","filter":["match",["get","class"],["ocean","sea","lake","bay","river","reservoir","water"],true,false],"layout":{"text-field":["get","name_en"],"text-font":["DIN Pro Bold Italic","Arial Unicode MS Regular"],"text-size":["interpolate",["linear"],["zoom"],6,13,14,20]},"paint":{"text-color":"#FCFAF0","text-halo-color":"#3B4A6A","text-halo-width":2}},{"id":"label-neighborhood","type":"symbol","source":"composite","source-layer":"place_label","filter":["match",["get","class"],["settlement_subdivision","locality","suburb"],true,false],"minzoom":11,"layout":{"text-field":["get","name_en"],"text-font":["DIN Pro Bold","Arial Unicode MS Regular"],"text-size":["interpolate",["linear"],["zoom"],11,13,16,18],"text-letter-spacing":0.15,"text-transform":"uppercase"},"paint":{"text-color":"#252024","text-halo-color":"#fdfbf4","text-halo-width":4}},{"id":"label-town","type":"symbol","source":"composite","source-layer":"place_label","filter":["match",["get","class"],["town","village","hamlet"],true,false],"layout":{"text-field":["get","name_en"],"text-font":["DIN Pro Bold","Arial Unicode MS Regular"],"text-size":["interpolate",["linear"],["zoom"],8,13,14,18]},"paint":{"text-color":"#252024","text-halo-color":"#fdfbf4","text-halo-width":4}},{"id":"label-city","type":"symbol","source":"composite","source-layer":"place_label","filter":["==",["get","class"],"city"],"layout":{"text-field":["get","name_en"],"text-font":["DIN Pro Bold","Arial Unicode MS Regular"],"text-size":["interpolate",["linear"],["zoom"],5,14,10,20,14,24]},"paint":{"text-color":"#252024","text-halo-color":"#fdfbf4","text-halo-width":4}}]};
+// Mapbox custom style — all map colors managed via Mapbox Studio
+const GAIA_STYLE = 'mapbox://styles/articavisuals/cmmvc02ke00e901rng9w6e58b';
+const GAIA_DEFAULT_TOKEN = 'pk.eyJ1IjoiYXJ0aWNhdmlzdWFscyIsImEiOiJjbW1nNDdyeGYwMTY2MnpvaXVmYXNpMHAxIn0.yUA1pC9B2jBzt1P2dyTdoA';
 
 const OBSERVATIONS = {type:'FeatureCollection',features:[
   {type:'Feature',properties:{species:'Acer rubrum',common:'Red Maple',status:'Research grade',age:'2 days ago',color:'#67765B'},geometry:{type:'Point',coordinates:[-122.4174,37.7699]}},
@@ -1225,8 +2121,8 @@ function initMap() {
 //  BOOT
 // ════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
-  const savedToken = localStorage.getItem('gaiaToken');
-  if (savedToken) document.getElementById('tokenInput').value = savedToken;
+  const savedToken = localStorage.getItem('gaiaToken') || GAIA_DEFAULT_TOKEN;
+  document.getElementById('tokenInput').value = savedToken;
 
   if (savedToken && savedToken.startsWith('pk.')) { initMap(); return; }
 
