@@ -698,6 +698,260 @@ html, body {
 }
 .pop-dot { width: 6px; height: 6px; border-radius: 50%; }
 
+/* ── MAP PINS ────────────────────────────────────────────── */
+.gaia-pin {
+  position: relative;
+  display: block;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+  overflow: visible;
+  line-height: 0;
+  font-size: 0;
+}
+.gaia-pin:active { transform: scale(0.94); }
+/* Photo pins hidden by default; shown in photo mode via class */
+.gaia-pin--photo {
+  opacity: 0 !important; pointer-events: none !important;
+  transition: opacity 0.25s ease;
+  will-change: transform;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+.gaia-pin--photo.pin-visible { opacity: 1 !important; pointer-events: auto !important; }
+.gaia-pin--photo svg { overflow: visible; display: block; }
+
+/* Soft faded pin shadow — matches Figma 534:1354 */
+.gaia-pin__shadow {
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 48px;
+  height: 14px;
+  background: radial-gradient(ellipse at center,
+    rgba(31,44,37,0.13) 0%,
+    rgba(31,44,37,0.06) 35%,
+    rgba(31,44,37,0.02) 60%,
+    transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(3px);
+}
+
+/* WebGL glow canvas — replaces CSS glow ring */
+.gaia-pin__glowCanvas {
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.32s ease;
+}
+.gaia-pin.is-active  .gaia-pin__glowCanvas,
+.gaia-pin.is-hovered .gaia-pin__glowCanvas {
+  opacity: 1;
+}
+
+/* Cluster SVG markers */
+.gaia-cluster { transition: opacity 0.25s ease; }
+.gaia-cluster.cluster-hidden { opacity: 0 !important; pointer-events: none !important; }
+
+/* ── FIND DETAILS ──────────────────────────────────────── */
+#find-details { display: none; }
+#find-details.visible { display: block; }
+
+.fd-hero {
+  position: relative; width: 100%; height: 262px;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  overflow: hidden;
+  box-shadow: 0px 4px 16.2px 0px rgba(115,115,100,0.5);
+}
+.fd-hero img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.fd-hero-overlay {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 141px;
+  background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 100%);
+  backdrop-filter: blur(12.95px); -webkit-backdrop-filter: blur(12.95px);
+}
+.fd-hero-text {
+  position: absolute; bottom: 16px; left: 15px; color: var(--paper-50);
+}
+.fd-hero-title {
+  font-family: var(--font-serif); font-size: 32px; font-weight: 500;
+  line-height: 0.98; letter-spacing: -0.5px;
+}
+.fd-hero-sub {
+  font-family: var(--font-sans); font-size: 10px; font-weight: 400;
+  text-transform: uppercase; letter-spacing: 1.2px; margin-top: 4px;
+  opacity: 0.85;
+}
+.fd-dots {
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px; padding: 12px 0;
+}
+.fd-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #bfbfbf;
+}
+.fd-dot.active { background: #1a1a1a; }
+
+/* Tab switch */
+.fd-tabs {
+  display: flex; align-items: center; justify-content: center;
+  border-bottom: 1px solid #b1b2b5;
+}
+.fd-tab {
+  flex: 0 0 96px; padding: 16px 18px;
+  font-family: var(--font-sans); font-size: 17px; line-height: 1.3;
+  text-align: center; cursor: pointer; background: none; border: none;
+  color: #b0adb3; border-bottom: 3px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+.fd-tab.active {
+  color: var(--olive); border-bottom-color: var(--olive);
+}
+
+/* Tab content */
+.fd-content {
+  display: flex; flex-direction: column; gap: 16px;
+  padding: 16px; background: var(--paper-50);
+}
+
+/* Top Contributors card */
+.fd-card {
+  background: var(--paper-50);
+  border: 0.5px solid var(--brown-200);
+  border-radius: var(--radius-md);
+  box-shadow: 0px 0px 20px 0px rgba(94,98,98,0.2);
+  padding: 16px;
+}
+.fd-card-title {
+  font-family: var(--font-serif); font-size: 20px; line-height: 1.3;
+  color: var(--olive); margin-bottom: 10px;
+}
+.fd-contrib-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 4px 0;
+}
+.fd-contrib-left {
+  display: flex; align-items: center; gap: 16px;
+}
+.fd-contrib-rank {
+  font-family: var(--font-sans); font-size: 16px; color: #6d6e73;
+  width: 12px; text-align: center;
+}
+.fd-contrib-user {
+  display: flex; align-items: center; gap: 8px;
+}
+.fd-contrib-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 0.5px solid var(--olive-100); object-fit: cover;
+}
+.fd-contrib-name {
+  font-family: var(--font-sans); font-size: 11px; color: #6d6e73;
+  letter-spacing: 0.1px;
+}
+.fd-contrib-right {
+  display: flex; align-items: center; gap: 4px;
+}
+.fd-contrib-count {
+  font-family: var(--font-serif); font-size: 16px; color: #6d6e73;
+  line-height: 18px;
+}
+.fd-contrib-icon {
+  width: 32px; height: 32px; opacity: 0.5;
+}
+
+/* Action buttons row */
+.fd-actions {
+  display: flex; gap: 12px;
+}
+.fd-btn-primary {
+  flex: 1; padding: 14px 20px;
+  background: var(--olive); color: var(--paper-50);
+  border: none; border-radius: 1000px; cursor: pointer;
+  font-family: var(--font-sans); font-size: 17px; line-height: 1.3;
+  text-align: center;
+}
+.fd-btn-outline {
+  padding: 7px 14px; height: 34px;
+  background: transparent; color: var(--olive);
+  border: 1px solid var(--olive); border-radius: 1000px; cursor: pointer;
+  font-family: var(--font-sans); font-size: 15px; line-height: 1.3;
+  letter-spacing: 0.5px; white-space: nowrap;
+}
+
+/* Activity feed card */
+.fd-activity-card {
+  background: var(--paper-50);
+  border: 0.5px solid var(--brown-200);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-small);
+  overflow: hidden;
+}
+.fd-activity-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px;
+  border-bottom: 0.5px solid var(--brown-100);
+}
+.fd-activity-avatar {
+  width: 48px; height: 48px; border-radius: 50%;
+  border: 0.5px solid var(--olive-100); object-fit: cover; flex-shrink: 0;
+}
+.fd-activity-meta {
+  flex: 1; display: flex; align-items: center; gap: 8px;
+}
+.fd-activity-info { flex: 1; display: flex; align-items: baseline; gap: 4px; flex-wrap: wrap; }
+.fd-activity-name {
+  font-family: var(--font-serif); font-size: 16px; color: var(--olive);
+  line-height: 18px; white-space: nowrap;
+}
+.fd-activity-action {
+  font-family: var(--font-sans); font-size: 10px; color: var(--brown-500);
+  letter-spacing: 0.25px;
+}
+.fd-activity-time {
+  font-family: var(--font-sans); font-size: 10px; color: #b0adb3;
+  letter-spacing: 0.25px; text-align: right; white-space: nowrap;
+}
+.fd-activity-body { padding: 12px; }
+.fd-activity-suggestion {
+  display: flex; align-items: center; gap: 16px;
+}
+.fd-activity-thumb {
+  width: 66px; height: 66px; border-radius: var(--radius-sm);
+  object-fit: cover; flex-shrink: 0;
+}
+.fd-activity-id-name {
+  font-family: var(--font-serif); font-size: 20px; color: var(--olive);
+  line-height: 1.3;
+}
+.fd-activity-id-note {
+  font-family: var(--font-sans); font-size: 12px; color: var(--ink-300);
+  letter-spacing: 0.2px;
+}
+.fd-activity-comment {
+  font-family: var(--font-sans); font-size: 11px; color: #848589;
+  letter-spacing: 0.1px; line-height: 1.3;
+}
+.fd-activity-actions {
+  display: flex; gap: 10px; justify-content: flex-end; padding: 0 12px 12px;
+}
+/* Thread connector line */
+.fd-thread {
+  display: flex; gap: 16px; align-items: stretch;
+}
+.fd-thread-line {
+  width: 0.5px; background: var(--brown-200); flex-shrink: 0; margin-left: 8px;
+}
+.fd-thread-cards {
+  display: flex; flex-direction: column; gap: 16px; flex: 1;
+}
+
 /* ── USER LOCATION DOT ──────────────────────────────────── */
 .user-dot {
   width: 16px; height: 16px;
@@ -1311,6 +1565,164 @@ html, body {
         </div>
       </div>
     </div><!-- /sheet-content -->
+
+    <!-- ══ FIND DETAILS (shown when a pin is tapped) ══════════════ -->
+    <div id="find-details">
+      <!-- Hero image -->
+      <div class="fd-hero">
+        <img id="fd-hero-img" src="https://picsum.photos/seed/oak1/800/520" alt="">
+        <div class="fd-hero-overlay"></div>
+        <div class="fd-hero-text">
+          <div class="fd-hero-title">Coast Live Oak</div>
+          <div class="fd-hero-sub">Quercus agrifolia</div>
+        </div>
+      </div>
+
+      <!-- Dots -->
+      <div class="fd-dots">
+        <div class="fd-dot active"></div>
+        <div class="fd-dot"></div>
+        <div class="fd-dot"></div>
+        <div class="fd-dot"></div>
+      </div>
+
+      <!-- Tab switch -->
+      <div class="fd-tabs">
+        <button class="fd-tab" data-fd-tab="find">Find</button>
+        <button class="fd-tab active" data-fd-tab="activity">Activity</button>
+        <button class="fd-tab" data-fd-tab="log">Log</button>
+      </div>
+
+      <!-- Activity tab content -->
+      <div class="fd-content">
+        <!-- Top Contributors -->
+        <div class="fd-card">
+          <div class="fd-card-title">Top Contributors</div>
+          <div class="fd-contrib-row">
+            <div class="fd-contrib-left">
+              <span class="fd-contrib-rank">1</span>
+              <div class="fd-contrib-user">
+                <img class="fd-contrib-avatar" src="https://i.pravatar.cc/64?u=alice" alt="">
+                <span class="fd-contrib-name">Alice Edwards</span>
+              </div>
+            </div>
+            <div class="fd-contrib-right">
+              <span class="fd-contrib-count">6</span>
+              <svg class="fd-contrib-icon" viewBox="0 0 32 32"><path d="M8.2 8.2c0-1.2 1-2.2 2.2-2.2h1.8c.6 0 1.2.3 1.6.7l.7.8c.4.4 1 .7 1.6.7h5.5c1.2 0 2.2 1 2.2 2.2v10c0 1.2-1 2.2-2.2 2.2H10.4c-1.2 0-2.2-1-2.2-2.2V8.2z" fill="none" stroke="#6d6e73" stroke-width="1.2"/></svg>
+            </div>
+          </div>
+          <div class="fd-contrib-row">
+            <div class="fd-contrib-left">
+              <span class="fd-contrib-rank">2</span>
+              <div class="fd-contrib-user">
+                <img class="fd-contrib-avatar" src="https://i.pravatar.cc/64?u=maya" alt="">
+                <span class="fd-contrib-name">Maya Chen</span>
+              </div>
+            </div>
+            <div class="fd-contrib-right">
+              <span class="fd-contrib-count">3</span>
+              <svg class="fd-contrib-icon" viewBox="0 0 32 32"><path d="M8.2 8.2c0-1.2 1-2.2 2.2-2.2h1.8c.6 0 1.2.3 1.6.7l.7.8c.4.4 1 .7 1.6.7h5.5c1.2 0 2.2 1 2.2 2.2v10c0 1.2-1 2.2-2.2 2.2H10.4c-1.2 0-2.2-1-2.2-2.2V8.2z" fill="none" stroke="#6d6e73" stroke-width="1.2"/></svg>
+            </div>
+          </div>
+          <div class="fd-contrib-row">
+            <div class="fd-contrib-left">
+              <span class="fd-contrib-rank">3</span>
+              <div class="fd-contrib-user">
+                <img class="fd-contrib-avatar" src="https://i.pravatar.cc/64?u=jules" alt="">
+                <span class="fd-contrib-name">Jules Kim</span>
+              </div>
+            </div>
+            <div class="fd-contrib-right">
+              <span class="fd-contrib-count">1</span>
+              <svg class="fd-contrib-icon" viewBox="0 0 32 32"><path d="M8.2 8.2c0-1.2 1-2.2 2.2-2.2h1.8c.6 0 1.2.3 1.6.7l.7.8c.4.4 1 .7 1.6.7h5.5c1.2 0 2.2 1 2.2 2.2v10c0 1.2-1 2.2-2.2 2.2H10.4c-1.2 0-2.2-1-2.2-2.2V8.2z" fill="none" stroke="#6d6e73" stroke-width="1.2"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="fd-actions">
+          <button class="fd-btn-primary">Suggest ID</button>
+          <button class="fd-btn-primary">Comment</button>
+        </div>
+
+        <!-- Alice suggested an ID -->
+        <div class="fd-activity-card">
+          <div class="fd-activity-header">
+            <img class="fd-activity-avatar" src="https://i.pravatar.cc/96?u=alice" alt="">
+            <div class="fd-activity-meta">
+              <div class="fd-activity-info">
+                <span class="fd-activity-name">Alice Edwards</span>
+                <span class="fd-activity-action">suggested an ID</span>
+              </div>
+              <span class="fd-activity-time">2h ago</span>
+            </div>
+          </div>
+          <div class="fd-activity-body">
+            <div class="fd-activity-suggestion">
+              <img class="fd-activity-thumb" src="https://picsum.photos/seed/oak2/132/132" alt="">
+              <div>
+                <div class="fd-activity-id-name">Quercus agrifolia</div>
+                <div class="fd-activity-id-note">Original suggested ID</div>
+              </div>
+            </div>
+          </div>
+          <div class="fd-activity-actions">
+            <button class="fd-btn-outline">Agree</button>
+            <button class="fd-btn-outline">Comment</button>
+          </div>
+        </div>
+
+        <!-- Thread: Maya + Jules commented -->
+        <div class="fd-thread">
+          <div class="fd-thread-line"></div>
+          <div class="fd-thread-cards">
+            <!-- Maya commented -->
+            <div class="fd-activity-card">
+              <div class="fd-activity-header">
+                <img class="fd-activity-avatar" src="https://i.pravatar.cc/96?u=maya" alt="">
+                <div class="fd-activity-meta">
+                  <div class="fd-activity-info">
+                    <span class="fd-activity-name">Maya Chen</span>
+                    <span class="fd-activity-action">commented</span>
+                  </div>
+                  <span class="fd-activity-time">4h ago</span>
+                </div>
+              </div>
+              <div class="fd-activity-body">
+                <p class="fd-activity-comment">Great find. Leaf margins and acorn shape strongly match Coast Live Oak.</p>
+              </div>
+            </div>
+            <!-- Jules commented -->
+            <div class="fd-activity-card">
+              <div class="fd-activity-header">
+                <img class="fd-activity-avatar" src="https://i.pravatar.cc/96?u=jules" alt="">
+                <div class="fd-activity-meta">
+                  <div class="fd-activity-info">
+                    <span class="fd-activity-name">Jules Kim</span>
+                    <span class="fd-activity-action">commented</span>
+                  </div>
+                  <span class="fd-activity-time">5h ago</span>
+                </div>
+              </div>
+              <div class="fd-activity-body">
+                <p class="fd-activity-comment">Noted nearby seedlings as well. Added supporting photo to thread.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Safety & Moderation -->
+        <div class="fd-card">
+          <div class="fd-card-title">Safety + Moderation</div>
+          <div style="display:flex;gap:12px;margin-top:4px;">
+            <button class="fd-btn-outline">Report Issue</button>
+          </div>
+        </div>
+
+        <!-- Bottom spacer for nav bar -->
+        <div style="height:100px;"></div>
+      </div>
+    </div><!-- /find-details -->
 
   </div><!-- /sheet-inner -->
 </div><!-- /sheet -->
@@ -2055,13 +2467,546 @@ function setupEvents() {
 const GAIA_STYLE = 'mapbox://styles/articavisuals/cmmvc02ke00e901rng9w6e58b';
 const GAIA_DEFAULT_TOKEN = 'pk.eyJ1IjoiYXJ0aWNhdmlzdWFscyIsImEiOiJjbW1nNDdyeGYwMTY2MnpvaXVmYXNpMHAxIn0.yUA1pC9B2jBzt1P2dyTdoA';
 
-const OBSERVATIONS = {type:'FeatureCollection',features:[
-  {type:'Feature',properties:{species:'Acer rubrum',common:'Red Maple',status:'Research grade',age:'2 days ago',color:'#67765B'},geometry:{type:'Point',coordinates:[-122.4174,37.7699]}},
-  {type:'Feature',properties:{species:'Danaus plexippus',common:'Monarch Butterfly',status:'Research grade',age:'5 days ago',color:'#67765B'},geometry:{type:'Point',coordinates:[-122.4094,37.7649]}},
-  {type:'Feature',properties:{species:'Unknown fungus',common:'Needs ID',status:'Needs ID',age:'1 day ago',color:'#B5493A'},geometry:{type:'Point',coordinates:[-122.4154,37.7749]}},
-  {type:'Feature',properties:{species:'Quercus agrifolia',common:'Coast Live Oak',status:'Community ID',age:'3 days ago',color:'#4F638D'},geometry:{type:'Point',coordinates:[-122.4054,37.7719]}},
-  {type:'Feature',properties:{species:'Procyon lotor',common:'Raccoon',status:'Research grade',age:'1 week ago',color:'#67765B'},geometry:{type:'Point',coordinates:[-122.4214,37.7669]}},
-]};
+// ── PIN DATA ──────────────────────────────────────────────
+const PINS_DATA = [
+  {id:'pin_01',lat:34.1478,lng:-118.1445,img:'https://picsum.photos/seed/gaia01/120/120'},
+  {id:'pin_02',lat:34.1492,lng:-118.1411,img:'https://picsum.photos/seed/gaia02/120/120'},
+  {id:'pin_03',lat:34.1510,lng:-118.1382,img:'https://picsum.photos/seed/gaia03/120/120'},
+  {id:'pin_04',lat:34.1456,lng:-118.1368,img:'https://picsum.photos/seed/gaia04/120/120'},
+  {id:'pin_05',lat:34.1437,lng:-118.1489,img:'https://picsum.photos/seed/gaia05/120/120'},
+  {id:'pin_06',lat:34.1405,lng:-118.1513,img:'https://picsum.photos/seed/gaia06/120/120'},
+  {id:'pin_07',lat:34.1544,lng:-118.1506,img:'https://picsum.photos/seed/gaia07/120/120'},
+  {id:'pin_08',lat:34.1568,lng:-118.1432,img:'https://picsum.photos/seed/gaia08/120/120'},
+  {id:'pin_09',lat:34.1388,lng:-118.1421,img:'https://picsum.photos/seed/gaia09/120/120'},
+  {id:'pin_10',lat:34.1362,lng:-118.1467,img:'https://picsum.photos/seed/gaia10/120/120'},
+  {id:'pin_11',lat:34.1595,lng:-118.1364,img:'https://picsum.photos/seed/gaia11/120/120'},
+  {id:'pin_12',lat:34.1618,lng:-118.1327,img:'https://picsum.photos/seed/gaia12/120/120'},
+  {id:'pin_13',lat:34.1641,lng:-118.1295,img:'https://picsum.photos/seed/gaia13/120/120'},
+  {id:'pin_14',lat:34.1664,lng:-118.1262,img:'https://picsum.photos/seed/gaia14/120/120'},
+  {id:'pin_15',lat:34.1688,lng:-118.1219,img:'https://picsum.photos/seed/gaia15/120/120'},
+  {id:'pin_16',lat:34.1712,lng:-118.1184,img:'https://picsum.photos/seed/gaia16/120/120'},
+  {id:'pin_17',lat:34.1737,lng:-118.1148,img:'https://picsum.photos/seed/gaia17/120/120'},
+  {id:'pin_18',lat:34.1761,lng:-118.1109,img:'https://picsum.photos/seed/gaia18/120/120'},
+  {id:'pin_19',lat:34.1786,lng:-118.1073,img:'https://picsum.photos/seed/gaia19/120/120'},
+  {id:'pin_20',lat:34.1810,lng:-118.1036,img:'https://picsum.photos/seed/gaia20/120/120'},
+  {id:'pin_21',lat:34.1523,lng:-118.1568,img:'https://picsum.photos/seed/gaia21/120/120'},
+  {id:'pin_22',lat:34.1491,lng:-118.1602,img:'https://picsum.photos/seed/gaia22/120/120'},
+  {id:'pin_23',lat:34.1452,lng:-118.1639,img:'https://picsum.photos/seed/gaia23/120/120'},
+  {id:'pin_24',lat:34.1418,lng:-118.1673,img:'https://picsum.photos/seed/gaia24/120/120'},
+  {id:'pin_25',lat:34.1379,lng:-118.1707,img:'https://picsum.photos/seed/gaia25/120/120'},
+  {id:'pin_26',lat:34.1338,lng:-118.1741,img:'https://picsum.photos/seed/gaia26/120/120'},
+  {id:'pin_27',lat:34.1297,lng:-118.1776,img:'https://picsum.photos/seed/gaia27/120/120'},
+  {id:'pin_28',lat:34.1255,lng:-118.1719,img:'https://picsum.photos/seed/gaia28/120/120'},
+  {id:'pin_29',lat:34.1224,lng:-118.1661,img:'https://picsum.photos/seed/gaia29/120/120'},
+  {id:'pin_30',lat:34.1198,lng:-118.1604,img:'https://picsum.photos/seed/gaia30/120/120'},
+  {id:'pin_31',lat:34.1172,lng:-118.1548,img:'https://picsum.photos/seed/gaia31/120/120'},
+  {id:'pin_32',lat:34.1149,lng:-118.1492,img:'https://picsum.photos/seed/gaia32/120/120'},
+  {id:'pin_33',lat:34.1125,lng:-118.1438,img:'https://picsum.photos/seed/gaia33/120/120'},
+  {id:'pin_34',lat:34.1108,lng:-118.1381,img:'https://picsum.photos/seed/gaia34/120/120'},
+  {id:'pin_35',lat:34.1129,lng:-118.1326,img:'https://picsum.photos/seed/gaia35/120/120'},
+  {id:'pin_36',lat:34.1161,lng:-118.1274,img:'https://picsum.photos/seed/gaia36/120/120'},
+  {id:'pin_37',lat:34.1204,lng:-118.1228,img:'https://picsum.photos/seed/gaia37/120/120'},
+  {id:'pin_38',lat:34.1247,lng:-118.1186,img:'https://picsum.photos/seed/gaia38/120/120'},
+  {id:'pin_39',lat:34.1289,lng:-118.1141,img:'https://picsum.photos/seed/gaia39/120/120'},
+  {id:'pin_40',lat:34.1331,lng:-118.1094,img:'https://picsum.photos/seed/gaia40/120/120'},
+  {id:'pin_41',lat:34.1373,lng:-118.1048,img:'https://picsum.photos/seed/gaia41/120/120'},
+  {id:'pin_42',lat:34.1416,lng:-118.1001,img:'https://picsum.photos/seed/gaia42/120/120'},
+  {id:'pin_43',lat:34.1458,lng:-118.0955,img:'https://picsum.photos/seed/gaia43/120/120'},
+  {id:'pin_44',lat:34.1502,lng:-118.0912,img:'https://picsum.photos/seed/gaia44/120/120'},
+  {id:'pin_45',lat:34.1547,lng:-118.0876,img:'https://picsum.photos/seed/gaia45/120/120'},
+  {id:'pin_46',lat:34.1591,lng:-118.0848,img:'https://picsum.photos/seed/gaia46/120/120'},
+  {id:'pin_47',lat:34.1635,lng:-118.0826,img:'https://picsum.photos/seed/gaia47/120/120'},
+  {id:'pin_48',lat:34.1680,lng:-118.0894,img:'https://picsum.photos/seed/gaia48/120/120'},
+  {id:'pin_49',lat:34.1725,lng:-118.0968,img:'https://picsum.photos/seed/gaia49/120/120'},
+  {id:'pin_50',lat:34.1769,lng:-118.1042,img:'https://picsum.photos/seed/gaia50/120/120'},
+];
+
+// ── PIN SYSTEM ────────────────────────────────────────────
+const PHOTO_ZOOM = 14.2;
+const ZOOM_HYST  = 0.35;
+let pinsPhotoMode = false;
+let photoMarkers  = {};   // id → { marker, el }
+let selectedPin   = null;
+let hoveredPin    = null;
+
+// ── FIND DETAILS SHEET VIEW ──────────────────────────────
+function showFindDetails(pinId, imgUrl) {
+  const fd = document.getElementById('find-details');
+  const sc = document.getElementById('sheet-content');
+  if (!fd || !sc) return;
+
+  // Update hero image with pin's image (larger version)
+  const heroImg = document.getElementById('fd-hero-img');
+  if (heroImg) heroImg.src = imgUrl.replace('120/120', '800/520');
+
+  // Hide main sheet content, show find details
+  sc.style.display = 'none';
+  fd.classList.add('visible');
+
+  // Snap sheet to full
+  snapTo('full');
+}
+
+function hideFindDetails() {
+  const fd = document.getElementById('find-details');
+  const sc = document.getElementById('sheet-content');
+  if (!fd || !sc) return;
+  fd.classList.remove('visible');
+  sc.style.display = '';
+}
+
+// Wire up fd-tab clicks
+document.addEventListener('click', (e) => {
+  const tab = e.target.closest('.fd-tab');
+  if (!tab) return;
+  tab.parentElement.querySelectorAll('.fd-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+});
+
+function buildPhotoPinEl(id, imgUrl) {
+  // SVG teardrop pin — pixel-matched to Figma nodes 534:1397 + 534:1360
+  // Pin body: 73.138×83.762 at (3.43,3.43) in 80px frame
+  // Image circle: 67.5×67.5 at (6.25,6.25) → center (40,40), r=33.75
+  // Tail tip at y=88 (bottom of element for clean anchor:bottom)
+  const W = 80, H = 88;
+  const GS = 107;   // glow canvas size — Figma glow extends 33.59% beyond 80px
+  const gL = Math.round((W - GS) / 2);   // -14
+  const gT = Math.round(40 - GS / 2);    // -14
+
+  const btn = document.createElement('button');
+  btn.className = 'gaia-pin gaia-pin--photo';
+  btn.type = 'button';
+  btn.dataset.pinId = id;
+  btn.style.cssText = `width:${W}px;height:${H}px;`;
+
+  // Soft faded shadow (CSS element — matches Figma 534:1354)
+  const shadow = document.createElement('span');
+  shadow.className = 'gaia-pin__shadow';
+
+  // Glow canvas (2D) — receives drawImage from shared WebGL canvas
+  const gc = document.createElement('canvas');
+  gc.className = 'gaia-pin__glowCanvas';
+  gc.width = GS * 2; gc.height = GS * 2; // 2x for retina
+  gc.style.cssText = `left:${gL}px;top:${gT}px;width:${GS}px;height:${GS}px;`;
+  gc._ctx2d = gc.getContext('2d');
+
+  // SVG pin body
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(svgNS, 'svg');
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.setAttribute('width', W);
+  svg.setAttribute('height', H);
+  svg.style.cssText = 'position:relative;z-index:1;display:block;';
+
+  // Figma teardrop path: arc radius 36.57 (half of 73.138 body width)
+  // Smooth cubic bezier curves from circle to tail tip
+  const clipId = 'clip-' + id;
+  svg.innerHTML = [
+    '<defs>',
+    `<clipPath id="${clipId}"><circle cx="40" cy="40" r="33.75"/></clipPath>`,
+    '</defs>',
+    // Cream teardrop body — matches Figma pin body dimensions exactly
+    '<path d="M40 88 C38 78, 3.43 63, 3.43 40 A36.57 36.57 0 1 1 76.57 40 C76.57 63, 42 78, 40 88 Z"',
+    '  fill="#fefdf9" stroke="rgba(200,207,191,0.25)" stroke-width="0.5"/>',
+    // Photo image clipped to circle (67.5px diameter, centered at 40,40)
+    `<image href="${imgUrl}" x="6.25" y="6.25" width="67.5" height="67.5" clip-path="url(#${clipId})" preserveAspectRatio="xMidYMid slice"/>`,
+  ].join('');
+
+  btn.appendChild(shadow);
+  btn.appendChild(gc);
+  btn.appendChild(svg);
+  btn._glowCanvas = gc;
+
+  btn.addEventListener('pointerenter', () => {
+    if (hoveredPin && hoveredPin !== id) {
+      const p = photoMarkers[hoveredPin];
+      if (p) p.el.classList.remove('is-hovered');
+    }
+    hoveredPin = id;
+    btn.classList.add('is-hovered');
+    startGlowLoop();
+  });
+  btn.addEventListener('pointerleave', () => {
+    if (hoveredPin === id) hoveredPin = null;
+    btn.classList.remove('is-hovered');
+  });
+  btn.addEventListener('click', () => {
+    if (selectedPin && selectedPin !== id) {
+      const p = photoMarkers[selectedPin];
+      if (p) p.el.classList.remove('is-active');
+    }
+    const selecting = selectedPin !== id;
+    selectedPin = selecting ? id : null;
+    btn.classList.toggle('is-active', selecting);
+    startGlowLoop();
+    // Show/hide find details in sheet
+    if (selecting) { showFindDetails(id, imgUrl); }
+    else { hideFindDetails(); snapTo('collapsed'); }
+  });
+
+  return btn;
+}
+
+// ── WEBGL PULSING BORDER GLOW ───────────────────────────
+const GLOW_VS = `#version 300 es
+in vec2 a_position;
+out vec2 v_responsiveUV;
+out vec2 v_responsiveBoxGivenSize;
+out vec2 v_patternUV;
+void main(){
+  gl_Position=vec4(a_position,0.,1.);
+  v_responsiveUV=a_position*.5;
+  v_responsiveBoxGivenSize=vec2(1.,1.);
+  v_patternUV=a_position*.5+.5;
+}`;
+
+const GLOW_FS = `#version 300 es
+precision lowp float;
+uniform float u_time;
+uniform vec4 u_colorBack;
+uniform vec4 u_colors[5];
+uniform float u_colorsCount;
+uniform float u_roundness;
+uniform float u_thickness;
+uniform float u_marginLeft;
+uniform float u_marginRight;
+uniform float u_marginTop;
+uniform float u_marginBottom;
+uniform float u_aspectRatio;
+uniform float u_softness;
+uniform float u_intensity;
+uniform float u_bloom;
+uniform float u_spotSize;
+uniform float u_spots;
+uniform float u_pulse;
+uniform float u_smoke;
+uniform float u_smokeSize;
+uniform sampler2D u_noiseTexture;
+in vec2 v_responsiveUV;
+in vec2 v_responsiveBoxGivenSize;
+in vec2 v_patternUV;
+out vec4 fragColor;
+#define TWO_PI 6.28318530718
+#define PI 3.14159265358979323846
+float beat(float time){
+  float first=pow(abs(sin(time*TWO_PI)),10.);
+  float second=pow(abs(sin((time-.15)*TWO_PI)),10.);
+  return clamp(first+0.6*second,0.,1.);
+}
+float sst(float edge0,float edge1,float x){return smoothstep(edge0,edge1,x);}
+float roundedBox(vec2 uv,vec2 halfSize,float distance,float cornerDistance,float thickness,float softness){
+  float borderDistance=abs(distance);
+  float aa=2.*fwidth(distance);
+  float border=1.-sst(min(mix(thickness,-thickness,softness),thickness+aa),max(mix(thickness,-thickness,softness),thickness+aa),borderDistance);
+  float cornerFadeCircles=0.;
+  cornerFadeCircles=mix(1.,cornerFadeCircles,sst(0.,1.,length((uv+halfSize)/thickness)));
+  cornerFadeCircles=mix(1.,cornerFadeCircles,sst(0.,1.,length((uv-vec2(-halfSize.x,halfSize.y))/thickness)));
+  cornerFadeCircles=mix(1.,cornerFadeCircles,sst(0.,1.,length((uv-vec2(halfSize.x,-halfSize.y))/thickness)));
+  cornerFadeCircles=mix(1.,cornerFadeCircles,sst(0.,1.,length((uv-halfSize)/thickness)));
+  aa=fwidth(cornerDistance);
+  float cornerFade=sst(0.,mix(aa,thickness,softness),cornerDistance);
+  cornerFade*=cornerFadeCircles;
+  border+=cornerFade;
+  return border;
+}
+vec2 randomGB(vec2 p){
+  vec2 uv=floor(p)/100.+.5;
+  return texture(u_noiseTexture,fract(uv)).gb;
+}
+float randomG(vec2 p){
+  vec2 uv=floor(p)/100.+.5;
+  return texture(u_noiseTexture,fract(uv)).g;
+}
+float valueNoise(vec2 st){
+  vec2 i=floor(st);vec2 f=fract(st);
+  float a=randomG(i);float b=randomG(i+vec2(1.,0.));
+  float c=randomG(i+vec2(0.,1.));float d=randomG(i+vec2(1.,1.));
+  vec2 u=f*f*(3.-2.*f);
+  return mix(mix(a,b,u.x),mix(c,d,u.x),u.y);
+}
+void main(){
+  const float firstFrameOffset=109.;
+  float t=1.2*(u_time+firstFrameOffset);
+  vec2 borderUV=v_responsiveUV;
+  float pulse=u_pulse*beat(.18*u_time);
+  float canvasRatio=v_responsiveBoxGivenSize.x/v_responsiveBoxGivenSize.y;
+  vec2 halfSize=vec2(.5);
+  borderUV.x*=max(canvasRatio,1.);borderUV.y/=min(canvasRatio,1.);
+  halfSize.x*=max(canvasRatio,1.);halfSize.y/=min(canvasRatio,1.);
+  float mL=u_marginLeft,mR=u_marginRight,mT=u_marginTop,mB=u_marginBottom;
+  float mX=mL+mR,mY=mT+mB;
+  if(u_aspectRatio>0.){
+    float shapeRatio=canvasRatio*(1.-mX)/max(1.-mY,1e-6);
+    float freeX=shapeRatio>1.?(1.-mX)*(1.-1./max(abs(shapeRatio),1e-6)):0.;
+    float freeY=shapeRatio<1.?(1.-mY)*(1.-shapeRatio):0.;
+    mL+=freeX*.5;mR+=freeX*.5;mT+=freeY*.5;mB+=freeY*.5;mX=mL+mR;mY=mT+mB;
+  }
+  float thickness=.5*u_thickness*min(halfSize.x,halfSize.y);
+  halfSize.x*=(1.-mX);halfSize.y*=(1.-mY);
+  vec2 centerShift=vec2((mL-mR)*max(canvasRatio,1.)*.5,(mB-mT)/min(canvasRatio,1.)*.5);
+  borderUV-=centerShift;
+  halfSize-=mix(thickness,0.,u_softness);
+  float radius=mix(0.,min(halfSize.x,halfSize.y),u_roundness);
+  vec2 d=abs(borderUV)-halfSize+radius;
+  float outsideDistance=length(max(d,.0001))-radius;
+  float insideDistance=min(max(d.x,d.y),.0001);
+  float cornerDistance=abs(min(max(d.x,d.y)-.45*radius,.0));
+  float distance=outsideDistance+insideDistance;
+  float borderThickness=mix(thickness,3.*thickness,u_softness);
+  float border=roundedBox(borderUV,halfSize,distance,cornerDistance,borderThickness,u_softness);
+  border=pow(border,1.+u_softness);
+  vec2 smokeUV=.3*u_smokeSize*v_patternUV;
+  float smoke=clamp(3.*valueNoise(2.7*smokeUV+.5*t),0.,1.);
+  smoke-=valueNoise(3.4*smokeUV-.5*t);
+  float smokeThickness=thickness+.2;
+  smokeThickness=min(.4,max(smokeThickness,.1));
+  smoke*=roundedBox(borderUV,halfSize,distance,cornerDistance,smokeThickness,1.);
+  smoke=30.*smoke*smoke;
+  smoke*=mix(0.,.5,pow(u_smoke,2.));
+  smoke*=mix(1.,pulse,u_pulse);
+  smoke=clamp(smoke,0.,1.);
+  border+=smoke;border=clamp(border,0.,1.);
+  vec3 blendColor=vec3(0.);float blendAlpha=0.;
+  vec3 addColor=vec3(0.);float addAlpha=0.;
+  float bloom=4.*u_bloom;
+  float intensity=1.+(1.+4.*u_softness)*u_intensity;
+  float angle=atan(borderUV.y,borderUV.x)/TWO_PI;
+  for(int colorIdx=0;colorIdx<5;colorIdx++){
+    if(colorIdx>=int(u_colorsCount))break;
+    float colorIdxF=float(colorIdx);
+    vec3 c=u_colors[colorIdx].rgb*u_colors[colorIdx].a;
+    float a=u_colors[colorIdx].a;
+    for(int spotIdx=0;spotIdx<4;spotIdx++){
+      if(spotIdx>=int(u_spots))break;
+      float spotIdxF=float(spotIdx);
+      vec2 randVal=randomGB(vec2(spotIdxF*10.+2.,40.+colorIdxF));
+      float time=(.1+.15*abs(sin(spotIdxF*(2.+colorIdxF))*cos(spotIdxF*(2.+2.5*colorIdxF))))*t+randVal.x*3.;
+      time*=mix(1.,-1.,step(.5,randVal.y));
+      float mask=.5+.5*mix(sin(t+spotIdxF*(5.-1.5*colorIdxF)),cos(t+spotIdxF*(3.+1.3*colorIdxF)),step(mod(colorIdxF,2.),.5));
+      float p=clamp(2.*u_pulse-randVal.x,0.,1.);
+      mask=mix(mask,pulse,p);
+      float atg1=fract(angle+time);
+      float spotSize=.05+.6*pow(u_spotSize,2.)+.05*randVal.x;
+      spotSize=mix(spotSize,.1,p);
+      float sector=sst(.5-spotSize,.5,atg1)*(1.-sst(.5,.5+spotSize,atg1));
+      sector*=mask;sector*=border;sector*=intensity;sector=clamp(sector,0.,1.);
+      vec3 srcColor=c*sector;float srcAlpha=a*sector;
+      blendColor+=((1.-blendAlpha)*srcColor);
+      blendAlpha=blendAlpha+(1.-blendAlpha)*srcAlpha;
+      addColor+=srcColor;addAlpha+=srcAlpha;
+    }
+  }
+  vec3 accumColor=mix(blendColor,addColor,bloom);
+  float accumAlpha=mix(blendAlpha,addAlpha,bloom);
+  accumAlpha=clamp(accumAlpha,0.,1.);
+  vec3 bgColor=u_colorBack.rgb*u_colorBack.a;
+  vec3 color=accumColor+(1.-accumAlpha)*bgColor;
+  float opacity=accumAlpha+(1.-accumAlpha)*u_colorBack.a;
+  color+=1./256.*(fract(sin(dot(.014*gl_FragCoord.xy,vec2(12.9898,78.233)))*43758.5453123)-.5);
+  fragColor=vec4(color,opacity);
+}`;
+
+let _glowGL, _glowProg, _glowULocs, _glowCanvas;
+let _glowAnimId = null;
+const GLOW_SZ = 107;
+
+function initGlowShader() {
+  const c = document.createElement('canvas');
+  const dpr = window.devicePixelRatio || 1;
+  c.width = GLOW_SZ * dpr; c.height = GLOW_SZ * dpr;
+  const gl = c.getContext('webgl2', { premultipliedAlpha: false, alpha: true, antialias: false });
+  if (!gl) { console.warn('WebGL2 not available for glow shader'); return; }
+  _glowCanvas = c; _glowGL = gl;
+
+  function compile(type, src) {
+    const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { console.error(gl.getShaderInfoLog(s)); return null; }
+    return s;
+  }
+  const vs = compile(gl.VERTEX_SHADER, GLOW_VS);
+  const fs = compile(gl.FRAGMENT_SHADER, GLOW_FS);
+  if (!vs || !fs) return;
+  const prog = gl.createProgram(); gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) { console.error(gl.getProgramInfoLog(prog)); return; }
+  _glowProg = prog; gl.useProgram(prog);
+
+  // Fullscreen quad
+  const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(prog, 'a_position');
+  gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+  // Noise texture (256x256 RGBA random)
+  const noiseSz = 256, noiseData = new Uint8Array(noiseSz * noiseSz * 4);
+  for (let i = 0; i < noiseData.length; i++) noiseData[i] = Math.random() * 256 | 0;
+  const tex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, noiseSz, noiseSz, 0, gl.RGBA, gl.UNSIGNED_BYTE, noiseData);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+
+  // Cache uniform locations
+  const uNames = ['u_time','u_colorBack','u_roundness','u_thickness','u_marginLeft','u_marginRight',
+    'u_marginTop','u_marginBottom','u_aspectRatio','u_softness','u_intensity','u_bloom',
+    'u_spotSize','u_spots','u_pulse','u_smoke','u_smokeSize','u_colorsCount','u_noiseTexture'];
+  _glowULocs = {};
+  for (const n of uNames) _glowULocs[n] = gl.getUniformLocation(prog, n);
+  // Color array uniforms
+  _glowULocs.u_colors = [];
+  for (let i = 0; i < 5; i++) _glowULocs.u_colors.push(gl.getUniformLocation(prog, `u_colors[${i}]`));
+
+  // Set static uniforms — olive/cream circular glow
+  gl.uniform4f(_glowULocs.u_colorBack, 0, 0, 0, 0);     // transparent bg
+  gl.uniform4f(_glowULocs.u_colors[0], 0.784, 0.812, 0.749, 0.85); // olive-200ish
+  gl.uniform4f(_glowULocs.u_colors[1], 0.635, 0.678, 0.580, 0.70); // olive-300ish
+  gl.uniform4f(_glowULocs.u_colors[2], 0.404, 0.463, 0.357, 0.55); // olive-500
+  for (let i = 3; i < 5; i++) gl.uniform4f(_glowULocs.u_colors[i], 0, 0, 0, 0);
+  gl.uniform1f(_glowULocs.u_colorsCount, 3);
+  gl.uniform1f(_glowULocs.u_roundness, 1.0);        // circle
+  gl.uniform1f(_glowULocs.u_thickness, 0.12);
+  gl.uniform1f(_glowULocs.u_marginLeft, 0);
+  gl.uniform1f(_glowULocs.u_marginRight, 0);
+  gl.uniform1f(_glowULocs.u_marginTop, 0);
+  gl.uniform1f(_glowULocs.u_marginBottom, 0);
+  gl.uniform1f(_glowULocs.u_aspectRatio, 1);         // square canvas
+  gl.uniform1f(_glowULocs.u_softness, 0.65);
+  gl.uniform1f(_glowULocs.u_intensity, 0.9);
+  gl.uniform1f(_glowULocs.u_bloom, 0.4);
+  gl.uniform1f(_glowULocs.u_spotSize, 0.35);
+  gl.uniform1f(_glowULocs.u_spots, 2);
+  gl.uniform1f(_glowULocs.u_pulse, 0.25);
+  gl.uniform1f(_glowULocs.u_smoke, 0);
+  gl.uniform1f(_glowULocs.u_smokeSize, 1);
+  gl.uniform1i(_glowULocs.u_noiseTexture, 0);
+
+  gl.viewport(0, 0, c.width, c.height);
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+  gl.clearColor(0, 0, 0, 0);
+}
+
+function renderGlowFrame(time) {
+  const gl = _glowGL;
+  if (!gl || !_glowProg) return;
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.uniform1f(_glowULocs.u_time, time * 0.001);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+}
+
+function glowLoop(time) {
+  // Find active pin canvases
+  const active = document.querySelectorAll('.gaia-pin.is-hovered .gaia-pin__glowCanvas, .gaia-pin.is-active .gaia-pin__glowCanvas');
+  if (active.length === 0) { _glowAnimId = null; return; }
+
+  renderGlowFrame(time);
+  // Copy WebGL output to each active pin's 2D canvas
+  for (const gc of active) {
+    if (gc._ctx2d) {
+      gc._ctx2d.clearRect(0, 0, gc.width, gc.height);
+      gc._ctx2d.drawImage(_glowCanvas, 0, 0, gc.width, gc.height);
+    }
+  }
+  _glowAnimId = requestAnimationFrame(glowLoop);
+}
+
+function startGlowLoop() {
+  if (_glowAnimId || !_glowGL) return;
+  _glowAnimId = requestAnimationFrame(glowLoop);
+}
+
+function initPhotoMarkers() {
+  PINS_DATA.forEach(p => {
+    const btn = buildPhotoPinEl(p.id, p.img);
+    // anchor:'bottom' places btn bottom edge at geo coordinate
+    // tail tip is at y=88 = bottom of element → perfect alignment
+    const marker = new mapboxgl.Marker({ element: btn, anchor: 'bottom' })
+      .setLngLat([p.lng, p.lat])
+      .addTo(map);
+    photoMarkers[p.id] = { marker, el: btn };
+  });
+}
+
+let clusterMarkers = {}; // key → { marker, el }
+
+function makeClusterSvgEl(count, clusterId, lng, lat) {
+  const r = count < 10 ? 28 : count < 30 ? 34 : 40;
+  const d = r * 2;
+  const el = document.createElement('div');
+  el.className = 'gaia-cluster';
+  el.style.cursor = 'pointer';
+  el.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="${d}" height="${d}" viewBox="0 0 ${d} ${d}">` +
+    `<circle cx="${r}" cy="${r}" r="${r - 2}" fill="#67765b" stroke="#fff" stroke-width="3"/>` +
+    `<text x="${r}" y="${r}" text-anchor="middle" dominant-baseline="central" fill="#fefdf9" ` +
+    `font-family="neue-haas-unica, 'Neue Haas Unica', system-ui, sans-serif" ` +
+    `font-size="${r > 30 ? 22 : 20}" font-weight="400" letter-spacing="-0.5">${count}</text></svg>`;
+  el.addEventListener('click', () => {
+    map.getSource('gaia-pins').getClusterExpansionZoom(clusterId, (err, z) => {
+      if (!err) map.easeTo({ center: [lng, lat], zoom: z + 0.5, duration: 350 });
+    });
+  });
+  return el;
+}
+
+function makeSingleSvgEl() {
+  const el = document.createElement('div');
+  el.className = 'gaia-cluster';
+  el.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44">' +
+    '<circle cx="22" cy="22" r="18" fill="#67765b" stroke="#fff" stroke-width="3"/></svg>';
+  return el;
+}
+
+function syncClusterMarkers() {
+  if (pinsPhotoMode) return;
+  const features = map.querySourceFeatures('gaia-pins');
+  const seen = new Set();
+  const toAdd = [];
+
+  for (const f of features) {
+    const isCluster = f.properties.cluster;
+    const key = isCluster ? 'c' + f.properties.cluster_id : 's' + f.properties.id;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    if (!clusterMarkers[key]) toAdd.push({ key, feature: f, isCluster });
+  }
+
+  // Remove stale
+  for (const key of Object.keys(clusterMarkers)) {
+    if (!seen.has(key)) { clusterMarkers[key].marker.remove(); delete clusterMarkers[key]; }
+  }
+
+  // Add new
+  for (const { key, feature, isCluster } of toAdd) {
+    const [lng, lat] = feature.geometry.coordinates;
+    const el = isCluster
+      ? makeClusterSvgEl(feature.properties.point_count, feature.properties.cluster_id, lng, lat)
+      : makeSingleSvgEl();
+    const marker = new mapboxgl.Marker({ element: el, anchor: 'center' })
+      .setLngLat([lng, lat]).addTo(map);
+    clusterMarkers[key] = { marker, el };
+  }
+}
+
+function setPinMode(photoMode) {
+  pinsPhotoMode = photoMode;
+  for (const { el } of Object.values(photoMarkers)) {
+    el.classList.toggle('pin-visible', photoMode);
+  }
+  // Toggle cluster markers
+  for (const { el } of Object.values(clusterMarkers)) {
+    el.classList.toggle('cluster-hidden', photoMode);
+  }
+  if (!photoMode) {
+    syncClusterMarkers();
+    // Deselect pin and hide find details when zooming out
+    if (selectedPin) {
+      const p = photoMarkers[selectedPin];
+      if (p) p.el.classList.remove('is-active');
+      selectedPin = null;
+      hideFindDetails();
+    }
+  }
+}
 
 // ════════════════════════════════════════════════
 //  MAP INIT
@@ -2081,35 +3026,54 @@ function initMap() {
   document.getElementById('setup-overlay').style.display = 'none';
 
   mapboxgl.accessToken = token;
-  map = new mapboxgl.Map({ container: 'map', style: GAIA_STYLE, center: [-122.4194, 37.7749], zoom: 12, pitch: 0 });
+  map = new mapboxgl.Map({ container: 'map', style: GAIA_STYLE, center: [-118.1300, 34.1520], zoom: 12, pitch: 0, pixelRatio: window.devicePixelRatio || 1 });
 
   map.on('load', () => {
-    [{id:'pin-ok',color:'#67765B'},{id:'pin-unk',color:'#B5493A'},{id:'pin-com',color:'#4F638D'}].forEach(({id,color}) => {
-      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36"><path d="M14 0C6.268 0 0 6.268 0 14c0 9.333 14 22 14 22S28 23.333 28 14C28 6.268 21.732 0 14 0z" fill="${color}"/><circle cx="14" cy="14" r="5" fill="white" opacity="0.9"/></svg>`;
-      const img = new Image(28, 36);
-      img.onload = () => { if (!map.hasImage(id)) map.addImage(id, img); };
-      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
-    });
-    map.addSource('observations', { type: 'geojson', data: OBSERVATIONS });
-    map.addLayer({
-      id: 'obs-pins', type: 'symbol', source: 'observations',
-      layout: {
-        'icon-image': ['match',['get','status'],'Research grade','pin-ok','Community ID','pin-com','pin-unk'],
-        'icon-size': 0.85, 'icon-anchor': 'bottom', 'icon-allow-overlap': true,
-        'text-field': ['get','common'], 'text-font': ['DIN Pro Bold','Arial Unicode MS Regular'],
-        'text-size': 11, 'text-anchor': 'top', 'text-offset': [0, 0.2], 'text-allow-overlap': false
+    // ── CLUSTER SOURCE ──────────────────────────────────────
+    map.addSource('gaia-pins', {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: PINS_DATA.map(p => ({
+          type: 'Feature',
+          properties: { id: p.id },
+          geometry: { type: 'Point', coordinates: [p.lng, p.lat] }
+        }))
       },
-      paint: { 'text-color': '#252024', 'text-halo-color': '#fdfbf4', 'text-halo-width': 3 }
+      cluster: true,
+      clusterMaxZoom: 14,
+      clusterRadius: 50
     });
-    map.on('click', 'obs-pins', e => {
-      const p = e.features[0].properties;
-      new mapboxgl.Popup({ offset: [0,-32], closeButton: true })
-        .setLngLat(e.features[0].geometry.coordinates)
-        .setHTML(`<div class="pop-sp">${p.species}</div><div class="pop-meta">${p.common} · ${p.age}</div><div class="pop-st"><div class="pop-dot" style="background:${p.color}"></div>${p.status}</div>`)
-        .addTo(map);
+
+    // Hidden layer forces Mapbox to process source tiles (required for querySourceFeatures)
+    map.addLayer({
+      id: 'gaia-pins-hidden', type: 'circle', source: 'gaia-pins',
+      paint: { 'circle-radius': 0, 'circle-opacity': 0 }
     });
-    map.on('mouseenter', 'obs-pins', () => map.getCanvas().style.cursor = 'pointer');
-    map.on('mouseleave', 'obs-pins', () => map.getCanvas().style.cursor = '');
+
+    // ── SVG CLUSTER MARKERS (managed via querySourceFeatures) ──
+    map.once('idle', () => { if (!pinsPhotoMode) syncClusterMarkers(); });
+    map.on('moveend', () => { if (!pinsPhotoMode) syncClusterMarkers(); });
+    map.on('sourcedata', e => {
+      if (e.sourceId === 'gaia-pins' && !pinsPhotoMode) syncClusterMarkers();
+    });
+
+    // ── WEBGL GLOW + HTML PHOTO MARKERS ─────────────────────
+    initGlowShader();
+    initPhotoMarkers();
+
+    // Set initial display mode
+    const initZoom = map.getZoom();
+    pinsPhotoMode = initZoom >= PHOTO_ZOOM;
+    setPinMode(pinsPhotoMode);
+
+    // Zoom → switch between cluster and photo-pin display (with hysteresis)
+    map.on('zoom', () => {
+      const z = map.getZoom();
+      const threshold = pinsPhotoMode ? PHOTO_ZOOM - ZOOM_HYST : PHOTO_ZOOM;
+      const shouldBePhoto = z >= threshold;
+      if (shouldBePhoto !== pinsPhotoMode) setPinMode(shouldBePhoto);
+    });
   });
 
   initSheetLayout();
