@@ -144,6 +144,7 @@ html, body {
   position: relative;
   overflow: visible;
   min-height: 0;
+  touch-action: none;  /* prevent browser from claiming any touch in this area */
 }
 
 #deck-stack {
@@ -385,10 +386,10 @@ const THROW_VEL  = 0.3;  // px/ms to trigger throw by velocity
 /* ── Helpers ────────────────────────────────────────────── */
 const lerp = (a, b, t) => a + (b - a) * t;
 
-function posTransform(posKey, dx = 0, rot = 0) {
+function posTransform(posKey, dx = 0, dy = 0, rot = 0) {
   const { tx, ty, s } = POS[posKey];
   const rotStr = rot ? ` rotate(${rot}deg)` : '';
-  return `translate(${tx + dx}px, ${ty}px) scale(${s})${rotStr}`;
+  return `translate(${tx + dx}px, ${ty + dy}px) scale(${s})${rotStr}`;
 }
 
 function getSlot(pos) {
@@ -471,13 +472,13 @@ function onDown(e) {
   e.currentTarget.setPointerCapture(e.pointerId);
 
   drag = {
-    startX:    e.clientX,
-    startY:    e.clientY,
-    dx:        0,
-    direction: null,   // null | 'h' | 'v'
-    vx:        0,
-    lastX:     e.clientX,
-    lastT:     performance.now(),
+    startX: e.clientX,
+    startY: e.clientY,
+    dx: 0, dy: 0,
+    vx: 0, vy: 0,
+    lastX: e.clientX,
+    lastY: e.clientY,
+    lastT: performance.now(),
   };
 
   document.addEventListener('pointermove', onMove, { passive: false });
@@ -487,42 +488,40 @@ function onDown(e) {
 
 function onMove(e) {
   if (!drag) return;
+  e.preventDefault();
 
   const dx = e.clientX - drag.startX;
   const dy = e.clientY - drag.startY;
 
-  // Lock scroll axis on first meaningful move
-  if (!drag.direction && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) {
-    drag.direction = Math.abs(dx) >= Math.abs(dy) ? 'h' : 'v';
-  }
-  if (drag.direction === 'v') return;
-  if (drag.direction === 'h') e.preventDefault();
-
-  // Exponential moving average velocity (px/ms)
+  // Exponential moving average velocity (px/ms) for both axes
   const now = performance.now();
   const dt  = now - drag.lastT || 1;
   drag.vx   = drag.vx * 0.65 + (e.clientX - drag.lastX) / dt * 0.35;
+  drag.vy   = drag.vy * 0.65 + (e.clientY - drag.lastY) / dt * 0.35;
   drag.lastX = e.clientX;
+  drag.lastY = e.clientY;
   drag.lastT = now;
-  drag.dx    = dx;
+  drag.dx = dx;
+  drag.dy = dy;
 
-  applyLiveDrag(dx);
+  applyLiveDrag(dx, dy);
 }
 
-function applyLiveDrag(dx) {
+function applyLiveDrag(dx, dy) {
   const front = getSlot('front');
   const mid   = getSlot('mid');
   const back  = getSlot('back');
   if (!front) return;
 
-  // Natural rotation: slight tilt in swipe direction
-  const rot = Math.max(-18, Math.min(18, dx * 0.05));
+  // Rotation follows horizontal drag; vertical drag dampens it slightly
+  const rot = Math.max(-20, Math.min(20, dx * 0.06));
 
   front.style.transition = 'none';
-  front.style.transform  = posTransform('front', dx, rot);
+  front.style.transform  = posTransform('front', dx, dy, rot);
 
-  // Promote mid/back proportionally toward their next positions
-  const t = Math.min(Math.abs(dx) / (THROW_DIST * 1.6), 1);
+  // Promote mid/back based on total drag distance (2D)
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  const t = Math.min(dist / (THROW_DIST * 1.6), 1);
 
   if (mid) {
     const tx = lerp(POS.mid.tx, POS.front.tx, t);
@@ -548,43 +547,60 @@ function onUp() {
   document.removeEventListener('pointerup',     onUp);
   document.removeEventListener('pointercancel', onUp);
 
-  if (drag.direction === 'v') { drag = null; return; }
-
-  const { dx, vx } = drag;
+  const { dx, dy, vx, vy } = drag;
   drag = null;
 
-  const shouldThrow = Math.abs(dx) > THROW_DIST || Math.abs(vx) > THROW_VEL;
+  // 2D distance and speed
+  const dist  = Math.sqrt(dx * dx + dy * dy);
+  const speed = Math.sqrt(vx * vx + vy * vy);
 
-  if (shouldThrow) {
-    throwCard(dx >= 0 ? 1 : -1);
+  if (dist > THROW_DIST || speed > THROW_VEL) {
+    throwCard(dx, dy, vx, vy);
   } else {
     snapBack();
   }
 }
 
 /* ── Throw Card ─────────────────────────────────────────── */
-function throwCard(dir) {
+function throwCard(dx, dy, vx, vy) {
   const front = getSlot('front');
   const mid   = getSlot('mid');
   const back  = getSlot('back');
   if (!front) return;
 
-  const targetX  = dir * (window.innerWidth + 520);
-  const DURATION = 340; // ms
+  // Compute throw direction: prefer velocity vector, fall back to displacement
+  const speed = Math.sqrt(vx * vx + vy * vy);
+  let nx, ny;
+  if (speed > 0.02) {
+    nx = vx / speed;
+    ny = vy / speed;
+  } else {
+    const d = Math.sqrt(dx * dx + dy * dy) || 1;
+    nx = dx / d;
+    ny = dy / d;
+  }
 
-  // Accelerate front card off screen (ease-in)
-  front.style.transition = `transform ${DURATION}ms cubic-bezier(0.4, 0, 1, 1)`;
-  front.style.transform  = `translate(${targetX}px, ${POS.front.ty + dir * 16}px) rotate(${dir * 22}deg) scale(0.92)`;
+  // Target: current position + enough to exit any screen
+  const EXTRA   = 1000;
+  const finalDX = dx + nx * EXTRA;
+  const finalDY = dy + ny * EXTRA;
+  // Rotation based on horizontal component of throw direction
+  const rot     = nx * 24;
+
+  const DURATION = 360;
+
+  front.style.transition = `transform ${DURATION}ms cubic-bezier(0.22, 0, 0.5, 1)`;
+  front.style.transform  = posTransform('front', finalDX, finalDY, rot);
 
   // Mid → front, Back → mid with a spring pop
-  const POP = `${Math.round(DURATION * 0.85)}ms cubic-bezier(0.22, 1.2, 0.36, 1)`;
+  const POP = `${Math.round(DURATION * 0.8)}ms cubic-bezier(0.22, 1.2, 0.36, 1)`;
 
   if (mid) {
     mid.style.transition = `transform ${POP}`;
     mid.style.transform  = posTransform('front');
     const blurEl = mid.querySelector('.slot-blur');
     if (blurEl) {
-      blurEl.style.transition = `opacity ${Math.round(DURATION * 0.85)}ms ease`;
+      blurEl.style.transition = `opacity ${Math.round(DURATION * 0.8)}ms ease`;
       blurEl.style.opacity = '0';
     }
   }
@@ -593,7 +609,7 @@ function throwCard(dir) {
     back.style.transform  = posTransform('mid');
     const blurEl = back.querySelector('.slot-blur');
     if (blurEl) {
-      blurEl.style.transition = `opacity ${Math.round(DURATION * 0.85)}ms ease`;
+      blurEl.style.transition = `opacity ${Math.round(DURATION * 0.8)}ms ease`;
       blurEl.style.opacity    = String(BLUR_ALPHA.mid);
     }
   }
