@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>The Story of a Keystone — Gaia</title>
+<link rel="stylesheet" href="https://use.typekit.net/atn6inh.css">
+<style>
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── DESIGN TOKENS ─────────────────────────────────────── */
+:root {
+  --olive-50:   #f2f4f0;
+  --olive-100:  #e3e7df;
+  --olive-200:  #c8cfbf;
+  --olive-400:  #8a9b7e;
+  --olive:      #67765b;
+
+  --paper:      #fdfbf4;
+  --paper-50:   #fefdf9;
+  --paper-500:  #fcfaf0;
+
+  --brown-50:   #F6F2EE;
+  --brown-100:  #EDE5DC;
+  --brown-200:  #D8C9B8;
+  --brown-300:  #BFA98F;
+  --brown-400:  #AC9479;
+  --brown-500:  #9B856B;
+  --brown-600:  #89755E;
+
+  --ink:        #252024;
+  --ink-300:    #7d7981;
+  --grey:       #5b5c61;
+
+  --font-serif: "new-spirit","New Spirit",Georgia,serif;
+  --font-sans:  "neue-haas-unica","Neue Haas Unica","Helvetica Neue",system-ui,sans-serif;
+
+  --shadow-lg:  0px 8px 40px 0px rgba(155,133,107,0.24);
+  --shadow-nav: 0px 8px 40px rgba(0,0,0,0.12);
+}
+
+html, body {
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--paper-50);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ── APP SHELL ─────────────────────────────────────────── */
+#app {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background:
+    linear-gradient(180deg, rgba(252,250,240,0.4) 14%, rgba(122,158,93,0.4) 100%),
+    var(--paper-50);
+  overflow: hidden;
+}
+
+/* ── TOOLBAR ───────────────────────────────────────────── */
+#toolbar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-end;
+  padding: 52px 16px 8px;
+  height: 96px;
+}
+
+.back-btn {
+  width: 48px; height: 48px;
+  border-radius: 250px;
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; isolation: isolate; overflow: hidden;
+  background: transparent;
+  box-shadow: var(--shadow-nav);
+}
+.back-btn::before {
+  content: ''; position: absolute; inset: 0; border-radius: 250px;
+  background: rgba(255,255,255,0.65);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  z-index: 0; pointer-events: none;
+}
+.back-btn::after {
+  content: ''; position: absolute; inset: 0; border-radius: 250px;
+  background: #ddd; mix-blend-mode: color-burn;
+  z-index: 1; pointer-events: none;
+}
+.back-btn .btn-darken {
+  position: absolute; inset: 0; border-radius: 250px;
+  background: #f7f7f7; mix-blend-mode: darken;
+  z-index: 2; pointer-events: none;
+}
+.back-btn svg { position: relative; z-index: 3; pointer-events: none; }
+
+/* ── HEADER ────────────────────────────────────────────── */
+#page-header {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 21px 20px;
+  text-align: center;
+}
+
+.species-pill {
+  background: var(--brown-300);
+  color: var(--paper-500);
+  font-family: var(--font-sans);
+  font-size: 10px;
+  letter-spacing: 0.25px;
+  line-height: 1.3;
+  padding: 6px 12px;
+  border-radius: 250px;
+  white-space: nowrap;
+}
+
+.story-title {
+  font-family: var(--font-serif);
+  font-size: clamp(38px, 11vw, 50px);
+  font-weight: 500;
+  color: var(--olive);
+  line-height: 0.97;
+  letter-spacing: -0.87px;
+}
+.story-title em { font-style: italic; }
+
+.story-sub {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--grey);
+  line-height: 1.3;
+  letter-spacing: 0.5px;
+}
+
+/* ── DECK AREA ─────────────────────────────────────────── */
+#deck-wrap {
+  flex: 1;
+  position: relative;
+  overflow: visible;
+  min-height: 0;
+}
+
+#deck-stack {
+  position: absolute;
+  top: 0; bottom: 0;
+  /* 333px front card + 31px back card horizontal offset = 364px */
+  width: 364px;
+  left: 50%;
+  margin-left: -182px;
+  overflow: visible;
+}
+
+/* ── CARD SLOT ─────────────────────────────────────────── */
+/* All 3 slots share the same base dimensions; transforms do the positioning */
+.card-slot {
+  position: absolute;
+  top: 0; left: 0;
+  width: 333px;
+  /* Height: leaves 41px at top for the back/mid cards to peek through */
+  height: calc(100% - 41px);
+  transform-origin: top left;
+  will-change: transform;
+  touch-action: none;
+}
+
+/* ── LEARNING CARD ─────────────────────────────────────── */
+.learning-card {
+  width: 100%;
+  height: 100%;
+  background: var(--paper-500);
+  border: 1px solid var(--brown-200);
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+}
+
+.card-title {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--brown-500);
+  line-height: 0.98;
+  letter-spacing: -0.5px;
+  margin-bottom: 18px;
+  flex-shrink: 0;
+}
+
+.card-img-wrap {
+  border: 1px solid var(--brown-200);
+  border-radius: 8px;
+  overflow: hidden;
+  flex: 0 0 38%;
+  background: white;
+  margin-bottom: 10px;
+}
+.card-img-wrap img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+.card-body {
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  color: var(--grey);
+  line-height: 1.4;
+  letter-spacing: 0.4px;
+  overflow-y: auto;
+  flex: 1;
+  -webkit-overflow-scrolling: touch;
+}
+.card-body::-webkit-scrollbar { display: none; }
+
+/* Frosted blur overlay — sits on top of learning-card for mid/back slots */
+.slot-blur {
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  pointer-events: none;
+}
+
+/* ── PROGRESS DOTS ─────────────────────────────────────── */
+#progress {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 48px;
+}
+
+.dot {
+  width: 6px; height: 6px;
+  border-radius: 3px;
+  background: var(--brown-200);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  flex-shrink: 0;
+}
+.dot.active {
+  width: 20px;
+  background: var(--olive);
+}
+
+/* ── DONE STATE ────────────────────────────────────────── */
+#done-screen {
+  display: none;
+  position: absolute;
+  inset: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  text-align: center;
+  padding: 40px;
+}
+#done-screen.visible { display: flex; }
+
+.done-title {
+  font-family: var(--font-serif);
+  font-size: 30px;
+  font-weight: 500;
+  color: var(--olive);
+  line-height: 0.97;
+  letter-spacing: -0.5px;
+}
+.done-sub {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--grey);
+  letter-spacing: 0.4px;
+  line-height: 1.4;
+}
+.restart-btn {
+  margin-top: 6px;
+  background: var(--olive);
+  color: var(--paper-50);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  letter-spacing: 0.4px;
+  padding: 13px 32px;
+  border-radius: 250px;
+  border: none;
+  cursor: pointer;
+}
+.done-leaf {
+  font-size: 44px;
+  line-height: 1;
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div id="toolbar">
+    <button class="back-btn" onclick="history.back()" aria-label="Back">
+      <span class="btn-darken"></span>
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M12.5 15L7.5 10L12.5 5" stroke="#252024" stroke-width="1.5"
+          stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <header id="page-header">
+    <div class="species-pill">QUERCUS AGRIFOLIA</div>
+    <h1 class="story-title">The Story of<br>a <em>Keystone</em></h1>
+    <p class="story-sub">270+ species. 5000 years of human history.<br>A disease that could end it all.</p>
+  </header>
+
+  <main id="deck-wrap">
+    <div id="deck-stack">
+      <div id="done-screen">
+        <div class="done-leaf">🌿</div>
+        <h2 class="done-title">You've read<br>every card.</h2>
+        <p class="done-sub">The Coast Live Oak thanks you.</p>
+        <button class="restart-btn" onclick="restart()">Read Again</button>
+      </div>
+    </div>
+  </main>
+
+  <div id="progress"></div>
+</div>
+
+<script>
+/* ── Card Data ──────────────────────────────────────────── */
+const IMG = 'https://www.figma.com/api/mcp/asset/a928c780-5c80-4a43-a007-266036349db4';
+
+const CARDS = [
+  {
+    title: 'An Ecosystem\nLives Here.',
+    body:  'Over 270 species of birds, mammals, and insects depend on the Coast Live Oak for food and shelter. From acorn woodpeckers storing their harvest in its bark to the California oak moth whose caterpillars feed exclusively on its leaves.',
+    img:   IMG,
+  },
+  {
+    title: '5,000 Years\nof History.',
+    body:  'Indigenous communities across California — from the Ohlone to the Chumash — relied on acorns as a dietary staple for millennia. A single mature oak can produce up to 20,000 acorns in a good mast year, each one a vital food source.',
+    img:   IMG,
+  },
+  {
+    title: 'A Disease\nSpreads Fast.',
+    body:  'Sudden Oak Death, caused by Phytophthora ramorum, has killed millions of tanoaks and Coast Live Oaks. It spreads through wind-blown rain, infected soil, and nursery plants — often outpacing detection and removal efforts.',
+    img:   IMG,
+  },
+  {
+    title: 'Deep Roots,\nLong Memory.',
+    body:  'A mature Coast Live Oak can live over 250 years and extend roots 30 meters in every direction. Its deep taproot accesses groundwater during California\'s long summer droughts, making it remarkably resilient.',
+    img:   IMG,
+  },
+  {
+    title: 'The Acorn\nEconomy.',
+    body:  'When acorn crops fail in mast failure years, the ripple reaches deer, bear, woodpeckers, and jays — all the way up the food chain. The oak isn\'t just a tree. It\'s the engine of the entire woodland community.',
+    img:   IMG,
+  },
+];
+
+/* ── Stack Position Config ──────────────────────────────── */
+// transform-origin: top left
+// front = full size, mid/back scaled and offset to peek above front card
+const POS = {
+  front: { tx: 0,  ty: 41, s: 1           },
+  mid:   { tx: 15, ty: 19, s: 303 / 333   },
+  back:  { tx: 31, ty: 0,  s: 271 / 333   },
+};
+const BLUR_PX    = { mid: 1.0, back: 2.5  };
+const BLUR_ALPHA = { mid: 0.12, back: 0.20 };
+
+/* ── State ──────────────────────────────────────────────── */
+let activeIdx = 0;
+let drag      = null;
+
+const THROW_DIST = 75;   // px to trigger throw
+const THROW_VEL  = 0.3;  // px/ms to trigger throw by velocity
+
+/* ── Helpers ────────────────────────────────────────────── */
+const lerp = (a, b, t) => a + (b - a) * t;
+
+function posTransform(posKey, dx = 0, rot = 0) {
+  const { tx, ty, s } = POS[posKey];
+  const rotStr = rot ? ` rotate(${rot}deg)` : '';
+  return `translate(${tx + dx}px, ${ty}px) scale(${s})${rotStr}`;
+}
+
+function getSlot(pos) {
+  return document.querySelector(`#deck-stack [data-pos="${pos}"]`);
+}
+
+/* ── Build Deck ─────────────────────────────────────────── */
+function buildDeck() {
+  const stack = document.getElementById('deck-stack');
+
+  // Remove old card slots (preserve done-screen)
+  stack.querySelectorAll('.card-slot').forEach(el => el.remove());
+
+  if (activeIdx >= CARDS.length) {
+    document.getElementById('done-screen').classList.add('visible');
+    updateDots();
+    return;
+  }
+  document.getElementById('done-screen').classList.remove('visible');
+
+  // Render back → mid → front (front is last = highest paint order)
+  const ORDER = ['back', 'mid', 'front'];
+  const OFFSET = { front: 0, mid: 1, back: 2 };
+
+  ORDER.forEach(pos => {
+    const cardIdx = activeIdx + OFFSET[pos];
+    if (cardIdx >= CARDS.length) return;
+
+    const card = CARDS[cardIdx];
+    const slot = document.createElement('div');
+    slot.className  = 'card-slot';
+    slot.dataset.pos = pos;
+    slot.style.zIndex   = pos === 'front' ? 3 : pos === 'mid' ? 2 : 1;
+    slot.style.transform = posTransform(pos);
+
+    slot.innerHTML = `
+      <div class="learning-card">
+        <h2 class="card-title">${card.title.replace('\n', '<br>')}</h2>
+        <div class="card-img-wrap">
+          <img src="${card.img}" alt="" draggable="false">
+        </div>
+        <p class="card-body">${card.body}</p>
+      </div>
+      <div class="slot-blur"></div>
+    `;
+
+    // Apply frosted blur overlay to mid/back
+    if (pos !== 'front') {
+      const blurEl = slot.querySelector('.slot-blur');
+      blurEl.style.background        = `rgba(216,201,184,${BLUR_ALPHA[pos]})`;
+      blurEl.style.backdropFilter    = `blur(${BLUR_PX[pos]}px)`;
+      blurEl.style.webkitBackdropFilter = `blur(${BLUR_PX[pos]}px)`;
+    }
+
+    stack.appendChild(slot);
+  });
+
+  // Wire drag to front card
+  const front = getSlot('front');
+  if (front) attachDrag(front);
+
+  updateDots();
+}
+
+/* ── Progress Dots ──────────────────────────────────────── */
+function updateDots() {
+  document.getElementById('progress').innerHTML =
+    CARDS.map((_, i) =>
+      `<div class="dot${i === activeIdx ? ' active' : ''}"></div>`
+    ).join('');
+}
+
+/* ── Drag / Swipe Interaction ───────────────────────────── */
+function attachDrag(el) {
+  el.addEventListener('pointerdown', onDown, { passive: false });
+}
+
+function onDown(e) {
+  if (drag) return;
+  e.currentTarget.setPointerCapture(e.pointerId);
+
+  drag = {
+    startX:    e.clientX,
+    startY:    e.clientY,
+    dx:        0,
+    direction: null,   // null | 'h' | 'v'
+    vx:        0,
+    lastX:     e.clientX,
+    lastT:     performance.now(),
+  };
+
+  document.addEventListener('pointermove', onMove, { passive: false });
+  document.addEventListener('pointerup',     onUp);
+  document.addEventListener('pointercancel', onUp);
+}
+
+function onMove(e) {
+  if (!drag) return;
+
+  const dx = e.clientX - drag.startX;
+  const dy = e.clientY - drag.startY;
+
+  // Lock scroll axis on first meaningful move
+  if (!drag.direction && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) {
+    drag.direction = Math.abs(dx) >= Math.abs(dy) ? 'h' : 'v';
+  }
+  if (drag.direction === 'v') return;
+  if (drag.direction === 'h') e.preventDefault();
+
+  // Exponential moving average velocity (px/ms)
+  const now = performance.now();
+  const dt  = now - drag.lastT || 1;
+  drag.vx   = drag.vx * 0.65 + (e.clientX - drag.lastX) / dt * 0.35;
+  drag.lastX = e.clientX;
+  drag.lastT = now;
+  drag.dx    = dx;
+
+  applyLiveDrag(dx);
+}
+
+function applyLiveDrag(dx) {
+  const front = getSlot('front');
+  const mid   = getSlot('mid');
+  const back  = getSlot('back');
+  if (!front) return;
+
+  // Natural rotation: slight tilt in swipe direction
+  const rot = Math.max(-18, Math.min(18, dx * 0.05));
+
+  front.style.transition = 'none';
+  front.style.transform  = posTransform('front', dx, rot);
+
+  // Promote mid/back proportionally toward their next positions
+  const t = Math.min(Math.abs(dx) / (THROW_DIST * 1.6), 1);
+
+  if (mid) {
+    const tx = lerp(POS.mid.tx, POS.front.tx, t);
+    const ty = lerp(POS.mid.ty, POS.front.ty, t);
+    const s  = lerp(POS.mid.s,  POS.front.s,  t);
+    mid.style.transition = 'none';
+    mid.style.transform  = `translate(${tx}px,${ty}px) scale(${s})`;
+    const blurEl = mid.querySelector('.slot-blur');
+    if (blurEl) blurEl.style.opacity = 1 - t;
+  }
+  if (back) {
+    const tx = lerp(POS.back.tx, POS.mid.tx, t);
+    const ty = lerp(POS.back.ty, POS.mid.ty, t);
+    const s  = lerp(POS.back.s,  POS.mid.s,  t);
+    back.style.transition = 'none';
+    back.style.transform  = `translate(${tx}px,${ty}px) scale(${s})`;
+  }
+}
+
+function onUp() {
+  if (!drag) return;
+  document.removeEventListener('pointermove', onMove);
+  document.removeEventListener('pointerup',     onUp);
+  document.removeEventListener('pointercancel', onUp);
+
+  if (drag.direction === 'v') { drag = null; return; }
+
+  const { dx, vx } = drag;
+  drag = null;
+
+  const shouldThrow = Math.abs(dx) > THROW_DIST || Math.abs(vx) > THROW_VEL;
+
+  if (shouldThrow) {
+    throwCard(dx >= 0 ? 1 : -1);
+  } else {
+    snapBack();
+  }
+}
+
+/* ── Throw Card ─────────────────────────────────────────── */
+function throwCard(dir) {
+  const front = getSlot('front');
+  const mid   = getSlot('mid');
+  const back  = getSlot('back');
+  if (!front) return;
+
+  const targetX  = dir * (window.innerWidth + 520);
+  const DURATION = 340; // ms
+
+  // Accelerate front card off screen (ease-in)
+  front.style.transition = `transform ${DURATION}ms cubic-bezier(0.4, 0, 1, 1)`;
+  front.style.transform  = `translate(${targetX}px, ${POS.front.ty + dir * 16}px) rotate(${dir * 22}deg) scale(0.92)`;
+
+  // Mid → front, Back → mid with a spring pop
+  const POP = `${Math.round(DURATION * 0.85)}ms cubic-bezier(0.22, 1.2, 0.36, 1)`;
+
+  if (mid) {
+    mid.style.transition = `transform ${POP}`;
+    mid.style.transform  = posTransform('front');
+    const blurEl = mid.querySelector('.slot-blur');
+    if (blurEl) {
+      blurEl.style.transition = `opacity ${Math.round(DURATION * 0.85)}ms ease`;
+      blurEl.style.opacity = '0';
+    }
+  }
+  if (back) {
+    back.style.transition = `transform ${POP}`;
+    back.style.transform  = posTransform('mid');
+    const blurEl = back.querySelector('.slot-blur');
+    if (blurEl) {
+      blurEl.style.transition = `opacity ${Math.round(DURATION * 0.85)}ms ease`;
+      blurEl.style.opacity    = String(BLUR_ALPHA.mid);
+    }
+  }
+
+  // After throw animation: advance deck
+  front.addEventListener('transitionend', () => {
+    activeIdx++;
+    buildDeck();
+  }, { once: true });
+}
+
+/* ── Snap Back ──────────────────────────────────────────── */
+function snapBack() {
+  const SPRING = '0.42s cubic-bezier(0.34, 1.56, 0.64, 1)';
+
+  ['front', 'mid', 'back'].forEach(pos => {
+    const slot = getSlot(pos);
+    if (!slot) return;
+
+    slot.style.transition = `transform ${SPRING}`;
+    slot.style.transform  = posTransform(pos);
+
+    const blurEl = slot.querySelector('.slot-blur');
+    if (blurEl) {
+      blurEl.style.transition = 'opacity 0.3s ease';
+      blurEl.style.opacity    = '1';
+    }
+  });
+}
+
+/* ── Restart ────────────────────────────────────────────── */
+function restart() {
+  activeIdx = 0;
+  buildDeck();
+}
+
+/* ── Init ───────────────────────────────────────────────── */
+buildDeck();
+</script>
+</body>
+</html>

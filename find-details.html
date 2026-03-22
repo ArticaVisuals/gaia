@@ -1,0 +1,1527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Find Details — Gaia</title>
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.css" rel="stylesheet"/>
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
+<link rel="stylesheet" href="https://use.typekit.net/atn6inh.css">
+<style>
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── DESIGN TOKENS (Figma) ─────────────────────────────── */
+:root {
+  --olive-50:    #f2f4f0;
+  --olive-100:   #e3e7df;
+  --olive-200:   #c8cfbf;
+  --olive-400:   #8a9b7e;
+  --olive:       #67765b;
+
+  --cream-50:    #fefdf9;
+  --cream-100:   #fefcf7;
+  --cream-200:   #fdfbf4;
+  --paper:       #fdfbf4;
+  --paper-50:    #fefdf9;
+
+  --brown-50:    #F6F2EE;
+  --brown-100:   #EDE5DC;
+  --brown-200:   #D8C9B8;
+  --brown-300:   #BFA98F;
+  --brown-400:   #AC9479;
+  --brown-500:   #9B856B;
+  --brown-600:   #89755E;
+
+  --ink:         #252024;
+  --ink-200:     #b0adb3;
+  --ink-300:     #7d7981;
+
+  --grey-100:    #d9d9db;
+  --grey-200:    #b1b2b5;
+  --grey-300:    #848589;
+  --grey:        #5b5c61;
+
+  --verm:        #b5493a;
+  --border-default: #D8C9B8;
+  --fill-vibrant-tert: #e6ede3;
+
+  --shadow-sm:   0px 2px 8px 0px rgba(155,133,107,0.10);
+  --shadow-md:   0px 4px 20px 0px rgba(155,133,107,0.16);
+  --shadow-lg:   0px 8px 40px 0px rgba(155,133,107,0.24);
+  --shadow-small: 0px 4px 20px 0px rgba(128,105,38,0.09);
+  --shadow-nav:  0px 8px 40px 0px rgba(0,0,0,0.12);
+
+  --font-serif: "new-spirit","New Spirit",Georgia,serif;
+  --font-sans:  "neue-haas-unica","Neue Haas Unica","Helvetica Neue",system-ui,sans-serif;
+
+  --space-0: 0px; --space-1: 2px; --space-2: 4px; --space-3: 8px;
+  --space-4: 12px; --space-5: 16px; --space-6: 20px; --space-7: 24px;
+  --space-8: 32px; --space-9: 48px; --space-12: 64px;
+
+  --radius-sm: 4px; --radius-md: 8px; --radius-lg: 14px;
+  --radius-xl: 24px; --radius-xxl: 48px; --radius-full: 250px;
+
+  --nav-h: 68px;
+  --nav-bottom: 12px;
+}
+
+html, body {
+  height: 100%; width: 100%;
+  overflow: hidden;
+  background: var(--cream-50);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── PAGE SCROLL CONTAINER ─────────────────────────────── */
+#page {
+  position: fixed; inset: 0;
+  overflow-y: auto; overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  /* bottom padding = nav height + bottom gap + extra breathing room */
+  padding-bottom: calc(var(--nav-h) + var(--nav-bottom) + 16px);
+  background: var(--cream-50);
+}
+#page::-webkit-scrollbar { display: none; }
+
+/* ── FLOATING TOOLBAR ──────────────────────────────────── */
+#toolbar {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 50;
+  display: flex; align-items: flex-end; justify-content: space-between;
+  padding: 56px 16px 0;
+  height: 104px;
+  pointer-events: none;
+}
+
+/* Glass button base */
+.glass-btn {
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-full); border: none;
+  background: transparent;
+  box-shadow: var(--shadow-nav);
+  cursor: pointer; position: relative;
+  isolation: isolate; overflow: hidden;
+  pointer-events: all;
+  flex-shrink: 0;
+}
+.glass-btn::before {
+  content: ''; position: absolute; inset: 0;
+  border-radius: inherit;
+  background: rgba(255,255,255,0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  pointer-events: none; z-index: 0;
+}
+.glass-btn::after {
+  content: ''; position: absolute; inset: 0;
+  border-radius: inherit;
+  background: #ddd;
+  mix-blend-mode: color-burn;
+  pointer-events: none; z-index: 0;
+}
+.glass-btn .glass-darken {
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  background: #f7f7f7;
+  mix-blend-mode: darken;
+  pointer-events: none; z-index: 0;
+}
+/* ── Toolbar icon containers ── */
+.glass-btn .icon-32 {
+  width: 32px; height: 32px; position: relative;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1;
+}
+
+/* Back button: 48×48 */
+#btn-back { width: 48px; height: 48px; }
+
+/* Action group: two icons in a pill */
+#btn-actions {
+  display: flex; align-items: center;
+  gap: 4px; padding: 0 6px;
+  border-radius: var(--radius-full);
+  height: 48px;
+}
+
+/* Toolbar SVG icons — crisp, no stretching */
+.toolbar-icon {
+  display: block; flex-shrink: 0;
+}
+
+/* ── Icon insets (nav bar) — same pattern as index.html ── */
+.icon-inset {
+  position: absolute;
+}
+.icon-inset img {
+  position: absolute;
+  width: 100%; height: 100%;
+  display: block; object-fit: contain;
+}
+
+/* ── HERO IMAGE ─────────────────────────────────────────── */
+#hero {
+  position: relative;
+  width: 100%;
+  height: 262px;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  overflow: hidden;
+  box-shadow: 0px 4px 16.2px 0px rgba(115,115,100,0.5);
+  flex-shrink: 0;
+}
+#hero-img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+/* Progressive gradient overlay — fades from fully transparent to dark */
+#hero-gradient {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom,
+    rgba(0,0,0,0)    0%,
+    rgba(0,0,0,0)    41%,
+    rgba(0,0,0,0.55) 100%
+  );
+  pointer-events: none;
+}
+#hero-meta {
+  position: absolute; bottom: 0; left: 15px;
+  display: flex; flex-direction: column; gap: 4px;
+  padding-bottom: 16px;
+}
+.hero-title {
+  font-family: var(--font-serif);
+  font-size: 32px; font-weight: 500;
+  color: var(--cream-50);
+  line-height: 0.98;
+  letter-spacing: -0.5px;
+}
+.hero-subtitle {
+  font-family: var(--font-sans);
+  font-size: 10px; font-weight: 400;
+  color: var(--cream-50);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  line-height: 1.3;
+}
+
+/* ── PAGE DOTS ──────────────────────────────────────────── */
+#page-dots {
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+}
+.dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #bfbfbf;
+  flex-shrink: 0;
+}
+.dot.active { background: #1a1a1a; }
+
+/* ── TAB SWITCHER ───────────────────────────────────────── */
+#tab-switcher {
+  display: flex; align-items: center; justify-content: center;
+  border-bottom: 1px solid var(--grey-200);
+  width: 100%;
+}
+.tab-item {
+  flex: none;
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px 18px;
+  width: 96px;
+  font-family: var(--font-sans);
+  font-size: 17px; font-weight: 400;
+  line-height: 1.3;
+  cursor: pointer;
+  white-space: nowrap;
+  border: none; background: transparent;
+  color: var(--grey-200);
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.18s, border-color 0.18s;
+}
+.tab-item.active {
+  color: var(--olive);
+  border-bottom-color: var(--olive);
+}
+
+/* ── MAP SECTION ────────────────────────────────────────── */
+#map-section {
+  position: relative;
+  width: 100%;
+  height: 355px;
+  overflow: hidden;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  transition: height 0.4s cubic-bezier(0.32,0.72,0,1);
+}
+#map-section.expanded {
+  height: 75vh;
+}
+#find-map {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+}
+/* Hide Mapbox default controls */
+#find-map .mapboxgl-ctrl-attrib { display: none; }
+#find-map .mapboxgl-ctrl-logo { display: none; }
+.map-ui {
+  position: absolute; inset: 0;
+  padding: var(--space-5);
+  display: flex; flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Profile card on map */
+.profile-card-map {
+  width: 209px; height: 64px;
+  position: relative; overflow: hidden;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-nav);
+  flex-shrink: 0;
+}
+.profile-card-map::before {
+  content: ''; position: absolute; inset: 0;
+  border-radius: var(--radius-md);
+  background: rgba(255,255,255,0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  pointer-events: none;
+}
+.profile-card-map::after {
+  content: ''; position: absolute; inset: 0;
+  border-radius: var(--radius-md);
+  background: #ddd;
+  mix-blend-mode: color-burn;
+  pointer-events: none;
+}
+.profile-card-map .glass-darken2 {
+  position: absolute; inset: 0;
+  border-radius: var(--radius-md);
+  background: #f7f7f7;
+  mix-blend-mode: darken;
+  pointer-events: none;
+}
+.profile-card-inner {
+  position: absolute; inset: 8px;
+  display: flex; gap: 8px; align-items: center;
+  z-index: 1;
+}
+.profile-avatar {
+  width: 48px; height: 48px; border-radius: 50%;
+  overflow: hidden; border: 0.5px solid var(--olive-100);
+  flex-shrink: 0; background: var(--grey-100);
+  position: relative;
+}
+.profile-avatar img {
+  position: absolute;
+  width: 315.06%; height: 209.82%;
+  top: -23.43%; left: -165.01%;
+  max-width: none; display: block;
+  object-fit: cover;
+}
+.profile-info {
+  display: flex; flex-direction: column; gap: 0;
+}
+.profile-name {
+  font-family: var(--font-serif);
+  font-size: 20px; font-weight: 400;
+  color: var(--olive); line-height: 1.3;
+  white-space: nowrap;
+}
+.profile-finds {
+  font-family: var(--font-sans);
+  font-size: 10px; font-weight: 400;
+  color: var(--grey-300); letter-spacing: 0.25px;
+  line-height: 1.3;
+}
+
+/* Map top row (profile card + expand btn) */
+.map-top-row {
+  display: flex; align-items: flex-start;
+  justify-content: space-between;
+}
+
+/* Expand button: 44×44 glass circle */
+.expand-btn {
+  width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-full); border: none;
+  box-shadow: var(--shadow-nav);
+  cursor: pointer; position: relative;
+  isolation: isolate; overflow: hidden;
+  background: transparent; flex-shrink: 0;
+}
+.expand-btn::before {
+  content: ''; position: absolute; inset: 0;
+  border-radius: var(--radius-full);
+  background: rgba(255,255,255,0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  pointer-events: none;
+}
+.expand-btn::after {
+  content: ''; position: absolute; inset: 0;
+  border-radius: var(--radius-full);
+  background: #ddd;
+  mix-blend-mode: color-burn;
+  pointer-events: none;
+}
+.expand-btn .glass-darken {
+  position: absolute; inset: 0;
+  border-radius: var(--radius-full);
+  background: #f7f7f7;
+  mix-blend-mode: darken;
+}
+.expand-btn .toolbar-icon { position: relative; z-index: 1; }
+
+/* Location card at bottom of map */
+.location-card {
+  position: relative; overflow: hidden;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-nav);
+  padding: 8px 0 8px 8px;
+}
+.location-card::before {
+  content: ''; position: absolute; inset: 0;
+  border-radius: var(--radius-md);
+  background: rgba(255,255,255,0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  pointer-events: none;
+}
+.location-card::after {
+  content: ''; position: absolute; inset: 0;
+  border-radius: var(--radius-md);
+  background: #ddd;
+  mix-blend-mode: color-burn;
+  pointer-events: none;
+}
+.location-card .glass-darken {
+  position: absolute; inset: 0;
+  border-radius: var(--radius-md);
+  background: #f7f7f7;
+  mix-blend-mode: darken;
+}
+.location-inner {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column; gap: 2px;
+  width: 157px;
+}
+.location-row {
+  display: flex; align-items: center; gap: 4px;
+}
+.location-name {
+  font-family: var(--font-sans);
+  font-size: 15px; font-weight: 400;
+  color: #454649; letter-spacing: 0.5px;
+  white-space: nowrap; line-height: 1.3;
+}
+.location-date {
+  font-family: var(--font-sans);
+  font-size: 10px; font-weight: 400;
+  color: var(--grey-200); letter-spacing: 0.25px;
+  line-height: 1.3;
+}
+
+/* ── FIND CONDITIONS ────────────────────────────────────── */
+#find-conditions {
+  display: flex; flex-direction: column;
+  gap: var(--space-5);
+  padding-top: var(--space-8);
+}
+
+.section-label {
+  font-family: var(--font-serif);
+  font-size: 16px; font-weight: 400;
+  color: var(--ink-300); line-height: 18px;
+  padding: 0 var(--space-5);
+  white-space: nowrap;
+}
+
+/* Condition outer card */
+.conditions-card {
+  margin: 0 var(--space-5);
+  background: #f9f7eb;
+  border: 0.5px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-small);
+  padding: var(--space-4);
+  display: flex; flex-direction: column; gap: 8px;
+}
+.card-section-title {
+  font-family: var(--font-serif);
+  font-size: 20px; font-weight: 400;
+  color: var(--olive); line-height: 1.3;
+  white-space: nowrap;
+}
+
+/* Biome + Weather row */
+.condition-row {
+  display: flex; gap: 8px; align-items: stretch;
+}
+
+/* Biome card */
+.biome-card {
+  width: 169px;
+  background: var(--cream-50);
+  border: 0.5px solid var(--brown-200);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-4);
+  display: flex; flex-direction: column; gap: 8px;
+  flex-shrink: 0; overflow: hidden;
+}
+.sub-card-label {
+  font-family: var(--font-sans);
+  font-size: 10px; font-weight: 400;
+  color: var(--ink-300); letter-spacing: 0.25px;
+  white-space: nowrap; line-height: 1.3;
+}
+
+/* Biome image area */
+.biome-image-wrap {
+  background: linear-gradient(to bottom, #d5dae5, var(--cream-50));
+  border: 0.5px solid var(--border-default);
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  padding: var(--space-4);
+  width: 100%;
+}
+.biome-image-wrap img {
+  width: 124px; height: 102px;
+  object-fit: cover; display: block;
+  border-radius: 4px;
+}
+
+.biome-info {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.biome-text { display: flex; flex-direction: column; gap: 8px; }
+.biome-place {
+  font-family: var(--font-sans);
+  font-size: 16px; font-weight: 400;
+  color: var(--ink); line-height: 1.3;
+  white-space: nowrap;
+}
+.biome-sublabel {
+  font-family: var(--font-sans);
+  font-size: 10px; font-weight: 400;
+  color: var(--ink-200); letter-spacing: 0.25px;
+  white-space: nowrap; line-height: 1.3;
+}
+.chevron-icon {
+  width: 16px; height: 16px;
+  position: relative; overflow: hidden; flex-shrink: 0;
+}
+.chevron-icon img {
+  width: 100%; height: 100%; display: block; object-fit: contain;
+}
+
+/* Weather card */
+.weather-card {
+  flex: 1 0 0;
+  min-width: 0;
+  background: var(--cream-50);
+  border: 0.5px solid var(--brown-200);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-4);
+  display: flex; flex-direction: column;
+  justify-content: space-between;
+  gap: 8px; overflow: hidden;
+}
+
+/* Weather gradient box */
+.weather-gradient-box {
+  border: 0.5px solid var(--border-default);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  height: 126px;
+  position: relative;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 10px;
+  padding: var(--space-5) var(--space-4);
+  /* Warm coral → golden → neutral → cool sky gradient */
+  background: radial-gradient(ellipse at 75% 90%,
+    rgba(253,188,170,1) 0%,
+    rgba(253,224,170,1) 30%,
+    rgba(239,233,213,1) 60%,
+    rgba(226,242,255,1) 100%);
+}
+.weather-temp {
+  font-family: var(--font-serif);
+  font-size: 69.5px; font-weight: 400;
+  color: #524e56;
+  line-height: 1.1;
+  letter-spacing: -1.09px;
+  position: relative; z-index: 1;
+  flex: 1;
+  display: flex; align-items: center;
+}
+.weather-curve {
+  position: absolute;
+  bottom: 0; left: -16px;
+  width: 176.7px; height: 105.7px;
+  pointer-events: none;
+}
+.weather-info {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.weather-text { display: flex; flex-direction: column; gap: 8px; }
+.weather-condition {
+  font-family: var(--font-sans);
+  font-size: 16px; font-weight: 400;
+  color: var(--ink); line-height: 1.3;
+  white-space: nowrap;
+}
+.weather-date {
+  font-family: var(--font-sans);
+  font-size: 10px; font-weight: 400;
+  color: var(--ink-200); letter-spacing: 0.25px;
+  white-space: nowrap; line-height: 1.3;
+}
+
+/* Data Quality card */
+.data-quality-card {
+  margin: 0 var(--space-5);
+  background: var(--cream-50);
+  border: 0.5px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-small);
+  overflow: hidden;
+}
+.dq-header {
+  border-bottom: 0.5px solid var(--border-default);
+  padding: 8px var(--space-4);
+}
+.dq-items {
+  display: flex; align-items: center;
+  gap: 37px;
+  padding: var(--space-4);
+}
+.dq-item {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 4px;
+  width: 91px;
+}
+.dq-badge {
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+}
+.dq-badge img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.dq-label {
+  font-family: var(--font-sans);
+  font-size: 10px; font-weight: 400;
+  color: var(--grey-200); letter-spacing: 0.25px;
+  text-align: center; line-height: 1.3;
+}
+
+/* Projects card */
+.projects-card {
+  margin: 0 var(--space-5);
+  background: var(--cream-50);
+  border: 0.5px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-small);
+  padding: var(--space-4);
+  display: flex; flex-direction: column; gap: 8px;
+}
+.project-item {
+  background: var(--cream-50);
+  border: 0.5px solid var(--brown-200);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  height: 129px;
+  overflow: hidden;
+  padding: var(--space-4);
+  display: flex; flex-direction: column;
+  justify-content: space-between;
+}
+.project-photo-placeholder {
+  flex: 1;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--olive-100), var(--brown-100));
+  box-shadow: var(--shadow-small);
+  margin-bottom: 8px;
+}
+.project-info { display: flex; flex-direction: column; }
+.project-name {
+  font-family: var(--font-sans);
+  font-size: 16px; font-weight: 400;
+  color: var(--brown-500); line-height: 20px;
+  white-space: nowrap;
+}
+.project-observers {
+  font-family: var(--font-sans);
+  font-size: 10px; font-weight: 400;
+  color: var(--ink-200); letter-spacing: 0.25px;
+  line-height: 1.3;
+}
+
+/* ── TAB PANELS ─────────────────────────────────────────── */
+.tab-panel { display: block; }
+.tab-panel[hidden] { display: none; }
+
+/* ── LEARN TAB ───────────────────────────────────────────── */
+#panel-learn {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding-bottom: 0;
+}
+
+/* Species + Map card */
+.learn-main-card {
+  margin: 16px 16px 0;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+/* Olive species info section */
+.species-info {
+  background: var(--olive);
+  border-bottom: 0.5px solid var(--border-default);
+  box-shadow: var(--shadow-small);
+  padding: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.species-text {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1 0 0;
+  min-width: 0;
+}
+
+.species-name {
+  font-family: var(--font-serif);
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--paper-500);
+  line-height: 0.98;
+  letter-spacing: -0.5px;
+  padding-left: 3px;
+}
+
+.species-desc {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: var(--olive-200);
+  letter-spacing: 0.1px;
+  line-height: 1.3;
+  max-height: 47px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 270px;
+}
+
+/* Stats row */
+.species-stats {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+}
+
+.stat-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 89px;
+  overflow: hidden;
+}
+
+.stat-label {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: var(--olive-200);
+  letter-spacing: 0.1px;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.stat-badge img {
+  width: 49px; height: 49px;
+  display: block;
+  object-fit: contain;
+}
+
+.stat-lc {
+  width: 50px; height: 50px;
+  border: 3px solid var(--paper-50);
+  border-radius: 250px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.stat-lc-text {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--paper-50);
+  line-height: 1;
+}
+
+.stat-finds {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--paper-50);
+  letter-spacing: -0.25px;
+  line-height: 1.2;
+}
+
+.stat-divider {
+  width: 0;
+  align-self: stretch;
+  border-left: 0.5px solid rgba(200,207,191,0.35);
+  flex-shrink: 0;
+}
+
+/* Map section within learn card */
+.learn-map-wrap {
+  position: relative;
+  height: 247px;
+  overflow: hidden;
+}
+
+.learn-map-wrap img.learn-map-img {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
+.learn-map-expand {
+  position: absolute;
+  bottom: 16px; right: 16px;
+  width: 44px; height: 44px;
+  border-radius: 250px;
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  position: absolute;
+  isolation: isolate; overflow: hidden;
+  background: transparent;
+  box-shadow: 0px 8px 40px rgba(0,0,0,0.12);
+}
+.learn-map-expand::before {
+  content: ''; position: absolute; inset: 0; border-radius: 250px;
+  background: rgba(255,255,255,0.65);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  z-index: 0;
+}
+.learn-map-expand::after {
+  content: ''; position: absolute; inset: 0; border-radius: 250px;
+  background: #ddd; mix-blend-mode: color-burn;
+  z-index: 1; pointer-events: none;
+}
+.learn-map-expand .expand-darken {
+  position: absolute; inset: 0; border-radius: 250px;
+  background: #f7f7f7; mix-blend-mode: darken;
+  z-index: 2; pointer-events: none;
+}
+.learn-map-expand svg { position: relative; z-index: 3; }
+
+/* Observation Gallery */
+.learn-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.learn-section-header {
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+}
+
+.section-title-serif {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--ink-300);
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.gallery-scroll {
+  display: flex;
+  gap: 8px;
+  padding: 0 16px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+}
+.gallery-scroll::-webkit-scrollbar { display: none; }
+
+.gallery-photo {
+  flex-shrink: 0;
+  width: 181px; height: 112px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  scroll-snap-align: start;
+  background: var(--brown-50);
+}
+.gallery-photo img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
+.view-all {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--grey-300);
+  letter-spacing: 0.5px;
+  padding: 0 16px;
+  line-height: 1.3;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+/* Story Card */
+.stories-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 16px;
+}
+
+.story-card {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  text-decoration: none;
+  display: block;
+}
+
+.story-card-image {
+  position: relative;
+  aspect-ratio: 2912 / 1632;
+  overflow: hidden;
+}
+.story-card-image img {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.story-card-image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(200,199,111,0.5) 0%, var(--paper-500) 48%);
+  pointer-events: none;
+}
+
+.story-card-body {
+  background: var(--brown-500);
+  box-shadow: var(--shadow-small);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.story-label {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  color: var(--paper-500);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  line-height: 1.3;
+}
+
+.story-card-title {
+  font-family: var(--font-serif);
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--paper-500);
+  line-height: 0.98;
+  letter-spacing: -0.5px;
+}
+
+.story-card-desc {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: var(--paper-500);
+  letter-spacing: 0.1px;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* ── NAV BAR ─────────────────────────────────────────────── */
+#nav-bar {
+  position: fixed;
+  left: 16px; right: 16px; bottom: 12px;
+  z-index: 50;
+  height: var(--nav-h);
+  border-radius: 250px;
+  background: rgba(255,255,255,0.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-nav);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px;
+  isolation: isolate; overflow: hidden;
+}
+#nav-bar::before {
+  content: ''; position: absolute; inset: 0; border-radius: 250px;
+  background: var(--paper-50); mix-blend-mode: color-burn;
+  pointer-events: none; z-index: 0;
+}
+#nav-bar::after {
+  content: ''; position: absolute; inset: 0; border-radius: 250px;
+  background: var(--paper-50); mix-blend-mode: darken;
+  pointer-events: none; z-index: 0;
+}
+.nav-indicator {
+  position: absolute; left: 0; top: 8px;
+  width: 72px; height: calc(100% - 16px);
+  border-radius: 250px;
+  background: var(--fill-vibrant-tert);
+  transition: transform 0.35s cubic-bezier(0.34,1.4,0.64,1),
+              width   0.35s cubic-bezier(0.34,1.4,0.64,1);
+  pointer-events: none; z-index: 0; will-change: transform, width;
+}
+.nav-item {
+  flex: 1 0 0; min-width: 1px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 0; border: none; background: transparent;
+  cursor: pointer; padding: 2px 4px 4px;
+  border-radius: 250px;
+  font-family: var(--font-sans);
+  font-size: 10px; font-weight: 400; letter-spacing: 0.25px;
+  color: var(--olive);
+  overflow: hidden; margin-right: -8px;
+  touch-action: none;
+  position: relative; z-index: 1; white-space: nowrap;
+}
+.nav-item:last-child { margin-right: 0; }
+.nav-item .icon-32 {
+  width: 32px; height: 32px;
+  position: relative; overflow: hidden; flex-shrink: 0;
+}
+.nav-label { display: block; width: 44px; text-align: center; line-height: 1.3; overflow: hidden; }
+</style>
+</head>
+<body>
+
+<!-- ══ FLOATING TOOLBAR ════════════════════════════════════ -->
+<div id="toolbar">
+  <!-- Back button -->
+  <button class="glass-btn" id="btn-back" onclick="history.back()">
+    <div class="glass-darken"></div>
+    <svg class="toolbar-icon" width="22" height="20" viewBox="0 0 22 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10 1L1 10L10 19" stroke="#252024" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M1 10H21" stroke="#252024" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  </button>
+
+  <!-- Action buttons: + and share in a glass pill -->
+  <div class="glass-btn" id="btn-actions">
+    <div class="glass-darken"></div>
+    <!-- Plus icon -->
+    <svg class="toolbar-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 4V20" stroke="#252024" stroke-width="2" stroke-linecap="round"/>
+      <path d="M4 12H20" stroke="#252024" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <!-- Share icon -->
+    <svg class="toolbar-icon" width="20" height="24" viewBox="0 0 20 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10 1V15" stroke="#252024" stroke-width="2" stroke-linecap="round"/>
+      <path d="M6 5L10 1L14 5" stroke="#252024" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M1 14V21C1 22.1046 1.89543 23 3 23H17C18.1046 23 19 22.1046 19 21V14" stroke="#252024" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  </div>
+</div>
+
+<!-- ══ SCROLLABLE PAGE CONTENT ═════════════════════════════ -->
+<div id="page">
+
+  <!-- Hero image — slides behind the toolbar -->
+  <div id="hero">
+    <img id="hero-img" src="https://www.figma.com/api/mcp/asset/97d3a79e-e656-40a5-8de8-85e64b017bed" alt="Coast Live Oak">
+    <div id="hero-gradient"></div>
+    <div id="hero-meta">
+      <span class="hero-title">Coast Live Oak</span>
+      <span class="hero-subtitle">Quercus agrifolia</span>
+    </div>
+  </div>
+
+  <!-- Page dots -->
+  <div id="page-dots">
+    <div class="dot active"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+
+  <!-- Tab switcher: Find / Activity / Log -->
+  <div id="tab-switcher">
+    <button class="tab-item active" data-tab="find">Find</button>
+    <button class="tab-item" data-tab="activity">Activity</button>
+    <button class="tab-item" data-tab="learn">Learn</button>
+  </div>
+
+  <!-- ══ FIND TAB PANEL ═════════════════════════════════════ -->
+  <div id="panel-find" class="tab-panel">
+
+  <!-- Map section — real Mapbox map -->
+  <div id="map-section">
+    <div id="find-map"></div>
+    <div class="map-ui">
+      <!-- Top row: profile card + expand btn -->
+      <div class="map-top-row">
+        <!-- Profile card -->
+        <div class="profile-card-map">
+          <div class="glass-darken2"></div>
+          <div class="profile-card-inner">
+            <div class="profile-avatar">
+              <img src="https://www.figma.com/api/mcp/asset/40a0d2cb-8979-45e2-81bb-d9f1a0c35ed2" alt="Alice Edwards">
+            </div>
+            <div class="profile-info">
+              <span class="profile-name">Alice Edwards</span>
+              <span class="profile-finds">127 finds</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Expand button -->
+        <button class="expand-btn" id="btn-expand">
+          <div class="glass-darken"></div>
+          <svg class="toolbar-icon" id="expand-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 1H19V8" stroke="#252024" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8 19H1V12" stroke="#252024" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M19 1L12 8" stroke="#252024" stroke-width="2" stroke-linecap="round"/>
+            <path d="M1 19L8 12" stroke="#252024" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Location card at bottom -->
+      <div class="location-card">
+        <div class="glass-darken"></div>
+        <div class="location-inner">
+          <div class="location-row">
+            <!-- Location pin SVG -->
+            <svg class="toolbar-icon" width="10" height="14" viewBox="0 0 10 14" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+              <path d="M5 0C2.24 0 0 2.24 0 5C0 8.5 5 14 5 14S10 8.5 10 5C10 2.24 7.76 0 5 0ZM5 6.75C4.04 6.75 3.25 5.96 3.25 5C3.25 4.04 4.04 3.25 5 3.25C5.96 3.25 6.75 4.04 6.75 5C6.75 5.96 5.96 6.75 5 6.75Z" fill="#454649"/>
+            </svg>
+            <span class="location-name">Avila Beach, CA</span>
+          </div>
+          <span class="location-date">July 10, 2025, 10:19 AM</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FIND CONDITIONS ════════════════════════════════════ -->
+  <div id="find-conditions">
+
+    <div class="section-label">Find Conditions</div>
+
+    <!-- Condition card: Biome + Weather -->
+    <div class="conditions-card">
+      <div class="card-section-title">Condition</div>
+      <div class="condition-row">
+
+        <!-- Biome card -->
+        <div class="biome-card">
+          <div class="sub-card-label">Biome</div>
+          <div class="biome-image-wrap">
+            <img src="https://www.figma.com/api/mcp/asset/b0f3b73c-5afd-4577-ae1d-5a54e017fa90" alt="Riparian biome">
+          </div>
+          <div class="biome-info">
+            <div class="biome-text">
+              <span class="biome-place">Riparian Edge</span>
+              <span class="biome-sublabel">Perfumo Canyon</span>
+            </div>
+            <div class="chevron-icon" style="transform:rotate(180deg)">
+              <img src="https://www.figma.com/api/mcp/asset/dfbbc95a-4449-49e0-9bd7-96f87502a541" alt="">
+            </div>
+          </div>
+        </div>
+
+        <!-- Weather card -->
+        <div class="weather-card">
+          <div class="sub-card-label">Weather</div>
+          <div class="weather-gradient-box">
+            <span class="weather-temp">54º</span>
+            <img class="weather-curve"
+              src="https://www.figma.com/api/mcp/asset/ce47c01b-4e37-4043-a0f0-4ef257f4922e"
+              alt="">
+          </div>
+          <div class="weather-info">
+            <div class="weather-text">
+              <span class="weather-condition">Partly Cloudy</span>
+              <span class="weather-date">July 10, 2025, 10:19 AM</span>
+            </div>
+            <div class="chevron-icon" style="transform:rotate(180deg)">
+              <img src="https://www.figma.com/api/mcp/asset/dfbbc95a-4449-49e0-9bd7-96f87502a541" alt="">
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Data Quality card -->
+    <div class="data-quality-card">
+      <div class="dq-header">
+        <div class="card-section-title">Data Quality</div>
+      </div>
+      <div class="dq-items">
+        <div class="dq-item">
+          <div class="dq-badge">
+            <img src="https://www.figma.com/api/mcp/asset/51e8d904-ed53-4598-aaac-8596a647c041" alt="Casual Grade">
+          </div>
+          <span class="dq-label">Casual Grade</span>
+        </div>
+        <div class="dq-item">
+          <div class="dq-badge">
+            <img src="https://www.figma.com/api/mcp/asset/512d16df-257a-481f-8ab4-edf23bbe9d3b" alt="Needs ID">
+          </div>
+          <span class="dq-label">Needs ID</span>
+        </div>
+        <div class="dq-item">
+          <div class="dq-badge">
+            <img src="https://www.figma.com/api/mcp/asset/71de89af-dff3-40ac-a25a-692364f36d23" alt="Research Grade">
+          </div>
+          <span class="dq-label">Research Grade</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Projects card -->
+    <div class="projects-card">
+      <div class="card-section-title">Projects</div>
+      <div class="project-item">
+        <div class="project-photo-placeholder"></div>
+        <div class="project-info">
+          <span class="project-name">Creek Recovery</span>
+          <span class="project-observers">12 Observers</span>
+        </div>
+      </div>
+      <div class="project-item">
+        <div class="project-photo-placeholder"></div>
+        <div class="project-info">
+          <span class="project-name">Pollinator Corridor</span>
+          <span class="project-observers">12 Observers</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /find-conditions -->
+
+  </div><!-- /panel-find -->
+
+  <!-- ══ ACTIVITY TAB PANEL ════════════════════════════════ -->
+  <div id="panel-activity" class="tab-panel" hidden>
+    <div style="padding: 48px 16px; text-align: center; color: var(--ink-300); font-family: var(--font-sans); font-size: 14px; letter-spacing: 0.4px;">
+      Activity coming soon.
+    </div>
+  </div>
+
+  <!-- ══ LEARN TAB PANEL ════════════════════════════════════ -->
+  <div id="panel-learn" class="tab-panel" hidden>
+
+    <!-- Species info + map card -->
+    <div class="learn-main-card">
+
+      <!-- Olive species info -->
+      <div class="species-info">
+        <div class="species-text">
+          <div class="species-name">Quercus agrifolia</div>
+          <p class="species-desc">The Coast Live Oak (Quercus agrifolia) is an iconic, majestic tree that serves as a cornerstone for wildlife and the surrounding ecosystem. It is easily-recognized by its gnarled branches and grand canopy. The Coast Live Oak flowers each spring and its acorns attract a wide variety of birds and butterflies — over 270 species rely on these trees for habitat and food.</p>
+        </div>
+
+        <div class="species-stats">
+          <!-- Category -->
+          <div class="stat-col">
+            <span class="stat-label">Category</span>
+            <div class="stat-badge">
+              <img src="https://www.figma.com/api/mcp/asset/33100a6a-5625-43a8-8d82-9b46bd598837" alt="Plant">
+            </div>
+          </div>
+
+          <div class="stat-divider"></div>
+
+          <!-- Status -->
+          <div class="stat-col">
+            <span class="stat-label">Status</span>
+            <div class="stat-lc">
+              <span class="stat-lc-text">LC</span>
+            </div>
+          </div>
+
+          <div class="stat-divider"></div>
+
+          <!-- Finds -->
+          <div class="stat-col" style="justify-content: space-between; align-self: stretch;">
+            <span class="stat-label">Finds</span>
+            <span class="stat-finds">55,916</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Map snapshot -->
+      <div class="learn-map-wrap">
+        <img class="learn-map-img"
+          src="https://www.figma.com/api/mcp/asset/ce025806-7187-43b5-a457-cf043dbc6293"
+          alt="Map">
+        <button class="learn-map-expand" aria-label="Expand map">
+          <span class="expand-darken"></span>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M12 1H19V8" stroke="#252024" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8 19H1V12" stroke="#252024" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M19 1L12 8" stroke="#252024" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M1 19L8 12" stroke="#252024" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+    </div><!-- /learn-main-card -->
+
+    <!-- Observation Gallery -->
+    <div class="learn-section">
+      <div class="learn-section-header">
+        <span class="section-title-serif">Observation Gallery</span>
+      </div>
+      <div class="gallery-scroll">
+        <div class="gallery-photo">
+          <img src="https://www.figma.com/api/mcp/asset/d3a0264f-341a-4785-9bcf-3841384e936f" alt="">
+        </div>
+        <div class="gallery-photo">
+          <img src="https://www.figma.com/api/mcp/asset/92a5c66e-462e-4511-ab3c-295caf893823" alt="">
+        </div>
+        <div class="gallery-photo">
+          <img src="https://www.figma.com/api/mcp/asset/10b5e86c-9449-4e24-880b-230f15d9e6a3" alt="">
+        </div>
+        <div class="gallery-photo">
+          <img src="https://www.figma.com/api/mcp/asset/12293b57-3dd1-4a9b-99cb-f3ed367044df" alt="">
+        </div>
+      </div>
+      <button class="view-all">View all</button>
+    </div>
+
+    <!-- Stories -->
+    <div class="stories-section">
+      <span class="section-title-serif">Stories</span>
+      <a href="story-cards.html" class="story-card">
+        <div class="story-card-image">
+          <img src="https://www.figma.com/api/mcp/asset/a04208ca-8e5b-4af5-8c42-0f8e70e49a4e" alt="Coast Live Oak">
+          <div class="story-card-image-overlay"></div>
+        </div>
+        <div class="story-card-body">
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <span class="story-label">WHY IT MATTERS</span>
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <div class="story-card-title">The Story of<br>a Keystone</div>
+            </div>
+          </div>
+          <p class="story-card-desc">270+ species. 5000 years of human history. A disease that could end it all.</p>
+        </div>
+      </a>
+    </div>
+
+    <!-- Bottom breathing room -->
+    <div style="height: 16px;"></div>
+
+  </div><!-- /panel-learn -->
+
+</div><!-- /page -->
+
+<!-- ══ NAV BAR ═══════════════════════════════════════════════ -->
+<div id="nav-bar">
+  <div class="nav-indicator"></div>
+
+  <button class="nav-item" data-nav="explore">
+    <div class="icon-32">
+      <div class="icon-inset" style="inset:15.76% 15.49% 15.49% 15.76%">
+        <img src="https://www.figma.com/api/mcp/asset/09b98f0b-a6b2-4e99-b9d1-d64ddf88d7ed" alt="">
+      </div>
+    </div>
+    <span class="nav-label">Explore</span>
+  </button>
+
+  <button class="nav-item" data-nav="log">
+    <div class="icon-32">
+      <div class="icon-inset" style="inset:15.63% 20.95% 15.83% 18.39%">
+        <img src="https://www.figma.com/api/mcp/asset/47d31587-7492-45af-bec4-7b37a89e0f92" alt="">
+      </div>
+    </div>
+    <span class="nav-label">Log</span>
+  </button>
+
+  <button class="nav-item" data-nav="observe">
+    <div class="icon-32">
+      <div class="icon-inset" style="inset:25.5% 16.06% 25.5% 15.19%">
+        <img src="https://www.figma.com/api/mcp/asset/278d2152-41ac-4957-9b68-567398a6c04d" alt="">
+      </div>
+    </div>
+    <span class="nav-label">Observe</span>
+  </button>
+
+  <button class="nav-item" data-nav="activity">
+    <div class="icon-32">
+      <div class="icon-inset" style="inset:15.52% 20.6% 15.73% 20.07%">
+        <img src="https://www.figma.com/api/mcp/asset/4b0f6861-1a6a-484a-83e9-3e98a4c6643d" alt="">
+      </div>
+    </div>
+    <span class="nav-label">Activity</span>
+  </button>
+
+  <button class="nav-item" data-nav="profile">
+    <div class="icon-32">
+      <div class="icon-inset" style="top:4.93px;left:4.93px;width:22px;height:22.108px">
+        <img src="https://www.figma.com/api/mcp/asset/891580cd-3cc0-43ce-9253-5cb672f5c66d" alt="">
+      </div>
+    </div>
+    <span class="nav-label">Profile</span>
+  </button>
+</div>
+
+<script>
+// ════════════════════════════════════════════════
+//  MAPBOX INIT — same style + token as index.html
+// ════════════════════════════════════════════════
+const GAIA_STYLE = 'mapbox://styles/articavisuals/cmmvc02ke00e901rng9w6e58b';
+const GAIA_DEFAULT_TOKEN = 'pk.eyJ1IjoiYXJ0aWNhdmlzdWFscyIsImEiOiJjbW1nNDdyeGYwMTY2MnpvaXVmYXNpMHAxIn0.yUA1pC9B2jBzt1P2dyTdoA';
+
+// Use stored token or default
+const token = localStorage.getItem('gaiaToken') || GAIA_DEFAULT_TOKEN;
+mapboxgl.accessToken = token;
+
+// Avila Beach, CA coordinates (find location)
+const FIND_CENTER = [-120.7361, 35.1797];
+
+const findMap = new mapboxgl.Map({
+  container: 'find-map',
+  style: GAIA_STYLE,
+  center: FIND_CENTER,
+  zoom: 13,
+  pitch: 0,
+  interactive: false  // static by default
+});
+
+// Add a pin marker for the find location
+findMap.on('load', () => {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36"><path d="M14 0C6.268 0 0 6.268 0 14c0 9.333 14 22 14 22S28 23.333 28 14C28 6.268 21.732 0 14 0z" fill="#67765B"/><circle cx="14" cy="14" r="5" fill="white" opacity="0.9"/></svg>`;
+  const img = new Image(28, 36);
+  img.onload = () => {
+    if (!findMap.hasImage('pin-find')) findMap.addImage('pin-find', img);
+    findMap.addSource('find-pin', {
+      type: 'geojson',
+      data: { type: 'Feature', geometry: { type: 'Point', coordinates: FIND_CENTER }, properties: {} }
+    });
+    findMap.addLayer({
+      id: 'find-pin-layer',
+      type: 'symbol',
+      source: 'find-pin',
+      layout: { 'icon-image': 'pin-find', 'icon-size': 1, 'icon-anchor': 'bottom' }
+    });
+  };
+  img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+});
+
+// ── Expand / collapse map ────────────────────────────────
+const mapSection = document.getElementById('map-section');
+const expandBtn  = document.getElementById('btn-expand');
+const expandIcon = document.getElementById('expand-icon');
+let mapExpanded  = false;
+
+expandBtn.addEventListener('click', () => {
+  mapExpanded = !mapExpanded;
+  mapSection.classList.toggle('expanded', mapExpanded);
+  findMap.scrollZoom.enable();
+  findMap.dragPan.enable();
+
+  // Toggle icon: expand ↔ collapse
+  if (mapExpanded) {
+    expandIcon.innerHTML = `
+      <path d="M7 1H1V7" stroke="#252024" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M13 19H19V13" stroke="#252024" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M1 1L8 8" stroke="#252024" stroke-width="2" stroke-linecap="round"/>
+      <path d="M19 19L12 12" stroke="#252024" stroke-width="2" stroke-linecap="round"/>`;
+  } else {
+    expandIcon.innerHTML = `
+      <path d="M12 1H19V8" stroke="#252024" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M8 19H1V12" stroke="#252024" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M19 1L12 8" stroke="#252024" stroke-width="2" stroke-linecap="round"/>
+      <path d="M1 19L8 12" stroke="#252024" stroke-width="2" stroke-linecap="round"/>`;
+    findMap.scrollZoom.disable();
+    findMap.dragPan.disable();
+  }
+
+  // Resize map after transition
+  setTimeout(() => findMap.resize(), 420);
+});
+
+// ── Nav indicator sliding animation ──────────────────────
+(function() {
+  const bar  = document.getElementById('nav-bar');
+  const ind  = bar.querySelector('.nav-indicator');
+  const btns = bar.querySelectorAll('.nav-item');
+
+  function moveIndicator(btn) {
+    const barRect = bar.getBoundingClientRect();
+    const btnRect = btn.getBoundingClientRect();
+    ind.style.width     = btnRect.width + 'px';
+    ind.style.transform = `translateX(${btnRect.left - barRect.left}px)`;
+  }
+
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      btns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      moveIndicator(btn);
+    });
+  });
+
+  // No tab active on this detail page
+  ind.style.transform = 'translateX(-200px)';
+  ind.style.width = '76px';
+})();
+
+// ── Tab switcher ─────────────────────────────────────────
+const tabBtns  = document.querySelectorAll('.tab-item');
+const panels   = document.querySelectorAll('.tab-panel');
+
+tabBtns.forEach(tab => {
+  tab.addEventListener('click', () => {
+    tabBtns.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+
+    const target = tab.dataset.tab;
+    panels.forEach(p => {
+      const match = p.id === `panel-${target}`;
+      p.hidden = !match;
+    });
+
+    // Scroll to top of page when switching tabs
+    document.getElementById('page').scrollTop = 0;
+  });
+});
+</script>
+</body>
+</html>
