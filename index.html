@@ -99,7 +99,7 @@
   /* ── Layout ── */
   --header-h: 108px;
   --peek-h:   150px;
-  --nav-h:    68px;
+  --nav-h:    56px;
   --nav-gap:  12px;
 
   /* ── Transitions ── */
@@ -327,7 +327,7 @@ html, body {
   height: 134px;                 /* Figma spec: Map Panel Closed = 134px */
   background: var(--paper);
   border: 0.5px solid var(--olive-100);
-  border-radius: 48px;           /* radius/xxl from Figma */
+  border-radius: 35px;           /* Figma node I571:13501;289:2105 */
   /* Top-align content so handle pill + label stay visible above nav bar overlay */
   display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
   padding-top: 28px;             /* clears the absolute handle pill (12px + 4px pill + 12px gap) */
@@ -542,18 +542,18 @@ html, body {
 /* ── NAV BAR (fixed pill — always visible, all 3 sheet states) ── */
 #nav-bar {
   position: fixed;
-  left: 16px; right: 16px;
-  bottom: 12px;
+  left: 15px; right: 15px;
+  bottom: 30px;
   z-index: 50;   /* above sheet */
   height: var(--nav-h);
-  border-radius: 250px;
-  /* Liquid Glass — matches Figma node 451:3691 blend stack */
+  border-radius: 296px;
+  /* Warm Glass — matches Figma node 576:13693 blend stack */
   background: rgba(255,255,255,0.65);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  box-shadow: var(--shadow-nav);
+  box-shadow: 0px 8px 40px rgba(0,0,0,0.12);
   display: flex; align-items: center; justify-content: space-between;
-  padding: 8px;
+  padding: 4px 5px 4px 1px;
   touch-action: none;
   isolation: isolate;
   overflow: hidden;
@@ -561,20 +561,21 @@ html, body {
 /* Liquid Glass blend layers behind nav items + indicator */
 #nav-bar::before {
   content: ''; position: absolute; inset: 0;
-  border-radius: 250px;
+  border-radius: 296px;
   background: var(--paper-50);   /* #fefdf9 — paper-white/50 */
   mix-blend-mode: color-burn;
   pointer-events: none; z-index: 0;
 }
 #nav-bar::after {
   content: ''; position: absolute; inset: 0;
-  border-radius: 250px;
+  border-radius: 296px;
   background: var(--paper-50);   /* #fefdf9 */
   mix-blend-mode: darken;
   pointer-events: none; z-index: 0;
 }
 .nav-item {
   flex: 1 0 0; min-width: 1px;
+  height: 48px;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   gap: 0; border: none; background: transparent;
@@ -587,7 +588,7 @@ html, body {
   color: var(--olive);
   overflow: hidden;
   /* Figma: negative right margin prevents items from squishing on narrow screens */
-  margin-right: -8px;
+  margin-right: -4px;
   touch-action: none;
   position: relative; z-index: 1;
   white-space: nowrap;
@@ -599,9 +600,9 @@ html, body {
 /* Sliding active indicator — width set dynamically by JS to match button */
 .nav-indicator {
   position: absolute;
-  left: 0; top: 8px;
-  width: 72px;   /* fallback; JS overrides with btn.offsetWidth on load */
-  height: calc(100% - 16px);
+  left: 0; top: 4px;
+  width: 76px;   /* fallback; JS overrides with btn.offsetWidth on load */
+  height: calc(100% - 8px);
   border-radius: 250px;
   background: var(--fill-vibrant-tert);  /* #e6ede3 from Figma */
   transition: transform 0.35s cubic-bezier(0.34, 1.4, 0.64, 1),
@@ -2337,47 +2338,47 @@ html, body {
   <button class="nav-item active" data-nav="explore">
     <div class="icon-32">
       <div class="icon-inset" style="inset:15.76% 15.49% 15.49% 15.76%">
-        <img src="https://www.figma.com/api/mcp/asset/09b98f0b-a6b2-4e99-b9d1-d64ddf88d7ed" alt="">
+        <img src="https://www.figma.com/api/mcp/asset/7b67554b-e43f-4d85-b283-17a2d696905e" alt="">
       </div>
     </div>
     <span class="nav-label">Explore</span>
   </button>
 
-  <!-- Log — notebook/log icon (node I452:3805;451:3716;496:2727) -->
+  <!-- Log — notebook/log icon (node I576:13695;451:3716;496:2727) -->
   <button class="nav-item" data-nav="log">
     <div class="icon-32">
       <div class="icon-inset" style="inset:15.63% 20.95% 15.83% 18.39%">
-        <img src="https://www.figma.com/api/mcp/asset/47d31587-7492-45af-bec4-7b37a89e0f92" alt="">
+        <img src="https://www.figma.com/api/mcp/asset/9f2b547d-b20b-43ff-b190-a1464989cdd2" alt="">
       </div>
     </div>
     <span class="nav-label">Log</span>
   </button>
 
-  <!-- Observe — binoculars icon (node I452:3813;451:3716;215:457), inset 25.5% 16.06% 25.5% 15.19% -->
+  <!-- Observe — binoculars icon (node I576:13696;451:3716;215:457), inset 25.5% 16.06% 25.5% 15.19% -->
   <button class="nav-item" data-nav="observe">
     <div class="icon-32">
       <div class="icon-inset" style="inset:25.5% 16.06% 25.5% 15.19%">
-        <img src="https://www.figma.com/api/mcp/asset/278d2152-41ac-4957-9b68-567398a6c04d" alt="">
+        <img src="https://www.figma.com/api/mcp/asset/68dd28fd-abd4-4b00-9ac3-7ba6c2d57821" alt="">
       </div>
     </div>
     <span class="nav-label">Observe</span>
   </button>
 
-  <!-- Activity — bell icon (node I452:3824;451:3716;226:1056), inset 15.52% 20.6% 15.73% 20.07% -->
+  <!-- Activity — bell icon (node I576:13697;451:3716;226:1056), inset 15.52% 20.6% 15.73% 20.07% -->
   <button class="nav-item" data-nav="activity">
     <div class="icon-32">
       <div class="icon-inset" style="inset:15.52% 20.6% 15.73% 20.07%">
-        <img src="https://www.figma.com/api/mcp/asset/4b0f6861-1a6a-484a-83e9-3e98a4c6643d" alt="">
+        <img src="https://www.figma.com/api/mcp/asset/d052222f-a9b8-45f6-af04-4b749e676e18" alt="">
       </div>
     </div>
     <span class="nav-label">Activity</span>
   </button>
 
-  <!-- Profile — person icon (node I452:3834;451:3716;215:445), 22×22.108px at top/left 4.93px -->
+  <!-- Profile — person icon (node I576:13698;451:3716;215:445), 22×22.108px at top/left 4.93px -->
   <button class="nav-item" data-nav="profile">
     <div class="icon-32">
       <div class="icon-inset" style="top:4.93px; left:4.93px; width:22px; height:22.108px">
-        <img src="https://www.figma.com/api/mcp/asset/891580cd-3cc0-43ce-9253-5cb672f5c66d" alt="">
+        <img src="https://www.figma.com/api/mcp/asset/d9df712e-2d63-4e59-9902-868e33239436" alt="">
       </div>
     </div>
     <span class="nav-label">Profile</span>
@@ -2391,7 +2392,7 @@ html, body {
 // ════════════════════════════════════════════════
 const HEADER_H = 108;
 const PEEK_H   = 150;  // 8px top + 134px card (Figma spec) + 8px bottom
-const NAV_H    = 80;   // nav pill (68px) + bottom gap (12px)
+const NAV_H    = 86;   // nav pill (56px) + bottom gap (30px)
 const SPRING   = 'cubic-bezier(0.32,0.72,0,1)';
 
 // ════════════════════════════════════════════════
