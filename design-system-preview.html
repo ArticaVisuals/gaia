@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gaia – Design System Preview</title>
+<style>
+/* ─── Reset & tokens ─────────────────────────────────────────── */
+:root {
+  --ink:       #252024;
+  --ink-300:   #7d7981;
+  --ink-700:   #1b181b;
+  --olive-50:  #f2f4f0;
+  --olive-100: #e3e7df;
+  --olive-200: #c8cfbf;
+  --olive-400: #8a9b7e;
+  --olive:     #67765b;
+  --paper-50:  #fefdf9;
+  --paper:     #fdfbf4;
+  --cream-300: #fbf7eb;
+  --bb-50:     #F6F2EE;
+  --bb-100:    #EDE5DC;
+  --bb-200:    #D8C9B8;
+  --bb-300:    #BFA98F;
+  --bb-400:    #AC9479;
+  --bb-500:    #9B856B;
+  --bb-600:    #89755E;
+  --grey-50:   #ededee;
+  --grey-100:  #d9d9db;
+  --grey:      #5b5c61;
+  --verm:      #b5493a;
+  --water:     #4F638D;
+
+  --radius-sm:  4px;
+  --radius-md:  8px;
+  --radius-lg:  14px;
+  --radius-xl:  24px;
+  --radius-xxl: 48px;
+  --radius-full:250px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body {
+  background: var(--paper-50);
+  color: var(--ink);
+  font-family: -apple-system, 'Helvetica Neue', sans-serif;
+  min-height: 100vh;
+}
+
+/* ─── Canvas (matches Figma "Design System" page layout) ────── */
+.ds-canvas {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+}
+
+/* ─── Page header ────────────────────────────────────────────── */
+.ds-header h1 {
+  font-size: 56px;
+  font-weight: 700;
+  letter-spacing: -1.5px;
+  line-height: 1;
+  color: var(--ink);
+}
+.ds-header p {
+  font-size: 16px;
+  color: var(--ink-300);
+  margin-top: 10px;
+}
+
+/* ─── Section chrome ─────────────────────────────────────────── */
+.ds-section { display: flex; flex-direction: column; gap: 32px; }
+.section-head { display: flex; flex-direction: column; gap: 12px; }
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--ink-300);
+}
+.hairline { height: 1px; background: rgba(0,0,0,0.10); }
+
+/* ─── Collection title row ───────────────────────────────────── */
+.col-title-row { display: flex; align-items: baseline; gap: 12px; }
+.col-title-row h3 { font-size: 20px; font-weight: 600; color: var(--ink); }
+.col-title-row .mode-chip { font-size: 11px; color: var(--ink-300); }
+
+/* ─── Color swatches ─────────────────────────────────────────── */
+.swatch-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px 12px;
+}
+.swatch-card { display: flex; flex-direction: column; gap: 5px; }
+.swatch-box {
+  width: 80px; height: 80px;
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,0.08);
+  position: relative;
+  overflow: hidden;
+}
+.swatch-hex-badge {
+  position: absolute;
+  bottom: 6px; left: 6px;
+  font-size: 9px;
+  font-weight: 600;
+  background: rgba(255,255,255,0.25);
+  backdrop-filter: blur(4px);
+  padding: 2px 5px;
+  border-radius: 4px;
+  letter-spacing: 0.3px;
+}
+.swatch-name  { font-size: 11px; font-weight: 500; color: var(--ink); }
+.swatch-path  { font-size: 10px; color: var(--ink-300); }
+
+/* ─── Collection groups ──────────────────────────────────────── */
+.collection-wrap { display: flex; flex-direction: column; gap: 20px; }
+
+/* ─── Number variables ───────────────────────────────────────── */
+.num-table { display: flex; flex-direction: column; gap: 0; }
+.num-row {
+  display: flex; align-items: center; gap: 16px;
+  padding: 8px 0;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  font-size: 13px;
+}
+.num-row .nname { flex: 1; color: var(--ink); }
+.num-bar { height: 8px; border-radius: 100px; background: rgba(103,118,91,0.2); flex-shrink: 0; }
+.num-val { color: var(--ink-300); min-width: 48px; text-align: right; }
+
+/* ─── Sub-section title ──────────────────────────────────────── */
+.sub-title { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 10px; }
+
+/* ─── Color styles groups ────────────────────────────────────── */
+.cat-group { display: flex; flex-direction: column; gap: 16px; }
+.cat-group-title { font-size: 15px; font-weight: 600; color: var(--ink); }
+
+/* ─── Typography rows ────────────────────────────────────────── */
+.type-group { display: flex; flex-direction: column; }
+.type-row {
+  display: flex; align-items: center; gap: 32px;
+  padding: 18px 12px;
+  border-radius: 8px;
+}
+.type-row:nth-child(odd) { background: rgba(0,0,0,0.02); }
+.type-sample { flex: 1; color: var(--ink); min-width: 0; }
+.type-meta { width: 220px; flex-shrink: 0; display: flex; flex-direction: column; gap: 3px; }
+.type-meta .tn  { font-size: 13px; font-weight: 600; color: var(--ink); }
+.type-meta .tf  { font-size: 11px; color: var(--ink-300); }
+.type-meta .tl  { font-size: 11px; color: var(--ink-300); }
+
+/* ─── Effect cards ───────────────────────────────────────────── */
+.effect-grid { display: flex; flex-wrap: wrap; gap: 32px; }
+.effect-card { display: flex; flex-direction: column; gap: 12px; }
+.effect-preview {
+  width: 100px; height: 100px;
+  border-radius: 20px;
+  background: #fff;
+}
+.effect-name { font-size: 12px; font-weight: 500; color: var(--ink); }
+.effect-desc { font-size: 11px; color: var(--ink-300); }
+
+/* ─── Component grid ─────────────────────────────────────────── */
+.comp-section-group { display: flex; flex-direction: column; gap: 20px; }
+.comp-group-title { font-size: 16px; font-weight: 600; color: var(--ink); }
+.comp-grid { display: flex; flex-wrap: wrap; gap: 20px; }
+.comp-card {
+  display: flex; flex-direction: column; gap: 10px;
+  padding: 16px;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid var(--bb-100);
+  min-width: 120px;
+  align-items: center;
+}
+.comp-thumb {
+  background: var(--paper-50);
+  border-radius: 8px;
+  width: 120px; height: 80px;
+  display: flex; align-items: center; justify-content: center;
+}
+.comp-thumb-icon {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: var(--olive-100);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.comp-name  { font-size: 12px; font-weight: 500; color: var(--ink); text-align: center; }
+.comp-variants { font-size: 10px; color: var(--ink-300); text-align: center; }
+
+/* ─── Sticky nav / toolbar ───────────────────────────────────── */
+.ds-nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(253,251,244,0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(0,0,0,0.07);
+  padding: 0 80px;
+  display: flex; align-items: center; gap: 0;
+}
+.ds-nav a {
+  font-size: 13px; font-weight: 500;
+  color: var(--ink-300);
+  text-decoration: none;
+  padding: 14px 16px;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+.ds-nav a:hover, .ds-nav a.active {
+  color: var(--olive);
+  border-bottom-color: var(--olive);
+}
+.ds-nav .push { margin-left: auto; }
+.push-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--olive); color: #fdfbf4;
+  border: none; border-radius: 8px;
+  padding: 7px 14px; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: background 0.15s;
+}
+.push-btn:hover { background: #5b6a50; }
+.push-btn svg { opacity: 0.9; }
+
+/* ─── Semantic table ─────────────────────────────────────────── */
+.sem-table { display: flex; flex-direction: column; gap: 0; }
+.sem-row {
+  display: flex; align-items: center; gap: 16px;
+  padding: 10px 0;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  font-size: 13px;
+}
+.sem-swatch { width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.08); }
+.sem-name   { flex: 1; color: var(--ink); font-weight: 500; }
+.sem-desc   { font-size: 11px; color: var(--ink-300); flex: 1.5; }
+.sem-val    { font-size: 10px; color: var(--ink-300); font-family: monospace; }
+
+/* ─── Spacing viz ────────────────────────────────────────────── */
+.spacing-grid { display: flex; flex-direction: column; gap: 0; }
+.space-row {
+  display: flex; align-items: center; gap: 16px;
+  padding: 8px 0;
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+.space-bar-wrap { flex: 1; }
+.space-bar { height: 8px; border-radius: 100px; background: var(--olive); opacity: 0.25; }
+.space-label { font-size: 12px; font-weight: 500; color: var(--ink); min-width: 72px; }
+.space-val   { font-size: 11px; color: var(--ink-300); min-width: 36px; text-align: right; }
+
+/* ─── Border-radius viz ──────────────────────────────────────── */
+.radius-grid { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-end; }
+.radius-card { display: flex; flex-direction: column; gap: 8px; align-items: center; }
+.radius-box  { width: 64px; height: 64px; background: var(--olive-100); border: 1px solid rgba(0,0,0,0.08); }
+.radius-lbl  { font-size: 11px; font-weight: 500; color: var(--ink); text-align: center; }
+.radius-val  { font-size: 10px; color: var(--ink-300); text-align: center; }
+
+/* ─── Shadow demos ───────────────────────────────────────────── */
+.shadow-grid { display: flex; flex-wrap: wrap; gap: 32px; }
+.shadow-demo { display: flex; flex-direction: column; gap: 12px; align-items: center; }
+.shadow-box  { width: 80px; height: 80px; border-radius: 16px; background: #fff; }
+.shadow-lbl  { font-size: 12px; font-weight: 500; color: var(--ink); }
+.shadow-desc { font-size: 10px; color: var(--ink-300); text-align: center; }
+
+/* ─── Scroll anchor offsets ──────────────────────────────────── */
+section[id] { scroll-margin-top: 50px; }
+
+/* ─── Tooltip on swatch hover ────────────────────────────────── */
+.swatch-box[title] { cursor: default; }
+</style>
+</head>
+<body>
+
+<!-- Sticky nav -->
+<nav class="ds-nav">
+  <a href="#variables" class="active">Variables</a>
+  <a href="#semantic">Semantic</a>
+  <a href="#color-styles">Color Styles</a>
+  <a href="#typography">Typography</a>
+  <a href="#effects">Effects</a>
+  <a href="#spacing">Spacing</a>
+  <a href="#radii">Radii</a>
+  <span class="push"></span>
+  <button class="push-btn" onclick="alert('Install the plugin in Figma → Plugins → Development → Import from manifest → select the design-system-plugin/manifest.json file, then run it to push directly to Figma.')">
+    <svg width="14" height="14" fill="none" viewBox="0 0 14 14">
+      <path d="M7 1v8M3 5l4-4 4 4M2 11h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Push to Figma
+  </button>
+</nav>
+
+<div class="ds-canvas">
+
+  <!-- ── Header ──────────────────────────────────────────────── -->
+  <div class="ds-header">
+    <h1>Design System</h1>
+    <p>Gaia Prototype &nbsp;·&nbsp; Preview generated <script>document.write(new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}))</script></p>
+  </div>
+
+  <!-- ── Variables ───────────────────────────────────────────── -->
+  <section class="ds-section" id="variables">
+    <div class="section-head">
+      <span class="section-label">Variables</span>
+      <div class="hairline"></div>
+    </div>
+
+    <!-- Primary / Olive-Green -->
+    <div class="collection-wrap">
+      <div class="col-title-row"><h3>primary / olive-green</h3><span class="mode-chip">1 mode</span></div>
+      <div class="swatch-grid" id="og-swatches"></div>
+    </div>
+
+    <!-- Primary / Paper-White -->
+    <div class="collection-wrap">
+      <div class="col-title-row"><h3>primary / paper-white</h3><span class="mode-chip">1 mode</span></div>
+      <div class="swatch-grid" id="pw-swatches"></div>
+    </div>
+
+    <!-- Broccoli-Brown -->
+    <div class="collection-wrap">
+      <div class="col-title-row"><h3>broccoli-brown</h3><span class="mode-chip">1 mode</span></div>
+      <div class="swatch-grid" id="bb-swatches"></div>
+    </div>
+
+    <!-- Ink-Black -->
+    <div class="collection-wrap">
+      <div class="col-title-row"><h3>ink-black</h3><span class="mode-chip">1 mode</span></div>
+      <div class="swatch-grid" id="ink-swatches"></div>
+    </div>
+
+    <!-- Secondary / Blackish-Grey -->
+    <div class="collection-wrap">
+      <div class="col-title-row"><h3>secondary / blackish-grey</h3><span class="mode-chip">1 mode</span></div>
+      <div class="swatch-grid" id="grey-swatches"></div>
+    </div>
+
+    <!-- Secondary / Vermillion -->
+    <div class="collection-wrap">
+      <div class="col-title-row"><h3>secondary / vermillion-red</h3><span class="mode-chip">1 mode</span></div>
+      <div class="swatch-grid" id="verm-swatches"></div>
+    </div>
+
+    <!-- Cream -->
+    <div class="collection-wrap">
+      <div class="col-title-row"><h3>cream</h3><span class="mode-chip">1 mode</span></div>
+      <div class="swatch-grid" id="cream-swatches"></div>
+    </div>
+
+    <!-- Water -->
+    <div class="collection-wrap">
+      <div class="col-title-row"><h3>water</h3><span class="mode-chip">1 mode · intentional exception</span></div>
+      <div class="swatch-grid" id="water-swatches"></div>
+    </div>
+  </section>
+
+  <!-- ── Semantic Tokens ──────────────────────────────────────── -->
+  <section class="ds-section" id="semantic">
+    <div class="section-head">
+      <span class="section-label">Semantic Tokens</span>
+      <div class="hairline"></div>
+    </div>
+    <div class="sem-table" id="sem-table"></div>
+  </section>
+
+  <!-- ── Typography ──────────────────────────────────────────── -->
+  <section class="ds-section" id="typography">
+    <div class="section-head">
+      <span class="section-label">Typography</span>
+      <div class="hairline"></div>
+    </div>
+
+    <div class="cat-group">
+      <p class="cat-group-title">Serif — New Spirit</p>
+      <div class="type-group" id="type-serif"></div>
+    </div>
+
+    <div class="cat-group">
+      <p class="cat-group-title">Sans — Neue Haas Unica</p>
+      <div class="type-group" id="type-sans"></div>
+    </div>
+  </section>
+
+  <!-- ── Effects ─────────────────────────────────────────────── -->
+  <section class="ds-section" id="effects">
+    <div class="section-head">
+      <span class="section-label">Effects & Shadows</span>
+      <div class="hairline"></div>
+    </div>
+    <div class="shadow-grid" id="shadow-grid"></div>
+  </section>
+
+  <!-- ── Spacing ─────────────────────────────────────────────── -->
+  <section class="ds-section" id="spacing">
+    <div class="section-head">
+      <span class="section-label">Spacing Scale</span>
+      <div class="hairline"></div>
+    </div>
+    <div class="spacing-grid" id="spacing-grid"></div>
+  </section>
+
+  <!-- ── Border Radii ────────────────────────────────────────── -->
+  <section class="ds-section" id="radii">
+    <div class="section-head">
+      <span class="section-label">Border Radii</span>
+      <div class="hairline"></div>
+    </div>
+    <div class="radius-grid" id="radius-grid"></div>
+  </section>
+
+  <!-- ── Components placeholder ──────────────────────────────── -->
+  <section class="ds-section" id="components">
+    <div class="section-head">
+      <span class="section-label">Components</span>
+      <div class="hairline"></div>
+    </div>
+    <div class="comp-grid" id="comp-grid"></div>
+  </section>
+
+</div><!-- /canvas -->
+
+<script>
+// ─── Token data (from tokens.json) ──────────────────────────
+const TOKENS = {
+  swatches: {
+    'og-swatches': [
+      { name:'50',  hex:'#f2f4f0' }, { name:'100', hex:'#e3e7df' },
+      { name:'200', hex:'#c8cfbf' }, { name:'400', hex:'#8a9b7e' },
+      { name:'500', hex:'#67765b' },
+    ],
+    'pw-swatches': [
+      { name:'50',  hex:'#fefdf9' }, { name:'100', hex:'#fefcf7' },
+      { name:'200', hex:'#fdfbf4' },
+    ],
+    'bb-swatches': [
+      { name:'50',  hex:'#F6F2EE' }, { name:'100', hex:'#EDE5DC' },
+      { name:'200', hex:'#D8C9B8' }, { name:'300', hex:'#BFA98F' },
+      { name:'400', hex:'#AC9479' }, { name:'500', hex:'#9B856B' },
+      { name:'600', hex:'#89755E' },
+    ],
+    'ink-swatches': [
+      { name:'300', hex:'#7d7981' }, { name:'500', hex:'#252024' },
+      { name:'700', hex:'#1b181b' },
+    ],
+    'grey-swatches': [
+      { name:'50',  hex:'#ededee' }, { name:'100', hex:'#d9d9db' },
+      { name:'500', hex:'#5b5c61' },
+    ],
+    'verm-swatches': [
+      { name:'500', hex:'#b5493a' },
+    ],
+    'cream-swatches': [
+      { name:'50',  hex:'#fefdf9' }, { name:'100', hex:'#fefcf7' },
+      { name:'200', hex:'#fdfbf4' }, { name:'300', hex:'#fbf7eb' },
+      { name:'400', hex:'#f6f0dd' }, { name:'500', hex:'#f0e8ce' },
+      { name:'600', hex:'#e9dfbf' },
+    ],
+    'water-swatches': [
+      { name:'500', hex:'#4F638D' },
+    ],
+  },
+  semantic: [
+    { name:'border-default',       hex:'#D8C9B8', desc:'Default border for cards, inputs' },
+    { name:'fill-vibrant-tertiary',hex:'#e6ede3', desc:'Nav selection highlight' },
+    { name:'surface-primary',      hex:'#fdfbf4', desc:'Page background' },
+    { name:'surface-sheet',        hex:'#fefcf7', desc:'Bottom sheet background' },
+    { name:'surface-card',         hex:'#fefdf9', desc:'Card / elevated surfaces' },
+    { name:'text-primary',         hex:'#252024', desc:'Primary text' },
+    { name:'text-secondary',       hex:'#7d7981', desc:'Section headings, muted text' },
+    { name:'text-tertiary',        hex:'#5b5c61', desc:'Placeholder, helper text' },
+    { name:'text-brand',           hex:'#67765b', desc:'Brand-colored text' },
+    { name:'text-on-fill',         hex:'#fefdf9', desc:'Text on filled backgrounds' },
+  ],
+  typography: {
+    serif: [
+      { name:'display / regular',  family:'New Spirit',     size:32, weight:400, lh:'1.1',  ls:'-0.5px' },
+      { name:'display / medium',   family:'New Spirit',     size:32, weight:500, lh:'1.1',  ls:'-0.5px' },
+      { name:'title-1 / regular',  family:'New Spirit',     size:28, weight:400, lh:'1.15', ls:'-0.3px' },
+      { name:'title-1 / medium',   family:'New Spirit',     size:28, weight:500, lh:'1.15', ls:'-0.3px' },
+      { name:'title-2 / regular',  family:'New Spirit',     size:24, weight:400, lh:'1.2',  ls:'-0.2px' },
+      { name:'title-2 / medium',   family:'New Spirit',     size:24, weight:500, lh:'1.2',  ls:'-0.2px' },
+      { name:'title-3 / regular',  family:'New Spirit',     size:20, weight:400, lh:'1.3',  ls:'0px' },
+      { name:'title-3 / medium',   family:'New Spirit',     size:20, weight:500, lh:'1.3',  ls:'0px' },
+      { name:'subhead-1 / regular',family:'New Spirit',     size:16, weight:400, lh:'18px', ls:'0px' },
+      { name:'subhead-1 / medium', family:'New Spirit',     size:16, weight:500, lh:'18px', ls:'0px' },
+      { name:'body / regular',     family:'New Spirit',     size:14, weight:400, lh:'1.4',  ls:'0px' },
+      { name:'body / medium',      family:'New Spirit',     size:14, weight:500, lh:'1.4',  ls:'0px' },
+    ],
+    sans: [
+      { name:'headline / regular', family:'Neue Haas Unica', size:17, weight:400, lh:'1.3',  ls:'0px' },
+      { name:'headline / medium',  family:'Neue Haas Unica', size:17, weight:500, lh:'1.3',  ls:'0px' },
+      { name:'headline / bold',    family:'Neue Haas Unica', size:17, weight:700, lh:'1.3',  ls:'0px' },
+      { name:'body / regular',     family:'Neue Haas Unica', size:15, weight:400, lh:'1.35', ls:'0px' },
+      { name:'body / medium',      family:'Neue Haas Unica', size:15, weight:500, lh:'1.35', ls:'0px' },
+      { name:'body / bold',        family:'Neue Haas Unica', size:15, weight:700, lh:'1.35', ls:'0px' },
+      { name:'button-sm / regular',family:'Neue Haas Unica', size:13, weight:400, lh:'1.2',  ls:'0px' },
+      { name:'button-sm / medium', family:'Neue Haas Unica', size:13, weight:500, lh:'1.2',  ls:'0px' },
+      { name:'button-sm / bold',   family:'Neue Haas Unica', size:13, weight:700, lh:'1.2',  ls:'0px' },
+      { name:'link-sm / regular',  family:'Neue Haas Unica', size:12, weight:400, lh:'20px', ls:'0px' },
+      { name:'link-sm / medium',   family:'Neue Haas Unica', size:12, weight:500, lh:'20px', ls:'0px' },
+      { name:'nav-label / regular',family:'Neue Haas Unica', size:10, weight:400, lh:'1.3',  ls:'0.25px' },
+      { name:'nav-label / medium', family:'Neue Haas Unica', size:10, weight:500, lh:'1.3',  ls:'0.25px' },
+      { name:'caption / regular',  family:'Neue Haas Unica', size:10, weight:400, lh:'1.3',  ls:'0.25px' },
+      { name:'caption / medium',   family:'Neue Haas Unica', size:10, weight:500, lh:'1.3',  ls:'0.25px' },
+    ],
+  },
+  shadows: [
+    { name:'shadow/sm',   desc:'Chips, tags, small buttons',
+      css:'0px 2px 8px rgba(155,133,107,0.10)' },
+    { name:'shadow/md',   desc:'Cards, search bar, inputs',
+      css:'0px 4px 20px rgba(155,133,107,0.16)' },
+    { name:'shadow/lg',   desc:'Nav, sheet, modals',
+      css:'0px 8px 40px rgba(155,133,107,0.24)' },
+    { name:'shadow/soft', desc:'Soft ambient shadow',
+      css:'0px 0px 20px 25px rgba(94,98,98,0.20)' },
+    { name:'shadow/small',desc:'Organism cards',
+      css:'0px 4px 20px rgba(128,105,38,0.09)' },
+    { name:'shadow/dark', desc:'Project cards',
+      css:'0px 4px 20px rgba(50,40,8,0.35)' },
+    { name:'shadow/nav',  desc:'Nav bar',
+      css:'0px 8px 40px rgba(0,0,0,0.12)' },
+  ],
+  spacing: [
+    { name:'space-0', val:0  }, { name:'space-1', val:2  },
+    { name:'space-2', val:4  }, { name:'space-3', val:8  },
+    { name:'space-4', val:12 }, { name:'space-5', val:16 },
+    { name:'space-6', val:20 }, { name:'space-7', val:24 },
+    { name:'space-8', val:32 },
+  ],
+  radii: [
+    { name:'sm',   val:4   }, { name:'md',   val:8   },
+    { name:'lg',   val:14  }, { name:'xl',   val:24  },
+    { name:'xxl',  val:48  }, { name:'full', val:250 },
+  ],
+  components: [
+    { name:'Nav Bar',         icon:'🗺', variants:3  },
+    { name:'Bottom Sheet',    icon:'📋', variants:3  },
+    { name:'FAB',             icon:'🔍', variants:2  },
+    { name:'Story Card',      icon:'🌿', variants:4  },
+    { name:'Organism Cell',   icon:'🐛', variants:3  },
+    { name:'Tag / Chip',      icon:'🏷',  variants:5  },
+    { name:'Search Bar',      icon:'🔎', variants:2  },
+    { name:'Profile Card',    icon:'👤', variants:1  },
+    { name:'Locate Button',   icon:'📍', variants:2  },
+    { name:'Toolbar Button',  icon:'⚙️', variants:4  },
+    { name:'Location Bar',    icon:'📌', variants:1  },
+    { name:'Input Field',     icon:'✏️', variants:3  },
+  ],
+};
+
+// ─── Helpers ─────────────────────────────────────────────────
+function lum(hex) {
+  const r=parseInt(hex.slice(1,3),16)/255,g=parseInt(hex.slice(3,5),16)/255,b=parseInt(hex.slice(5,7),16)/255;
+  const c=v=>v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4);
+  return 0.2126*c(r)+0.7152*c(g)+0.0722*c(b);
+}
+function textOnHex(hex) { return lum(hex) > 0.35 ? 'rgba(37,32,36,0.85)' : 'rgba(254,253,249,0.9)'; }
+
+function makeSwatch(name, hex, path) {
+  const card = document.createElement('div');
+  card.className = 'swatch-card';
+
+  const box = document.createElement('div');
+  box.className = 'swatch-box';
+  box.style.background = hex;
+  box.title = hex;
+
+  const badge = document.createElement('span');
+  badge.className = 'swatch-hex-badge';
+  badge.textContent = hex.toLowerCase();
+  badge.style.color = textOnHex(hex);
+  box.appendChild(badge);
+
+  const nm = document.createElement('div'); nm.className = 'swatch-name'; nm.textContent = name;
+  const pt = document.createElement('div'); pt.className = 'swatch-path'; pt.textContent = hex.toLowerCase();
+
+  card.appendChild(box); card.appendChild(nm);
+  if (path) { const pp = document.createElement('div'); pp.className='swatch-path'; pp.textContent=path; card.appendChild(pp); }
+  return card;
+}
+
+// ─── Render swatches ─────────────────────────────────────────
+for (const [id, swatches] of Object.entries(TOKENS.swatches)) {
+  const el = document.getElementById(id);
+  if (!el) continue;
+  swatches.forEach(({ name, hex }) => el.appendChild(makeSwatch(name, hex)));
+}
+
+// ─── Render semantic tokens ───────────────────────────────────
+const semTable = document.getElementById('sem-table');
+TOKENS.semantic.forEach(({ name, hex, desc }) => {
+  const row = document.createElement('div');
+  row.className = 'sem-row';
+
+  const sw = document.createElement('div');
+  sw.className = 'sem-swatch';
+  sw.style.background = hex;
+  sw.title = hex;
+
+  const nm = document.createElement('div'); nm.className='sem-name'; nm.textContent = name;
+  const ds = document.createElement('div'); ds.className='sem-desc'; ds.textContent = desc;
+  const vl = document.createElement('div'); vl.className='sem-val';  vl.textContent = hex.toLowerCase();
+
+  row.appendChild(sw); row.appendChild(nm); row.appendChild(ds); row.appendChild(vl);
+  semTable.appendChild(row);
+});
+
+// ─── Render typography ────────────────────────────────────────
+function renderTypeRows(data, containerId) {
+  const el = document.getElementById(containerId);
+  data.forEach((s, i) => {
+    const row = document.createElement('div');
+    row.className = 'type-row';
+    if (i % 2 === 0) row.style.background = 'rgba(0,0,0,0.02)';
+
+    const sample = document.createElement('div');
+    sample.className = 'type-sample';
+    sample.textContent = 'The quick brown fox';
+    sample.style.cssText = `
+      font-size:${Math.min(s.size,36)}px;
+      font-weight:${s.weight};
+      line-height:${s.lh};
+      letter-spacing:${s.ls};
+      font-family:"${s.family}", serif;
+    `;
+
+    const meta = document.createElement('div');
+    meta.className = 'type-meta';
+    meta.innerHTML = `
+      <span class="tn">${s.name}</span>
+      <span class="tf">${s.family} · ${s.weight} · ${s.size}px</span>
+      <span class="tl">lh: ${s.lh}  ls: ${s.ls}</span>
+    `;
+
+    row.appendChild(sample); row.appendChild(meta);
+    el.appendChild(row);
+  });
+}
+renderTypeRows(TOKENS.typography.serif, 'type-serif');
+renderTypeRows(TOKENS.typography.sans,  'type-sans');
+
+// ─── Render shadows ───────────────────────────────────────────
+const shadowGrid = document.getElementById('shadow-grid');
+TOKENS.shadows.forEach(({ name, desc, css }) => {
+  const demo = document.createElement('div');
+  demo.className = 'shadow-demo';
+
+  const box = document.createElement('div');
+  box.className = 'shadow-box';
+  box.style.boxShadow = css;
+
+  const lbl  = document.createElement('div'); lbl.className='shadow-lbl';  lbl.textContent=name.split('/').pop();
+  const desc2= document.createElement('div'); desc2.className='shadow-desc'; desc2.textContent=desc;
+
+  demo.appendChild(box); demo.appendChild(lbl); demo.appendChild(desc2);
+  shadowGrid.appendChild(demo);
+});
+
+// ─── Render spacing ───────────────────────────────────────────
+const spGrid = document.getElementById('spacing-grid');
+TOKENS.spacing.forEach(({ name, val }) => {
+  const row = document.createElement('div');
+  row.className = 'space-row';
+
+  const lbl = document.createElement('div'); lbl.className='space-label'; lbl.textContent=name;
+
+  const barWrap = document.createElement('div'); barWrap.className='space-bar-wrap';
+  const bar = document.createElement('div');
+  bar.className = 'space-bar';
+  bar.style.width = Math.max(val * 4, 4) + 'px';
+  barWrap.appendChild(bar);
+
+  const v = document.createElement('div'); v.className='space-val'; v.textContent=val+'px';
+
+  row.appendChild(lbl); row.appendChild(barWrap); row.appendChild(v);
+  spGrid.appendChild(row);
+});
+
+// ─── Render radii ─────────────────────────────────────────────
+const radGrid = document.getElementById('radius-grid');
+TOKENS.radii.forEach(({ name, val }) => {
+  const card = document.createElement('div');
+  card.className = 'radius-card';
+
+  const box = document.createElement('div');
+  box.className = 'radius-box';
+  box.style.borderRadius = Math.min(val, 32) + 'px';
+
+  const lbl = document.createElement('div'); lbl.className='radius-lbl'; lbl.textContent=name;
+  const v   = document.createElement('div'); v.className='radius-val';   v.textContent=val+'px';
+
+  card.appendChild(box); card.appendChild(lbl); card.appendChild(v);
+  radGrid.appendChild(card);
+});
+
+// ─── Render components ────────────────────────────────────────
+const compGrid = document.getElementById('comp-grid');
+TOKENS.components.forEach(({ name, icon, variants }) => {
+  const card = document.createElement('div');
+  card.className = 'comp-card';
+
+  const thumb = document.createElement('div');
+  thumb.className = 'comp-thumb';
+  const ic = document.createElement('div');
+  ic.className = 'comp-thumb-icon';
+  ic.textContent = icon;
+  thumb.appendChild(ic);
+
+  const nm  = document.createElement('div'); nm.className='comp-name'; nm.textContent=name;
+  const vv  = document.createElement('div'); vv.className='comp-variants'; vv.textContent=`${variants} variant${variants!==1?'s':''}`;
+
+  card.appendChild(thumb); card.appendChild(nm); card.appendChild(vv);
+  compGrid.appendChild(card);
+});
+
+// ─── Active nav highlight on scroll ──────────────────────────
+const sections = document.querySelectorAll('section[id]');
+const navLinks  = document.querySelectorAll('.ds-nav a');
+const observer  = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id));
+    }
+  });
+}, { rootMargin: '-40% 0px -55% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

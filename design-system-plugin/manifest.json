@@ -1,0 +1,9 @@
+{
+  "name": "Gaia Design System Generator",
+  "id": "gaia-design-system-gen-v1",
+  "api": "1.0.0",
+  "permissions": ["currentuser"],
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": ["figma"]
+}

@@ -95,55 +95,18 @@ html, body {
   pointer-events: none;
 }
 
-/* Glass button base */
-.glass-btn {
+/* Hero toolbar button — solid dark olive circle (matches Figma) */
+.hero-btn {
   display: flex; align-items: center; justify-content: center;
   border-radius: var(--radius-full); border: none;
-  background: transparent;
-  box-shadow: var(--shadow-nav);
-  cursor: pointer; position: relative;
-  isolation: isolate; overflow: hidden;
-  pointer-events: all;
-  flex-shrink: 0;
-}
-.glass-btn::before {
-  content: ''; position: absolute; inset: 0;
-  border-radius: inherit;
-  background: rgba(255,255,255,0.65);
+  background: rgba(103,118,91,0.75);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  pointer-events: none; z-index: 0;
-}
-.glass-btn::after {
-  content: ''; position: absolute; inset: 0;
-  border-radius: inherit;
-  background: #ddd;
-  mix-blend-mode: color-burn;
-  pointer-events: none; z-index: 0;
-}
-.glass-btn .glass-darken {
-  position: absolute; inset: 0;
-  border-radius: inherit;
-  background: #f7f7f7;
-  mix-blend-mode: darken;
-  pointer-events: none; z-index: 0;
-}
-/* ── Toolbar icon containers ── */
-.glass-btn .icon-32 {
-  width: 32px; height: 32px; position: relative;
-  display: flex; align-items: center; justify-content: center;
-  z-index: 1;
-}
-
-/* Back button: 48×48 */
-#btn-back { width: 48px; height: 48px; }
-
-/* Action group: two icons in a pill */
-#btn-actions {
-  display: flex; align-items: center;
-  gap: 4px; padding: 0 6px;
-  border-radius: var(--radius-full);
-  height: 48px;
+  box-shadow: var(--shadow-nav);
+  cursor: pointer; position: relative;
+  pointer-events: all;
+  flex-shrink: 0;
+  width: 48px; height: 48px;
 }
 
 /* Toolbar SVG icons — crisp, no stretching */
@@ -1030,30 +993,21 @@ html, body {
 
 <!-- ══ FLOATING TOOLBAR ════════════════════════════════════ -->
 <div id="toolbar">
-  <!-- Back button -->
-  <button class="glass-btn" id="btn-back" onclick="history.back()">
-    <div class="glass-darken"></div>
+  <!-- Back button — solid dark olive circle, white icon -->
+  <button class="hero-btn" id="btn-back" onclick="history.back()">
     <svg class="toolbar-icon" width="22" height="20" viewBox="0 0 22 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M10 1L1 10L10 19" stroke="#252024" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M1 10H21" stroke="#252024" stroke-width="2" stroke-linecap="round"/>
+      <path d="M10 1L1 10L10 19" stroke="#fefdf9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M1 10H21" stroke="#fefdf9" stroke-width="2" stroke-linecap="round"/>
     </svg>
   </button>
 
-  <!-- Action buttons: + and share in a glass pill -->
-  <div class="glass-btn" id="btn-actions">
-    <div class="glass-darken"></div>
-    <!-- Plus icon -->
+  <!-- Single "+" button — standalone dark olive circle (matches Figma, no share) -->
+  <button class="hero-btn" id="btn-add">
     <svg class="toolbar-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 4V20" stroke="#252024" stroke-width="2" stroke-linecap="round"/>
-      <path d="M4 12H20" stroke="#252024" stroke-width="2" stroke-linecap="round"/>
+      <path d="M12 4V20" stroke="#fefdf9" stroke-width="2" stroke-linecap="round"/>
+      <path d="M4 12H20" stroke="#fefdf9" stroke-width="2" stroke-linecap="round"/>
     </svg>
-    <!-- Share icon -->
-    <svg class="toolbar-icon" width="20" height="24" viewBox="0 0 20 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M10 1V15" stroke="#252024" stroke-width="2" stroke-linecap="round"/>
-      <path d="M6 5L10 1L14 5" stroke="#252024" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M1 14V21C1 22.1046 1.89543 23 3 23H17C18.1046 23 19 22.1046 19 21V14" stroke="#252024" stroke-width="2" stroke-linecap="round"/>
-    </svg>
-  </div>
+  </button>
 </div>
 
 <!-- ══ SCROLLABLE PAGE CONTENT ═════════════════════════════ -->
@@ -1072,7 +1026,6 @@ html, body {
   <!-- Page dots -->
   <div id="page-dots">
     <div class="dot active"></div>
-    <div class="dot"></div>
     <div class="dot"></div>
     <div class="dot"></div>
   </div>
@@ -1492,6 +1445,11 @@ expandBtn.addEventListener('click', () => {
 
   btns.forEach(btn => {
     btn.addEventListener('click', () => {
+      // Navigate to Observe page
+      if (btn.dataset.nav === 'observe') {
+        window.location.href = 'observe.html';
+        return;
+      }
       btns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       moveIndicator(btn);

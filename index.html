@@ -2713,6 +2713,11 @@ function navPointerUp() {
   navDrag = null;
 
   if (!state.dragging) {
+    // Navigate to Observe page
+    if (state.tapBtn.dataset.nav === 'observe') {
+      window.location.href = 'observe.html';
+      return;
+    }
     // Simple tap — switch to tapped button
     document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
     state.tapBtn.classList.add('active');
