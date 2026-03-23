@@ -307,9 +307,9 @@ html, body {
 /* ── PEEK ROW (collapsed state only) ────────────────────── */
 #peek-row {
   flex-shrink: 0;
-  height: var(--peek-h);   /* 8px top + 134px card + 8px bottom = 150px */
+  height: var(--peek-h);   /* 4px top + 134px card + 12px bottom = 150px */
   overflow: hidden;
-  padding: 8px 4px;        /* horizontal 4px → card fills ~382px on 390px screen */
+  padding: 4px 0 12px;     /* Figma: pb=12px on panel; sheet-inner margins handle sides */
   display: flex;
   flex-direction: column;
   cursor: pointer;
@@ -328,29 +328,32 @@ html, body {
   position: relative;            /* so handle pill can be absolute inside */
   flex: 1;
   height: 134px;                 /* Figma spec: Map Panel Closed = 134px */
-  background: var(--paper);
+  background: var(--paper-50);
   border: 0.5px solid var(--olive-100);
-  border-radius: 35px;           /* Figma node I571:13501;289:2105 */
-  /* Top-align content so handle pill + label stay visible above nav bar overlay */
+  border-radius: 35px;           /* Figma node 289:2105 */
+  /* Figma: flex-col, items-center, justify-between, py=12px */
   display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-  padding-top: 28px;             /* clears the absolute handle pill (12px + 4px pill + 12px gap) */
+  padding: 12px 0;              /* Figma py=12px */
   box-shadow: var(--shadow-md);
 }
 
 /* Handle pill sits inside the card near its top */
 .peek-card .handle-pill {
   position: absolute;
-  top: 12px;
+  top: 9px;               /* Figma: card py=12px, inner pt=-3px → 9px from card top */
   left: 50%;
   transform: translateX(-50%);
 }
 
 .peek-label {
+  /* Figma: inner content pt=16px from card py=12px edge */
+  margin-top: 16px;
   /* serif/subhead-1: New Spirit, Regular, 16px */
   font-family: var(--font-serif);
   font-size: 16px; font-weight: 400;
   color: var(--olive);
-  line-height: 1.2;
+  line-height: 18px;         /* Figma: leading-[18px] */
+  text-align: center;
 }
 
 /* ── SHEET CONTENT ───────────────────────────────────────── */
