@@ -558,8 +558,8 @@ html, body {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   box-shadow: 0px 8px 40px rgba(0,0,0,0.12);
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 4px 5px 4px 1px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 4px 9px 4px 5px;  /* Figma: BG overhang 4px + Tab Bar pl:1/pr:5 */
   touch-action: none;
   isolation: isolate;
   overflow: hidden;
@@ -2639,9 +2639,11 @@ function dragEnd() {
 function moveNavIndicator(btn) {
   const ind = document.querySelector('.nav-indicator');
   if (!ind || !btn) return;
-  // Match indicator width exactly to the button, align left edges
-  ind.style.width = btn.offsetWidth + 'px';
-  ind.style.transform = `translateX(${btn.offsetLeft}px)`;
+  // Figma: selected pill is always 76×48px, centered on the button
+  const pillW = 76;
+  ind.style.width = pillW + 'px';
+  const centered = btn.offsetLeft + (btn.offsetWidth - pillW) / 2;
+  ind.style.transform = `translateX(${Math.max(0, centered)}px)`;
 }
 
 // --- NAV DRAG (Liquid Glass-inspired) ---
@@ -2662,7 +2664,7 @@ function cacheTabSlots() {
 function nearestSlot(x) {
   // x = current indicator translateX (its left edge)
   // find the slot whose center is closest to the indicator's center
-  const indW = document.querySelector('.nav-indicator')?.offsetWidth || 72;
+  const indW = 76;  // Figma: selected pill always 76px
   const cx = x + indW / 2;
   return tabSlots.reduce((best, s) =>
     Math.abs(s.center - cx) < Math.abs(best.center - cx) ? s : best
