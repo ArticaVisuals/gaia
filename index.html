@@ -774,79 +774,153 @@ html, body {
 }
 #find-details.visible::-webkit-scrollbar { display: none; }
 
-.fd-hero {
-  position: relative; width: 100%; min-height: 286px; flex-shrink: 0;
+/* ── Immersive Image Gallery (swipeable hero) ───────────── */
+.fd-gallery {
+  position: relative; width: 100%; height: 262px; flex-shrink: 0;
   border-radius: 0 0 var(--radius-md) var(--radius-md);
   overflow: hidden;
   box-shadow: 0px 4px 16.2px 0px rgba(115,115,100,0.5);
+  margin-top: -83px; /* pull hero up behind sticky toolbar */
 }
-.fd-hero img#fd-hero-img {
+.fd-gallery-track {
+  display: flex; width: 100%; height: 100%;
+  overflow-x: auto; overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+}
+.fd-gallery-track::-webkit-scrollbar { display: none; }
+.fd-gallery-slide {
+  position: relative; flex: 0 0 100%; width: 100%; height: 100%;
+  scroll-snap-align: start;
+}
+.fd-gallery-slide img {
   position: absolute; inset: 0;
   width: 100%; height: 100%; object-fit: cover; display: block;
 }
-/* Toolbar overlaid on hero */
+/* Toolbar — sticky to top of #find-details scroll container
+   Figma node 451:701: h=83px, pt=19px + inner pt=16px = 35px top padding
+   Back btn: 48×48 circle, glass cool
+   Right pill: 48px tall, px=10, gap=18, glass cool
+   ──────────────────────────────────────────────────────────── */
 .fd-toolbar {
-  position: absolute; top: 0; left: 0; right: 0; z-index: 10;
+  position: sticky; top: 0; left: 0; right: 0; z-index: 110;
   display: flex; align-items: flex-start; justify-content: space-between;
-  padding: 35px 16px 16px;
+  padding: 35px 16px 0;
+  height: 83px;
+  pointer-events: none;
 }
+.fd-toolbar > * { pointer-events: all; }
+
+/* Back button — 48×48 circle, Figma glass cool */
+.fd-back-btn {
+  width: 48px; height: 48px; border-radius: 296px; border: none;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  padding: 0 6px; position: relative;
+  background: transparent;
+  isolation: isolate; overflow: hidden;
+}
+/* Figma mix-blend-multiply white base */
+.fd-back-btn .fd-glass-multiply {
+  position: absolute; inset: 0; border-radius: 296px;
+  background: white; mix-blend-mode: multiply; pointer-events: none;
+}
+/* Figma Fill + Shadow BG */
+.fd-back-btn .fd-glass-bg {
+  position: absolute; inset: 0; border-radius: 296px;
+  box-shadow: 0px 8px 40px 0px rgba(0,0,0,0.12);
+  overflow: hidden;
+}
+.fd-back-btn .fd-glass-bg::before {
+  content: ''; position: absolute; inset: 0; border-radius: 296px;
+  background: rgba(255,255,255,0.65);
+}
+.fd-back-btn .fd-glass-bg .fd-glass-burn {
+  position: absolute; inset: 0; border-radius: 296px;
+  background: #ddd; mix-blend-mode: color-burn; pointer-events: none;
+}
+.fd-back-btn .fd-glass-bg .fd-glass-darken {
+  position: absolute; inset: 0; border-radius: 296px;
+  background: #f7f7f7; mix-blend-mode: darken; pointer-events: none;
+}
+/* Back icon container — 32×32, icon inset per Figma */
+.fd-back-icon-wrap {
+  position: relative; z-index: 1; width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+}
+.fd-back-icon-wrap img {
+  width: 15.59px; height: 20.1px; object-fit: contain;
+  transform: rotate(-90deg); /* Figma: chevron-up rotated -90° = points left */
+}
+
+/* Right pill — glass cool, contains icon buttons */
 .fd-toolbar-right {
   display: flex; gap: 18px; align-items: center;
   padding: 0 10px; border-radius: 296px; height: 48px;
   position: relative;
-  background: rgba(255,255,255,0.65);
-  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0px 8px 40px rgba(0,0,0,0.12);
+  background: transparent;
   isolation: isolate; overflow: hidden;
 }
-.fd-toolbar-right::before {
-  content:''; position:absolute; inset:0; border-radius:296px;
-  background:#ddd; mix-blend-mode:color-burn; pointer-events:none;
+.fd-toolbar-right .fd-glass-multiply {
+  position: absolute; inset: 0; border-radius: 296px;
+  background: white; mix-blend-mode: multiply; pointer-events: none;
 }
-.fd-toolbar-right::after {
-  content:''; position:absolute; inset:0; border-radius:296px;
-  background:#f7f7f7; mix-blend-mode:darken; pointer-events:none;
+.fd-toolbar-right .fd-glass-bg {
+  position: absolute; inset: 0; border-radius: 296px;
+  box-shadow: 0px 8px 40px 0px rgba(0,0,0,0.12);
+  overflow: hidden;
 }
-.fd-toolbar-right > * { position:relative; z-index:1; }
-.fd-toolbar-btn {
-  width: 48px; height: 48px; border-radius: 296px; border: none;
-  cursor: pointer; display: flex; align-items: center; justify-content: center;
-  background: transparent; padding: 0; position: relative;
-}
-.fd-back-btn {
+.fd-toolbar-right .fd-glass-bg::before {
+  content: ''; position: absolute; inset: 0; border-radius: 296px;
   background: rgba(255,255,255,0.65);
-  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0px 8px 40px rgba(0,0,0,0.12);
-  isolation: isolate; overflow: hidden;
 }
-.fd-back-btn::before {
-  content:''; position:absolute; inset:0; border-radius:296px;
-  background:#ddd; mix-blend-mode:color-burn; pointer-events:none;
+.fd-toolbar-right .fd-glass-bg .fd-glass-burn {
+  position: absolute; inset: 0; border-radius: 296px;
+  background: #ddd; mix-blend-mode: color-burn; pointer-events: none;
 }
-.fd-back-btn::after {
-  content:''; position:absolute; inset:0; border-radius:296px;
-  background:#f7f7f7; mix-blend-mode:darken; pointer-events:none;
+.fd-toolbar-right .fd-glass-bg .fd-glass-darken {
+  position: absolute; inset: 0; border-radius: 296px;
+  background: #f7f7f7; mix-blend-mode: darken; pointer-events: none;
 }
-/* Progressive blur — single Figma-matched element (7.5px blur, masked gradient)
-   Figma node 447:702: backdrop-blur 7.5px, gradient from transparent(40%) to rgba(0,0,0,0.5),
-   height 154/262 ≈ 59%, starts at y=108/262 ≈ 41% from top.
-   mask-image fades the blur smoothly; overlay provides the dark gradient separately. */
+/* Icon buttons inside right pill — 36×36 */
+.fd-toolbar-icon-btn {
+  width: 36px; height: 36px; border: none; background: transparent;
+  cursor: pointer; padding: 0; position: relative; z-index: 1;
+  display: flex; align-items: center; justify-content: center;
+}
+.fd-toolbar-icon-btn img {
+  object-fit: contain;
+}
+/* Plus icon: Figma inset 17.75%/18.75% → ~23×23 within 36×36 */
+.fd-toolbar-icon-btn.fd-add-btn img {
+  width: 22.5px; height: 23.5px;
+}
+/* Share icon: Figma w=19.336 h=27 */
+.fd-toolbar-icon-btn.fd-share-btn img {
+  width: 19.3px; height: 27px;
+}
+/* ── Hero blur — faded progressive blur ────────────────────
+   Two layers:
+   1. Backdrop-blur with mask-image so blur fades in smoothly
+   2. Dark gradient overlay for text contrast
+   Both use pointer-events:none so swipe passes through. */
 .fd-hero-blur {
-  position: absolute; bottom: 0; left: 0; right: 0; height: 65%;
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.1) 25%, rgba(0,0,0,0.4) 50%, black 100%);
-  mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.1) 25%, rgba(0,0,0,0.4) 50%, black 100%);
-  z-index: 1;
+  position: absolute; left: 0; right: 0;
+  top: 0; height: 100%;
+  backdrop-filter: blur(7.5px); -webkit-backdrop-filter: blur(7.5px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 30%, black 75%);
+  mask-image: linear-gradient(to bottom, transparent 30%, black 75%);
+  z-index: 2; pointer-events: none;
 }
-/* Dark gradient overlay for text readability — matches Figma gradient */
-.fd-hero-overlay {
-  position: absolute; bottom: 0; left: 0; right: 0; height: 59%;
-  background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.5) 100%);
-  z-index: 2;
+.fd-hero-gradient {
+  position: absolute; left: 0; right: 0;
+  bottom: 0; height: 59%;
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 100%);
+  z-index: 3; pointer-events: none;
 }
 .fd-hero-text {
   position: absolute; bottom: 16px; left: 15px; color: var(--paper-50);
-  z-index: 5;
+  z-index: 5; pointer-events: none;
 }
 .fd-hero-title {
   font-family: var(--font-serif); font-size: 32px; font-weight: 500;
@@ -864,6 +938,8 @@ html, body {
 .fd-dot {
   width: 8px; height: 8px; border-radius: 50%;
   background: #bfbfbf;
+  transition: background 0.25s ease;
+  cursor: pointer;
 }
 .fd-dot.active { background: #1a1a1a; }
 
@@ -968,7 +1044,7 @@ html, body {
   background: #f7f7f7; mix-blend-mode: darken; pointer-events: none;
 }
 .fd-expand-btn img {
-  position: relative; z-index: 1; width: 19px; height: 19px;
+  position: relative; z-index: 1; width: 34px; height: 34px;
   object-fit: contain;
 }
 /* Location bar on map — glass effect */
@@ -1031,32 +1107,34 @@ html, body {
 }
 .fd-biome-img-wrap {
   border: 0.5px solid var(--brown-200); border-radius: 8px;
-  overflow: hidden; aspect-ratio: 124/102;
+  overflow: hidden; width: 100%; aspect-ratio: 107/102;
   background: linear-gradient(to bottom, #d5dae5, var(--paper-50));
   display: flex; align-items: center; justify-content: center;
+  padding: 12px; position: relative;
 }
 .fd-biome-img-wrap img {
-  width: 114%; max-width: none;
+  width: 100%; height: 100%; object-fit: contain;
 }
 .fd-weather-box {
   border: 0.5px solid var(--brown-200); border-radius: 8px;
-  overflow: hidden; aspect-ratio: 145/126; position: relative;
+  overflow: hidden; height: 126px; position: relative;
   display: flex; align-items: center; justify-content: center;
-  background: radial-gradient(ellipse at 75% 92%, rgba(253,188,170,1) 0%, rgba(253,224,170,1) 30%, rgba(239,233,213,1) 55%, rgba(226,242,255,1) 100%);
+}
+.fd-weather-box img.fd-weather-bg {
+  position: absolute; width: 178.65%; height: 222.61%;
+  left: -8.28%; top: -42.35%;
+  max-width: none; object-fit: cover; pointer-events: none;
 }
 .fd-weather-temp {
-  font-family: var(--font-serif); font-size: 60px; line-height: 1.1;
-  color: #524e56; letter-spacing: -1px; position: relative; z-index: 1;
-}
-.fd-weather-wave {
-  position: absolute; bottom: 0; left: 0; width: 130%; opacity: 0.3;
-  object-fit: contain;
+  font-family: var(--font-serif); font-size: 69.5px; line-height: 1.1;
+  color: #fcfaf0; position: relative; z-index: 1;
+  text-align: center; width: 100%;
 }
 .fd-condition-meta {
   display: flex; align-items: flex-start; justify-content: space-between;
 }
 .fd-condition-name {
-  font-family: var(--font-sans); font-size: 16px; line-height: 1.3;
+  font-family: var(--font-sans); font-size: 17px; line-height: 1.3;
   color: var(--ink);
 }
 .fd-condition-sub {
@@ -1064,8 +1142,9 @@ html, body {
   color: #b0adb3; letter-spacing: 0.25px; margin-top: 8px;
 }
 .fd-condition-chevron {
-  width: 16px; height: 16px; opacity: 0.4;
-  transform: rotate(90deg); margin-top: 4px;
+  width: 16px; height: 16px; flex-shrink: 0;
+  object-fit: contain;
+  transform: rotate(90deg); /* Figma: chevron-up → rotate 90° = points right */
 }
 
 /* Data Quality card */
@@ -1074,10 +1153,12 @@ html, body {
   border: 0.5px solid var(--brown-200);
   border-radius: 8px; overflow: hidden;
   box-shadow: 0px 4px 20px rgba(128,105,38,0.09);
+  height: 169px;
 }
 .fd-quality-header {
-  padding: 8px 12px;
+  padding: 10px 12px 8px;
   border-bottom: 0.5px solid var(--brown-200);
+  height: 42px; display: flex; align-items: center;
 }
 .fd-quality-header span {
   font-family: var(--font-serif); font-size: 20px; line-height: 1.3;
@@ -1085,11 +1166,11 @@ html, body {
 }
 .fd-quality-circles {
   display: flex; align-items: center; justify-content: center;
-  gap: 37px; padding: 16px 0;
+  gap: 24px; padding: 24px 0;
 }
 .fd-quality-item {
   display: flex; flex-direction: column; align-items: center;
-  gap: 4px; width: 91px;
+  gap: 8px; width: 91px;
 }
 .fd-quality-item img { width: 40px; height: 40px; object-fit: contain; }
 .fd-quality-item span {
@@ -1127,33 +1208,38 @@ html, body {
   font-family: var(--font-sans); font-size: 10px; line-height: 1.3;
   color: #b0adb3; letter-spacing: 0.25px;
 }
-/* Project card v2 — Figma side-by-side with blurred bg image */
+/* Project card v2 — Figma: full bleed bg image with info overlay at bottom */
 .fd-project-card-v2 {
   flex: 1; height: 129px; border-radius: 7.5px;
   border: 0.5px solid var(--brown-200); overflow: hidden;
   box-shadow: 0px 3.7px 18.7px rgba(128,105,38,0.09);
-  display: flex; flex-direction: column; justify-content: space-between;
+  position: relative;
   background: var(--grey-50);
 }
-.fd-project-card-bg {
-  flex: 1; padding: 7.5px; position: relative;
-  background-size: cover; background-position: center;
-  display: flex; flex-direction: column; align-items: flex-start;
-}
-.fd-project-card-bg::after {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 100%);
+/* Blurred background image — fills entire card */
+.fd-project-card-v2 .fd-project-bg-img {
+  position: absolute; inset: -4px; /* bleed to prevent blur edge */
+  width: calc(100% + 8px); height: calc(100% + 8px);
+  object-fit: cover;
+  filter: blur(2.15px);
   pointer-events: none;
 }
+/* Gradient overlay on bg */
+.fd-project-card-v2::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 100%);
+  pointer-events: none; border-radius: 7.5px;
+}
 .fd-project-tag {
-  position: relative; z-index: 1;
+  position: absolute; top: 7.5px; left: 7.5px; z-index: 2;
   font-family: var(--font-sans); font-size: 9.3px; font-weight: 400;
   color: var(--ink-700, #1b181b); letter-spacing: 0.23px;
-  background: var(--paper-50); border-radius: 233px;
+  background: var(--cream-100, #fefcf7); border-radius: 233px;
   padding: 2px 9.3px; line-height: 1.3;
 }
 .fd-project-card-info {
-  padding: 8px 11px; display: flex; flex-direction: column; gap: 3.7px;
+  position: absolute; bottom: 0; left: 0; right: 0; z-index: 2;
+  padding: 11px; display: flex; flex-direction: column; gap: 3.7px;
 }
 .fd-project-card-name {
   font-family: var(--font-serif); font-size: 14.9px; line-height: 1.13;
@@ -2013,42 +2099,67 @@ html, body {
 
 <!-- ══ FIND DETAILS (shown when a pin is tapped) ══════════════ -->
     <div id="find-details">
-      <!-- Hero image — Figma asset from node 459:2114 -->
-      <div class="fd-hero">
-        <div class="fd-toolbar">
-          <button class="fd-toolbar-btn fd-back-btn" aria-label="Go back">
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style="position:relative;z-index:1">
-              <path d="M20 8L12 16L20 24" stroke="#252024" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+      <!-- Sticky toolbar — Figma node 451:701 -->
+      <div class="fd-toolbar">
+        <!-- Back button — 48×48 circle, glass cool -->
+        <button class="fd-back-btn" aria-label="Go back">
+          <div class="fd-glass-multiply"></div>
+          <div class="fd-glass-bg">
+            <div class="fd-glass-burn"></div>
+            <div class="fd-glass-darken"></div>
+          </div>
+          <div class="fd-back-icon-wrap">
+            <img src="https://www.figma.com/api/mcp/asset/9af873b2-a7e4-4bbe-9f63-5f684033721e" alt="Back">
+          </div>
+        </button>
+        <!-- Right pill — add + share, glass cool -->
+        <div class="fd-toolbar-right">
+          <div class="fd-glass-multiply"></div>
+          <div class="fd-glass-bg">
+            <div class="fd-glass-burn"></div>
+            <div class="fd-glass-darken"></div>
+          </div>
+          <button class="fd-toolbar-icon-btn fd-add-btn" aria-label="Add">
+            <img src="https://www.figma.com/api/mcp/asset/6f775807-573b-40f7-9ec8-7d09b27ecb19" alt="Add">
           </button>
-          <div class="fd-toolbar-right">
-            <button class="fd-toolbar-btn" aria-label="Add">
-              <svg width="36" height="36" viewBox="0 0 36 36" fill="none" style="position:relative;z-index:1">
-                <path d="M18 9V27M9 18H27" stroke="#252024" stroke-width="2" stroke-linecap="round"/>
-              </svg>
-            </button>
-            <button class="fd-toolbar-btn" aria-label="Share">
-              <svg width="36" height="36" viewBox="0 0 36 36" fill="none" style="position:relative;z-index:1">
-                <path d="M12 21V25C12 26.1 12.9 27 14 27H22C23.1 27 24 26.1 24 25V21M18 9V22M18 9L22 13M18 9L14 13" stroke="#252024" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
+          <button class="fd-toolbar-icon-btn fd-share-btn" aria-label="Share">
+            <img src="https://www.figma.com/api/mcp/asset/88abed93-5cef-4819-beb7-cd2a31058396" alt="Share">
+          </button>
+        </div>
+      </div>
+      <!-- Immersive Image Gallery — swipeable, Figma 582:16202 -->
+      <div class="fd-gallery" id="fd-gallery">
+        <div class="fd-gallery-track" id="fd-gallery-track">
+          <div class="fd-gallery-slide">
+            <img src="https://www.figma.com/api/mcp/asset/0c6834d0-8741-4582-9e87-8545161f9213" alt="Coast Live Oak">
+          </div>
+          <div class="fd-gallery-slide">
+            <img src="https://www.figma.com/api/mcp/asset/0c6834d0-8741-4582-9e87-8545161f9213" alt="Coast Live Oak">
+          </div>
+          <div class="fd-gallery-slide">
+            <img src="https://www.figma.com/api/mcp/asset/0c6834d0-8741-4582-9e87-8545161f9213" alt="Coast Live Oak">
+          </div>
+          <div class="fd-gallery-slide">
+            <img src="https://www.figma.com/api/mcp/asset/0c6834d0-8741-4582-9e87-8545161f9213" alt="Coast Live Oak">
           </div>
         </div>
-        <img id="fd-hero-img" src="https://www.figma.com/api/mcp/asset/8128e0eb-762b-468d-be28-0e3e90ab1cf7" alt="">
+        <!-- Faded blur layer (mask fades blur in gradually) -->
         <div class="fd-hero-blur"></div>
-        <div class="fd-hero-overlay"></div>
+        <!-- Dark gradient overlay for text contrast -->
+        <div class="fd-hero-gradient"></div>
+        <!-- Text overlay -->
         <div class="fd-hero-text">
           <div class="fd-hero-title">Coast Live Oak</div>
           <div class="fd-hero-sub">Quercus agrifolia</div>
         </div>
       </div>
 
-      <!-- Dots -->
-      <div class="fd-dots">
-        <div class="fd-dot active"></div>
-        <div class="fd-dot"></div>
-        <div class="fd-dot"></div>
-        <div class="fd-dot"></div>
+      <!-- Page dots -->
+      <div class="fd-dots" id="fd-gallery-dots">
+        <div class="fd-dot active" data-slide="0"></div>
+        <div class="fd-dot" data-slide="1"></div>
+        <div class="fd-dot" data-slide="2"></div>
+        <div class="fd-dot" data-slide="3"></div>
       </div>
 
       <!-- Tab switch -->
@@ -2065,19 +2176,19 @@ html, body {
           <div id="fd-find-map" style="position:absolute;inset:0;border-radius:8px 8px 0 0;"></div>
           <div class="fd-map-top">
             <div class="fd-profile-card">
-              <img class="fd-profile-avatar" src="https://www.figma.com/api/mcp/asset/09ee5dd6-7d36-476a-b0fe-d584a1573580" alt="">
+              <img class="fd-profile-avatar" src="https://www.figma.com/api/mcp/asset/f65aaa5f-c52f-4196-ab40-2bcf54ae814b" alt="">
               <div class="fd-profile-info">
                 <span class="fd-profile-name">Alice Edwards</span>
                 <span class="fd-profile-finds">127 finds</span>
               </div>
             </div>
             <button class="fd-expand-btn" aria-label="Expand map">
-              <img src="https://www.figma.com/api/mcp/asset/9ac8e966-c6ff-4617-aa96-78ad8d25ff5e" alt="">
+              <img src="https://www.figma.com/api/mcp/asset/1951b749-77a0-4b3c-a52e-71306516ace8" alt="">
             </button>
           </div>
           <div class="fd-location-bar">
             <div class="fd-location-row">
-              <img class="fd-location-icon" src="https://www.figma.com/api/mcp/asset/3b068046-0d35-4cb7-a35c-c41c6ef12da1" alt="">
+              <img class="fd-location-icon" src="https://www.figma.com/api/mcp/asset/a5d692ed-5496-409c-a6f1-856a48e8f747" alt="">
               <span class="fd-location-text">Avila Beach, CA, United States of America</span>
             </div>
             <span class="fd-location-date">July 10, 2025, 10:19 AM</span>
@@ -2095,29 +2206,29 @@ html, body {
               <div class="fd-condition-cell">
                 <span class="fd-condition-label">Biome</span>
                 <div class="fd-biome-img-wrap">
-                  <img src="https://www.figma.com/api/mcp/asset/21f072a0-d06a-4e2a-bd51-7eea518c38e1" alt="Riparian Edge">
+                  <img src="https://www.figma.com/api/mcp/asset/d17de230-48b7-4004-bbda-35bb238f4fd3" alt="Riparian Edge">
                 </div>
                 <div class="fd-condition-meta">
                   <div>
                     <div class="fd-condition-name">Riparian Edge</div>
                     <div class="fd-condition-sub">Perfumo Canyon</div>
                   </div>
-                  <svg class="fd-condition-chevron" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="#7d7981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <img class="fd-condition-chevron" src="https://www.figma.com/api/mcp/asset/33e8b69b-776b-4d26-ba10-53a7da5f11f7" alt="">
                 </div>
               </div>
               <!-- Weather -->
               <div class="fd-condition-cell">
                 <span class="fd-condition-label">Weather</span>
                 <div class="fd-weather-box">
+                  <img class="fd-weather-bg" src="https://www.figma.com/api/mcp/asset/44899393-1b31-49b0-b046-ce4548239b7f" alt="">
                   <span class="fd-weather-temp">54º</span>
-                  <img class="fd-weather-wave" src="https://www.figma.com/api/mcp/asset/f4ac04cf-4408-4dde-abed-ecfdeb9174e9" alt="">
                 </div>
                 <div class="fd-condition-meta">
                   <div>
                     <div class="fd-condition-name">Partly Cloudy</div>
                     <div class="fd-condition-sub">July 10, 2025, 10:19 AM</div>
                   </div>
-                  <svg class="fd-condition-chevron" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="#7d7981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <img class="fd-condition-chevron" src="https://www.figma.com/api/mcp/asset/33e8b69b-776b-4d26-ba10-53a7da5f11f7" alt="">
                 </div>
               </div>
             </div>
@@ -2129,16 +2240,16 @@ html, body {
               <div class="fd-quality-header"><span>Data Quality</span></div>
               <div class="fd-quality-circles">
                 <div class="fd-quality-item">
-                  <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="18" stroke="var(--olive)" stroke-width="2"/><path d="M14 20l4 4 8-8" stroke="var(--olive)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <img src="https://www.figma.com/api/mcp/asset/140c07ff-4429-440e-a431-0abff1d92b71" alt="" width="40" height="40">
                   <span style="color:var(--olive)">Casual Grade</span>
                 </div>
                 <div class="fd-quality-item">
-                  <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="18" stroke="var(--olive)" stroke-width="2"/><path d="M14 20l4 4 8-8" stroke="var(--olive)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <img src="https://www.figma.com/api/mcp/asset/6a222ff1-5702-432b-87a5-cc0456ffa992" alt="" width="40" height="40">
                   <span style="color:var(--olive)">Needs ID</span>
                 </div>
                 <div class="fd-quality-item">
-                  <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="18" stroke="#b1b2b5" stroke-width="2"/></svg>
-                  <span>Research Grade</span>
+                  <img src="https://www.figma.com/api/mcp/asset/f78de295-a95f-4d33-9716-0e6121049e5a" alt="" width="40" height="40">
+                  <span style="color:#b1b2b5">Research Grade</span>
                 </div>
               </div>
             </div>
@@ -2150,25 +2261,23 @@ html, body {
               <div class="fd-projects-title">Projects</div>
               <div style="display:flex;gap:8px;">
                 <div class="fd-project-card-v2">
-                  <div class="fd-project-card-bg" style="background-image:url('https://www.figma.com/api/mcp/asset/e17c030d-5004-44d7-91fe-1a280deb76d2');">
-                    <span class="fd-project-tag">Forest</span>
-                  </div>
+                  <img class="fd-project-bg-img" src="https://www.figma.com/api/mcp/asset/3ee6437f-ff7a-4a62-8b65-0b7f6f332064" alt="">
+                  <span class="fd-project-tag">Forest</span>
                   <div class="fd-project-card-info">
                     <div class="fd-project-card-name">Creek Recovery</div>
                     <div class="fd-project-card-count">
-                      <svg width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M6.5 1C3.5 1 1 3.5 1 5s2.5 4 5.5 4 5.5-2.5 5.5-4-2.5-4-5.5-4z" stroke="var(--paper-50)" stroke-width="0.8"/><circle cx="6.5" cy="5" r="1.5" fill="var(--paper-50)"/></svg>
+                      <img src="https://www.figma.com/api/mcp/asset/f7b9d3fd-e658-486b-b444-be584bdce3f3" alt="" style="width:13px;height:9.3px;object-fit:contain;">
                       <span>12</span>
                     </div>
                   </div>
                 </div>
                 <div class="fd-project-card-v2">
-                  <div class="fd-project-card-bg" style="background-image:url('https://www.figma.com/api/mcp/asset/41c8b6a4-aab8-47c2-b67b-8413c18d42c5');">
-                    <span class="fd-project-tag">Garden</span>
-                  </div>
+                  <img class="fd-project-bg-img" src="https://www.figma.com/api/mcp/asset/680c38a2-8b12-47ea-b2a9-3246fea01359" alt="">
+                  <span class="fd-project-tag">Garden</span>
                   <div class="fd-project-card-info">
                     <div class="fd-project-card-name">Pollinator Corridor</div>
                     <div class="fd-project-card-count">
-                      <svg width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M6.5 1C3.5 1 1 3.5 1 5s2.5 4 5.5 4 5.5-2.5 5.5-4-2.5-4-5.5-4z" stroke="var(--paper-50)" stroke-width="0.8"/><circle cx="6.5" cy="5" r="1.5" fill="var(--paper-50)"/></svg>
+                      <img src="https://www.figma.com/api/mcp/asset/f7b9d3fd-e658-486b-b444-be584bdce3f3" alt="" style="width:13px;height:9.3px;object-fit:contain;">
                       <span>12</span>
                     </div>
                   </div>
@@ -3209,6 +3318,12 @@ function showFindDetails(pinId, imgUrl) {
   fd.classList.add('visible');
   fd.scrollTop = 0;
 
+  // Reset gallery to first slide
+  const galleryTrack = document.getElementById('fd-gallery-track');
+  if (galleryTrack) galleryTrack.scrollLeft = 0;
+  const dots = document.querySelectorAll('#fd-gallery-dots .fd-dot');
+  dots.forEach((d, i) => d.classList.toggle('active', i === 0));
+
   // Reset to Find tab
   fd.querySelectorAll('.fd-tab').forEach(t => t.classList.remove('active'));
   fd.querySelector('.fd-tab[data-fd-tab="find"]').classList.add('active');
@@ -3301,6 +3416,43 @@ document.addEventListener('click', (e) => {
     hideFindDetails();
   }
 });
+
+// ── Immersive Image Gallery — swipe + dot sync ──────────
+(function initGallery() {
+  const track = document.getElementById('fd-gallery-track');
+  const dotsWrap = document.getElementById('fd-gallery-dots');
+  if (!track || !dotsWrap) return;
+  const dots = dotsWrap.querySelectorAll('.fd-dot');
+
+  function updateDots() {
+    const scrollLeft = track.scrollLeft;
+    const slideW = track.offsetWidth;
+    const idx = Math.round(scrollLeft / slideW);
+    dots.forEach((d, i) => {
+      d.classList.toggle('active', i === idx);
+    });
+  }
+
+  // Listen for scroll (works for both swipe and programmatic scroll)
+  let scrollTick = false;
+  track.addEventListener('scroll', () => {
+    if (!scrollTick) {
+      requestAnimationFrame(() => {
+        updateDots();
+        scrollTick = false;
+      });
+      scrollTick = true;
+    }
+  }, { passive: true });
+
+  // Tap dot → scroll to slide
+  dotsWrap.addEventListener('click', (e) => {
+    const dot = e.target.closest('.fd-dot');
+    if (!dot) return;
+    const idx = parseInt(dot.dataset.slide, 10);
+    track.scrollTo({ left: idx * track.offsetWidth, behavior: 'smooth' });
+  });
+})();
 
 // Wire up story card → open flashcard screen full-bleed
 document.addEventListener('click', (e) => {
