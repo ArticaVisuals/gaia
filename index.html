@@ -972,18 +972,27 @@ html, body {
    2. Dark gradient overlay for text contrast
    Both use pointer-events:none so swipe passes through. */
 .fd-hero-blur {
-  position: absolute; left: 0; right: 0;
-  top: 0; height: 100%;
-  backdrop-filter: blur(7.5px); -webkit-backdrop-filter: blur(7.5px);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 30%, black 75%);
-  mask-image: linear-gradient(to bottom, transparent 30%, black 75%);
-  z-index: 2; pointer-events: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 108px;
+  height: 154px;
+  backdrop-filter: blur(7.5px);
+  -webkit-backdrop-filter: blur(7.5px);
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 39.885%, rgba(0,0,0,1) 100%);
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 39.885%, rgba(0,0,0,1) 100%);
+  z-index: 2;
+  pointer-events: none;
 }
 .fd-hero-gradient {
-  position: absolute; left: 0; right: 0;
-  bottom: 0; height: 59%;
-  background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 100%);
-  z-index: 3; pointer-events: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 108px;
+  height: 154px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 39.885%, rgba(0,0,0,0.5) 100%);
+  z-index: 3;
+  pointer-events: none;
 }
 .fd-hero-text {
   position: absolute; bottom: 16px; left: 15px; color: var(--paper-50);
@@ -996,11 +1005,18 @@ html, body {
 .fd-hero-sub {
   font-family: var(--font-sans); font-size: 10px; font-weight: 400;
   text-transform: uppercase; letter-spacing: 1.2px; margin-top: 4px;
-  opacity: 0.85;
 }
 .fd-dots {
-  display: flex; align-items: center; justify-content: center;
-  gap: 8px; padding: 12px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: fit-content;
+  margin: 12px auto;
+  padding: 0 24px;
+  border-radius: 50px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 .fd-dot {
   width: 8px; height: 8px; border-radius: 50%;
@@ -1019,7 +1035,7 @@ html, body {
   flex: 0 0 96px; padding: 16px 18px;
   font-family: var(--font-sans); font-size: 17px; line-height: 1.3;
   text-align: center; cursor: pointer; background: none; border: none;
-  color: #b0adb3; border-bottom: 3px solid transparent;
+  color: #b1b2b5; border-bottom: 3px solid transparent;
   transition: color 0.2s, border-color 0.2s;
 }
 .fd-tab.active {
@@ -1028,7 +1044,7 @@ html, body {
 
 /* Tab panels — only the active one is visible */
 .fd-panel { display: none; }
-.fd-panel.active { display: block; padding-bottom: 96px; /* clearance for nav bar */ }
+.fd-panel.active { display: block; }
 
 /* Tab content */
 .fd-content {
@@ -1044,7 +1060,7 @@ html, body {
   position: relative; border-radius: 8px 8px 0 0; overflow: hidden;
   padding: 16px; min-height: 280px;
   display: flex; flex-direction: column;
-  justify-content: space-between;
+  gap: 151px;
 }
 #fd-find-map { position: absolute; inset: 0; border-radius: 8px 8px 0 0; }
 #fd-find-map .mapboxgl-canvas { border-radius: 8px 8px 0 0; }
@@ -1111,13 +1127,14 @@ html, body {
   background: #f7f7f7; mix-blend-mode: darken; pointer-events: none;
 }
 .fd-expand-btn img {
-  position: relative; z-index: 1; width: 34px; height: 34px;
+  position: relative; z-index: 1; width: 32px; height: 32px;
   object-fit: contain;
 }
 /* Location bar on map — glass effect */
 .fd-location-bar {
   position: relative; z-index: 1;
   display: flex; flex-direction: column; gap: 2px;
+  width: 313px; max-width: 100%;
   padding: 8px; border-radius: 8px;
   margin-top: auto; overflow: hidden;
   background: rgba(255,255,255,0.65);
@@ -1137,7 +1154,7 @@ html, body {
 .fd-location-row {
   display: flex; align-items: center; gap: 4px;
 }
-.fd-location-icon { width: 10px; height: 14px; flex-shrink: 0; object-fit: contain; }
+.fd-location-icon { width: 10px; height: 21px; flex-shrink: 0; object-fit: contain; }
 .fd-location-text {
   font-family: var(--font-sans); font-size: 15px; line-height: 1.3;
   color: #454649; letter-spacing: 0.5px;
@@ -1174,13 +1191,13 @@ html, body {
 }
 .fd-biome-img-wrap {
   border: 0.5px solid var(--brown-200); border-radius: 8px;
-  overflow: hidden; width: 100%; aspect-ratio: 107/102;
+  overflow: hidden; width: 100%; height: 126px;
   background: linear-gradient(to bottom, #d5dae5, var(--paper-50));
   display: flex; align-items: center; justify-content: center;
   padding: 12px; position: relative;
 }
 .fd-biome-img-wrap img {
-  width: 100%; height: 100%; object-fit: contain;
+  width: 107px; height: 102px; object-fit: contain;
 }
 .fd-weather-box {
   border: 0.5px solid var(--brown-200); border-radius: 8px;
@@ -2329,7 +2346,7 @@ html, body {
               <div style="display:flex;gap:8px;">
                 <div class="fd-project-card-v2">
                   <img class="fd-project-bg-img" src="https://www.figma.com/api/mcp/asset/3ee6437f-ff7a-4a62-8b65-0b7f6f332064" alt="">
-                  <span class="fd-project-tag">Forest</span>
+                  <span class="fd-project-tag">Wetland</span>
                   <div class="fd-project-card-info">
                     <div class="fd-project-card-name">Creek Recovery</div>
                     <div class="fd-project-card-count">
@@ -2340,7 +2357,7 @@ html, body {
                 </div>
                 <div class="fd-project-card-v2">
                   <img class="fd-project-bg-img" src="https://www.figma.com/api/mcp/asset/680c38a2-8b12-47ea-b2a9-3246fea01359" alt="">
-                  <span class="fd-project-tag">Garden</span>
+                  <span class="fd-project-tag">Wetland</span>
                   <div class="fd-project-card-info">
                     <div class="fd-project-card-name">Pollinator Corridor</div>
                     <div class="fd-project-card-count">
