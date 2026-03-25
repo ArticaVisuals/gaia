@@ -3311,6 +3311,14 @@ function setupEvents() {
 // Mapbox custom style — all map colors managed via Mapbox Studio
 const GAIA_STYLE = 'mapbox://styles/articavisuals/cmmvc02ke00e901rng9w6e58b';
 const GAIA_DEFAULT_TOKEN = 'pk.eyJ1IjoiYXJ0aWNhdmlzdWFscyIsImEiOiJjbW1nNDdyeGYwMTY2MnpvaXVmYXNpMHAxIn0.yUA1pC9B2jBzt1P2dyTdoA';
+const MAP_INITIAL_CENTER = [-118.1300, 34.1520];
+const MAP_INITIAL_ZOOM = 12;
+const MAP_EASE_DURATION_MS = 350;
+
+const GAIA_PIN_SOURCE_ID = 'gaia-pins';
+const GAIA_PIN_HIDDEN_LAYER_ID = 'gaia-pins-hidden';
+const GAIA_CLUSTER_MAX_ZOOM = 14;
+const GAIA_CLUSTER_RADIUS = 50;
 
 // ── PIN DATA ──────────────────────────────────────────────
 const PINS_DATA = [
@@ -3374,6 +3382,10 @@ let photoMarkers  = {};   // id → { marker, el }
 let selectedPin   = null;
 let hoveredPin    = null;
 const PIN_SIZE = 62;
+const NUMBER_PIN_FONT_SIZE = 32.512;
+const NUMBER_PIN_LARGE_FONT_SIZE = 26;
+const NUMBER_PIN_LARGE_THRESHOLD = 100;
+const CLUSTER_CENTROID_CACHE_TTL_MS = 700;
 
 // ── FIND DETAILS FULL-SCREEN OVERLAY ─────────────────────
 let fdFindMap = null;
@@ -3645,274 +3657,6 @@ function buildPhotoPinEl(id, imgUrl) {
   return btn;
 }
 
-// ── WEBGL PULSING BORDER GLOW ───────────────────────────
-const GLOW_VS = `#version 300 es
-in vec2 a_position;
-out vec2 v_responsiveUV;
-out vec2 v_responsiveBoxGivenSize;
-out vec2 v_patternUV;
-void main(){
-  gl_Position=vec4(a_position,0.,1.);
-  v_responsiveUV=a_position*.5;
-  v_responsiveBoxGivenSize=vec2(1.,1.);
-  v_patternUV=a_position*.5+.5;
-}`;
-
-const GLOW_FS = `#version 300 es
-precision lowp float;
-uniform float u_time;
-uniform vec4 u_colorBack;
-uniform vec4 u_colors[5];
-uniform float u_colorsCount;
-uniform float u_roundness;
-uniform float u_thickness;
-uniform float u_marginLeft;
-uniform float u_marginRight;
-uniform float u_marginTop;
-uniform float u_marginBottom;
-uniform float u_aspectRatio;
-uniform float u_softness;
-uniform float u_intensity;
-uniform float u_bloom;
-uniform float u_spotSize;
-uniform float u_spots;
-uniform float u_pulse;
-uniform float u_smoke;
-uniform float u_smokeSize;
-uniform sampler2D u_noiseTexture;
-in vec2 v_responsiveUV;
-in vec2 v_responsiveBoxGivenSize;
-in vec2 v_patternUV;
-out vec4 fragColor;
-#define TWO_PI 6.28318530718
-#define PI 3.14159265358979323846
-float beat(float time){
-  float first=pow(abs(sin(time*TWO_PI)),10.);
-  float second=pow(abs(sin((time-.15)*TWO_PI)),10.);
-  return clamp(first+0.6*second,0.,1.);
-}
-float sst(float edge0,float edge1,float x){return smoothstep(edge0,edge1,x);}
-float roundedBox(vec2 uv,vec2 halfSize,float distance,float cornerDistance,float thickness,float softness){
-  float borderDistance=abs(distance);
-  float aa=2.*fwidth(distance);
-  float border=1.-sst(min(mix(thickness,-thickness,softness),thickness+aa),max(mix(thickness,-thickness,softness),thickness+aa),borderDistance);
-  float cornerFadeCircles=0.;
-  cornerFadeCircles=mix(1.,cornerFadeCircles,sst(0.,1.,length((uv+halfSize)/thickness)));
-  cornerFadeCircles=mix(1.,cornerFadeCircles,sst(0.,1.,length((uv-vec2(-halfSize.x,halfSize.y))/thickness)));
-  cornerFadeCircles=mix(1.,cornerFadeCircles,sst(0.,1.,length((uv-vec2(halfSize.x,-halfSize.y))/thickness)));
-  cornerFadeCircles=mix(1.,cornerFadeCircles,sst(0.,1.,length((uv-halfSize)/thickness)));
-  aa=fwidth(cornerDistance);
-  float cornerFade=sst(0.,mix(aa,thickness,softness),cornerDistance);
-  cornerFade*=cornerFadeCircles;
-  border+=cornerFade;
-  return border;
-}
-vec2 randomGB(vec2 p){
-  vec2 uv=floor(p)/100.+.5;
-  return texture(u_noiseTexture,fract(uv)).gb;
-}
-float randomG(vec2 p){
-  vec2 uv=floor(p)/100.+.5;
-  return texture(u_noiseTexture,fract(uv)).g;
-}
-float valueNoise(vec2 st){
-  vec2 i=floor(st);vec2 f=fract(st);
-  float a=randomG(i);float b=randomG(i+vec2(1.,0.));
-  float c=randomG(i+vec2(0.,1.));float d=randomG(i+vec2(1.,1.));
-  vec2 u=f*f*(3.-2.*f);
-  return mix(mix(a,b,u.x),mix(c,d,u.x),u.y);
-}
-void main(){
-  const float firstFrameOffset=109.;
-  float t=1.2*(u_time+firstFrameOffset);
-  vec2 borderUV=v_responsiveUV;
-  float pulse=u_pulse*beat(.18*u_time);
-  float canvasRatio=v_responsiveBoxGivenSize.x/v_responsiveBoxGivenSize.y;
-  vec2 halfSize=vec2(.5);
-  borderUV.x*=max(canvasRatio,1.);borderUV.y/=min(canvasRatio,1.);
-  halfSize.x*=max(canvasRatio,1.);halfSize.y/=min(canvasRatio,1.);
-  float mL=u_marginLeft,mR=u_marginRight,mT=u_marginTop,mB=u_marginBottom;
-  float mX=mL+mR,mY=mT+mB;
-  if(u_aspectRatio>0.){
-    float shapeRatio=canvasRatio*(1.-mX)/max(1.-mY,1e-6);
-    float freeX=shapeRatio>1.?(1.-mX)*(1.-1./max(abs(shapeRatio),1e-6)):0.;
-    float freeY=shapeRatio<1.?(1.-mY)*(1.-shapeRatio):0.;
-    mL+=freeX*.5;mR+=freeX*.5;mT+=freeY*.5;mB+=freeY*.5;mX=mL+mR;mY=mT+mB;
-  }
-  float thickness=.5*u_thickness*min(halfSize.x,halfSize.y);
-  halfSize.x*=(1.-mX);halfSize.y*=(1.-mY);
-  vec2 centerShift=vec2((mL-mR)*max(canvasRatio,1.)*.5,(mB-mT)/min(canvasRatio,1.)*.5);
-  borderUV-=centerShift;
-  halfSize-=mix(thickness,0.,u_softness);
-  float radius=mix(0.,min(halfSize.x,halfSize.y),u_roundness);
-  vec2 d=abs(borderUV)-halfSize+radius;
-  float outsideDistance=length(max(d,.0001))-radius;
-  float insideDistance=min(max(d.x,d.y),.0001);
-  float cornerDistance=abs(min(max(d.x,d.y)-.45*radius,.0));
-  float distance=outsideDistance+insideDistance;
-  float borderThickness=mix(thickness,3.*thickness,u_softness);
-  float border=roundedBox(borderUV,halfSize,distance,cornerDistance,borderThickness,u_softness);
-  border=pow(border,1.+u_softness);
-  vec2 smokeUV=.3*u_smokeSize*v_patternUV;
-  float smoke=clamp(3.*valueNoise(2.7*smokeUV+.5*t),0.,1.);
-  smoke-=valueNoise(3.4*smokeUV-.5*t);
-  float smokeThickness=thickness+.2;
-  smokeThickness=min(.4,max(smokeThickness,.1));
-  smoke*=roundedBox(borderUV,halfSize,distance,cornerDistance,smokeThickness,1.);
-  smoke=30.*smoke*smoke;
-  smoke*=mix(0.,.5,pow(u_smoke,2.));
-  smoke*=mix(1.,pulse,u_pulse);
-  smoke=clamp(smoke,0.,1.);
-  border+=smoke;border=clamp(border,0.,1.);
-  vec3 blendColor=vec3(0.);float blendAlpha=0.;
-  vec3 addColor=vec3(0.);float addAlpha=0.;
-  float bloom=4.*u_bloom;
-  float intensity=1.+(1.+4.*u_softness)*u_intensity;
-  float angle=atan(borderUV.y,borderUV.x)/TWO_PI;
-  for(int colorIdx=0;colorIdx<5;colorIdx++){
-    if(colorIdx>=int(u_colorsCount))break;
-    float colorIdxF=float(colorIdx);
-    vec3 c=u_colors[colorIdx].rgb*u_colors[colorIdx].a;
-    float a=u_colors[colorIdx].a;
-    for(int spotIdx=0;spotIdx<4;spotIdx++){
-      if(spotIdx>=int(u_spots))break;
-      float spotIdxF=float(spotIdx);
-      vec2 randVal=randomGB(vec2(spotIdxF*10.+2.,40.+colorIdxF));
-      float time=(.1+.15*abs(sin(spotIdxF*(2.+colorIdxF))*cos(spotIdxF*(2.+2.5*colorIdxF))))*t+randVal.x*3.;
-      time*=mix(1.,-1.,step(.5,randVal.y));
-      float mask=.5+.5*mix(sin(t+spotIdxF*(5.-1.5*colorIdxF)),cos(t+spotIdxF*(3.+1.3*colorIdxF)),step(mod(colorIdxF,2.),.5));
-      float p=clamp(2.*u_pulse-randVal.x,0.,1.);
-      mask=mix(mask,pulse,p);
-      float atg1=fract(angle+time);
-      float spotSize=.05+.6*pow(u_spotSize,2.)+.05*randVal.x;
-      spotSize=mix(spotSize,.1,p);
-      float sector=sst(.5-spotSize,.5,atg1)*(1.-sst(.5,.5+spotSize,atg1));
-      sector*=mask;sector*=border;sector*=intensity;sector=clamp(sector,0.,1.);
-      vec3 srcColor=c*sector;float srcAlpha=a*sector;
-      blendColor+=((1.-blendAlpha)*srcColor);
-      blendAlpha=blendAlpha+(1.-blendAlpha)*srcAlpha;
-      addColor+=srcColor;addAlpha+=srcAlpha;
-    }
-  }
-  vec3 accumColor=mix(blendColor,addColor,bloom);
-  float accumAlpha=mix(blendAlpha,addAlpha,bloom);
-  accumAlpha=clamp(accumAlpha,0.,1.);
-  vec3 bgColor=u_colorBack.rgb*u_colorBack.a;
-  vec3 color=accumColor+(1.-accumAlpha)*bgColor;
-  float opacity=accumAlpha+(1.-accumAlpha)*u_colorBack.a;
-  color+=1./256.*(fract(sin(dot(.014*gl_FragCoord.xy,vec2(12.9898,78.233)))*43758.5453123)-.5);
-  fragColor=vec4(color,opacity);
-}`;
-
-let _glowGL, _glowProg, _glowULocs, _glowCanvas;
-let _glowAnimId = null;
-const GLOW_SZ = 86;
-
-function initGlowShader() {
-  const c = document.createElement('canvas');
-  const dpr = window.devicePixelRatio || 1;
-  c.width = GLOW_SZ * dpr; c.height = GLOW_SZ * dpr;
-  const gl = c.getContext('webgl2', { premultipliedAlpha: false, alpha: true, antialias: false });
-  if (!gl) { console.warn('WebGL2 not available for glow shader'); return; }
-  _glowCanvas = c; _glowGL = gl;
-
-  function compile(type, src) {
-    const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s);
-    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { console.error(gl.getShaderInfoLog(s)); return null; }
-    return s;
-  }
-  const vs = compile(gl.VERTEX_SHADER, GLOW_VS);
-  const fs = compile(gl.FRAGMENT_SHADER, GLOW_FS);
-  if (!vs || !fs) return;
-  const prog = gl.createProgram(); gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
-  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) { console.error(gl.getProgramInfoLog(prog)); return; }
-  _glowProg = prog; gl.useProgram(prog);
-
-  // Fullscreen quad
-  const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
-  const loc = gl.getAttribLocation(prog, 'a_position');
-  gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-
-  // Noise texture (256x256 RGBA random)
-  const noiseSz = 256, noiseData = new Uint8Array(noiseSz * noiseSz * 4);
-  for (let i = 0; i < noiseData.length; i++) noiseData[i] = Math.random() * 256 | 0;
-  const tex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tex);
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, noiseSz, noiseSz, 0, gl.RGBA, gl.UNSIGNED_BYTE, noiseData);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-
-  // Cache uniform locations
-  const uNames = ['u_time','u_colorBack','u_roundness','u_thickness','u_marginLeft','u_marginRight',
-    'u_marginTop','u_marginBottom','u_aspectRatio','u_softness','u_intensity','u_bloom',
-    'u_spotSize','u_spots','u_pulse','u_smoke','u_smokeSize','u_colorsCount','u_noiseTexture'];
-  _glowULocs = {};
-  for (const n of uNames) _glowULocs[n] = gl.getUniformLocation(prog, n);
-  // Color array uniforms
-  _glowULocs.u_colors = [];
-  for (let i = 0; i < 5; i++) _glowULocs.u_colors.push(gl.getUniformLocation(prog, `u_colors[${i}]`));
-
-  // Set static uniforms — olive/cream circular glow, tight around pin
-  gl.uniform4f(_glowULocs.u_colorBack, 0, 0, 0, 0);     // transparent bg
-  gl.uniform4f(_glowULocs.u_colors[0], 0.784, 0.812, 0.749, 0.65); // olive-200ish
-  gl.uniform4f(_glowULocs.u_colors[1], 0.635, 0.678, 0.580, 0.50); // olive-300ish
-  gl.uniform4f(_glowULocs.u_colors[2], 0.404, 0.463, 0.357, 0.35); // olive-500
-  for (let i = 3; i < 5; i++) gl.uniform4f(_glowULocs.u_colors[i], 0, 0, 0, 0);
-  gl.uniform1f(_glowULocs.u_colorsCount, 3);
-  gl.uniform1f(_glowULocs.u_roundness, 1.0);        // circle
-  gl.uniform1f(_glowULocs.u_thickness, 0.08);       // thinner ring, hugs pin tighter
-  gl.uniform1f(_glowULocs.u_marginLeft, 0.08);      // margins push glow ring inward
-  gl.uniform1f(_glowULocs.u_marginRight, 0.08);
-  gl.uniform1f(_glowULocs.u_marginTop, 0.08);
-  gl.uniform1f(_glowULocs.u_marginBottom, 0.08);
-  gl.uniform1f(_glowULocs.u_aspectRatio, 1);         // square canvas
-  gl.uniform1f(_glowULocs.u_softness, 0.75);         // softer edges
-  gl.uniform1f(_glowULocs.u_intensity, 0.7);         // subtler
-  gl.uniform1f(_glowULocs.u_bloom, 0.5);
-  gl.uniform1f(_glowULocs.u_spotSize, 0.30);
-  gl.uniform1f(_glowULocs.u_spots, 2);
-  gl.uniform1f(_glowULocs.u_pulse, 0.20);
-  gl.uniform1f(_glowULocs.u_smoke, 0);
-  gl.uniform1f(_glowULocs.u_smokeSize, 1);
-  gl.uniform1i(_glowULocs.u_noiseTexture, 0);
-
-  gl.viewport(0, 0, c.width, c.height);
-  gl.enable(gl.BLEND);
-  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-  gl.clearColor(0, 0, 0, 0);
-}
-
-function renderGlowFrame(time) {
-  const gl = _glowGL;
-  if (!gl || !_glowProg) return;
-  gl.clear(gl.COLOR_BUFFER_BIT);
-  gl.uniform1f(_glowULocs.u_time, time * 0.001);
-  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-}
-
-function glowLoop(time) {
-  // Find active pin canvases
-  const active = document.querySelectorAll('.gaia-pin.is-hovered .gaia-pin__glowCanvas, .gaia-pin.is-active .gaia-pin__glowCanvas');
-  if (active.length === 0) { _glowAnimId = null; return; }
-
-  renderGlowFrame(time);
-  // Copy WebGL output to each active pin's 2D canvas
-  for (const gc of active) {
-    if (gc._ctx2d) {
-      gc._ctx2d.clearRect(0, 0, gc.width, gc.height);
-      gc._ctx2d.drawImage(_glowCanvas, 0, 0, gc.width, gc.height);
-    }
-  }
-  _glowAnimId = requestAnimationFrame(glowLoop);
-}
-
-function startGlowLoop() {
-  if (_glowAnimId || !_glowGL) return;
-  _glowAnimId = requestAnimationFrame(glowLoop);
-}
-
 // Pin container — direct child of map, manually positioned for zero-lag
 let _pinContainer;
 
@@ -3953,12 +3697,10 @@ let numberPinUid = 0;
 function makeNumberPinEl(count) {
   const safeCount = Math.max(1, Number(count) || 1);
   const gradId = `gaia-pin-grad-${numberPinUid++}`;
-  const countSize = safeCount >= 100 ? 26 : 32.512;
 
   const el = document.createElement('button');
   el.type = 'button';
   el.className = 'gaia-cluster gaia-number-pin';
-  el.setAttribute('aria-label', `${safeCount} observations`);
   el.innerHTML =
     `<svg xmlns="http://www.w3.org/2000/svg" width="62" height="62" viewBox="0 0 61.9644 61.9644" fill="none" aria-hidden="true">` +
       '<defs>' +
@@ -3970,7 +3712,9 @@ function makeNumberPinEl(count) {
       `<circle cx="30.9822" cy="30.9822" r="30.9822" fill="url(#${gradId})" />` +
       '<circle cx="30.9822" cy="30.9822" r="30.2292" stroke="#FFFFFF" stroke-opacity="0.5" stroke-width="1.50598"/>' +
     '</svg>' +
-    `<span class="gaia-number-pin__count" style="font-size:${countSize}px">${safeCount}</span>`;
+    '<span class="gaia-number-pin__count"></span>';
+
+  setNumberPinCount(el, safeCount);
   return el;
 }
 
@@ -3979,8 +3723,10 @@ function makeClusterSvgEl(count, clusterId, lng, lat) {
   el._clusterMeta = { clusterId, lng, lat };
   el.addEventListener('click', () => {
     const meta = el._clusterMeta || { clusterId, lng, lat };
-    map.getSource('gaia-pins').getClusterExpansionZoom(meta.clusterId, (err, z) => {
-      if (!err) map.easeTo({ center: [meta.lng, meta.lat], zoom: z + 0.5, duration: 350 });
+    const source = getPinSource();
+    if (!source) return;
+    source.getClusterExpansionZoom(meta.clusterId, (err, z) => {
+      if (!err) map.easeTo({ center: [meta.lng, meta.lat], zoom: z + 0.5, duration: MAP_EASE_DURATION_MS });
     });
   });
   return el;
@@ -3991,7 +3737,7 @@ function makeSingleSvgEl(lng, lat) {
   el._singleMeta = { lng, lat };
   el.addEventListener('click', () => {
     const meta = el._singleMeta || { lng, lat };
-    map.easeTo({ center: [meta.lng, meta.lat], zoom: Math.max(map.getZoom() + 1.2, PHOTO_ZOOM + 0.1), duration: 350 });
+    map.easeTo({ center: [meta.lng, meta.lat], zoom: Math.max(map.getZoom() + 1.2, PHOTO_ZOOM + 0.1), duration: MAP_EASE_DURATION_MS });
   });
   return el;
 }
@@ -4004,9 +3750,132 @@ function normalizeLngToMap(lng) {
   return wrappedLng;
 }
 
+function normalizeLngAround(lng, refLng) {
+  let wrappedLng = Number(lng);
+  while (wrappedLng - refLng > 180) wrappedLng -= 360;
+  while (wrappedLng - refLng < -180) wrappedLng += 360;
+  return wrappedLng;
+}
+
+function setNumberPinCount(el, count) {
+  const safeCount = Math.max(1, Number(count) || 1);
+  const countEl = el.querySelector('.gaia-number-pin__count');
+  if (!countEl) return;
+  countEl.textContent = String(safeCount);
+  countEl.style.fontSize = safeCount >= NUMBER_PIN_LARGE_THRESHOLD
+    ? `${NUMBER_PIN_LARGE_FONT_SIZE}px`
+    : `${NUMBER_PIN_FONT_SIZE}px`;
+  el.setAttribute('aria-label', `${safeCount} observations`);
+}
+
+let _clusterSyncRaf = null;
+let _clusterSyncVersion = 0;
+const _clusterCentroidCache = new Map();
+
+function requestClusterSync() {
+  if (pinsPhotoMode || !map) return;
+  if (_clusterSyncRaf !== null) return;
+  _clusterSyncRaf = requestAnimationFrame(() => {
+    _clusterSyncRaf = null;
+    syncClusterMarkers();
+  });
+}
+
+function getPinSource() {
+  if (!map) return null;
+  const source = map.getSource(GAIA_PIN_SOURCE_ID);
+  if (!source || typeof source.getClusterLeaves !== 'function') return null;
+  return source;
+}
+
+function resolveClusterCentroid(clusterId, pointCount, fallbackLng, fallbackLat) {
+  const source = getPinSource();
+  if (!source || !Number.isFinite(Number(clusterId))) {
+    return Promise.resolve({ lng: fallbackLng, lat: fallbackLat });
+  }
+
+  const cacheKey = `${clusterId}:${pointCount}`;
+  const now = Date.now();
+  const cached = _clusterCentroidCache.get(cacheKey);
+  if (cached && (now - cached.ts) < CLUSTER_CENTROID_CACHE_TTL_MS) {
+    return Promise.resolve(cached.value);
+  }
+
+  return new Promise(resolve => {
+    source.getClusterLeaves(clusterId, pointCount, 0, (err, leaves) => {
+      if (err || !Array.isArray(leaves) || leaves.length === 0) {
+        resolve({ lng: fallbackLng, lat: fallbackLat });
+        return;
+      }
+
+      const refLng = Number(leaves[0].geometry.coordinates[0]);
+      let lngSum = 0;
+      let latSum = 0;
+
+      for (const leaf of leaves) {
+        const rawLng = Number(leaf.geometry.coordinates[0]);
+        const rawLat = Number(leaf.geometry.coordinates[1]);
+        lngSum += normalizeLngAround(rawLng, refLng);
+        latSum += rawLat;
+      }
+
+      const centroid = {
+        lng: normalizeLngToMap(lngSum / leaves.length),
+        lat: latSum / leaves.length
+      };
+
+      _clusterCentroidCache.set(cacheKey, { ts: Date.now(), value: centroid });
+      resolve(centroid);
+    });
+  });
+}
+
+function applyClusterMarkerBuckets(resolvedBuckets) {
+  const seen = new Set(resolvedBuckets.map(b => b.key));
+
+  for (const b of resolvedBuckets) {
+    const existing = clusterMarkers[b.key];
+    if (existing) {
+      existing.marker.setLngLat([b.lng, b.lat]);
+
+      if (b.isCluster) {
+        setNumberPinCount(existing.el, b.pointCount);
+        if (existing.el._clusterMeta) {
+          existing.el._clusterMeta.clusterId = b.clusterId;
+          existing.el._clusterMeta.lng = b.lng;
+          existing.el._clusterMeta.lat = b.lat;
+        }
+      } else if (existing.el._singleMeta) {
+        existing.el._singleMeta.lng = b.lng;
+        existing.el._singleMeta.lat = b.lat;
+      }
+      continue;
+    }
+
+    const el = b.isCluster
+      ? makeClusterSvgEl(b.pointCount, b.clusterId, b.lng, b.lat)
+      : makeSingleSvgEl(b.lng, b.lat);
+
+    const marker = new mapboxgl.Marker({ element: el, anchor: 'center' })
+      .setLngLat([b.lng, b.lat])
+      .addTo(map);
+
+    clusterMarkers[b.key] = { marker, el };
+  }
+
+  for (const key of Object.keys(clusterMarkers)) {
+    if (!seen.has(key)) {
+      clusterMarkers[key].marker.remove();
+      delete clusterMarkers[key];
+    }
+  }
+}
+
 function syncClusterMarkers() {
-  if (pinsPhotoMode) return;
-  const features = map.querySourceFeatures('gaia-pins');
+  if (pinsPhotoMode || !map || !map.isStyleLoaded()) return;
+  if (!map.getSource(GAIA_PIN_SOURCE_ID)) return;
+
+  const features = map.querySourceFeatures(GAIA_PIN_SOURCE_ID);
   const buckets = {};
 
   // Deduplicate cluster/single features across source tiles and stabilize their center.
@@ -4038,69 +3907,50 @@ function syncClusterMarkers() {
     }
   }
 
-  const seen = new Set(Object.keys(buckets));
+  const syncVersion = ++_clusterSyncVersion;
+  const bucketList = Object.values(buckets);
+  const bucketPromises = bucketList.map(async b => {
+    const fallbackLng = b.lngSum / b.n;
+    const fallbackLat = b.latSum / b.n;
 
-  for (const key of seen) {
-    const b = buckets[key];
-    const lng = b.lngSum / b.n;
-    const lat = b.latSum / b.n;
-
-    const existing = clusterMarkers[key];
-    if (existing) {
-      existing.marker.setLngLat([lng, lat]);
-
-      if (b.isCluster) {
-        const safeCount = b.pointCount;
-        const countEl = existing.el.querySelector('.gaia-number-pin__count');
-        if (countEl) {
-          countEl.textContent = String(safeCount);
-          countEl.style.fontSize = safeCount >= 100 ? '26px' : '32.512px';
-        }
-        existing.el.setAttribute('aria-label', `${safeCount} observations`);
-        if (existing.el._clusterMeta) {
-          existing.el._clusterMeta.clusterId = b.clusterId;
-          existing.el._clusterMeta.lng = lng;
-          existing.el._clusterMeta.lat = lat;
-        }
-      } else if (existing.el._singleMeta) {
-        existing.el._singleMeta.lng = lng;
-        existing.el._singleMeta.lat = lat;
-      }
-      continue;
+    if (!b.isCluster) {
+      return { ...b, lng: fallbackLng, lat: fallbackLat };
     }
 
-    const el = b.isCluster
-      ? makeClusterSvgEl(b.pointCount, b.clusterId, lng, lat)
-      : makeSingleSvgEl(lng, lat);
+    const centroid = await resolveClusterCentroid(b.clusterId, b.pointCount, fallbackLng, fallbackLat);
+    return { ...b, lng: centroid.lng, lat: centroid.lat };
+  });
 
-    const marker = new mapboxgl.Marker({ element: el, anchor: 'center' })
-      .setLngLat([lng, lat])
-      .addTo(map);
-
-    clusterMarkers[key] = { marker, el };
-  }
-
-  for (const key of Object.keys(clusterMarkers)) {
-    if (!seen.has(key)) {
-      clusterMarkers[key].marker.remove();
-      delete clusterMarkers[key];
-    }
-  }
+  Promise.all(bucketPromises)
+    .then(resolvedBuckets => {
+      if (syncVersion !== _clusterSyncVersion || pinsPhotoMode || !map) return;
+      applyClusterMarkerBuckets(resolvedBuckets);
+    })
+    .catch(err => {
+      console.warn('Failed to sync cluster markers', err);
+    });
 }
 
 function setPinMode(photoMode) {
+  _clusterSyncVersion += 1;
   pinsPhotoMode = photoMode;
   for (const { el } of Object.values(photoMarkers)) {
     el.classList.toggle('pin-visible', photoMode);
   }
   // Position pins immediately when entering photo mode
-  if (photoMode) syncPinPositions();
+  if (photoMode) {
+    if (_clusterSyncRaf !== null) {
+      cancelAnimationFrame(_clusterSyncRaf);
+      _clusterSyncRaf = null;
+    }
+    syncPinPositions();
+  }
   // Toggle cluster markers
   for (const { el } of Object.values(clusterMarkers)) {
     el.classList.toggle('cluster-hidden', photoMode);
   }
   if (!photoMode) {
-    syncClusterMarkers();
+    requestClusterSync();
     // Hide find details when zooming out (hideFindDetails handles pin deselect)
     hideFindDetails();
   }
@@ -4124,11 +3974,11 @@ function initMap() {
   document.getElementById('setup-overlay').style.display = 'none';
 
   mapboxgl.accessToken = token;
-  map = new mapboxgl.Map({ container: 'map', style: GAIA_STYLE, center: [-118.1300, 34.1520], zoom: 12, pitch: 0, pixelRatio: window.devicePixelRatio || 1 });
+  map = new mapboxgl.Map({ container: 'map', style: GAIA_STYLE, center: MAP_INITIAL_CENTER, zoom: MAP_INITIAL_ZOOM, pitch: 0, pixelRatio: window.devicePixelRatio || 1 });
 
   map.on('load', () => {
     // ── CLUSTER SOURCE ──────────────────────────────────────
-    map.addSource('gaia-pins', {
+    map.addSource(GAIA_PIN_SOURCE_ID, {
       type: 'geojson',
       data: {
         type: 'FeatureCollection',
@@ -4139,26 +3989,28 @@ function initMap() {
         }))
       },
       cluster: true,
-      clusterMaxZoom: 14,
-      clusterRadius: 50
+      clusterMaxZoom: GAIA_CLUSTER_MAX_ZOOM,
+      clusterRadius: GAIA_CLUSTER_RADIUS
     });
 
     // Hidden layer forces Mapbox to process source tiles (required for querySourceFeatures)
     map.addLayer({
-      id: 'gaia-pins-hidden', type: 'circle', source: 'gaia-pins',
+      id: GAIA_PIN_HIDDEN_LAYER_ID, type: 'circle', source: GAIA_PIN_SOURCE_ID,
       paint: { 'circle-radius': 0, 'circle-opacity': 0 }
     });
 
     // ── SVG CLUSTER MARKERS (managed via querySourceFeatures) ──
-    map.once('idle', () => { if (!pinsPhotoMode) syncClusterMarkers(); });
-    map.on('move', () => { if (!pinsPhotoMode) syncClusterMarkers(); });
-    map.on('moveend', () => { if (!pinsPhotoMode) syncClusterMarkers(); });
+    map.once('idle', requestClusterSync);
+    map.on('move', requestClusterSync);
+    map.on('moveend', requestClusterSync);
     map.on('sourcedata', e => {
-      if (e.sourceId === 'gaia-pins' && !pinsPhotoMode) syncClusterMarkers();
+      if (e.sourceId === GAIA_PIN_SOURCE_ID) {
+        _clusterCentroidCache.clear();
+        requestClusterSync();
+      }
     });
 
-    // ── WEBGL GLOW + HTML PHOTO MARKERS ─────────────────────
-    initGlowShader();
+    // ── HTML PHOTO MARKERS ───────────────────────────────────
     initPhotoMarkers();
 
     // Set initial display mode
@@ -4172,7 +4024,7 @@ function initMap() {
       const threshold = pinsPhotoMode ? PHOTO_ZOOM - ZOOM_HYST : PHOTO_ZOOM;
       const shouldBePhoto = z >= threshold;
       if (shouldBePhoto !== pinsPhotoMode) setPinMode(shouldBePhoto);
-      if (!pinsPhotoMode) syncClusterMarkers();
+      if (!pinsPhotoMode) requestClusterSync();
     });
   });
 
