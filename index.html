@@ -7,6 +7,7 @@
 <link href="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.css" rel="stylesheet"/>
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
 <link rel="stylesheet" href="https://use.typekit.net/atn6inh.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&display=swap">
 <style>
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -76,6 +77,27 @@
   /* ── Typography ── */
   --font-serif: "new-spirit","New Spirit",Georgia,serif;
   --font-sans:  "neue-haas-unica","Neue Haas Unica","Helvetica Neue",system-ui,sans-serif;
+  --font-mono:  "IBM Plex Mono","IBM Plex Mono Fallback","SFMono-Regular",ui-monospace,monospace;
+
+  /* ── Map Pin Tokens (Figma node 624:2133) ── */
+  --pin-fill-top:  #7BB369;
+  --pin-fill-bottom:#6E9152;
+  --pin-number-text:#E0F2DA;
+  --pin-ring: rgba(255,255,255,0.50);
+  --pin-ring-solid: #ffffff;
+  --pin-glass-dark: rgba(0,0,0,0.01);
+  --pin-text-shadow: 0px 4px 20px rgba(128,105,38,0.09);
+  --pin-glow-1: rgba(116,161,93,0.55);
+  --pin-glow-2: rgba(116,161,93,0.48);
+  --pin-glow-3: rgba(116,161,93,0.28);
+  --pin-glow-4: rgba(116,161,93,0.08);
+  --pin-glow-5: rgba(116,161,93,0.01);
+  --pin-glow-stack:
+    0.968px 1.937px 4.841px 0px var(--pin-glow-1),
+    3.873px 8.715px 9.683px 0px var(--pin-glow-2),
+    9.683px 19.366px 12.588px 0px var(--pin-glow-3),
+    16.461px 33.890px 15.493px 0px var(--pin-glow-4),
+    25.176px 53.256px 16.461px 0px var(--pin-glow-5);
 
   /* ── Spacing (matches Figma spacing variables) ── */
   --space-0: 0px;
@@ -715,51 +737,110 @@ html, body {
   overflow: visible;
   line-height: 0;
   font-size: 0;
+  appearance: none;
+  -webkit-appearance: none;
 }
-.gaia-pin:active { transform: scale(0.94); }
+.gaia-pin:active { transform: scale(0.96); }
+
 /* Photo pins hidden by default; shown in photo mode via class */
 .gaia-pin--photo {
   opacity: 0 !important; pointer-events: none !important;
   transition: opacity 0.25s ease;
-  will-change: transform;
-}
-.gaia-pin--photo.pin-visible { opacity: 1 !important; pointer-events: auto !important; }
-.gaia-pin--photo svg { overflow: visible; display: block; }
-
-/* Soft faded pin shadow — matches Figma 534:1354 */
-.gaia-pin__shadow {
-  position: absolute;
-  bottom: -4px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 48px;
-  height: 14px;
-  background: radial-gradient(ellipse at center,
-    rgba(31,44,37,0.13) 0%,
-    rgba(31,44,37,0.06) 35%,
-    rgba(31,44,37,0.02) 60%,
-    transparent 100%);
-  pointer-events: none;
-  z-index: 0;
-  filter: blur(3px);
-}
-
-/* WebGL glow canvas — replaces CSS glow ring */
-.gaia-pin__glowCanvas {
-  position: absolute;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0;
-  transition: opacity 0.32s ease;
+  will-change: transform, opacity;
   border-radius: 50%;
 }
-.gaia-pin.is-active  .gaia-pin__glowCanvas,
-.gaia-pin.is-hovered .gaia-pin__glowCanvas {
-  opacity: 1;
+.gaia-pin--photo.pin-visible { opacity: 1 !important; pointer-events: auto !important; }
+.gaia-pin__photo-shell {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: var(--pin-glow-stack);
+  backdrop-filter: blur(3px) saturate(115%);
+  -webkit-backdrop-filter: blur(3px) saturate(115%);
+}
+.gaia-pin__photo-img {
+  position: absolute;
+  inset: 2.2px;
+  width: calc(100% - 4.4px);
+  height: calc(100% - 4.4px);
+  object-fit: cover;
+  border-radius: 50%;
+}
+.gaia-pin__photo-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 8px solid var(--pin-ring);
+  background: var(--pin-glass-dark);
+}
+.gaia-pin__photo-glass {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    linear-gradient(158deg, rgba(255,255,255,0.40) 0%, rgba(255,255,255,0.16) 32%, rgba(255,255,255,0) 66%),
+    radial-gradient(130% 110% at 24% 16%, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0) 52%);
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+.gaia-pin.is-hovered .gaia-pin__photo-shell,
+.gaia-pin.is-active .gaia-pin__photo-shell {
+  transform: translateY(-1px) scale(1.02);
 }
 
-/* Cluster SVG markers */
+/* Cluster number pins (zoomed-out state) */
 .gaia-cluster { transition: opacity 0.25s ease; }
+.gaia-number-pin {
+  position: relative;
+  width: 62px;
+  height: 62px;
+  display: block;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  overflow: visible;
+  box-shadow: var(--pin-glow-stack);
+  backdrop-filter: blur(3px) saturate(115%);
+  -webkit-backdrop-filter: blur(3px) saturate(115%);
+  touch-action: manipulation;
+}
+.gaia-number-pin svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.gaia-number-pin__glass {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  background:
+    linear-gradient(160deg, rgba(255,255,255,0.34) 0%, rgba(255,255,255,0.10) 34%, rgba(255,255,255,0) 68%),
+    radial-gradient(120% 110% at 24% 18%, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 48%);
+}
+.gaia-number-pin__count {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 32.512px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: -2px;
+  font-feature-settings: 'lnum' 1, 'tnum' 1;
+  color: var(--pin-number-text);
+  text-shadow: var(--pin-text-shadow);
+  text-align: center;
+  user-select: none;
+  transform: translateY(-0.5px);
+}
 .gaia-cluster.cluster-hidden { opacity: 0 !important; pointer-events: none !important; }
 
 /* ── FIND DETAILS ──────────────────────────────────────── */
@@ -3306,6 +3387,7 @@ let pinsPhotoMode = false;
 let photoMarkers  = {};   // id → { marker, el }
 let selectedPin   = null;
 let hoveredPin    = null;
+const PIN_SIZE = 62;
 
 // ── FIND DETAILS FULL-SCREEN OVERLAY ─────────────────────
 let fdFindMap = null;
@@ -3463,58 +3545,32 @@ document.addEventListener('click', (e) => {
 });
 
 function buildPhotoPinEl(id, imgUrl) {
-  // Exact SVG from Figma export (Frame 297.svg / node 534:1397)
-  // ViewBox: 0 0 74 85 — teardrop with circle cutout for photo
-  // Circle center: (36.57, 36.57), inner radius: 32.4, outer radius: 36.57
-  // Tail tip at ~y=84.45
-  const W = 74, H = 85;
-  // Glow canvas: circle centered on pin circle, extending ~10px beyond
-  const GS = 86;
-  const CX = 36.57, CY = 36.57; // pin circle center
-  const gL = Math.round(CX - GS / 2);   // ~-6
-  const gT = Math.round(CY - GS / 2);   // ~-6
-
   const btn = document.createElement('button');
   btn.className = 'gaia-pin gaia-pin--photo';
   btn.type = 'button';
   btn.dataset.pinId = id;
-  btn.style.cssText = `width:${W}px;height:${H}px;`;
+  btn.setAttribute('aria-label', `Observation ${id.replace('pin_', '')}`);
+  btn.style.cssText = `width:${PIN_SIZE}px;height:${PIN_SIZE}px;`;
 
-  // Soft faded shadow (CSS element — matches Figma 534:1354)
-  const shadow = document.createElement('span');
-  shadow.className = 'gaia-pin__shadow';
+  const shell = document.createElement('span');
+  shell.className = 'gaia-pin__photo-shell';
 
-  // Glow canvas (2D) — receives drawImage from shared WebGL canvas
-  const gc = document.createElement('canvas');
-  gc.className = 'gaia-pin__glowCanvas';
-  gc.width = GS * 2; gc.height = GS * 2; // 2x for retina
-  gc.style.cssText = `left:${gL}px;top:${gT}px;width:${GS}px;height:${GS}px;`;
-  gc._ctx2d = gc.getContext('2d');
+  const img = document.createElement('img');
+  img.className = 'gaia-pin__photo-img';
+  img.src = imgUrl;
+  img.alt = '';
+  img.loading = 'lazy';
 
-  // SVG pin body — exact Figma path from Frame 297.svg
-  const svgNS = 'http://www.w3.org/2000/svg';
-  const svg = document.createElementNS(svgNS, 'svg');
-  svg.setAttribute('viewBox', '0 0 74 85');
-  svg.setAttribute('width', W);
-  svg.setAttribute('height', H);
-  svg.setAttribute('fill', 'none');
-  svg.style.cssText = 'position:relative;z-index:1;display:block;';
+  const ring = document.createElement('span');
+  ring.className = 'gaia-pin__photo-ring';
 
-  const clipId = 'clip-' + id;
-  svg.innerHTML = [
-    '<defs>',
-    `<clipPath id="${clipId}"><circle cx="36.5684" cy="36.5684" r="32.4"/></clipPath>`,
-    '</defs>',
-    // Photo image clipped to inner circle (drawn first, behind the pin body)
-    `<image href="${imgUrl}" x="4.17" y="4.17" width="64.8" height="64.8" clip-path="url(#${clipId})" preserveAspectRatio="xMidYMid slice"/>`,
-    // Pin body — exact Figma SVG path with cutout (outer teardrop + inner circle hole)
-    '<path d="M36.5684 0C56.7646 0 73.1375 16.3722 73.1377 36.5684C73.1377 54.1338 60.7521 68.8045 44.2383 72.3291C44.1986 72.6453 44.0983 72.9605 43.9238 73.2627L38.4277 82.7832C37.4655 84.4497 35.06 84.4495 34.0977 82.7832L28.5752 73.2178C28.3828 72.8846 28.2794 72.5356 28.25 72.1865C12.0616 68.4206 0 53.9031 0 36.5684C0.000198675 16.3723 16.3723 0.000198679 36.5684 0ZM36.5684 4.16895C18.6747 4.16914 4.16914 18.6747 4.16895 36.5684C4.16895 50.027 12.375 61.569 24.0566 66.4639C24.3896 66.6034 24.7259 66.7376 25.0645 66.8662C28.6394 68.2244 32.517 68.9687 36.5684 68.9688C40.3284 68.9688 43.9392 68.3282 47.2969 67.1504C47.6205 67.0369 47.9419 66.9183 48.2607 66.7949C60.3766 62.1051 68.9688 50.3398 68.9688 36.5684C68.9686 18.6746 54.4622 4.16895 36.5684 4.16895Z" fill="#F8F8EE"/>',
-  ].join('');
+  const glass = document.createElement('span');
+  glass.className = 'gaia-pin__photo-glass';
 
-  btn.appendChild(shadow);
-  btn.appendChild(gc);
-  btn.appendChild(svg);
-  btn._glowCanvas = gc;
+  shell.appendChild(img);
+  shell.appendChild(ring);
+  shell.appendChild(glass);
+  btn.appendChild(shell);
 
   btn.addEventListener('pointerenter', () => {
     if (hoveredPin && hoveredPin !== id) {
@@ -3523,12 +3579,13 @@ function buildPhotoPinEl(id, imgUrl) {
     }
     hoveredPin = id;
     btn.classList.add('is-hovered');
-    startGlowLoop();
   });
+
   btn.addEventListener('pointerleave', () => {
     if (hoveredPin === id) hoveredPin = null;
     btn.classList.remove('is-hovered');
   });
+
   btn.addEventListener('click', () => {
     if (selectedPin && selectedPin !== id) {
       const p = photoMarkers[selectedPin];
@@ -3537,7 +3594,7 @@ function buildPhotoPinEl(id, imgUrl) {
     const selecting = selectedPin !== id;
     selectedPin = selecting ? id : null;
     btn.classList.toggle('is-active', selecting);
-    startGlowLoop();
+
     // Show/hide find details overlay
     if (selecting) { showFindDetails(id, imgUrl); }
     else { hideFindDetails(); }
@@ -3840,28 +3897,44 @@ function initPhotoMarkers() {
 
 function syncPinPositions() {
   if (!pinsPhotoMode) return;
-  const W = 74, H = 85; // pin element size
   for (const id of Object.keys(photoMarkers)) {
     const pm = photoMarkers[id];
     const pos = map.project([pm.lng, pm.lat]);
-    // Position so tail tip (bottom-center) lands on the geo coordinate
-    pm.el.style.transform = `translate(${pos.x - W / 2}px, ${pos.y - H}px)`;
+    // Circle marker is center-anchored on the geo coordinate
+    pm.el.style.transform = `translate(${pos.x - PIN_SIZE / 2}px, ${pos.y - PIN_SIZE / 2}px)`;
   }
 }
 
 let clusterMarkers = {}; // key → { marker, el }
+let numberPinUid = 0;
+
+function makeNumberPinEl(count) {
+  const safeCount = Math.max(1, Number(count) || 1);
+  const gradId = `gaia-pin-grad-${numberPinUid++}`;
+  const countSize = safeCount >= 100 ? 26 : 32.512;
+
+  const el = document.createElement('button');
+  el.type = 'button';
+  el.className = 'gaia-cluster gaia-number-pin';
+  el.setAttribute('aria-label', `${safeCount} observations`);
+  el.innerHTML =
+    `<svg xmlns="http://www.w3.org/2000/svg" width="62" height="62" viewBox="0 0 61.9644 61.9644" fill="none" aria-hidden="true">` +
+      '<defs>' +
+        `<linearGradient id="${gradId}" x1="30.9822" y1="0" x2="30.9822" y2="61.9644" gradientUnits="userSpaceOnUse">` +
+          '<stop stop-color="var(--pin-fill-top)"/>' +
+          '<stop offset="1" stop-color="var(--pin-fill-bottom)"/>' +
+        '</linearGradient>' +
+      '</defs>' +
+      `<circle cx="30.9822" cy="30.9822" r="30.9822" fill="url(#${gradId})" fill-opacity="0.2"/>` +
+      '<circle cx="30.9822" cy="30.9822" r="30.2292" stroke="var(--pin-ring-solid)" stroke-opacity="0.5" stroke-width="1.50598"/>' +
+    '</svg>' +
+    '<span class="gaia-number-pin__glass" aria-hidden="true"></span>' +
+    `<span class="gaia-number-pin__count" style="font-size:${countSize}px">${safeCount}</span>`;
+  return el;
+}
 
 function makeClusterSvgEl(count, clusterId, lng, lat) {
-  const r = count < 10 ? 28 : count < 30 ? 34 : 40;
-  const d = r * 2;
-  const el = document.createElement('div');
-  el.className = 'gaia-cluster';
-  el.style.cursor = 'pointer';
-  el.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="${d}" height="${d}" viewBox="0 0 ${d} ${d}">` +
-    `<circle cx="${r}" cy="${r}" r="${r - 2}" fill="#67765b" stroke="#fff" stroke-width="3"/>` +
-    `<text x="${r}" y="${r}" text-anchor="middle" dominant-baseline="central" fill="#fefdf9" ` +
-    `font-family="neue-haas-unica, 'Neue Haas Unica', system-ui, sans-serif" ` +
-    `font-size="${r > 30 ? 22 : 20}" font-weight="400" letter-spacing="-0.5">${count}</text></svg>`;
+  const el = makeNumberPinEl(count);
   el.addEventListener('click', () => {
     map.getSource('gaia-pins').getClusterExpansionZoom(clusterId, (err, z) => {
       if (!err) map.easeTo({ center: [lng, lat], zoom: z + 0.5, duration: 350 });
@@ -3870,11 +3943,11 @@ function makeClusterSvgEl(count, clusterId, lng, lat) {
   return el;
 }
 
-function makeSingleSvgEl() {
-  const el = document.createElement('div');
-  el.className = 'gaia-cluster';
-  el.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44">' +
-    '<circle cx="22" cy="22" r="18" fill="#67765b" stroke="#fff" stroke-width="3"/></svg>';
+function makeSingleSvgEl(lng, lat) {
+  const el = makeNumberPinEl(1);
+  el.addEventListener('click', () => {
+    map.easeTo({ center: [lng, lat], zoom: Math.max(map.getZoom() + 1.2, PHOTO_ZOOM + 0.1), duration: 350 });
+  });
   return el;
 }
 
@@ -3902,7 +3975,7 @@ function syncClusterMarkers() {
     const [lng, lat] = feature.geometry.coordinates;
     const el = isCluster
       ? makeClusterSvgEl(feature.properties.point_count, feature.properties.cluster_id, lng, lat)
-      : makeSingleSvgEl();
+      : makeSingleSvgEl(lng, lat);
     const marker = new mapboxgl.Marker({ element: el, anchor: 'center' })
       .setLngLat([lng, lat]).addTo(map);
     clusterMarkers[key] = { marker, el };
