@@ -43,18 +43,79 @@ html, body {
   pointer-events: none;
 }
 
-/* Hero toolbar button — solid dark olive circle (matches Figma) */
+/* Hero toolbar — glass back button + glass actions pill */
 .hero-btn {
   display: flex; align-items: center; justify-content: center;
-  border-radius: var(--radius-full); border: none;
-  background: rgba(103,118,91,0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  border-radius: 296px; border: none;
+  background: transparent;
   box-shadow: var(--shadow-nav);
   cursor: pointer; position: relative;
   pointer-events: all;
   flex-shrink: 0;
   width: 48px; height: 48px;
+  isolation: isolate; overflow: hidden;
+}
+.hero-btn::before,
+.hero-actions::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: inherit;
+  z-index: 0;
+}
+.hero-btn::after,
+.hero-actions::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #ddd;
+  mix-blend-mode: color-burn;
+  border-radius: inherit;
+  z-index: 1;
+}
+.hero-darken {
+  position: absolute;
+  inset: 0;
+  background: #f7f7f7;
+  mix-blend-mode: darken;
+  border-radius: inherit;
+  z-index: 2;
+  pointer-events: none;
+}
+.hero-btn svg,
+.hero-action-btn svg {
+  position: relative;
+  z-index: 3;
+}
+.hero-actions {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  height: 48px;
+  padding: 0 10px;
+  border-radius: 296px;
+  background: transparent;
+  box-shadow: var(--shadow-nav);
+  isolation: isolate;
+  overflow: hidden;
+  pointer-events: all;
+}
+.hero-action-btn {
+  position: relative;
+  z-index: 3;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
 }
 
 /* Toolbar SVG icons — crisp, no stretching */
@@ -82,10 +143,39 @@ html, body {
   box-shadow: 0px 4px 16.2px 0px rgba(115,115,100,0.5);
   flex-shrink: 0;
 }
-#hero-img {
+#hero-img,
+.hero-img-blur {
   position: absolute; inset: 0;
   width: 100%; height: 100%;
   object-fit: cover; display: block;
+}
+.hero-img-blur {
+  inset: -3px;
+  width: calc(100% + 6px);
+  height: calc(100% + 6px);
+  max-width: none;
+  filter: blur(12px);
+  pointer-events: none;
+  -webkit-mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-mode: alpha;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0) 42%,
+    rgba(0,0,0,0.2) 58%,
+    rgba(0,0,0,0.65) 80%,
+    rgba(0,0,0,1) 100%
+  );
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  mask-mode: alpha;
+  mask-image: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0) 42%,
+    rgba(0,0,0,0.2) 58%,
+    rgba(0,0,0,0.65) 80%,
+    rgba(0,0,0,1) 100%
+  );
 }
 /* Progressive gradient overlay — fades from fully transparent to dark */
 #hero-gradient {
@@ -784,6 +874,7 @@ html, body {
   overflow: hidden;
   scroll-snap-align: start;
   background: var(--brown-50);
+  position: relative;
 }
 .gallery-photo img {
   width: 100%; height: 100%;
@@ -791,18 +882,30 @@ html, body {
   display: block;
   pointer-events: none;
 }
+.gallery-photo.gallery-photo-crop-1 img {
+  position: absolute;
+  top: -11.87%;
+  left: -1.1%;
+  width: 102.21%;
+  height: 123.75%;
+  max-width: none;
+  object-fit: fill;
+}
 
 .view-all {
   font-family: var(--font-sans);
-  font-size: 13px;
-  color: var(--grey-300);
+  font-size: 15px;
+  color: var(--olive);
   letter-spacing: 0.5px;
-  padding: 0 16px;
+  margin-left: 16px;
+  padding: 7px 14px;
   line-height: 1.3;
   background: none;
-  border: none;
+  border: 1px solid var(--olive);
+  border-radius: 1000px;
   cursor: pointer;
   text-align: left;
+  max-width: 120px;
 }
 
 /* Story Card */
@@ -829,8 +932,10 @@ html, body {
 }
 .story-card-image img {
   position: absolute;
-  inset: 0;
-  width: 100%; height: 100%;
+  left: 0;
+  top: -13.4%;
+  width: 100%;
+  height: 120.22%;
   object-fit: cover;
   display: block;
 }
@@ -941,21 +1046,32 @@ html, body {
 
 <!-- ══ FLOATING TOOLBAR ════════════════════════════════════ -->
 <div id="toolbar">
-  <!-- Back button — solid dark olive circle, white icon -->
+  <!-- Back button -->
   <button class="hero-btn" id="btn-back" onclick="history.back()">
+    <span class="hero-darken"></span>
     <svg class="toolbar-icon" width="22" height="20" viewBox="0 0 22 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M10 1L1 10L10 19" stroke="#fefdf9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M1 10H21" stroke="#fefdf9" stroke-width="2" stroke-linecap="round"/>
+      <path d="M10 1L1 10L10 19" stroke="#252024" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M1 10H21" stroke="#252024" stroke-width="2" stroke-linecap="round"/>
     </svg>
   </button>
 
-  <!-- Single "+" button — standalone dark olive circle (matches Figma, no share) -->
-  <button class="hero-btn" id="btn-add">
-    <svg class="toolbar-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 4V20" stroke="#fefdf9" stroke-width="2" stroke-linecap="round"/>
-      <path d="M4 12H20" stroke="#fefdf9" stroke-width="2" stroke-linecap="round"/>
-    </svg>
-  </button>
+  <!-- Action buttons -->
+  <div class="hero-actions" id="btn-actions">
+    <span class="hero-darken"></span>
+    <button class="hero-action-btn" id="btn-add" aria-label="Add">
+      <svg class="toolbar-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 4V20" stroke="#252024" stroke-width="2" stroke-linecap="round"/>
+        <path d="M4 12H20" stroke="#252024" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <button class="hero-action-btn" id="btn-share" aria-label="Share">
+      <svg class="toolbar-icon" width="20" height="24" viewBox="0 0 20 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 1V15" stroke="#252024" stroke-width="2" stroke-linecap="round"/>
+        <path d="M6 5L10 1L14 5" stroke="#252024" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M1 14V21C1 22.1046 1.89543 23 3 23H17C18.1046 23 19 22.1046 19 21V14" stroke="#252024" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
 </div>
 
 <!-- ══ SCROLLABLE PAGE CONTENT ═════════════════════════════ -->
@@ -963,7 +1079,8 @@ html, body {
 
   <!-- Hero image — slides behind the toolbar -->
   <div id="hero">
-    <img id="hero-img" src="https://www.figma.com/api/mcp/asset/97d3a79e-e656-40a5-8de8-85e64b017bed" alt="Coast Live Oak">
+    <img id="hero-img" src="assets/find-details/hero-coast-live-oak.png" alt="Coast Live Oak">
+    <img class="hero-img-blur" src="assets/find-details/hero-coast-live-oak.png" alt="">
     <div id="hero-gradient"></div>
     <div id="hero-meta">
       <span class="hero-title">Coast Live Oak</span>
@@ -976,17 +1093,18 @@ html, body {
     <div class="dot active"></div>
     <div class="dot"></div>
     <div class="dot"></div>
+    <div class="dot"></div>
   </div>
 
   <!-- Tab switcher: Find / Activity / Log -->
   <div id="tab-switcher">
-    <button class="tab-item active" data-tab="find">Find</button>
+    <button class="tab-item" data-tab="find">Find</button>
     <button class="tab-item" data-tab="activity">Activity</button>
-    <button class="tab-item" data-tab="learn">Learn</button>
+    <button class="tab-item active" data-tab="learn">Learn</button>
   </div>
 
   <!-- ══ FIND TAB PANEL ═════════════════════════════════════ -->
-  <div id="panel-find" class="tab-panel">
+  <div id="panel-find" class="tab-panel" hidden>
 
   <!-- Map section — real Mapbox map -->
   <div id="map-section">
@@ -1145,7 +1263,7 @@ html, body {
   </div>
 
   <!-- ══ LEARN TAB PANEL ════════════════════════════════════ -->
-  <div id="panel-learn" class="tab-panel" hidden>
+  <div id="panel-learn" class="tab-panel">
 
     <!-- Species info + map card -->
     <div class="learn-main-card">
@@ -1162,7 +1280,7 @@ html, body {
           <div class="stat-col">
             <span class="stat-label">Category</span>
             <div class="stat-badge">
-              <img src="https://www.figma.com/api/mcp/asset/33100a6a-5625-43a8-8d82-9b46bd598837" alt="Plant">
+              <img src="assets/find-details/category-plant-badge.svg" alt="Plant">
             </div>
           </div>
 
@@ -1189,7 +1307,7 @@ html, body {
       <!-- Map snapshot -->
       <div class="learn-map-wrap">
         <img class="learn-map-img"
-          src="https://www.figma.com/api/mcp/asset/ce025806-7187-43b5-a457-cf043dbc6293"
+          src="assets/find-details/learn-map-card.png"
           alt="Map">
         <button class="learn-map-expand" aria-label="Expand map">
           <span class="expand-darken"></span>
@@ -1209,20 +1327,20 @@ html, body {
         <span class="section-title-serif">Observation Gallery</span>
       </div>
       <div class="gallery-scroll">
-        <div class="gallery-photo">
-          <img src="https://www.figma.com/api/mcp/asset/d3a0264f-341a-4785-9bcf-3841384e936f" alt="">
+        <div class="gallery-photo gallery-photo-crop-1">
+          <img src="assets/find-details/gallery-1.png" alt="">
         </div>
         <div class="gallery-photo">
-          <img src="https://www.figma.com/api/mcp/asset/92a5c66e-462e-4511-ab3c-295caf893823" alt="">
+          <img src="assets/find-details/gallery-2.png" alt="">
         </div>
         <div class="gallery-photo">
-          <img src="https://www.figma.com/api/mcp/asset/10b5e86c-9449-4e24-880b-230f15d9e6a3" alt="">
+          <img src="assets/find-details/gallery-3.png" alt="">
         </div>
         <div class="gallery-photo">
-          <img src="https://www.figma.com/api/mcp/asset/12293b57-3dd1-4a9b-99cb-f3ed367044df" alt="">
+          <img src="assets/find-details/gallery-4.png" alt="">
         </div>
       </div>
-      <button class="view-all">View all</button>
+      <button class="view-all">View All</button>
     </div>
 
     <!-- Stories -->
@@ -1230,7 +1348,7 @@ html, body {
       <span class="section-title-serif">Stories</span>
       <a href="story-cards.html" class="story-card">
         <div class="story-card-image">
-          <img src="https://www.figma.com/api/mcp/asset/a04208ca-8e5b-4af5-8c42-0f8e70e49a4e" alt="Coast Live Oak">
+          <img src="assets/find-details/story-keystone.png" alt="Coast Live Oak">
           <div class="story-card-image-overlay"></div>
         </div>
         <div class="story-card-body">
@@ -1259,7 +1377,10 @@ html, body {
   <button class="nav-item" data-nav="explore">
     <div class="icon-32">
       <div class="icon-inset" style="inset:15.76% 15.49% 15.49% 15.76%">
-        <img src="https://www.figma.com/api/mcp/asset/09b98f0b-a6b2-4e99-b9d1-d64ddf88d7ed" alt="">
+        <img src="assets/find-details/nav-explore-ring.svg" alt="">
+      </div>
+      <div class="icon-inset" style="inset:34.52% 32.86% 32.85% 34.52%">
+        <img src="assets/find-details/nav-explore-dot.svg" alt="">
       </div>
     </div>
     <span class="nav-label">Explore</span>
@@ -1268,7 +1389,7 @@ html, body {
   <button class="nav-item" data-nav="log">
     <div class="icon-32">
       <div class="icon-inset" style="inset:15.63% 20.95% 15.83% 18.39%">
-        <img src="https://www.figma.com/api/mcp/asset/47d31587-7492-45af-bec4-7b37a89e0f92" alt="">
+        <img src="assets/find-details/nav-log.svg" alt="">
       </div>
     </div>
     <span class="nav-label">Log</span>
@@ -1277,7 +1398,7 @@ html, body {
   <button class="nav-item" data-nav="observe">
     <div class="icon-32">
       <div class="icon-inset" style="inset:25.5% 16.06% 25.5% 15.19%">
-        <img src="https://www.figma.com/api/mcp/asset/278d2152-41ac-4957-9b68-567398a6c04d" alt="">
+        <img src="assets/find-details/nav-observe.svg" alt="">
       </div>
     </div>
     <span class="nav-label">Observe</span>
@@ -1286,7 +1407,7 @@ html, body {
   <button class="nav-item" data-nav="activity">
     <div class="icon-32">
       <div class="icon-inset" style="inset:15.52% 20.6% 15.73% 20.07%">
-        <img src="https://www.figma.com/api/mcp/asset/4b0f6861-1a6a-484a-83e9-3e98a4c6643d" alt="">
+        <img src="assets/find-details/nav-activity.svg" alt="">
       </div>
     </div>
     <span class="nav-label">Activity</span>
@@ -1294,8 +1415,8 @@ html, body {
 
   <button class="nav-item" data-nav="profile">
     <div class="icon-32">
-      <div class="icon-inset" style="top:4.93px;left:4.93px;width:22px;height:22.108px">
-        <img src="https://www.figma.com/api/mcp/asset/891580cd-3cc0-43ce-9253-5cb672f5c66d" alt="">
+      <div class="icon-inset" style="inset:15.4% 15.84% 15.52% 15.4%">
+        <img src="assets/find-details/nav-profile.svg" alt="">
       </div>
     </div>
     <span class="nav-label">Profile</span>
@@ -1404,9 +1525,11 @@ expandBtn.addEventListener('click', () => {
     });
   });
 
-  // No tab active on this detail page
-  ind.style.transform = 'translateX(-200px)';
-  ind.style.width = '76px';
+  const defaultBtn = bar.querySelector('[data-nav="explore"]');
+  if (defaultBtn) {
+    defaultBtn.classList.add('active');
+    requestAnimationFrame(() => moveIndicator(defaultBtn));
+  }
 })();
 
 // ── Tab switcher ─────────────────────────────────────────
