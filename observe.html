@@ -9,12 +9,26 @@
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --olive:      #67765b;
-  --paper-50:   #fefdf9;
-  --ink-900:    #0d0c0d;
-  --ink-400:    #524e56;
-  --pw-600:     #dddbd3;
-  --font-sans:  "neue-haas-unica","Neue Haas Unica","Helvetica Neue",system-ui,sans-serif;
+  --olive:       #67765b;
+  --olive-100:   #e3e7df;
+  --paper-50:    #fefdf9;
+  --paper-100:   #fefcf7;
+  --paper-200:   #fdfbf4;
+  --ink:         #252024;
+  --ink-300:     #7d7981;
+  --ink-900:     #0d0c0d;
+  --ink-400:     #524e56;
+  --brown-200:   #D8C9B8;
+  --brown-500:   #9b856b;
+  --grey-50:     #ededee;
+  --grey-100:    #d9d9db;
+  --grey-200:    #b1b2b5;
+  --pw-600:      #dddbd3;
+  --font-serif:  "new-spirit","New Spirit",Georgia,serif;
+  --font-sans:   "neue-haas-unica","Neue Haas Unica","Helvetica Neue",system-ui,sans-serif;
+  --radius-md:   8px;
+  --radius-xl:   24px;
+  --spring:      cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 html, body {
@@ -26,13 +40,23 @@ html, body {
   user-select: none; -webkit-user-select: none;
 }
 
-#app {
+/* ═══════════════════════════════════════════════════════════
+   SCREEN CONTAINER — Each screen is a full-viewport layer
+   ═══════════════════════════════════════════════════════════ */
+.screen {
   position: fixed; inset: 0;
   display: flex; flex-direction: column;
-  background: #000;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.35s ease;
+  z-index: 1;
 }
+.screen.active { opacity: 1; pointer-events: auto; z-index: 10; }
 
-/* ── VIEWFINDER ───────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════
+   SCREEN 1: CAMERA
+   ═══════════════════════════════════════════════════════════ */
+#screen-camera { background: #000; }
+
 #viewfinder {
   flex: 1; min-height: 0;
   position: relative;
@@ -43,199 +67,1269 @@ html, body {
 #viewfinder img {
   position: absolute; inset: 0;
   width: 100%; height: 100%;
-  object-fit: cover;
-  display: block;
+  object-fit: cover; display: block;
 }
-/* Focus ring animation */
-.focus-ring {
+
+/* Dark gradient at bottom of viewfinder */
+#viewfinder::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 45%;
+  background: linear-gradient(to bottom, transparent 0%, rgba(13,12,13,0.85) 100%);
+  pointer-events: none;
+}
+
+/* Close X button — glass circle, top-left */
+.cam-close {
+  position: absolute; top: 16px; left: 16px; z-index: 20;
+  width: 52px; height: 52px;
+  border-radius: 350px;
+  border: none; cursor: pointer;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0px 8px 40px rgba(0,0,0,0.12);
+}
+.cam-close svg { display: block; }
+
+/* Viewfinder corner brackets */
+.vf-bracket {
+  position: absolute; z-index: 10;
+  width: 44px; height: 44px;
+  pointer-events: none;
+}
+.vf-bracket::before, .vf-bracket::after {
+  content: '';
   position: absolute;
-  width: 72px; height: 72px;
+  background: rgba(254,253,249,0.7);
+  border-radius: 1px;
+}
+.vf-bracket::before { /* horizontal bar */ }
+.vf-bracket::after  { /* vertical bar */ }
+
+.vf-tl { top: 22%; left: 10%; }
+.vf-tl::before { top: 0; left: 0; width: 28px; height: 2.5px; }
+.vf-tl::after  { top: 0; left: 0; width: 2.5px; height: 28px; }
+
+.vf-tr { top: 22%; right: 10%; }
+.vf-tr::before { top: 0; right: 0; width: 28px; height: 2.5px; }
+.vf-tr::after  { top: 0; right: 0; width: 2.5px; height: 28px; }
+
+.vf-bl { bottom: 28%; left: 10%; }
+.vf-bl::before { bottom: 0; left: 0; width: 28px; height: 2.5px; }
+.vf-bl::after  { bottom: 0; left: 0; width: 2.5px; height: 28px; }
+
+.vf-br { bottom: 28%; right: 10%; }
+.vf-br::before { bottom: 0; right: 0; width: 28px; height: 2.5px; }
+.vf-br::after  { bottom: 0; right: 0; width: 2.5px; height: 28px; }
+
+/* Focus ring on tap */
+.focus-ring {
+  position: absolute; width: 72px; height: 72px;
   border: 1.5px solid rgba(254,253,249,0.7);
   border-radius: 4px;
   pointer-events: none;
   transform: translate(-50%, -50%) scale(1.3);
-  opacity: 0;
-  transition: none;
+  opacity: 0; transition: none;
 }
 .focus-ring.animate {
-  opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
-  transition: transform 0.25s cubic-bezier(0.32,0.72,0,1), opacity 0.15s ease;
+  opacity: 1; transform: translate(-50%, -50%) scale(1);
+  transition: transform 0.25s var(--spring), opacity 0.15s ease;
 }
-.focus-ring.fade {
-  opacity: 0;
-  transition: opacity 0.4s ease 0.6s;
-}
+.focus-ring.fade { opacity: 0; transition: opacity 0.4s ease 0.6s; }
 
-/* ── BOTTOM CONTROLS ──────────────────────────────────── */
-#controls {
-  flex-shrink: 0;
-  background: var(--ink-900);
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 32px 48px;
-  padding-bottom: max(32px, env(safe-area-inset-bottom, 32px));
-}
-
-#controls-inner {
-  display: flex;
+/* Zoom controls */
+.zoom-row {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  z-index: 15;
+  display: flex; flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  max-width: 340px;
+  padding-bottom: 20px;
+  gap: 20px;
 }
-
-/* Side buttons (Import / Audio) */
-.ctrl-side {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding-top: 20px;
+.zoom-pills {
+  display: flex; gap: 8px; align-items: center;
+}
+.zoom-pill {
+  width: 38px; height: 38px;
+  border-radius: 250px;
+  border: none; background: transparent;
+  font-family: var(--font-sans);
+  font-size: 16px; font-weight: 400;
+  color: #fefdf9;
+  text-shadow: 0px 0px 1.8px rgba(0,0,0,0.25);
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0;
+  font-feature-settings: 'lnum' 1, 'pnum' 1;
 }
-.ctrl-side-circle {
-  width: 59.4px; height: 59.4px;
-  border-radius: 180px;
-  background: var(--ink-400);
-  overflow: hidden;
+.zoom-pill.active {
+  background: rgba(0,0,0,0.35);
+  color: #f6d214;
+  text-shadow: none;
+}
+
+/* Camera bottom controls */
+#cam-controls {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; max-width: 330px;
+  margin: 0 auto;
+  position: relative; z-index: 15;
+}
+
+/* Glass circle button (import + mic) */
+.cam-side-btn {
+  width: 52px; height: 52px;
+  border-radius: 350px;
   position: relative;
-  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; border: none; padding: 0;
+  background: transparent;
+  margin-top: 20px;
 }
-.ctrl-side-circle img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  display: block;
+.cam-side-btn .glass-bg {
+  position: absolute; inset: 0;
+  border-radius: 350px;
+  opacity: 0.5;
+  box-shadow: 0px 9px 47px rgba(0,0,0,0.12);
+  overflow: hidden;
 }
-.ctrl-side-label {
-  font-size: 13px;
-  font-weight: 400;
-  color: #fff;
-  line-height: 1.2;
-  letter-spacing: 0;
-  white-space: nowrap;
-  text-align: center;
+.cam-side-btn .glass-bg::before {
+  content: ''; position: absolute; inset: 0;
+  border-radius: 350px;
+  background: rgba(255,255,255,0.65);
 }
+.cam-side-btn .glass-bg::after {
+  content: ''; position: absolute; inset: 0;
+  border-radius: 350px;
+  background: #ededee;
+  mix-blend-mode: color-burn;
+}
+.cam-side-btn .thumb-img {
+  position: absolute; inset: 1px;
+  border-radius: 158px;
+  object-fit: cover; display: block;
+  width: 50px; height: 50px;
+}
+.cam-side-btn svg { position: relative; z-index: 1; display: block; }
 
-/* ── SHUTTER BUTTON ───────────────────────────────────── */
-.shutter-wrap {
-  flex-shrink: 0;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
+/* Shutter button */
+.shutter-wrap { flex-shrink: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .shutter-outer {
   width: 85px; height: 85px;
-  border-radius: 236px;
-  border: 2.833px solid var(--pw-600);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8.5px;
+  border-radius: 572px;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
   transition: transform 0.12s ease;
 }
-.shutter-outer:active {
-  transform: scale(0.92);
+.shutter-outer:active { transform: scale(0.92); }
+/* Glass layers behind shutter */
+.shutter-glass {
+  position: absolute; inset: 0;
+  border-radius: 572px; opacity: 0.5;
+  box-shadow: 0px 15px 77px rgba(0,0,0,0.12);
+  overflow: hidden;
+}
+.shutter-glass::before {
+  content: ''; position: absolute; inset: 0;
+  border-radius: 572px;
+  background: rgba(255,255,255,0.65);
+}
+.shutter-glass::after {
+  content: ''; position: absolute; inset: 0;
+  border-radius: 572px;
+  background: #ededee;
+  mix-blend-mode: color-burn;
 }
 .shutter-inner {
-  width: 68px; height: 68px;
+  width: 73px; height: 73px;
   border-radius: 189px;
   background: var(--paper-50);
+  position: relative; z-index: 1;
+}
+
+/* Camera bottom bar padding */
+#cam-bottom {
+  flex-shrink: 0;
+  background: transparent;
+  padding: 0 36px 29px;
+  position: relative; z-index: 15;
+}
+
+/* Flash overlay */
+#flash {
+  position: fixed; inset: 0;
+  background: #fff; opacity: 0;
+  pointer-events: none; z-index: 100;
+}
+#flash.fire { animation: flashPop 0.25s ease forwards; }
+@keyframes flashPop { 0% { opacity: 0.6; } 100% { opacity: 0; } }
+
+
+/* ═══════════════════════════════════════════════════════════
+   SCREEN 2: LOADING
+   ═══════════════════════════════════════════════════════════ */
+#screen-loading {
+  background: linear-gradient(180deg, #fefcf6 58%, #cad8bb 100%);
+  align-items: center; justify-content: center;
+}
+
+.loading-content {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 27px;
+}
+
+/* Stacked flashcards */
+.card-stack {
+  position: relative;
+  width: 283px; height: 181px;
+}
+.flash-card {
+  position: absolute;
+  width: 267px; height: 163px;
+  background: #fff;
+  border: 0.9px solid var(--brown-200);
+  border-radius: 7px;
+  overflow: hidden;
+  left: 50%; top: 50%;
+  transform-origin: center center;
+  transition: transform 0.3s var(--spring), opacity 0.3s ease;
+}
+.flash-card img {
+  position: absolute; inset: -4px;
+  width: calc(100% + 8px); height: calc(100% + 8px);
+  object-fit: cover; display: block;
+}
+/* Card blur overlay for back cards */
+.flash-card .card-blur {
+  position: absolute; inset: 0;
+  background: rgba(216,201,184,0.2);
+  backdrop-filter: blur(1px); -webkit-backdrop-filter: blur(1px);
+  border-radius: 15px;
+}
+.flash-card:nth-child(1) { transform: translate(-50%, -50%) rotate(-3.3deg); z-index: 3; }
+.flash-card:nth-child(2) { transform: translate(-50%, -50%) rotate(3.5deg); z-index: 2; }
+.flash-card:nth-child(2) img { filter: blur(0.5px); }
+.flash-card:nth-child(3) { transform: translate(-48%, -48%) rotate(0deg); z-index: 1; }
+.flash-card:nth-child(3) img { filter: blur(0.5px); }
+
+/* Flip animation for cards */
+@keyframes cardFlip {
+  0%   { transform: translate(-50%, -50%) rotate(-3.3deg) scale(1); }
+  25%  { transform: translate(-50%, -50%) rotate(8deg) scale(1.05) translateY(-20px); }
+  50%  { transform: translate(-50%, -50%) rotate(-5deg) scale(0.98); }
+  75%  { transform: translate(-50%, -50%) rotate(3deg) scale(1.02) translateY(-10px); }
+  100% { transform: translate(-50%, -50%) rotate(-3.3deg) scale(1); }
+}
+.card-stack.animating .flash-card:nth-child(1) {
+  animation: cardFlip 0.6s var(--spring) infinite;
+}
+
+/* Loading dots */
+.loading-dots {
+  display: flex; gap: 8px; align-items: center;
+  justify-content: center;
+}
+.loading-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--olive);
+  animation: dotPulse 1.2s ease infinite;
+}
+.loading-dot:nth-child(2) { animation-delay: 0.2s; }
+.loading-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes dotPulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50%      { opacity: 1;   transform: scale(1); }
+}
+
+.loading-text {
+  font-family: var(--font-serif);
+  font-size: 20px; font-weight: 500;
+  color: var(--olive);
+  text-align: center;
+  line-height: 1.3;
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   SCREEN 3: DETAILS (Confirm Find)
+   ═══════════════════════════════════════════════════════════ */
+#screen-details {
+  background: var(--paper-50);
+  flex-direction: column;
+}
+
+/* Toolbar */
+.details-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 52px 16px 0;
+  height: 99px; flex-shrink: 0;
+}
+.tb-btn-glass {
+  width: 48px; height: 48px;
+  border-radius: 296px;
+  border: none; cursor: pointer;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.65);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0px 8px 40px rgba(0,0,0,0.12);
+  overflow: hidden; isolation: isolate;
+}
+.tb-btn-glass::before {
+  content: ''; position: absolute; inset: 0;
+  border-radius: 296px; background: #ddd;
+  mix-blend-mode: color-burn; pointer-events: none;
+}
+.tb-btn-glass::after {
+  content: ''; position: absolute; inset: 0;
+  border-radius: 296px; background: #f7f7f7;
+  mix-blend-mode: darken; pointer-events: none;
+}
+.tb-btn-glass svg { position: relative; z-index: 1; display: block; }
+
+.tb-title {
+  font-family: var(--font-serif);
+  font-size: 20px; font-weight: 500;
+  color: var(--ink);
+}
+.tb-save {
+  font-family: var(--font-sans);
+  font-size: 15px; font-weight: 400;
+  color: var(--olive);
+  background: none; border: none;
+  cursor: pointer; padding: 8px;
+}
+
+/* Details scroll area */
+.details-scroll {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 120px;
+}
+.details-scroll::-webkit-scrollbar { display: none; }
+
+/* Photo strip */
+.photo-strip {
+  display: flex; gap: 8px;
+  padding: 12px 16px 0;
+  overflow-x: auto; scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.photo-strip::-webkit-scrollbar { display: none; }
+.photo-card {
+  flex-shrink: 0;
+  border-radius: var(--radius-md);
+  border: 0.5px solid var(--brown-200);
+  overflow: hidden; position: relative;
+  height: 112px;
+}
+.photo-card img {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+.photo-card.landscape { width: 181px; }
+.photo-card.square    { width: 112px; }
+.photo-card.portrait  { width: 84px; }
+.photo-card .photo-x {
+  position: absolute; top: 6px; right: 6px;
+  width: 24px; height: 24px; border-radius: 50%;
+  background: rgba(0,0,0,0.5); border: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; z-index: 2;
+}
+.photo-card .photo-x svg { display: block; }
+.photo-card .pill-hl {
+  position: absolute; bottom: 10px; left: 10px;
+  background: rgba(0,0,0,0.5);
+  border: 0.5px solid var(--grey-200);
+  border-radius: 250px;
+  padding: 4px 10px;
+  font-size: 11px; font-weight: 400;
+  color: var(--paper-50);
+  letter-spacing: 0.25px;
+}
+.photo-add {
+  flex-shrink: 0; width: 60px; height: 112px;
+  border-radius: var(--radius-md);
+  border: 0.5px solid var(--ink-300);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+.photo-add svg { display: block; }
+
+/* Section */
+.dt-section {
+  padding: 20px 16px 0;
+}
+.dt-section-title {
+  font-family: var(--font-serif);
+  font-size: 20px; font-weight: 400;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+
+/* Top suggestion card */
+.top-suggestion {
+  display: flex; align-items: center;
+  background: var(--paper-200);
+  border: 1px solid var(--brown-200);
+  border-radius: 14px;
+  padding: 12px;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.top-suggestion .ts-thumb {
+  width: 48px; height: 48px;
+  border-radius: 10px;
+  object-fit: cover; flex-shrink: 0;
+}
+.ts-info { flex: 1; }
+.ts-name {
+  font-family: var(--font-serif);
+  font-size: 16px; font-weight: 500;
+  color: var(--ink);
+  line-height: 1.2;
+}
+.ts-sci {
+  font-family: var(--font-sans);
+  font-size: 12px; font-weight: 400;
+  color: var(--brown-500);
+  line-height: 1.3;
+}
+.ts-match {
+  flex-shrink: 0;
+  background: var(--olive);
+  border-radius: 250px;
+  padding: 4px 10px;
+  font-family: var(--font-sans);
+  font-size: 12px; font-weight: 500;
+  color: var(--paper-50);
+}
+
+/* Secondary suggestions */
+.sec-suggestions {
+  display: flex; gap: 12px;
+  margin-bottom: 12px;
+}
+.sec-sug {
+  flex: 1;
+  display: flex; align-items: center;
+  gap: 8px;
+  background: var(--paper-200);
+  border: 1px solid var(--brown-200);
+  border-radius: 10px;
+  padding: 10px;
+}
+.sec-sug .sug-thumb {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  object-fit: cover; flex-shrink: 0;
+}
+.sug-name {
+  font-family: var(--font-sans);
+  font-size: 12px; font-weight: 400;
+  color: var(--ink);
+  line-height: 1.2;
+}
+.sug-pct {
+  font-family: var(--font-sans);
+  font-size: 11px; font-weight: 400;
+  color: var(--brown-500);
+}
+
+/* Species search bar */
+.species-search {
+  display: flex; align-items: center;
+  background: var(--paper-200);
+  border: 1px solid var(--brown-200);
+  border-radius: 10px;
+  padding: 10px 12px;
+  gap: 8px;
+}
+.species-search input {
+  flex: 1; border: none; background: none;
+  font-family: var(--font-sans);
+  font-size: 14px; font-weight: 400;
+  color: var(--ink); outline: none;
+}
+.species-search input::placeholder { color: var(--grey-200); }
+.species-search svg { flex-shrink: 0; display: block; }
+
+/* Notes field */
+.notes-field {
+  width: 100%;
+  min-height: 68px;
+  background: var(--paper-200);
+  border: 1px solid var(--brown-200);
+  border-radius: 10px;
+  padding: 12px;
+  font-family: var(--font-sans);
+  font-size: 14px; font-weight: 400;
+  color: var(--ink);
+  border: 1px solid var(--brown-200);
+  resize: none; outline: none;
+}
+.notes-field::placeholder { color: var(--grey-200); }
+
+/* Location card */
+.loc-card {
+  background: var(--paper-200);
+  border: 1px solid var(--brown-200);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.loc-map {
+  width: 100%; height: 96px;
+  object-fit: cover; display: block;
+}
+.loc-info { padding: 12px 14px; }
+.loc-row {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+}
+.loc-addr {
+  font-family: var(--font-sans);
+  font-size: 14px; font-weight: 400;
+  color: var(--ink);
+  line-height: 1.3;
+}
+.loc-coords {
+  font-family: var(--font-sans);
+  font-size: 12px; font-weight: 400;
+  color: var(--brown-500);
+  line-height: 1.4;
+}
+.loc-divider {
+  height: 1px; background: var(--brown-200);
+}
+
+/* Condition stat cards */
+.stat-row {
+  display: flex; gap: 8px;
+}
+.stat-card {
+  flex: 1;
+  background: var(--paper-200);
+  border: 1px solid var(--brown-200);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.stat-card-label {
+  font-family: var(--font-sans);
+  font-size: 11px; font-weight: 400;
+  color: var(--brown-500);
+  letter-spacing: 0.25px;
+  margin-bottom: 4px;
+}
+.stat-card-value {
+  font-family: var(--font-serif);
+  font-size: 16px; font-weight: 500;
+  color: var(--ink);
+}
+
+/* Details settings rows */
+.settings-card {
+  background: var(--paper-200);
+  border: 1px solid var(--brown-200);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.settings-row {
+  display: flex; align-items: center;
+  padding: 12px 14px;
+  gap: 10px;
+}
+.settings-row + .settings-row {
+  border-top: 1px solid var(--brown-200);
+}
+.settings-row-text {
+  flex: 1;
+  font-family: var(--font-sans);
+  font-size: 14px; font-weight: 400;
+  color: var(--ink);
+}
+.pill-tag {
+  background: rgba(103,118,91,0.10);
+  border-radius: 250px;
+  padding: 3px 10px;
+  font-family: var(--font-sans);
+  font-size: 11px; font-weight: 400;
+  color: var(--olive);
+}
+.chevron-right {
+  width: 20px; height: 20px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.chevron-right svg { display: block; }
+
+/* Bottom save button */
+.details-bottom {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: #fff;
+  padding: 16px 20px;
+  box-shadow: 0px -8px 40px rgba(155,133,107,0.24);
+  z-index: 20;
+}
+.btn-save-find {
+  width: 100%; height: 50px;
+  border-radius: 1000px;
+  border: none; cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 17px; font-weight: 400;
+  color: var(--paper-50);
+  background: var(--olive);
+  transition: opacity 0.15s;
+}
+.btn-save-find:active { opacity: 0.85; }
+
+
+/* ═══════════════════════════════════════════════════════════
+   SCREEN 4: CELEBRATION
+   ═══════════════════════════════════════════════════════════ */
+#screen-celebration {
+  background: var(--paper-50);
+  align-items: center;
+  justify-content: center;
+}
+
+.celeb-content {
+  display: flex; flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  padding: 0 43px;
+  width: 100%;
+}
+
+.celeb-title {
+  font-family: var(--font-serif);
+  font-size: 58px; font-weight: 500;
+  color: var(--ink);
+  text-align: center;
+  line-height: 1.1;
+  letter-spacing: -0.9px;
+  opacity: 0;
+  transform: translateY(30px) scale(0.9);
+  animation: celebTitleIn 0.7s var(--spring) 0.2s forwards;
+}
+@keyframes celebTitleIn {
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.celeb-card {
+  background: var(--paper-200);
+  border: 1px solid var(--brown-200);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  width: 100%;
+  display: flex; flex-direction: column;
+  gap: 16px;
+  box-shadow: 5px 10px 24px rgba(123,179,105,0.23),
+              19px 39px 44px rgba(123,179,105,0.2),
+              44px 89px 59px rgba(123,179,105,0.12);
+  opacity: 0;
+  transform: translateY(40px);
+  animation: celebCardIn 0.7s var(--spring) 0.45s forwards;
+}
+@keyframes celebCardIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.celeb-species {
+  font-family: var(--font-serif);
+  font-size: 32px; font-weight: 500;
+  color: var(--brown-500);
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+}
+.celeb-photo {
+  width: 100%;
+  aspect-ratio: 267 / 150;
+  border-radius: 14px;
+  border: 0.87px solid var(--brown-200);
+  object-fit: cover; display: block;
+}
+
+.celeb-sub {
+  font-family: var(--font-serif);
+  font-size: 20px; font-weight: 400;
+  color: var(--ink);
+  text-align: center;
+  line-height: 1.3;
+  max-width: 275px;
+  opacity: 0;
+  animation: fadeInUp 0.6s ease 0.7s forwards;
+}
+@keyframes fadeInUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+.celeb-sub { transform: translateY(15px); }
+
+.celeb-bottom {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  padding: 16px 20px;
+  padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
+  z-index: 20;
+}
+.btn-collection {
+  width: 100%; height: 50px;
+  border-radius: 1000px;
+  border: none; cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 17px; font-weight: 400;
+  color: var(--paper-50);
+  background: var(--olive);
+  opacity: 0;
+  animation: fadeInUp 0.5s ease 0.9s forwards;
+  transform: translateY(10px);
+}
+.btn-collection:active { opacity: 0.85; }
+
+
+/* ═══════════════════════════════════════════════════════════
+   SCREEN 5: SHARE CARDS
+   ═══════════════════════════════════════════════════════════ */
+#screen-share {
+  background: var(--paper-50);
+  align-items: center;
+  justify-content: center;
+}
+
+.share-close {
+  position: absolute; top: 35px; right: 16px; z-index: 20;
+}
+
+/* Card carousel */
+.card-carousel {
+  width: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  display: flex;
+  gap: 16px;
+  padding: 0 43px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.card-carousel::-webkit-scrollbar { display: none; }
+
+.share-card {
+  flex-shrink: 0;
+  width: calc(100% - 86px);
+  scroll-snap-align: center;
+  background: var(--paper-200);
+  border: 1px solid var(--brown-200);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  display: flex; flex-direction: column;
+  gap: 16px;
+}
+.share-card-title {
+  font-family: var(--font-serif);
+  font-size: 28px; font-weight: 500;
+  color: var(--ink);
+  text-align: center;
+  line-height: 1.1;
+  letter-spacing: -0.3px;
+}
+.share-card-img {
+  width: 100%;
+  aspect-ratio: 267 / 150;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--brown-200);
+  object-fit: cover; display: block;
+  position: relative;
+}
+.share-card-img-wrap {
+  width: 100%;
+  aspect-ratio: 267 / 150;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--brown-200);
+  overflow: hidden; position: relative;
+}
+.share-card-img-wrap::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, rgba(200,199,111,0.5) 0%, #fcfaf0 48%);
+  z-index: 1;
+}
+.share-card-img-wrap img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+  z-index: 2;
+}
+.share-card-caption {
+  font-family: var(--font-sans);
+  font-size: 11px; font-weight: 400;
+  color: var(--brown-500);
+  letter-spacing: 0.25px;
+}
+
+/* Stats grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.stat-cell {
+  background: var(--paper-50);
+  border: 1px solid var(--brown-200);
+  border-radius: var(--radius-md);
+  padding: 8px;
+  overflow: hidden;
+}
+.stat-cell-value {
+  display: flex; align-items: center; gap: 2px;
+}
+.stat-cell-num {
+  font-family: var(--font-serif);
+  font-size: 20px; font-weight: 500;
+  color: var(--ink);
+  line-height: 1.3;
+}
+.stat-cell-label {
+  font-family: var(--font-sans);
+  font-size: 12px; font-weight: 400;
+  color: var(--brown-500);
+  line-height: 20px;
+}
+.stat-cell-icon {
+  width: 24px; height: 24px;
   flex-shrink: 0;
 }
 
-/* ── FLASH OVERLAY (shutter feedback) ─────────────────── */
-#flash {
-  position: fixed; inset: 0;
-  background: #fff;
-  opacity: 0;
-  pointer-events: none;
-  z-index: 100;
+/* Card 2: Why It Matters */
+.share-card-desc {
+  font-family: var(--font-sans);
+  font-size: 15px; font-weight: 400;
+  color: var(--brown-500);
+  line-height: 20px;
 }
-#flash.fire {
-  animation: flashPop 0.25s ease forwards;
-}
-@keyframes flashPop {
-  0%   { opacity: 0.6; }
-  100% { opacity: 0; }
+.btn-learn-more {
+  width: 100%; height: 50px;
+  border-radius: 1000px;
+  border: none; cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 17px; font-weight: 400;
+  color: var(--paper-50);
+  background: var(--olive);
+  margin-top: auto;
 }
 
-/* ── CAPTURED IMAGE TOAST ─────────────────────────────── */
-#capture-toast {
-  position: fixed;
-  bottom: 180px; left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background: rgba(254,253,249,0.92);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: 14px;
-  padding: 10px 18px;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--olive);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
-  opacity: 0;
-  pointer-events: none;
-  z-index: 90;
-  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.32,0.72,0,1);
+/* Page dots */
+.page-dots {
+  display: flex; gap: 8px;
+  justify-content: center;
+  margin-top: 16px;
 }
-#capture-toast.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
+.page-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #bfbfbf;
+  transition: background 0.2s;
 }
+.page-dot.active { background: #1a1a1a; }
+
+/* Share action buttons */
+.share-actions {
+  display: flex; gap: 13px;
+  justify-content: center;
+  margin-top: 32px;
+}
+.share-action-btn {
+  width: 50px; height: 50px;
+  border-radius: 500px;
+  background: var(--paper-200);
+  border: 1px solid var(--brown-200);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+.share-action-btn svg { display: block; }
 </style>
 </head>
 <body>
 
-<div id="app">
-
-  <!-- ── Viewfinder ──────────────────────────────────── -->
+<!-- ═══════ SCREEN 1: CAMERA ═══════════════════════════════ -->
+<div class="screen active" id="screen-camera">
   <div id="viewfinder">
-    <!-- Camera stream fills here; fallback image if no camera -->
     <video id="camera" autoplay playsinline muted></video>
     <img id="fallback-img" src="https://www.figma.com/api/mcp/asset/6ce759e0-8a2b-41bb-a697-974c5ad9fd24"
          alt="Viewfinder" style="display:none">
     <div class="focus-ring" id="focus-ring"></div>
+
+    <!-- Close X -->
+    <button class="cam-close" onclick="history.back()">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M15 5L5 15M5 5l10 10" stroke="#fefdf9" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+
+    <!-- Viewfinder brackets -->
+    <div class="vf-bracket vf-tl"></div>
+    <div class="vf-bracket vf-tr"></div>
+    <div class="vf-bracket vf-bl"></div>
+    <div class="vf-bracket vf-br"></div>
+
+    <!-- Zoom + controls overlay at bottom -->
+    <div class="zoom-row">
+      <div class="zoom-pills">
+        <button class="zoom-pill" data-zoom="0.5">.5</button>
+        <button class="zoom-pill active" data-zoom="1">1x</button>
+        <button class="zoom-pill" data-zoom="2">2</button>
+      </div>
+    </div>
   </div>
 
-  <!-- ── Bottom controls ─────────────────────────────── -->
-  <div id="controls">
-    <div id="controls-inner">
-
-      <!-- Import -->
-      <div class="ctrl-side" id="btn-import" onclick="history.back()">
-        <div class="ctrl-side-circle">
-          <img src="https://www.figma.com/api/mcp/asset/f377db88-5c3b-4526-90f2-146c1cf63b18" alt="Import">
-        </div>
-        <span class="ctrl-side-label">Import</span>
-      </div>
+  <div id="cam-bottom">
+    <div id="cam-controls">
+      <!-- Import / thumbnail -->
+      <button class="cam-side-btn" id="btn-import">
+        <div class="glass-bg"></div>
+        <img class="thumb-img" src="https://www.figma.com/api/mcp/asset/67489df2-52ea-400c-9d86-8515d1b683a1" alt="">
+      </button>
 
       <!-- Shutter -->
       <div class="shutter-wrap" id="btn-shutter">
         <div class="shutter-outer">
+          <div class="shutter-glass"></div>
           <div class="shutter-inner"></div>
         </div>
       </div>
 
-      <!-- Audio -->
-      <div class="ctrl-side" id="btn-audio">
-        <div class="ctrl-side-circle"></div>
-        <span class="ctrl-side-label">Audio</span>
-      </div>
+      <!-- Audio / Mic -->
+      <button class="cam-side-btn" id="btn-audio">
+        <div class="glass-bg"></div>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" style="position:relative;z-index:1">
+          <path d="M12 1a4 4 0 0 0-4 4v6a4 4 0 0 0 8 0V5a4 4 0 0 0-4-4Z" stroke="#fefdf9" stroke-width="1.8"/>
+          <path d="M19 10v1a7 7 0 0 1-14 0v-1" stroke="#fefdf9" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M12 19v4" stroke="#fefdf9" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
 
+<!-- ═══════ SCREEN 2: LOADING ══════════════════════════════ -->
+<div class="screen" id="screen-loading">
+  <div class="loading-content">
+    <div class="card-stack" id="card-stack">
+      <div class="flash-card">
+        <img src="https://www.figma.com/api/mcp/asset/e0092b9b-098f-40d2-b07d-3ce60848f0cc" alt="">
+      </div>
+      <div class="flash-card">
+        <img src="https://www.figma.com/api/mcp/asset/fb222c40-907e-4c08-9ef2-916b41a7f0a4" alt="">
+        <div class="card-blur"></div>
+      </div>
+      <div class="flash-card">
+        <img src="https://www.figma.com/api/mcp/asset/ece5fd7d-ff80-4fcc-b5f0-d0205b554366" alt="">
+        <div class="card-blur"></div>
+      </div>
+    </div>
+    <div class="loading-dots">
+      <div class="loading-dot"></div>
+      <div class="loading-dot"></div>
+      <div class="loading-dot"></div>
+    </div>
+    <div class="loading-text">Identifying Species...</div>
+  </div>
+</div>
+
+<!-- ═══════ SCREEN 3: DETAILS (Confirm Find) ═══════════════ -->
+<div class="screen" id="screen-details">
+  <div class="details-toolbar">
+    <button class="tb-btn-glass" onclick="goTo('screen-camera')">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M12.5 15L7.5 10L12.5 5" stroke="#252024" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <span class="tb-title">Details</span>
+    <button class="tb-save" onclick="goTo('screen-celebration')">Save</button>
+  </div>
+
+  <div class="details-scroll">
+    <!-- Photo strip -->
+    <div class="photo-strip">
+      <div class="photo-card landscape">
+        <img src="https://www.figma.com/api/mcp/asset/7846cf03-fb04-4c7a-8e5d-7ed43874de88" alt="">
+        <button class="photo-x"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M7.5 2.5L2.5 7.5M2.5 2.5l5 5" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/></svg></button>
+        <span class="pill-hl">Highlight</span>
+      </div>
+      <div class="photo-card square">
+        <img src="https://www.figma.com/api/mcp/asset/94b99fe4-81a6-481c-83e1-96ecd55737e1" alt="">
+        <button class="photo-x"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M7.5 2.5L2.5 7.5M2.5 2.5l5 5" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/></svg></button>
+      </div>
+      <div class="photo-card portrait">
+        <img src="https://www.figma.com/api/mcp/asset/b2c00af4-3a45-4d42-972a-210c794833de" alt="">
+        <button class="photo-x"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M7.5 2.5L2.5 7.5M2.5 2.5l5 5" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/></svg></button>
+      </div>
+      <div class="photo-add">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M12 5v14M5 12h14" stroke="#7d7981" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Identification -->
+    <div class="dt-section">
+      <div class="dt-section-title">Identification</div>
+      <div class="top-suggestion">
+        <img class="ts-thumb" src="https://www.figma.com/api/mcp/asset/1d8e56b9-64df-4ef6-b864-6ba2059a5a29" alt="">
+        <div class="ts-info">
+          <div class="ts-name">Coast Live Oak</div>
+          <div class="ts-sci">Quercus agrifolia</div>
+        </div>
+        <span class="ts-match">94% Match</span>
+      </div>
+      <div class="sec-suggestions">
+        <div class="sec-sug">
+          <img class="sug-thumb" src="https://www.figma.com/api/mcp/asset/46fad7fc-9ed1-43a7-a852-c6f6e5785e30" alt="">
+          <div>
+            <div class="sug-name">California Black Oak</div>
+            <div class="sug-pct">78%</div>
+          </div>
+        </div>
+        <div class="sec-sug">
+          <img class="sug-thumb" src="https://www.figma.com/api/mcp/asset/8d9704fb-bb1a-4dfb-bab5-e222065d608b" alt="">
+          <div>
+            <div class="sug-name">Shumard Oak</div>
+            <div class="sug-pct">45%</div>
+          </div>
+        </div>
+      </div>
+      <div class="species-search">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <circle cx="9" cy="9" r="6" stroke="#7d7981" stroke-width="1.5"/>
+          <path d="M14 14l3 3" stroke="#7d7981" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <input type="text" placeholder="Look up a species by name">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M12 1a4 4 0 0 0-4 4v6a4 4 0 0 0 8 0V5a4 4 0 0 0-4-4Z" stroke="#7d7981" stroke-width="1.5"/>
+          <path d="M19 10v1a7 7 0 0 1-14 0v-1" stroke="#7d7981" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M12 19v4" stroke="#7d7981" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="dt-section">
+      <div class="dt-section-title">Notes</div>
+      <textarea class="notes-field" placeholder="Add observation notes..." rows="3"></textarea>
+    </div>
+
+    <!-- Location -->
+    <div class="dt-section">
+      <div class="dt-section-title">Location</div>
+      <div class="loc-card">
+        <img class="loc-map" src="https://www.figma.com/api/mcp/asset/d3d69add-2c0c-4901-b846-43078be99014" alt="Map">
+        <div class="loc-info">
+          <div class="loc-row">
+            <div>
+              <div class="loc-addr">E Del Mar Blvd, Pasadena, CA</div>
+              <div class="loc-coords">34.14, -118.14 · 9m accuracy</div>
+            </div>
+            <div class="chevron-right">
+              <svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1 1l6 6-6 6" stroke="#252024" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+          <div class="loc-divider"></div>
+          <div class="loc-row">
+            <div class="loc-addr">Mar 22, 2026 · 10:53 PM PT</div>
+            <div class="chevron-right">
+              <svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1 1l6 6-6 6" stroke="#252024" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+          <div class="loc-divider"></div>
+          <div class="loc-row">
+            <div style="display:flex;align-items:center;gap:8px">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="#252024" stroke-width="1.3"/><path d="M10 5v5l3 3" stroke="#252024" stroke-width="1.3" stroke-linecap="round"/></svg>
+              <span class="loc-addr">Geoprivacy</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span class="pill-tag">Open</span>
+              <div class="chevron-right">
+                <svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1 1l6 6-6 6" stroke="#252024" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Details (Captive / Projects) -->
+    <div class="dt-section">
+      <div class="dt-section-title">Details</div>
+      <div class="settings-card">
+        <div class="settings-row">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1C5.1 1 2 4.1 2 8c0 2.4 1.2 4.5 3 5.7V16l2.5-1.5c.5.1 1 .2 1.5.2 3.9 0 7-3.1 7-7s-3.1-7-7-7Z" stroke="#67765b" stroke-width="1.3"/></svg>
+          <span class="settings-row-text">Captive / Cultivated</span>
+          <span class="pill-tag">No</span>
+          <div class="chevron-right"><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1 1l6 6-6 6" stroke="#252024" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="settings-row">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="3" width="14" height="12" rx="2" stroke="#67765b" stroke-width="1.3"/><path d="M6 1v4M12 1v4" stroke="#67765b" stroke-width="1.3" stroke-linecap="round"/></svg>
+          <span class="settings-row-text">Projects</span>
+          <span style="font-size:13px;color:var(--ink-300)">None</span>
+          <div class="chevron-right"><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1 1l6 6-6 6" stroke="#252024" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Condition -->
+    <div class="dt-section" style="padding-bottom:32px">
+      <div class="dt-section-title">Condition</div>
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="stat-card-label">Health</div>
+          <div class="stat-card-value">Good</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">Life Stage</div>
+          <div class="stat-card-value">Adult</div>
+        </div>
+      </div>
     </div>
   </div>
 
+  <!-- Fixed bottom button -->
+  <div class="details-bottom">
+    <button class="btn-save-find" onclick="goTo('screen-celebration')">Save Find</button>
+  </div>
+</div>
+
+<!-- ═══════ SCREEN 4: CELEBRATION ══════════════════════════ -->
+<div class="screen" id="screen-celebration">
+  <div class="celeb-content">
+    <div class="celeb-title">Nice Find!</div>
+    <div class="celeb-card">
+      <div class="celeb-species">Quercus<br>agrifolia</div>
+      <img class="celeb-photo" src="https://www.figma.com/api/mcp/asset/f3f1baa7-b4eb-4018-a5dc-ae11f96bdd83" alt="">
+    </div>
+    <div class="celeb-sub">Every sighting adds clarity to the bigger picture.</div>
+  </div>
+  <div class="celeb-bottom">
+    <button class="btn-collection" onclick="goTo('screen-share')">Add to Collection</button>
+  </div>
+</div>
+
+<!-- ═══════ SCREEN 5: SHARE CARDS ═════════════════════════ -->
+<div class="screen" id="screen-share">
+  <button class="tb-btn-glass share-close" onclick="window.location.href='index.html'">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      <path d="M13.5 4.5L4.5 13.5M4.5 4.5l9 9" stroke="#252024" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </button>
+
+  <div style="width:100%;display:flex;flex-direction:column;align-items:center">
+    <div class="card-carousel" id="card-carousel">
+      <!-- Card 1: My Impact -->
+      <div class="share-card">
+        <div class="share-card-title">My Impact</div>
+        <div class="share-card-img-wrap">
+          <img src="https://www.figma.com/api/mcp/asset/e75e0f3c-0bf9-48dc-b636-e84b614e2ae4" alt="">
+        </div>
+        <div class="share-card-caption">Quercus agrifolia</div>
+        <div class="stats-grid">
+          <div class="stat-cell">
+            <div class="stat-cell-value">
+              <svg class="stat-cell-icon" viewBox="0 0 24 24" fill="none"><path d="M3 15.5C3 15.5 5.5 11 12 11s9 4.5 9 4.5" stroke="#252024" stroke-width="1.3"/><circle cx="12" cy="14" r="3" stroke="#252024" stroke-width="1.3"/></svg>
+              <span class="stat-cell-num">127</span>
+            </div>
+            <div class="stat-cell-label">Total Finds</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-cell-value">
+              <span class="stat-cell-num">6 days</span>
+            </div>
+            <div class="stat-cell-label">Current Streak</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-cell-value">
+              <span class="stat-cell-num">Top 8%</span>
+            </div>
+            <div class="stat-cell-label">Regional Rank</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-cell-value">
+              <svg class="stat-cell-icon" viewBox="0 0 24 24" fill="none"><rect x="5" y="4" width="14" height="16" rx="2" stroke="#252024" stroke-width="1.3"/><path d="M9 8h6M9 12h4M9 16h5" stroke="#252024" stroke-width="1.3" stroke-linecap="round"/></svg>
+              <span class="stat-cell-num">127</span>
+            </div>
+            <div class="stat-cell-label">Total Contributions</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Why It Matters -->
+      <div class="share-card">
+        <div class="share-card-title">Why It Matters</div>
+        <div class="share-card-img-wrap">
+          <img src="https://www.figma.com/api/mcp/asset/66d2409a-754e-441b-9e15-21c2b019462d" alt="">
+        </div>
+        <div class="share-card-desc">Your observation of Coast Live Oak contributes to understanding urban canopy health in the San Gabriel Valley across 3 active datasets.</div>
+        <button class="btn-learn-more">Learn More</button>
+      </div>
+    </div>
+
+    <div class="page-dots" id="page-dots">
+      <div class="page-dot active"></div>
+      <div class="page-dot"></div>
+    </div>
+
+    <div class="share-actions">
+      <!-- Share -->
+      <button class="share-action-btn">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M12 3v12" stroke="#252024" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M8 7l4-4 4 4" stroke="#252024" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M4 14v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4" stroke="#252024" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <!-- Save/Download -->
+      <button class="share-action-btn">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M12 3v12" stroke="#252024" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M8 11l4 4 4-4" stroke="#252024" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke="#252024" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <!-- More -->
+      <button class="share-action-btn">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="5" r="1.5" fill="#252024"/>
+          <circle cx="12" cy="12" r="1.5" fill="#252024"/>
+          <circle cx="12" cy="19" r="1.5" fill="#252024"/>
+        </svg>
+      </button>
+    </div>
+  </div>
 </div>
 
 <!-- Flash overlay -->
 <div id="flash"></div>
-<!-- Toast -->
-<div id="capture-toast">Photo captured</div>
 
 <script>
-// ─── Camera ──────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+//  SCREEN TRANSITIONS
+// ═══════════════════════════════════════════════════════════
+function goTo(screenId) {
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+  });
+  const target = document.getElementById(screenId);
+  if (target) {
+    // Force reflow for CSS animations in celebration screen
+    if (screenId === 'screen-celebration') {
+      target.innerHTML = target.innerHTML; // Reset animations
+    }
+    target.classList.add('active');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  CAMERA
+// ═══════════════════════════════════════════════════════════
 const video    = document.getElementById('camera');
 const fallback = document.getElementById('fallback-img');
 
@@ -247,50 +1341,121 @@ const fallback = document.getElementById('fallback-img');
     });
     video.srcObject = stream;
   } catch (e) {
-    // No camera — show fallback image
     video.style.display = 'none';
     fallback.style.display = 'block';
   }
 })();
 
-// ─── Focus ring on tap ────────────────────────────────
+// Focus ring on tap
 const vf   = document.getElementById('viewfinder');
 const ring = document.getElementById('focus-ring');
-
 vf.addEventListener('click', e => {
+  if (e.target.closest('.cam-close') || e.target.closest('.zoom-pill')) return;
   const rect = vf.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
-
   ring.className = 'focus-ring';
-  ring.style.left = x + 'px';
-  ring.style.top  = y + 'px';
-
-  // Force reflow then animate
+  ring.style.left = (e.clientX - rect.left) + 'px';
+  ring.style.top  = (e.clientY - rect.top)  + 'px';
   void ring.offsetWidth;
   ring.classList.add('animate');
   setTimeout(() => ring.classList.add('fade'), 100);
   setTimeout(() => ring.className = 'focus-ring', 1200);
 });
 
-// ─── Shutter button ──────────────────────────────────
+// Zoom pill toggle
+document.querySelectorAll('.zoom-pill').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.zoom-pill').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+// ═══════════════════════════════════════════════════════════
+//  SHUTTER → LOADING → DETAILS
+// ═══════════════════════════════════════════════════════════
 const shutter = document.getElementById('btn-shutter');
 const flash   = document.getElementById('flash');
-const toast   = document.getElementById('capture-toast');
 
 shutter.addEventListener('click', () => {
-  // Flash feedback
+  // Flash
   flash.classList.remove('fire');
   void flash.offsetWidth;
   flash.classList.add('fire');
 
-  // Toast
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 1800);
-
-  // Haptic if available
+  // Haptic
   if (navigator.vibrate) navigator.vibrate(30);
+
+  // Go to loading screen
+  setTimeout(() => {
+    goTo('screen-loading');
+
+    // Start card shuffle animation
+    const stack = document.getElementById('card-stack');
+    stack.classList.add('animating');
+
+    // After 2.5 seconds, go to details
+    setTimeout(() => {
+      stack.classList.remove('animating');
+      goTo('screen-details');
+    }, 2500);
+  }, 300);
 });
+
+// ═══════════════════════════════════════════════════════════
+//  CARD SHUFFLE ANIMATION (Loading screen)
+// ═══════════════════════════════════════════════════════════
+// Enhanced card shuffle: swap z-index and rotation every 500ms
+let shuffleInterval = null;
+const cardRotations = [
+  { rot: -3.3, z: 3 },
+  { rot: 3.5,  z: 2 },
+  { rot: 0,    z: 1 }
+];
+
+function startShuffle() {
+  const cards = document.querySelectorAll('.flash-card');
+  let tick = 0;
+  shuffleInterval = setInterval(() => {
+    tick++;
+    cards.forEach((card, i) => {
+      const offset = (i + tick) % 3;
+      const r = cardRotations[offset];
+      card.style.zIndex = r.z;
+      card.style.transform = `translate(-50%, -50%) rotate(${r.rot + (Math.random() * 4 - 2)}deg)`;
+      card.style.transition = 'transform 0.4s cubic-bezier(0.32,0.72,0,1)';
+    });
+  }, 400);
+}
+function stopShuffle() {
+  clearInterval(shuffleInterval);
+}
+
+// Observe screen-loading becoming active to start/stop shuffle
+const observer = new MutationObserver((mutations) => {
+  mutations.forEach(m => {
+    if (m.target.id === 'screen-loading') {
+      if (m.target.classList.contains('active')) startShuffle();
+      else stopShuffle();
+    }
+  });
+});
+observer.observe(document.getElementById('screen-loading'), {
+  attributes: true, attributeFilter: ['class']
+});
+
+// ═══════════════════════════════════════════════════════════
+//  SHARE CARD CAROUSEL — page dot sync
+// ═══════════════════════════════════════════════════════════
+const carousel = document.getElementById('card-carousel');
+const dots     = document.querySelectorAll('#page-dots .page-dot');
+
+if (carousel) {
+  carousel.addEventListener('scroll', () => {
+    const scrollLeft = carousel.scrollLeft;
+    const cardWidth  = carousel.querySelector('.share-card')?.offsetWidth || 1;
+    const idx = Math.round(scrollLeft / (cardWidth + 16));
+    dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+  });
+}
 </script>
 </body>
 </html>
