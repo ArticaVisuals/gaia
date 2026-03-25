@@ -3921,12 +3921,12 @@ function makeNumberPinEl(count) {
     `<svg xmlns="http://www.w3.org/2000/svg" width="62" height="62" viewBox="0 0 61.9644 61.9644" fill="none" aria-hidden="true">` +
       '<defs>' +
         `<linearGradient id="${gradId}" x1="30.9822" y1="0" x2="30.9822" y2="61.9644" gradientUnits="userSpaceOnUse">` +
-          '<stop stop-color="var(--pin-fill-top)"/>' +
-          '<stop offset="1" stop-color="var(--pin-fill-bottom)"/>' +
+          '<stop stop-color="#7BB369"/>' +
+          '<stop offset="1" stop-color="#6E9152"/>' +
         '</linearGradient>' +
       '</defs>' +
       `<circle cx="30.9822" cy="30.9822" r="30.9822" fill="url(#${gradId})" fill-opacity="0.2"/>` +
-      '<circle cx="30.9822" cy="30.9822" r="30.2292" stroke="var(--pin-ring-solid)" stroke-opacity="0.5" stroke-width="1.50598"/>' +
+      '<circle cx="30.9822" cy="30.9822" r="30.2292" stroke="#FFFFFF" stroke-opacity="0.5" stroke-width="1.50598"/>' +
     '</svg>' +
     '<span class="gaia-number-pin__glass" aria-hidden="true"></span>' +
     `<span class="gaia-number-pin__count" style="font-size:${countSize}px">${safeCount}</span>`;
