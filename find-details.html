@@ -8,6 +8,7 @@
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
 <link rel="stylesheet" href="https://use.typekit.net/atn6inh.css">
 <link rel="stylesheet" href="design-tokens.css">
+<link rel="stylesheet" href="assets/icons/system/icon-kit.css">
 <style>
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -85,8 +86,8 @@ html, body {
   z-index: 2;
   pointer-events: none;
 }
-.hero-btn svg,
-.hero-action-btn svg {
+.hero-btn .gaia-icon,
+.hero-action-btn .gaia-icon {
   position: relative;
   z-index: 3;
 }
@@ -376,7 +377,7 @@ html, body {
   background: #f7f7f7;
   mix-blend-mode: darken;
 }
-.expand-btn .toolbar-icon { position: relative; z-index: 1; }
+.expand-btn .gaia-icon { position: relative; z-index: 1; }
 
 /* Location card at bottom of map */
 .location-card {
@@ -717,6 +718,7 @@ html, body {
   height: 9.316px;
   object-fit: contain;
   display: block;
+  filter: brightness(0) invert(1);
 }
 
 /* ── TAB PANELS ─────────────────────────────────────────── */
@@ -1105,27 +1107,34 @@ html, body {
   <!-- Back button -->
   <button class="hero-btn" id="btn-back" onclick="history.back()">
     <span class="hero-darken"></span>
-    <svg class="toolbar-icon" width="22" height="20" viewBox="0 0 22 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M10 1L1 10L10 19" stroke="#252024" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M1 10H21" stroke="#252024" stroke-width="2" stroke-linecap="round"/>
-    </svg>
+    <span class="gaia-icon gaia-icon--left-arrow-20" aria-hidden="true">
+      <span class="gaia-icon__slot">
+        <span class="gaia-icon__part">
+          <img src="assets/icons/system/left-arrow-20.svg" alt="">
+        </span>
+      </span>
+    </span>
   </button>
 
   <!-- Action buttons -->
   <div class="hero-actions" id="btn-actions">
     <span class="hero-darken"></span>
     <button class="hero-action-btn" id="btn-add" aria-label="Add">
-      <svg class="toolbar-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 4V20" stroke="#252024" stroke-width="2" stroke-linecap="round"/>
-        <path d="M4 12H20" stroke="#252024" stroke-width="2" stroke-linecap="round"/>
-      </svg>
+      <span class="gaia-icon gaia-icon--plus-24" aria-hidden="true">
+        <span class="gaia-icon__part">
+          <img src="assets/icons/system/plus-24.svg" alt="">
+        </span>
+      </span>
     </button>
     <button class="hero-action-btn" id="btn-share" aria-label="Share">
-      <svg class="toolbar-icon" width="20" height="24" viewBox="0 0 20 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M10 1V15" stroke="#252024" stroke-width="2" stroke-linecap="round"/>
-        <path d="M6 5L10 1L14 5" stroke="#252024" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M1 14V21C1 22.1046 1.89543 23 3 23H17C18.1046 23 19 22.1046 19 21V14" stroke="#252024" stroke-width="2" stroke-linecap="round"/>
-      </svg>
+      <span class="gaia-icon gaia-icon--share-24" aria-hidden="true">
+        <span class="gaia-icon__part gaia-icon__part--base">
+          <img src="assets/icons/system/share-24-base.svg" alt="">
+        </span>
+        <span class="gaia-icon__part gaia-icon__part--arrow">
+          <img src="assets/icons/system/share-24-arrow.svg" alt="">
+        </span>
+      </span>
     </button>
   </div>
 </div>
@@ -1185,12 +1194,18 @@ html, body {
         <!-- Expand button -->
         <button class="expand-btn" id="btn-expand">
           <div class="glass-darken"></div>
-          <svg class="toolbar-icon" id="expand-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 1H19V8" stroke="#252024" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M8 19H1V12" stroke="#252024" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M19 1L12 8" stroke="#252024" stroke-width="2" stroke-linecap="round"/>
-            <path d="M1 19L8 12" stroke="#252024" stroke-width="2" stroke-linecap="round"/>
-          </svg>
+          <span class="gaia-icon gaia-icon--expand-20" id="expand-icon" aria-hidden="true">
+            <span class="gaia-icon__slot gaia-icon__slot--a">
+              <span class="gaia-icon__part gaia-icon__part--a">
+                <img src="assets/icons/system/expand-20-a.svg" alt="">
+              </span>
+            </span>
+            <span class="gaia-icon__slot gaia-icon__slot--b">
+              <span class="gaia-icon__part gaia-icon__part--b">
+                <img src="assets/icons/system/expand-20-b.svg" alt="">
+              </span>
+            </span>
+          </span>
         </button>
       </div>
 
@@ -1199,7 +1214,7 @@ html, body {
         <div class="glass-darken"></div>
         <div class="location-inner">
           <div class="location-row">
-            <img src="assets/find-details/find-tab/location-pin.svg" alt="" style="width:10px;height:21px;object-fit:contain;display:block;flex-shrink:0;">
+            <img src="assets/icons/system/pin-20.svg" alt="" style="width:10px;height:21px;object-fit:contain;display:block;flex-shrink:0;opacity:0.48;">
             <span class="location-name">Avila Beach, CA, United States of America</span>
           </div>
           <span class="location-date">July 10, 2025, 10:19 AM</span>
@@ -1227,8 +1242,14 @@ html, body {
               <span class="biome-place">Riparian Edge</span>
               <span class="biome-sublabel">Perfumo Canyon</span>
             </div>
-            <div class="chevron-icon" style="transform:rotate(180deg)">
-              <img src="assets/find-details/find-tab/chevron.svg" alt="">
+            <div class="chevron-icon">
+              <span class="gaia-icon gaia-icon--chevron-right-16" aria-hidden="true">
+                <span class="gaia-icon__slot">
+                  <span class="gaia-icon__part">
+                    <img src="assets/icons/system/chevron-16.svg" alt="">
+                  </span>
+                </span>
+              </span>
             </div>
           </div>
         </div>
@@ -1245,8 +1266,14 @@ html, body {
               <span class="weather-condition">Partly Cloudy</span>
               <span class="weather-date">July 10, 2025, 10:19 AM</span>
             </div>
-            <div class="chevron-icon" style="transform:rotate(180deg)">
-              <img src="assets/find-details/find-tab/chevron.svg" alt="">
+            <div class="chevron-icon">
+              <span class="gaia-icon gaia-icon--chevron-right-16" aria-hidden="true">
+                <span class="gaia-icon__slot">
+                  <span class="gaia-icon__part">
+                    <img src="assets/icons/system/chevron-16.svg" alt="">
+                  </span>
+                </span>
+              </span>
             </div>
           </div>
         </div>
@@ -1291,7 +1318,7 @@ html, body {
           <div class="find-project-info">
             <span class="find-project-title">Creek Recovery</span>
             <span class="find-project-count">
-              <img src="assets/find-details/find-tab/project-count-icon.svg" alt="">
+              <img src="assets/icons/system/binoculars-20.svg" alt="">
               <span>12</span>
             </span>
           </div>
@@ -1302,7 +1329,7 @@ html, body {
           <div class="find-project-info">
             <span class="find-project-title">Pollinator Corridor</span>
             <span class="find-project-count">
-              <img src="assets/find-details/find-tab/project-count-icon.svg" alt="">
+              <img src="assets/icons/system/binoculars-20.svg" alt="">
               <span>12</span>
             </span>
           </div>
@@ -1370,12 +1397,18 @@ html, body {
           alt="Map">
         <button class="learn-map-expand" aria-label="Expand map">
           <span class="expand-darken"></span>
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path d="M12 1H19V8" stroke="#252024" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M8 19H1V12" stroke="#252024" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M19 1L12 8" stroke="#252024" stroke-width="1.5" stroke-linecap="round"/>
-            <path d="M1 19L8 12" stroke="#252024" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
+          <span class="gaia-icon gaia-icon--expand-20" aria-hidden="true">
+            <span class="gaia-icon__slot gaia-icon__slot--a">
+              <span class="gaia-icon__part gaia-icon__part--a">
+                <img src="assets/icons/system/expand-20-a.svg" alt="">
+              </span>
+            </span>
+            <span class="gaia-icon__slot gaia-icon__slot--b">
+              <span class="gaia-icon__part gaia-icon__part--b">
+                <img src="assets/icons/system/expand-20-b.svg" alt="">
+              </span>
+            </span>
+          </span>
         </button>
       </div>
     </div><!-- /learn-main-card -->
@@ -1436,10 +1469,10 @@ html, body {
   <button class="nav-item" data-nav="explore">
     <div class="icon-32">
       <div class="icon-inset" style="inset:15.76% 15.49% 15.49% 15.76%">
-        <img src="assets/find-details/nav-explore-ring.svg" alt="">
+        <img src="assets/icons/system/explore-32-ring-olive.svg" alt="">
       </div>
       <div class="icon-inset" style="inset:34.52% 32.86% 32.85% 34.52%">
-        <img src="assets/find-details/nav-explore-dot.svg" alt="">
+        <img src="assets/icons/system/explore-32-dot-olive.svg" alt="">
       </div>
     </div>
     <span class="nav-label">Explore</span>
@@ -1448,7 +1481,16 @@ html, body {
   <button class="nav-item" data-nav="log">
     <div class="icon-32">
       <div class="icon-inset" style="inset:15.63% 20.95% 15.83% 18.39%">
-        <img src="assets/find-details/nav-log.svg" alt="">
+        <img src="assets/icons/system/logbook-32-outline-olive.svg" alt="">
+      </div>
+      <div class="icon-inset" style="inset:32.15% 40.48% 47.86% 36.58%">
+        <img src="assets/icons/system/logbook-32-line-1-olive.svg" alt="">
+      </div>
+      <div class="icon-inset" style="inset:57.52% 40.49% 39.01% 36.58%">
+        <img src="assets/icons/system/logbook-32-line-2-olive.svg" alt="">
+      </div>
+      <div class="icon-inset" style="inset:63.52% 40.49% 33.02% 36.58%">
+        <img src="assets/icons/system/logbook-32-line-3-olive.svg" alt="">
       </div>
     </div>
     <span class="nav-label">Log</span>
@@ -1457,7 +1499,7 @@ html, body {
   <button class="nav-item" data-nav="observe">
     <div class="icon-32">
       <div class="icon-inset" style="inset:25.5% 16.06% 25.5% 15.19%">
-        <img src="assets/find-details/nav-observe.svg" alt="">
+        <img src="assets/icons/system/binoculars-32-olive.svg" alt="">
       </div>
     </div>
     <span class="nav-label">Observe</span>
@@ -1466,7 +1508,7 @@ html, body {
   <button class="nav-item" data-nav="activity">
     <div class="icon-32">
       <div class="icon-inset" style="inset:15.52% 20.6% 15.73% 20.07%">
-        <img src="assets/find-details/nav-activity.svg" alt="">
+        <img src="assets/icons/system/bell-32-olive.svg" alt="">
       </div>
     </div>
     <span class="nav-label">Activity</span>
@@ -1475,7 +1517,7 @@ html, body {
   <button class="nav-item" data-nav="profile">
     <div class="icon-32">
       <div class="icon-inset" style="inset:15.4% 15.84% 15.52% 15.4%">
-        <img src="assets/find-details/nav-profile.svg" alt="">
+        <img src="assets/icons/system/profile-32-olive.svg" alt="">
       </div>
     </div>
     <span class="nav-label">Profile</span>

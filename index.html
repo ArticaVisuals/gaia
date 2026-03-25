@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="https://use.typekit.net/atn6inh.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&display=swap">
 <link rel="stylesheet" href="design-tokens.css">
+<link rel="stylesheet" href="assets/icons/system/icon-kit.css">
 <style>
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -100,7 +101,7 @@ html, body {
   cursor: pointer; padding: 0; pointer-events: all;
   color: var(--grey);
 }
-.search-mic svg { display: block; }
+.search-mic .gaia-icon { opacity: 0.6; }
 
 /* Bell button */
 .bell-btn {
@@ -397,7 +398,14 @@ html, body {
   display: flex; align-items: center; gap: 2px;
 }
 /* Binoculars icon: 14×9.977px (exact Figma size) */
-.card-obs img { display: block; flex-shrink: 0; width: 14px; height: 9.977px; object-fit: contain; }
+.card-obs img {
+  display: block;
+  flex-shrink: 0;
+  width: 14px;
+  height: 9.977px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
 
 /* Finds */
 .finds-hdr {
@@ -840,10 +848,7 @@ html, body {
   position: relative; z-index: 1; width: 32px; height: 32px;
   display: flex; align-items: center; justify-content: center;
 }
-.fd-back-icon-wrap img {
-  width: 15.59px; height: 20.1px; object-fit: contain;
-  transform: rotate(-90deg); /* Figma: chevron-up rotated -90° = points left */
-}
+.fd-back-icon-wrap .gaia-icon { position: relative; z-index: 1; }
 
 /* Right pill — glass cool, contains icon buttons */
 .fd-toolbar-right {
@@ -880,17 +885,7 @@ html, body {
   cursor: pointer; padding: 0; position: relative; z-index: 1;
   display: flex; align-items: center; justify-content: center;
 }
-.fd-toolbar-icon-btn img {
-  object-fit: contain;
-}
-/* Plus icon: Figma inset 17.75%/18.75% → ~23×23 within 36×36 */
-.fd-toolbar-icon-btn.fd-add-btn img {
-  width: 22.5px; height: 23.5px;
-}
-/* Share icon: Figma w=19.336 h=27 */
-.fd-toolbar-icon-btn.fd-share-btn img {
-  width: 19.3px; height: 27px;
-}
+.fd-toolbar-icon-btn .gaia-icon { position: relative; z-index: 1; }
 /* ── Hero blur — faded progressive blur ────────────────────
    Two layers:
    1. Backdrop-blur with mask-image so blur fades in smoothly
@@ -1041,10 +1036,7 @@ html, body {
   content: ''; position: absolute; inset: 0; border-radius: 296px;
   background: #f7f7f7; mix-blend-mode: darken; pointer-events: none;
 }
-.fd-expand-btn img {
-  position: relative; z-index: 1; width: 32px; height: 32px;
-  object-fit: contain;
-}
+.fd-expand-btn .gaia-icon { position: relative; z-index: 1; }
 /* Location bar on map — glass effect */
 .fd-location-bar {
   position: relative; z-index: 1;
@@ -1069,7 +1061,7 @@ html, body {
 .fd-location-row {
   display: flex; align-items: center; gap: 4px;
 }
-.fd-location-icon { width: 10px; height: 21px; flex-shrink: 0; object-fit: contain; }
+.fd-location-icon { width: 10px; height: 21px; flex-shrink: 0; object-fit: contain; opacity: 0.48; }
 .fd-location-text {
   font-family: var(--font-sans); font-size: 15px; line-height: 1.3;
   color: #454649; letter-spacing: 0.5px;
@@ -1275,7 +1267,14 @@ html, body {
   font-family: var(--font-sans); font-size: 9.3px; color: var(--paper-50);
   letter-spacing: 0.23px;
 }
-.fd-project-card-count svg { flex-shrink: 0; }
+.fd-project-card-count img {
+  display: block;
+  flex-shrink: 0;
+  width: 13.072px;
+  height: 9.316px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
 
 /* Top Contributors card */
 .fd-card {
@@ -1682,6 +1681,7 @@ html, body {
   width: 36px; height: 36px; position: relative; overflow: hidden; z-index: 1;
 }
 .profile-toolbar-btn .icon-36 img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.profile-toolbar-btn .icon-36 .gaia-icon { position: relative; }
 
 /* Profile content scroll area */
 .profile-content {
@@ -1991,7 +1991,7 @@ html, body {
     <!-- Search icon — inset 15.62% all sides (node I467:2849;215:439) -->
     <div class="icon-32">
       <div class="icon-inset" style="inset:15.62%">
-        <img src="https://www.figma.com/api/mcp/asset/926010c8-edc7-450b-8c85-cb72509647aa" alt="">
+        <img src="assets/icons/system/search-32.svg" alt="">
       </div>
     </div>
     <input
@@ -2004,12 +2004,14 @@ html, body {
       spellcheck="false"
     >
     <button class="search-mic" aria-label="Search by voice">
-      <svg width="18" height="22" viewBox="0 0 18 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="5.5" y="1" width="7" height="12" rx="3.5" stroke="currentColor" stroke-width="1.5"/>
-        <path d="M1 10C1 14.4183 4.58172 18 9 18C13.4183 18 17 14.4183 17 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        <line x1="9" y1="18" x2="9" y2="21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        <line x1="6" y1="21" x2="12" y2="21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
+      <span class="gaia-icon gaia-icon--microphone-20" aria-hidden="true">
+        <span class="gaia-icon__part gaia-icon__part--head">
+          <img src="assets/icons/system/microphone-20-head.svg" alt="">
+        </span>
+        <span class="gaia-icon__part gaia-icon__part--base">
+          <img src="assets/icons/system/microphone-20-base.svg" alt="">
+        </span>
+      </span>
     </button>
   </div>
 </div>
@@ -2020,9 +2022,14 @@ html, body {
   <button class="ctrl-btn" id="locateBtn" aria-label="Locate me">
     <div class="ctrl-btn-glass"></div>
     <div class="icon-32">
-      <div class="icon-inset" style="inset:12.5%">
-        <img src="https://www.figma.com/api/mcp/asset/97fa0903-6476-4692-8845-6aab96a78f26" alt="">
-      </div>
+      <span class="gaia-icon gaia-icon--target-24" aria-hidden="true" style="position:absolute; inset:12.5%;">
+        <span class="gaia-icon__part gaia-icon__part--dot">
+          <img src="assets/icons/system/target-24-dot.svg" alt="">
+        </span>
+        <span class="gaia-icon__part gaia-icon__part--ring">
+          <img src="assets/icons/system/target-24-ring.svg" alt="">
+        </span>
+      </span>
     </div>
   </button>
 </div>
@@ -2071,7 +2078,7 @@ html, body {
           <div class="card-info">
             <div class="card-title">Creek Recovery</div>
             <div class="card-obs">
-              <img src="https://www.figma.com/api/mcp/asset/170ddb6c-0e33-4003-a4d6-8f20c05e61db" alt="">
+              <img src="assets/icons/system/binoculars-20.svg" alt="">
               12
             </div>
           </div>
@@ -2085,7 +2092,7 @@ html, body {
           <div class="card-info">
             <div class="card-title">Pollinator Corridor</div>
             <div class="card-obs">
-              <img src="https://www.figma.com/api/mcp/asset/170ddb6c-0e33-4003-a4d6-8f20c05e61db" alt="">
+              <img src="assets/icons/system/binoculars-20.svg" alt="">
               12
             </div>
           </div>
@@ -2099,7 +2106,7 @@ html, body {
           <div class="card-info">
             <div class="card-title">Sea Creatures</div>
             <div class="card-obs">
-              <img src="https://www.figma.com/api/mcp/asset/170ddb6c-0e33-4003-a4d6-8f20c05e61db" alt="">
+              <img src="assets/icons/system/binoculars-20.svg" alt="">
               12
             </div>
           </div>
@@ -2113,13 +2120,13 @@ html, body {
           <!-- Grid view icon: fresh Figma asset -->
           <button class="finds-vb active" id="fvGrid">
             <div class="icon-inset" style="inset:21.67% 22.22% 21.88% 21.69%">
-              <img src="https://www.figma.com/api/mcp/asset/a1199383-663d-46a9-8187-f42a548fca5a" alt="">
+              <img src="assets/icons/system/grid-32.svg" alt="">
             </div>
           </button>
           <!-- List view icon: fresh Figma asset -->
           <button class="finds-vb" id="fvList">
             <div class="icon-inset" style="inset:26.03% 15.89% 26.24% 15.36%">
-              <img src="https://www.figma.com/api/mcp/asset/67e5e6cb-0414-49cf-ac4f-811605502b49" alt="">
+              <img src="assets/icons/system/list-32.svg" alt="">
             </div>
           </button>
         </div>
@@ -2167,7 +2174,13 @@ html, body {
             <div class="fd-glass-darken"></div>
           </div>
           <div class="fd-back-icon-wrap">
-            <img src="https://www.figma.com/api/mcp/asset/9af873b2-a7e4-4bbe-9f63-5f684033721e" alt="Back">
+            <span class="gaia-icon gaia-icon--left-arrow-20" aria-hidden="true">
+              <span class="gaia-icon__slot">
+                <span class="gaia-icon__part">
+                  <img src="assets/icons/system/left-arrow-20.svg" alt="">
+                </span>
+              </span>
+            </span>
           </div>
         </button>
         <!-- Right pill — add + share, glass cool -->
@@ -2178,10 +2191,21 @@ html, body {
             <div class="fd-glass-darken"></div>
           </div>
           <button class="fd-toolbar-icon-btn fd-add-btn" aria-label="Add">
-            <img src="https://www.figma.com/api/mcp/asset/6f775807-573b-40f7-9ec8-7d09b27ecb19" alt="Add">
+            <span class="gaia-icon gaia-icon--plus-24" aria-hidden="true">
+              <span class="gaia-icon__part">
+                <img src="assets/icons/system/plus-24.svg" alt="">
+              </span>
+            </span>
           </button>
           <button class="fd-toolbar-icon-btn fd-share-btn" aria-label="Share">
-            <img src="https://www.figma.com/api/mcp/asset/88abed93-5cef-4819-beb7-cd2a31058396" alt="Share">
+            <span class="gaia-icon gaia-icon--share-24" aria-hidden="true">
+              <span class="gaia-icon__part gaia-icon__part--base">
+                <img src="assets/icons/system/share-24-base.svg" alt="">
+              </span>
+              <span class="gaia-icon__part gaia-icon__part--arrow">
+                <img src="assets/icons/system/share-24-arrow.svg" alt="">
+              </span>
+            </span>
           </button>
         </div>
       </div>
@@ -2245,12 +2269,23 @@ html, body {
               </div>
             </div>
             <button class="fd-expand-btn" aria-label="Expand map">
-              <img src="https://www.figma.com/api/mcp/asset/1951b749-77a0-4b3c-a52e-71306516ace8" alt="">
+              <span class="gaia-icon gaia-icon--expand-20" aria-hidden="true">
+                <span class="gaia-icon__slot gaia-icon__slot--a">
+                  <span class="gaia-icon__part gaia-icon__part--a">
+                    <img src="assets/icons/system/expand-20-a.svg" alt="">
+                  </span>
+                </span>
+                <span class="gaia-icon__slot gaia-icon__slot--b">
+                  <span class="gaia-icon__part gaia-icon__part--b">
+                    <img src="assets/icons/system/expand-20-b.svg" alt="">
+                  </span>
+                </span>
+              </span>
             </button>
           </div>
           <div class="fd-location-bar">
             <div class="fd-location-row">
-              <img class="fd-location-icon" src="https://www.figma.com/api/mcp/asset/a5d692ed-5496-409c-a6f1-856a48e8f747" alt="">
+              <img class="fd-location-icon" src="assets/icons/system/pin-20.svg" alt="">
               <span class="fd-location-text">Avila Beach, CA, United States of America</span>
             </div>
             <span class="fd-location-date">July 10, 2025, 10:19 AM</span>
@@ -2275,7 +2310,13 @@ html, body {
                     <div class="fd-condition-name">Riparian Edge</div>
                     <div class="fd-condition-sub">Perfumo Canyon</div>
                   </div>
-                  <img class="fd-condition-chevron" src="https://www.figma.com/api/mcp/asset/33e8b69b-776b-4d26-ba10-53a7da5f11f7" alt="">
+                  <span class="gaia-icon gaia-icon--chevron-right-16" aria-hidden="true">
+                    <span class="gaia-icon__slot">
+                      <span class="gaia-icon__part">
+                        <img src="assets/icons/system/chevron-16.svg" alt="">
+                      </span>
+                    </span>
+                  </span>
                 </div>
               </div>
               <!-- Weather -->
@@ -2290,7 +2331,13 @@ html, body {
                     <div class="fd-condition-name">Partly Cloudy</div>
                     <div class="fd-condition-sub">July 10, 2025, 10:19 AM</div>
                   </div>
-                  <img class="fd-condition-chevron" src="https://www.figma.com/api/mcp/asset/33e8b69b-776b-4d26-ba10-53a7da5f11f7" alt="">
+                  <span class="gaia-icon gaia-icon--chevron-right-16" aria-hidden="true">
+                    <span class="gaia-icon__slot">
+                      <span class="gaia-icon__part">
+                        <img src="assets/icons/system/chevron-16.svg" alt="">
+                      </span>
+                    </span>
+                  </span>
                 </div>
               </div>
             </div>
@@ -2329,7 +2376,7 @@ html, body {
                   <div class="fd-project-card-info">
                     <div class="fd-project-card-name">Creek Recovery</div>
                     <div class="fd-project-card-count">
-                      <img src="https://www.figma.com/api/mcp/asset/f7b9d3fd-e658-486b-b444-be584bdce3f3" alt="" style="width:13px;height:9.3px;object-fit:contain;">
+                      <img src="assets/icons/system/binoculars-20.svg" alt="">
                       <span>12</span>
                     </div>
                   </div>
@@ -2341,7 +2388,7 @@ html, body {
                   <div class="fd-project-card-info">
                     <div class="fd-project-card-name">Pollinator Corridor</div>
                     <div class="fd-project-card-count">
-                      <img src="https://www.figma.com/api/mcp/asset/f7b9d3fd-e658-486b-b444-be584bdce3f3" alt="" style="width:13px;height:9.3px;object-fit:contain;">
+                      <img src="assets/icons/system/binoculars-20.svg" alt="">
                       <span>12</span>
                     </div>
                   </div>
@@ -2520,7 +2567,18 @@ html, body {
               <div id="fd-learn-map" style="width:100%;height:100%;"></div>
               <div style="position:absolute;bottom:16px;right:16px;z-index:2;">
                 <button class="fd-expand-btn" aria-label="Expand map">
-                  <svg width="19" height="19" viewBox="0 0 19 19" fill="none" style="position:relative;z-index:1"><path d="M2 7V2H7M12 2H17V7M17 12V17H12M7 17H2V12" stroke="#252024" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <span class="gaia-icon gaia-icon--expand-20" aria-hidden="true">
+                    <span class="gaia-icon__slot gaia-icon__slot--a">
+                      <span class="gaia-icon__part gaia-icon__part--a">
+                        <img src="assets/icons/system/expand-20-a.svg" alt="">
+                      </span>
+                    </span>
+                    <span class="gaia-icon__slot gaia-icon__slot--b">
+                      <span class="gaia-icon__part gaia-icon__part--b">
+                        <img src="assets/icons/system/expand-20-b.svg" alt="">
+                      </span>
+                    </span>
+                  </span>
                 </button>
               </div>
             </div>
@@ -2565,17 +2623,23 @@ html, body {
     <button class="profile-toolbar-btn" aria-label="Settings">
       <div class="profile-toolbar-btn-glass"></div>
       <div class="profile-toolbar-btn-darken"></div>
-      <div class="icon-36">
-        <img src="https://www.figma.com/api/mcp/asset/b90b2f7e-42d0-43fd-b511-17039a54d868" alt="">
+      <div class="icon-36" style="display:flex;align-items:center;justify-content:center;">
+        <span class="gaia-icon gaia-icon--gear-20" aria-hidden="true">
+          <span class="gaia-icon__part">
+            <img src="assets/icons/system/gear-20.svg" alt="">
+          </span>
+        </span>
       </div>
     </button>
     <button class="profile-toolbar-btn" aria-label="More options">
       <div class="profile-toolbar-btn-glass"></div>
       <div class="profile-toolbar-btn-darken"></div>
-      <div class="icon-36" style="display:flex;align-items:center;justify-content:center;gap:3.79px">
-        <div style="width:4.06px;height:4.06px;border-radius:50%;background:var(--ink)"></div>
-        <div style="width:4.06px;height:4.06px;border-radius:50%;background:var(--ink)"></div>
-        <div style="width:4.06px;height:4.06px;border-radius:50%;background:var(--ink)"></div>
+      <div class="icon-36" style="display:flex;align-items:center;justify-content:center;">
+        <span class="gaia-icon gaia-icon--ellipses-20" aria-hidden="true">
+          <span class="gaia-icon__part">
+            <img src="assets/icons/system/ellipses-20.svg" alt="">
+          </span>
+        </span>
       </div>
     </button>
   </div>
@@ -2774,7 +2838,10 @@ html, body {
   <button class="nav-item active" data-nav="explore">
     <div class="icon-32">
       <div class="icon-inset" style="inset:15.76% 15.49% 15.49% 15.76%">
-        <img src="https://www.figma.com/api/mcp/asset/7b67554b-e43f-4d85-b283-17a2d696905e" alt="">
+        <img src="assets/icons/system/explore-32-ring-olive.svg" alt="">
+      </div>
+      <div class="icon-inset" style="inset:34.52% 32.86% 32.85% 34.52%">
+        <img src="assets/icons/system/explore-32-dot-olive.svg" alt="">
       </div>
     </div>
     <span class="nav-label">Explore</span>
@@ -2784,7 +2851,16 @@ html, body {
   <button class="nav-item" data-nav="log">
     <div class="icon-32">
       <div class="icon-inset" style="inset:15.63% 20.95% 15.83% 18.39%">
-        <img src="https://www.figma.com/api/mcp/asset/9f2b547d-b20b-43ff-b190-a1464989cdd2" alt="">
+        <img src="assets/icons/system/logbook-32-outline-olive.svg" alt="">
+      </div>
+      <div class="icon-inset" style="inset:32.15% 40.48% 47.86% 36.58%">
+        <img src="assets/icons/system/logbook-32-line-1-olive.svg" alt="">
+      </div>
+      <div class="icon-inset" style="inset:57.52% 40.49% 39.01% 36.58%">
+        <img src="assets/icons/system/logbook-32-line-2-olive.svg" alt="">
+      </div>
+      <div class="icon-inset" style="inset:63.52% 40.49% 33.02% 36.58%">
+        <img src="assets/icons/system/logbook-32-line-3-olive.svg" alt="">
       </div>
     </div>
     <span class="nav-label">Log</span>
@@ -2794,7 +2870,7 @@ html, body {
   <button class="nav-item" data-nav="observe">
     <div class="icon-32">
       <div class="icon-inset" style="inset:25.5% 16.06% 25.5% 15.19%">
-        <img src="https://www.figma.com/api/mcp/asset/68dd28fd-abd4-4b00-9ac3-7ba6c2d57821" alt="">
+        <img src="assets/icons/system/binoculars-32-olive.svg" alt="">
       </div>
     </div>
     <span class="nav-label">Observe</span>
@@ -2804,7 +2880,7 @@ html, body {
   <button class="nav-item" data-nav="activity">
     <div class="icon-32">
       <div class="icon-inset" style="inset:15.52% 20.6% 15.73% 20.07%">
-        <img src="https://www.figma.com/api/mcp/asset/d052222f-a9b8-45f6-af04-4b749e676e18" alt="">
+        <img src="assets/icons/system/bell-32-olive.svg" alt="">
       </div>
     </div>
     <span class="nav-label">Activity</span>
@@ -2813,8 +2889,8 @@ html, body {
   <!-- Profile — person icon (node I576:13698;451:3716;215:445), 22×22.108px at top/left 4.93px -->
   <button class="nav-item" data-nav="profile">
     <div class="icon-32">
-      <div class="icon-inset" style="top:4.93px; left:4.93px; width:22px; height:22.108px">
-        <img src="https://www.figma.com/api/mcp/asset/d9df712e-2d63-4e59-9902-868e33239436" alt="">
+      <div class="icon-inset" style="inset:15.4% 15.84% 15.52% 15.4%">
+        <img src="assets/icons/system/profile-32-olive.svg" alt="">
       </div>
     </div>
     <span class="nav-label">Profile</span>

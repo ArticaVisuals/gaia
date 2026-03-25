@@ -1,0 +1,243 @@
+.gaia-icon {
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+  line-height: 0;
+  vertical-align: middle;
+  pointer-events: none;
+}
+
+.gaia-icon__slot,
+.gaia-icon__part {
+  position: absolute;
+  display: block;
+}
+
+.gaia-icon__slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gaia-icon__part img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: contain;
+  display: block;
+}
+
+.gaia-icon--inverse .gaia-icon__part img {
+  filter: brightness(0) invert(1);
+}
+
+.gaia-icon--muted .gaia-icon__part img {
+  opacity: 0.56;
+}
+
+.gaia-icon--search-32 {
+  width: 32px;
+  height: 32px;
+}
+
+.gaia-icon--search-32 .gaia-icon__part {
+  inset: 15.62%;
+}
+
+.gaia-icon--search-20 {
+  width: 20px;
+  height: 20px;
+}
+
+.gaia-icon--search-20 .gaia-icon__part {
+  inset: 15.62% 15.63%;
+}
+
+.gaia-icon--target-24 {
+  width: 24px;
+  height: 24px;
+}
+
+.gaia-icon--target-24 .gaia-icon__part--dot {
+  inset: 37.9% 37.9% 37.91% 37.91%;
+}
+
+.gaia-icon--target-24 .gaia-icon__part--ring {
+  inset: 12.5% 12.5% 12.51%;
+}
+
+.gaia-icon--left-arrow-20 {
+  width: 20px;
+  height: 20px;
+}
+
+.gaia-icon--left-arrow-20 .gaia-icon__slot {
+  inset: 25.96% 16.73% 25.32% 20.45%;
+}
+
+.gaia-icon--left-arrow-20 .gaia-icon__part {
+  width: 15.59px;
+  height: 20.103px;
+  transform: rotate(-90deg);
+}
+
+.gaia-icon--plus-24 {
+  width: 24px;
+  height: 24px;
+}
+
+.gaia-icon--plus-24 .gaia-icon__part {
+  inset: 17.75% 18.75% 16.88%;
+}
+
+.gaia-icon--share-24 {
+  width: 24px;
+  height: 24px;
+}
+
+.gaia-icon--share-24 .gaia-icon__part--base {
+  inset: 36.86% 23.58% 12.5% 22.71%;
+}
+
+.gaia-icon--share-24 .gaia-icon__part--arrow {
+  inset: 12.5% 35.8% 37.03% 34.92%;
+}
+
+.gaia-icon--microphone-20 {
+  width: 20px;
+  height: 20px;
+}
+
+.gaia-icon--microphone-20 .gaia-icon__part--head {
+  inset: 16.1% 35.64% 37.89% 36.04%;
+}
+
+.gaia-icon--microphone-20 .gaia-icon__part--base {
+  inset: 45.55% 24.79% 16.1% 25.19%;
+}
+
+.gaia-icon--expand-20 {
+  width: 20px;
+  height: 20px;
+}
+
+.gaia-icon--expand-20 .gaia-icon__slot--a {
+  inset: 36.74% 36.74% 0 0;
+}
+
+.gaia-icon--expand-20 .gaia-icon__slot--b {
+  inset: 0 0 36.74% 36.74%;
+}
+
+.gaia-icon--expand-20 .gaia-icon__part {
+  width: 20.359px;
+  height: 21.148px;
+}
+
+.gaia-icon--expand-20 .gaia-icon__part--a {
+  transform: rotate(-135deg);
+}
+
+.gaia-icon--expand-20 .gaia-icon__part--b {
+  transform: rotate(45deg);
+}
+
+.gaia-icon--cross-20 {
+  width: 20px;
+  height: 20px;
+}
+
+.gaia-icon--cross-20 .gaia-icon__slot {
+  inset: 5.23% 4.79% 4.36%;
+}
+
+.gaia-icon--cross-20 .gaia-icon__part {
+  width: 20px;
+  height: 20.918px;
+  transform: rotate(-45deg);
+}
+
+.gaia-icon--chevron-left-16,
+.gaia-icon--chevron-right-16 {
+  width: 16px;
+  height: 16px;
+}
+
+.gaia-icon--chevron-left-16 .gaia-icon__slot,
+.gaia-icon--chevron-right-16 .gaia-icon__slot {
+  inset: 16.3% 35.16% 16.51% 30.2%;
+}
+
+.gaia-icon--chevron-left-16 .gaia-icon__part,
+.gaia-icon--chevron-right-16 .gaia-icon__part {
+  width: 21.5px;
+  height: 11.086px;
+}
+
+.gaia-icon--chevron-left-16 .gaia-icon__part {
+  transform: rotate(-90deg);
+}
+
+.gaia-icon--chevron-right-16 .gaia-icon__part {
+  transform: rotate(90deg);
+}
+
+.gaia-icon--gear-20 {
+  width: 20px;
+  height: 20px;
+}
+
+.gaia-icon--gear-20 .gaia-icon__part {
+  inset: 15.62% 15.63% 15.63% 15.62%;
+}
+
+.gaia-icon--save-20 {
+  width: 20px;
+  height: 20px;
+}
+
+.gaia-icon--save-20 .gaia-icon__part--left {
+  inset: 20.41% 30.02% 28.34% 47.71%;
+}
+
+.gaia-icon--save-20 .gaia-icon__part--right {
+  inset: 20.41% 47.71% 28.34% 30.02%;
+}
+
+.gaia-icon--save-20 .gaia-icon__part--base {
+  inset: 63.06% 15.62% 17.3% 15.63%;
+}
+
+.gaia-icon--pin-20 {
+  width: 20px;
+  height: 20px;
+}
+
+.gaia-icon--pin-20 .gaia-icon__part {
+  inset: 15.81% 25.62% 15.44%;
+}
+
+.gaia-icon--ellipses-20 {
+  width: 20px;
+  height: 20px;
+}
+
+.gaia-icon--ellipses-20 .gaia-icon__part {
+  inset: 40.97% 6.07% 40.98%;
+}
+
+.gaia-icon--grid-32,
+.gaia-icon--list-32 {
+  width: 32px;
+  height: 32px;
+}
+
+.gaia-icon--grid-32 .gaia-icon__part {
+  inset: 21.67% 22.22% 21.88% 21.69%;
+}
+
+.gaia-icon--list-32 .gaia-icon__part {
+  inset: 26.03% 15.89% 26.24% 15.36%;
+}

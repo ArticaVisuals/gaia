@@ -6,6 +6,7 @@
 <title>The Story of a Keystone — Gaia</title>
 <link rel="stylesheet" href="https://use.typekit.net/atn6inh.css">
 <link rel="stylesheet" href="design-tokens.css">
+<link rel="stylesheet" href="assets/icons/system/icon-kit.css">
 <style>
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -67,7 +68,7 @@ html, body {
   background: #f7f7f7; mix-blend-mode: darken;
   z-index: 2; pointer-events: none;
 }
-.back-btn svg { position: relative; z-index: 3; pointer-events: none; }
+.back-btn .gaia-icon { position: relative; z-index: 3; }
 
 /* ── HEADER ────────────────────────────────────────────── */
 #page-header {
@@ -278,10 +279,13 @@ html, body {
   <div id="toolbar">
     <button class="back-btn" onclick="history.back()" aria-label="Back">
       <span class="btn-darken"></span>
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <path d="M12.5 15L7.5 10L12.5 5" stroke="#252024" stroke-width="1.5"
-          stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
+      <span class="gaia-icon gaia-icon--chevron-left-16" aria-hidden="true" style="transform:scale(1.12);">
+        <span class="gaia-icon__slot">
+          <span class="gaia-icon__part">
+            <img src="assets/icons/system/chevron-16.svg" alt="">
+          </span>
+        </span>
+      </span>
     </button>
   </div>
 
