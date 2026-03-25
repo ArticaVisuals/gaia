@@ -1341,7 +1341,7 @@ html, body {
   background: var(--paper-50);
   border: 0.5px solid var(--brown-200);
   border-radius: var(--radius-md);
-  box-shadow: 0px 0px 20px 0px rgba(94,98,98,0.2);
+  box-shadow: 0px 4px 20px 0px rgba(155,133,107,0.16);
   padding: 16px;
 }
 .fd-card-title {
@@ -1363,8 +1363,37 @@ html, body {
   display: flex; align-items: center; gap: 8px;
 }
 .fd-contrib-avatar {
-  width: 32px; height: 32px; border-radius: 50%;
-  border: 0.5px solid var(--olive-100); object-fit: cover;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 0.5px solid var(--olive-100);
+  background: var(--grey-100);
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+}
+.fd-contrib-avatar-img {
+  position: absolute;
+  max-width: none;
+  display: block;
+}
+.fd-contrib-avatar-img--alice {
+  width: 315.06%;
+  height: 209.82%;
+  left: -165.01%;
+  top: -23.43%;
+}
+.fd-contrib-avatar-img--maya {
+  width: 172.8%;
+  height: 259.19%;
+  left: -31.7%;
+  top: -59.63%;
+}
+.fd-contrib-avatar-img--jules {
+  width: 242.53%;
+  height: 363.79%;
+  left: -85.94%;
+  top: -81.2%;
 }
 .fd-contrib-name {
   font-family: var(--font-sans); font-size: 11px; color: #6d6e73;
@@ -1374,11 +1403,15 @@ html, body {
   display: flex; align-items: center; gap: 4px;
 }
 .fd-contrib-count {
-  font-family: var(--font-serif); font-size: 16px; color: #6d6e73;
+  font-family: var(--font-serif); font-size: 16px; color: var(--olive);
   line-height: 18px;
 }
 .fd-contrib-icon {
-  width: 32px; height: 32px; opacity: 0.5; object-fit: contain;
+  width: 22px;
+  height: auto;
+  max-height: 16px;
+  display: block;
+  object-fit: contain;
 }
 
 /* Action buttons row */
@@ -2384,7 +2417,7 @@ html, body {
             <div class="fd-contrib-left">
               <span class="fd-contrib-rank">1</span>
               <div class="fd-contrib-user">
-                <img class="fd-contrib-avatar" src="https://www.figma.com/api/mcp/asset/c228b073-32c4-460d-99ea-d0c32aacadad" alt="">
+                <div class="fd-contrib-avatar"><img class="fd-contrib-avatar-img fd-contrib-avatar-img--alice" src="https://www.figma.com/api/mcp/asset/c228b073-32c4-460d-99ea-d0c32aacadad" alt=""></div>
                 <span class="fd-contrib-name">Alice Edwards</span>
               </div>
             </div>
@@ -2397,7 +2430,7 @@ html, body {
             <div class="fd-contrib-left">
               <span class="fd-contrib-rank">2</span>
               <div class="fd-contrib-user">
-                <img class="fd-contrib-avatar" src="https://www.figma.com/api/mcp/asset/254025d8-ccc5-42c0-acde-e09e66d9010c" alt="">
+                <div class="fd-contrib-avatar"><img class="fd-contrib-avatar-img fd-contrib-avatar-img--maya" src="https://www.figma.com/api/mcp/asset/254025d8-ccc5-42c0-acde-e09e66d9010c" alt=""></div>
                 <span class="fd-contrib-name">Maya Chen</span>
               </div>
             </div>
@@ -2410,7 +2443,7 @@ html, body {
             <div class="fd-contrib-left">
               <span class="fd-contrib-rank">3</span>
               <div class="fd-contrib-user">
-                <img class="fd-contrib-avatar" src="https://www.figma.com/api/mcp/asset/4f0f6c5d-2488-4a13-a427-aae284a52a41" alt="">
+                <div class="fd-contrib-avatar"><img class="fd-contrib-avatar-img fd-contrib-avatar-img--jules" src="https://www.figma.com/api/mcp/asset/4f0f6c5d-2488-4a13-a427-aae284a52a41" alt=""></div>
                 <span class="fd-contrib-name">Jules Kim</span>
               </div>
             </div>
