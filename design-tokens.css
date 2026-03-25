@@ -1,0 +1,298 @@
+/* ══════════════════════════════════════════════════════════════
+   GAIA DESIGN TOKENS
+   Source of truth — synced from Figma Components page (node 0:1)
+   All HTML pages import this file so tokens stay consistent.
+   ══════════════════════════════════════════════════════════════ */
+
+:root {
+
+  /* ── Colors: Olive Green ─────────────────────────────────── */
+  --olive-50:  #f2f4f0;
+  --olive-100: #e3e7df;
+  --olive-200: #c8cfbf;
+  --olive-300: #a3ae95;
+  --olive-400: #8a9b7e;
+  --olive-500: #67765b;
+  --olive-600: #5b6850;
+  --olive-700: #4f5a45;
+  --olive-800: #3d4535;
+  --olive-900: #282d22;
+  --olive:     var(--olive-500);
+
+  /* ── Colors: Grass Green ─────────────────────────────────── */
+  --grass-100: #b0d1a5;
+  --grass-200: #a3ca96;
+  --grass-300: #95c287;
+  --grass-400: #88bb78;
+  --grass-500: #7bb369;
+  --grass-600: #6fa15f;
+  --grass-700: #628f54;
+  --grass-800: #567d4a;
+  --grass-900: #4a6b3f;
+
+  /* ── Colors: Broccoli Brown ──────────────────────────────── */
+  --brown-50:  #f6f2ee;
+  --brown-100: #ede5dc;
+  --brown-200: #d8c9b8;
+  --brown-300: #bfa98f;
+  --brown-400: #ac9479;
+  --brown-500: #9b856b;
+  --brown-600: #89755e;
+  --brown-700: #756350;
+  --brown-800: #5a4c3e;
+  --brown-900: #3b3129;
+
+  /* ── Colors: Asparagus Green ─────────────────────────────── */
+  --asparagus-50:  #f7f7ee;
+  --asparagus-100: #eeeedc;
+  --asparagus-200: #dddcb6;
+  --asparagus-300: #cccb8b;
+  --asparagus-400: #c9c87b;
+  --asparagus-500: #c2c190;
+  --asparagus-600: #abaa7f;
+  --asparagus-700: #91906c;
+  --asparagus-800: #707053;
+  --asparagus-900: #484837;
+
+  /* ── Colors: Paper White ─────────────────────────────────── */
+  --cream-50:  #fefdf9;
+  --cream-100: #fefcf7;
+  --cream-200: #fdfbf4;
+  --cream-300: #fdfaf1;
+  --cream-400: #fcfaf1;
+  --cream-500: #fcfaf0;
+  --cream-600: #dddbd3;
+  --cream-700: #bdbbb4;
+  --cream-800: #929189;
+  --cream-900: #5f5e5a;
+  --paper:     var(--cream-200);
+  --paper-50:  var(--cream-50);
+  --cream:     var(--cream-200);
+
+  /* ── Colors: Ink Black ───────────────────────────────────── */
+  --ink-50:  #edecee;
+  --ink-100: #d8d6da;
+  --ink-200: #b0adb3;
+  --ink-300: #7d7981;
+  --ink-400: #524e56;
+  --ink-500: #252024;
+  --ink-600: #201c20;
+  --ink-700: #1b181b;
+  --ink-800: #151315;
+  --ink-900: #0d0c0d;
+  --ink:     var(--ink-500);
+
+  /* ── Colors: Blackish Grey ───────────────────────────────── */
+  --grey-50:  #ededee;
+  --grey-100: #d9d9db;
+  --grey-200: #b1b2b5;
+  --grey-300: #848589;
+  --grey-400: #6d6e73;
+  --grey-500: #5b5c61;
+  --grey-600: #505156;
+  --grey-700: #454649;
+  --grey-800: #353638;
+  --grey-900: #222324;
+  --grey:     var(--grey-500);
+
+  /* ── Colors: Indigo Blue ─────────────────────────────────── */
+  --indigo-50:  #eceef3;
+  --indigo-100: #d5dae5;
+  --indigo-200: #a9b4c9;
+  --indigo-300: #7589a9;
+  --indigo-400: #61739b;
+  --indigo-500: #4f638d;
+  --indigo-600: #45577c;
+  --indigo-700: #3b4a6a;
+  --indigo-800: #2d3951;
+  --indigo-900: #1d2535;
+
+  /* ── Colors: Vermillion Red ──────────────────────────────── */
+  --verm-50:  #f6edec;
+  --verm-100: #ecd8d5;
+  --verm-200: #d6afa9;
+  --verm-300: #bc7d73;
+  --verm-400: #bd6356;
+  --verm-500: #b5493a;
+  --verm-600: #9f4033;
+  --verm-700: #88372b;
+  --verm-800: #692a21;
+  --verm-900: #441b16;
+  --verm:     var(--verm-500);
+
+  /* ── Colors: Yskin Green ─────────────────────────────────── */
+  --yskin-50:  #f8f8ee;
+  --yskin-100: #f0f0db;
+  --yskin-200: #e0dfb5;
+  --yskin-300: #cecd86;
+  --yskin-400: #d2d17a;
+  --yskin-500: #c8c76f;
+  --yskin-600: #b0af62;
+  --yskin-700: #969553;
+  --yskin-800: #737240;
+  --yskin-900: #4a4a2a;
+
+  /* ── Colors: Semantic ────────────────────────────────────── */
+  --text-primary:       #252024;
+  --text-secondary:     #5b5c61;
+  --text-secondary-2:   #9b856b;
+  --text-disabled:      #b1b2b5;
+  --text-inverse:       #fcfaf0;
+  --text-link:          #4f638d;
+  --text-inverse-secondary: #c8c76f;
+
+  --border-default:     #d8c9b8;
+  --border-strong:      #6d6e73;
+
+  --bg-default:         #fcfcf7;
+  --bg-subtle:          #dddbd3;
+  --bg-overlay:         rgba(0,0,0,0.5);
+  --bg-primary:         #fefdf9;
+
+  --brand-primary:      #67765b;
+  --brand-secondary:    #9b856b;
+  --brand-accent:       #c2c190;
+
+  --status-verified:    #5c9f3a;
+  --status-needs-id:    #c5943a;
+  --status-draft:       #7d7981;
+
+  --interactive-primary:  #67765b;
+  --interactive-hover:    #5b6850;
+  --interactive-pressed:  #4f5a45;
+  --interactive-disabled: #c8c7bf;
+
+  --pin-identified:     #577050;
+  --pin-needs-id:       #546f3a;
+  --pin-community:      #4f638d;
+
+  --overlay-dark:       rgba(0,0,0,0.5);
+  --overlay-light:      rgba(255,255,255,0.5);
+
+  --fill-vibrant-tert:  #e6ede3;
+  --handle-clr:         var(--grey-100);
+  --water:              #4f638d;
+
+  --error:              #b5493a;
+
+  /* ── Shadows ─────────────────────────────────────────────── */
+  /* sm — chips, tags, small buttons */
+  --shadow-sm:    0px 2px 8px 0px rgba(155,133,107, 0.10);
+  /* md — cards, search bar, inputs */
+  --shadow-md:    0px 4px 20px 0px rgba(155,133,107, 0.16);
+  /* lg — nav, sheet, modals */
+  --shadow-lg:    0px 8px 40px 0px rgba(155,133,107, 0.24);
+
+  /* Named effect styles */
+  --shadow-soft:  0px 0px 20px 25px rgba(94,98,98,0.20);
+  --shadow-small: 0px 4px 20px 0px rgba(128,105,38,0.09);
+  --shadow-dark:  0px 4px 20px 0px rgba(50,40,8,0.35);
+  --shadow-nav:   0px 8px 40px 0px rgba(0,0,0,0.12);
+
+  /* ── Typography ──────────────────────────────────────────── */
+  --font-serif: "new-spirit","New Spirit",Georgia,serif;
+  --font-sans:  "neue-haas-unica","Neue Haas Unica","Helvetica Neue",system-ui,sans-serif;
+  --font-mono:  "IBM Plex Mono","IBM Plex Mono Fallback","SFMono-Regular",ui-monospace,monospace;
+
+  /* ── Spacing ─────────────────────────────────────────────── */
+  --space-0:  0px;
+  --space-1:  2px;
+  --space-2:  4px;
+  --space-3:  8px;
+  --space-4:  12px;
+  --space-5:  16px;
+  --space-6:  20px;
+  --space-7:  24px;
+  --space-8:  32px;
+  --space-9:  36px;
+  --space-10: 40px;
+  --space-11: 44px;
+  --space-12: 48px;
+  --space-14: 56px;
+  --space-16: 64px;
+  --space-20: 80px;
+
+  /* ── Radius ──────────────────────────────────────────────── */
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   14px;
+  --radius-xl:   24px;
+  --radius-xxl:  48px;
+  --radius-full: 250px;
+
+  /* ── Icon Sizes ──────────────────────────────────────────── */
+  --icon-sm: 16px;
+  --icon-md: 24px;
+  --icon-lg: 32px;
+  --icon-xl: 48px;
+
+  /* ── Layout ──────────────────────────────────────────────── */
+  --header-h: 108px;
+  --peek-h:   150px;
+  --nav-h:    56px;
+  --nav-gap:  12px;
+
+  /* ── Transitions ─────────────────────────────────────────── */
+  --spring: cubic-bezier(0.32, 0.72, 0, 1);
+
+  /* ── Map Pin Tokens (Figma node 624:2133) ────────────────── */
+  --pin-fill-top:    #7BB369;
+  --pin-fill-bottom: #6E9152;
+  --pin-number-text: #E0F2DA;
+  --pin-ring:        rgba(255,255,255,0.50);
+  --pin-ring-solid:  #ffffff;
+  --pin-glass-dark:  rgba(0,0,0,0.01);
+  --pin-text-shadow: 0px 4px 20px rgba(128,105,38,0.09);
+  --pin-glow-1: rgba(116,161,93,0.55);
+  --pin-glow-2: rgba(116,161,93,0.48);
+  --pin-glow-3: rgba(116,161,93,0.28);
+  --pin-glow-4: rgba(116,161,93,0.08);
+  --pin-glow-5: rgba(116,161,93,0.01);
+  --pin-glow-stack:
+    0.968px 1.937px 4.841px 0px var(--pin-glow-1),
+    3.873px 8.715px 9.683px 0px var(--pin-glow-2),
+    9.683px 19.366px 12.588px 0px var(--pin-glow-3),
+    16.461px 33.890px 15.493px 0px var(--pin-glow-4),
+    25.176px 53.256px 16.461px 0px var(--pin-glow-5);
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   TYPOGRAPHY UTILITY CLASSES
+   Matches Figma Typography section exactly.
+   serif = New Spirit  |  sans = Neue Haas Unica
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Serif (New Spirit) ────────────────────────────────────── */
+.type-serif-display       { font-family: var(--font-serif); font-size: 32px; font-weight: 400; line-height: 1.1; }
+.type-serif-display-med   { font-family: var(--font-serif); font-size: 32px; font-weight: 500; line-height: 1.1; }
+.type-serif-title-1       { font-family: var(--font-serif); font-size: 28px; font-weight: 400; line-height: 1.1; }
+.type-serif-title-1-med   { font-family: var(--font-serif); font-size: 28px; font-weight: 500; line-height: 1.1; }
+.type-serif-title-2       { font-family: var(--font-serif); font-size: 24px; font-weight: 400; line-height: 1.2; }
+.type-serif-title-2-med   { font-family: var(--font-serif); font-size: 24px; font-weight: 500; line-height: 1.2; }
+.type-serif-title-3       { font-family: var(--font-serif); font-size: 20px; font-weight: 400; line-height: 1.3; }
+.type-serif-title-3-med   { font-family: var(--font-serif); font-size: 20px; font-weight: 500; line-height: 1.3; }
+.type-serif-subhead-1     { font-family: var(--font-serif); font-size: 16px; font-weight: 400; line-height: 18px; }
+.type-serif-subhead-1-med { font-family: var(--font-serif); font-size: 16px; font-weight: 500; line-height: 18px; }
+.type-serif-caption        { font-family: var(--font-serif); font-size: 14px; font-weight: 400; line-height: 1.4; }
+.type-serif-caption-med    { font-family: var(--font-serif); font-size: 14px; font-weight: 500; line-height: 1.4; }
+
+/* ── Sans (Neue Haas Unica) ───────────────────────────────── */
+.type-sans-title-3        { font-family: var(--font-sans); font-size: 20px; font-weight: 400; line-height: 25px; }
+.type-sans-title-3-med    { font-family: var(--font-sans); font-size: 20px; font-weight: 500; line-height: 25px; }
+.type-sans-body           { font-family: var(--font-sans); font-size: 17px; font-weight: 400; line-height: 1.3; }
+.type-sans-body-med       { font-family: var(--font-sans); font-size: 17px; font-weight: 500; line-height: 1.3; }
+.type-sans-body-bold      { font-family: var(--font-sans); font-size: 17px; font-weight: 700; line-height: 1.3; }
+.type-sans-callout        { font-family: var(--font-sans); font-size: 16px; font-weight: 400; line-height: 21px; }
+.type-sans-callout-med    { font-family: var(--font-sans); font-size: 16px; font-weight: 500; line-height: 21px; }
+.type-sans-subheadline    { font-family: var(--font-sans); font-size: 15px; font-weight: 400; line-height: 20px; }
+.type-sans-subheadline-med{ font-family: var(--font-sans); font-size: 15px; font-weight: 500; line-height: 20px; }
+.type-sans-footnote       { font-family: var(--font-sans); font-size: 13px; font-weight: 400; line-height: 18px; }
+.type-sans-footnote-med   { font-family: var(--font-sans); font-size: 13px; font-weight: 500; line-height: 18px; }
+.type-sans-caption        { font-family: var(--font-sans); font-size: 12px; font-weight: 400; line-height: 20px; }
+.type-sans-caption-med    { font-family: var(--font-sans); font-size: 12px; font-weight: 500; line-height: 20px; }
+.type-sans-caption-2      { font-family: var(--font-sans); font-size: 11px; font-weight: 400; line-height: 1.3; letter-spacing: 0.25px; }
+.type-sans-caption-2-med  { font-family: var(--font-sans); font-size: 11px; font-weight: 500; line-height: 1.3; letter-spacing: 0.25px; }
+
+/* Nav label — special 10px size used in bottom nav */
+.type-sans-nav-label      { font-family: var(--font-sans); font-size: 10px; font-weight: 400; line-height: 1.3; letter-spacing: 0.25px; }
