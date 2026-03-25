@@ -754,34 +754,30 @@ html, body {
   position: absolute;
   inset: 0;
   border-radius: 50%;
+  overflow: visible;
+}
+.gaia-pin__photo-img-wrap {
+  position: absolute;
+  top: 2.195px;
+  left: 2.486px;
+  width: 57.343px;
+  height: 57.343px;
+  border-radius: 50%;
   overflow: hidden;
-  box-shadow: var(--pin-glow-stack);
-  backdrop-filter: blur(3px) saturate(115%);
-  -webkit-backdrop-filter: blur(3px) saturate(115%);
 }
 .gaia-pin__photo-img {
   position: absolute;
-  inset: 2.2px;
-  width: calc(100% - 4.4px);
-  height: calc(100% - 4.4px);
+  inset: 0;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  border-radius: 50%;
 }
-.gaia-pin__photo-ring {
+.gaia-pin__photo-overlay {
   position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 8px solid var(--pin-ring);
-  background: var(--pin-glass-dark);
-}
-.gaia-pin__photo-glass {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background:
-    linear-gradient(158deg, rgba(255,255,255,0.40) 0%, rgba(255,255,255,0.16) 32%, rgba(255,255,255,0) 66%),
-    radial-gradient(130% 110% at 24% 16%, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0) 52%);
-  mix-blend-mode: screen;
+  left: -5.809px;
+  top: -2.908px;
+  width: 109.447px;
+  height: 134.622px;
   pointer-events: none;
 }
 .gaia-pin.is-hovered .gaia-pin__photo-shell,
@@ -803,8 +799,6 @@ html, body {
   cursor: pointer;
   overflow: visible;
   box-shadow: var(--pin-glow-stack);
-  backdrop-filter: blur(0.8px) saturate(120%);
-  -webkit-backdrop-filter: blur(0.8px) saturate(120%);
   touch-action: manipulation;
 }
 .gaia-number-pin svg {
@@ -813,15 +807,6 @@ html, body {
   width: 100%;
   height: 100%;
   display: block;
-}
-.gaia-number-pin__glass {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  pointer-events: none;
-  background:
-    linear-gradient(160deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 34%, rgba(255,255,255,0) 68%),
-    radial-gradient(120% 110% at 24% 18%, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0) 48%);
 }
 .gaia-number-pin__count {
   position: absolute;
@@ -837,6 +822,7 @@ html, body {
   font-feature-settings: 'lnum' 1, 'tnum' 1;
   color: var(--pin-number-text);
   text-shadow: var(--pin-text-shadow);
+  filter: drop-shadow(0px 4px 20px rgba(128,105,38,0.09));
   text-align: center;
   user-select: none;
   transform: translateY(-0.5px);
@@ -3544,6 +3530,63 @@ document.addEventListener('click', (e) => {
   }
 });
 
+function buildPhotoOverlaySvg(id) {
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const suffix = id.replace(/[^a-zA-Z0-9_-]/g, '_');
+  const filterId = `gaia-pin-filter-${suffix}`;
+  const gradId = `gaia-pin-grad-${suffix}`;
+
+  const svg = document.createElementNS(svgNS, 'svg');
+  svg.setAttribute('class', 'gaia-pin__photo-overlay');
+  svg.setAttribute('viewBox', '0 0 109.447 134.622');
+  svg.setAttribute('fill', 'none');
+  svg.setAttribute('aria-hidden', 'true');
+
+  svg.innerHTML = [
+    `<g filter="url(#${filterId})">`,
+    '<circle cx="36.8098" cy="33.9049" r="31" fill="black" fill-opacity="0.01"/>',
+    `<circle cx="36.8098" cy="33.9049" r="27" stroke="url(#${gradId})" stroke-opacity="0.5" stroke-width="8"/>`,
+    '</g>',
+    '<defs>',
+    `<filter id="${filterId}" x="0" y="0" width="109.447" height="134.622" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">`,
+    '<feFlood flood-opacity="0" result="BackgroundImageFix"/>',
+    '<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>',
+    '<feOffset dx="0.968298" dy="1.9366"/>',
+    '<feGaussianBlur stdDeviation="2.42075"/>',
+    '<feColorMatrix type="matrix" values="0 0 0 0 0.454902 0 0 0 0 0.631373 0 0 0 0 0.364706 0 0 0 0.55 0"/>',
+    '<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow"/>',
+    '<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>',
+    '<feOffset dx="3.87319" dy="8.71468"/>',
+    '<feGaussianBlur stdDeviation="4.84149"/>',
+    '<feColorMatrix type="matrix" values="0 0 0 0 0.454902 0 0 0 0 0.631373 0 0 0 0 0.364706 0 0 0 0.48 0"/>',
+    '<feBlend mode="normal" in2="effect1_dropShadow" result="effect2_dropShadow"/>',
+    '<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>',
+    '<feOffset dx="9.68298" dy="19.366"/>',
+    '<feGaussianBlur stdDeviation="6.29394"/>',
+    '<feColorMatrix type="matrix" values="0 0 0 0 0.454902 0 0 0 0 0.631373 0 0 0 0 0.364706 0 0 0 0.28 0"/>',
+    '<feBlend mode="normal" in2="effect2_dropShadow" result="effect3_dropShadow"/>',
+    '<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>',
+    '<feOffset dx="16.4611" dy="33.8904"/>',
+    '<feGaussianBlur stdDeviation="7.74638"/>',
+    '<feColorMatrix type="matrix" values="0 0 0 0 0.454902 0 0 0 0 0.631373 0 0 0 0 0.364706 0 0 0 0.08 0"/>',
+    '<feBlend mode="normal" in2="effect3_dropShadow" result="effect4_dropShadow"/>',
+    '<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>',
+    '<feOffset dx="25.1757" dy="53.2564"/>',
+    '<feGaussianBlur stdDeviation="8.23053"/>',
+    '<feColorMatrix type="matrix" values="0 0 0 0 0.454902 0 0 0 0 0.631373 0 0 0 0 0.364706 0 0 0 0.01 0"/>',
+    '<feBlend mode="normal" in2="effect4_dropShadow" result="effect5_dropShadow"/>',
+    '<feBlend mode="normal" in="SourceGraphic" in2="effect5_dropShadow" result="shape"/>',
+    '</filter>',
+    `<linearGradient id="${gradId}" x1="36.8098" y1="2.9049" x2="36.8098" y2="64.9049" gradientUnits="userSpaceOnUse">`,
+    '<stop stop-color="white"/>',
+    '<stop offset="1" stop-color="white"/>',
+    '</linearGradient>',
+    '</defs>'
+  ].join('');
+
+  return svg;
+}
+
 function buildPhotoPinEl(id, imgUrl) {
   const btn = document.createElement('button');
   btn.className = 'gaia-pin gaia-pin--photo';
@@ -3555,21 +3598,20 @@ function buildPhotoPinEl(id, imgUrl) {
   const shell = document.createElement('span');
   shell.className = 'gaia-pin__photo-shell';
 
+  const imgWrap = document.createElement('span');
+  imgWrap.className = 'gaia-pin__photo-img-wrap';
+
   const img = document.createElement('img');
   img.className = 'gaia-pin__photo-img';
   img.src = imgUrl;
   img.alt = '';
   img.loading = 'lazy';
 
-  const ring = document.createElement('span');
-  ring.className = 'gaia-pin__photo-ring';
+  const overlay = buildPhotoOverlaySvg(id);
 
-  const glass = document.createElement('span');
-  glass.className = 'gaia-pin__photo-glass';
-
-  shell.appendChild(img);
-  shell.appendChild(ring);
-  shell.appendChild(glass);
+  imgWrap.appendChild(img);
+  shell.appendChild(imgWrap);
+  shell.appendChild(overlay);
   btn.appendChild(shell);
 
   btn.addEventListener('pointerenter', () => {
@@ -3925,19 +3967,20 @@ function makeNumberPinEl(count) {
           '<stop offset="1" stop-color="#6E9152"/>' +
         '</linearGradient>' +
       '</defs>' +
-      `<circle cx="30.9822" cy="30.9822" r="30.9822" fill="url(#${gradId})" fill-opacity="0.42"/>` +
+      `<circle cx="30.9822" cy="30.9822" r="30.9822" fill="url(#${gradId})" />` +
       '<circle cx="30.9822" cy="30.9822" r="30.2292" stroke="#FFFFFF" stroke-opacity="0.5" stroke-width="1.50598"/>' +
     '</svg>' +
-    '<span class="gaia-number-pin__glass" aria-hidden="true"></span>' +
     `<span class="gaia-number-pin__count" style="font-size:${countSize}px">${safeCount}</span>`;
   return el;
 }
 
 function makeClusterSvgEl(count, clusterId, lng, lat) {
   const el = makeNumberPinEl(count);
+  el._clusterMeta = { clusterId, lng, lat };
   el.addEventListener('click', () => {
-    map.getSource('gaia-pins').getClusterExpansionZoom(clusterId, (err, z) => {
-      if (!err) map.easeTo({ center: [lng, lat], zoom: z + 0.5, duration: 350 });
+    const meta = el._clusterMeta || { clusterId, lng, lat };
+    map.getSource('gaia-pins').getClusterExpansionZoom(meta.clusterId, (err, z) => {
+      if (!err) map.easeTo({ center: [meta.lng, meta.lat], zoom: z + 0.5, duration: 350 });
     });
   });
   return el;
@@ -3945,8 +3988,10 @@ function makeClusterSvgEl(count, clusterId, lng, lat) {
 
 function makeSingleSvgEl(lng, lat) {
   const el = makeNumberPinEl(1);
+  el._singleMeta = { lng, lat };
   el.addEventListener('click', () => {
-    map.easeTo({ center: [lng, lat], zoom: Math.max(map.getZoom() + 1.2, PHOTO_ZOOM + 0.1), duration: 350 });
+    const meta = el._singleMeta || { lng, lat };
+    map.easeTo({ center: [meta.lng, meta.lat], zoom: Math.max(map.getZoom() + 1.2, PHOTO_ZOOM + 0.1), duration: 350 });
   });
   return el;
 }
@@ -3962,35 +4007,70 @@ function normalizeLngToMap(lng) {
 function syncClusterMarkers() {
   if (pinsPhotoMode) return;
   const features = map.querySourceFeatures('gaia-pins');
-  const seen = new Set();
+  const buckets = {};
 
+  // Deduplicate cluster/single features across source tiles and stabilize their center.
   for (const f of features) {
     const isCluster = Boolean(f.properties.cluster);
     const key = isCluster ? 'c' + f.properties.cluster_id : 's' + f.properties.id;
-    if (seen.has(key)) continue;
-    seen.add(key);
+    const lng = normalizeLngToMap(f.geometry.coordinates[0]);
+    const lat = Number(f.geometry.coordinates[1]);
 
-    const rawLng = f.geometry.coordinates[0];
-    const lat = f.geometry.coordinates[1];
-    const lng = normalizeLngToMap(rawLng);
+    if (!buckets[key]) {
+      buckets[key] = {
+        key,
+        isCluster,
+        clusterId: isCluster ? f.properties.cluster_id : null,
+        pointCount: isCluster ? Math.max(1, Number(f.properties.point_count) || 1) : 1,
+        lngSum: 0,
+        latSum: 0,
+        n: 0
+      };
+    }
+
+    const b = buckets[key];
+    b.lngSum += lng;
+    b.latSum += lat;
+    b.n += 1;
+    if (isCluster) {
+      b.pointCount = Math.max(b.pointCount, Math.max(1, Number(f.properties.point_count) || 1));
+      b.clusterId = f.properties.cluster_id;
+    }
+  }
+
+  const seen = new Set(Object.keys(buckets));
+
+  for (const key of seen) {
+    const b = buckets[key];
+    const lng = b.lngSum / b.n;
+    const lat = b.latSum / b.n;
 
     const existing = clusterMarkers[key];
     if (existing) {
       existing.marker.setLngLat([lng, lat]);
-      if (isCluster) {
-        const safeCount = Math.max(1, Number(f.properties.point_count) || 1);
+
+      if (b.isCluster) {
+        const safeCount = b.pointCount;
         const countEl = existing.el.querySelector('.gaia-number-pin__count');
         if (countEl) {
           countEl.textContent = String(safeCount);
           countEl.style.fontSize = safeCount >= 100 ? '26px' : '32.512px';
         }
         existing.el.setAttribute('aria-label', `${safeCount} observations`);
+        if (existing.el._clusterMeta) {
+          existing.el._clusterMeta.clusterId = b.clusterId;
+          existing.el._clusterMeta.lng = lng;
+          existing.el._clusterMeta.lat = lat;
+        }
+      } else if (existing.el._singleMeta) {
+        existing.el._singleMeta.lng = lng;
+        existing.el._singleMeta.lat = lat;
       }
       continue;
     }
 
-    const el = isCluster
-      ? makeClusterSvgEl(f.properties.point_count, f.properties.cluster_id, lng, lat)
+    const el = b.isCluster
+      ? makeClusterSvgEl(b.pointCount, b.clusterId, lng, lat)
       : makeSingleSvgEl(lng, lat);
 
     const marker = new mapboxgl.Marker({ element: el, anchor: 'center' })
@@ -4000,7 +4080,6 @@ function syncClusterMarkers() {
     clusterMarkers[key] = { marker, el };
   }
 
-  // Remove stale markers no longer represented at current zoom/tile set
   for (const key of Object.keys(clusterMarkers)) {
     if (!seen.has(key)) {
       clusterMarkers[key].marker.remove();
