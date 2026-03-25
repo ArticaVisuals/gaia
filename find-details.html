@@ -384,6 +384,7 @@ html, body {
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-nav);
   padding: 8px 0 8px 8px;
+  max-width: calc(100% - 40px);
 }
 .location-card::before {
   content: ''; position: absolute; inset: 0;
@@ -409,7 +410,8 @@ html, body {
 .location-inner {
   position: relative; z-index: 1;
   display: flex; flex-direction: column; gap: 2px;
-  width: 157px;
+  width: 313px;
+  max-width: calc(100vw - 64px);
 }
 .location-row {
   display: flex; align-items: center; gap: 4px;
@@ -419,6 +421,7 @@ html, body {
   font-size: 15px; font-weight: 400;
   color: #454649; letter-spacing: 0.5px;
   white-space: nowrap; line-height: 1.3;
+  overflow: hidden; text-overflow: ellipsis;
 }
 .location-date {
   font-family: var(--font-sans);
@@ -430,26 +433,18 @@ html, body {
 /* ── FIND CONDITIONS ────────────────────────────────────── */
 #find-conditions {
   display: flex; flex-direction: column;
-  gap: var(--space-5);
-  padding-top: var(--space-8);
-}
-
-.section-label {
-  font-family: var(--font-serif);
-  font-size: 16px; font-weight: 400;
-  color: var(--ink-300); line-height: 18px;
-  padding: 0 var(--space-5);
-  white-space: nowrap;
+  gap: 12px;
+  padding-top: 16px;
 }
 
 /* Condition outer card */
 .conditions-card {
   margin: 0 var(--space-5);
-  background: #f9f7eb;
-  border: 0.5px solid var(--border-default);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-small);
-  padding: var(--space-4);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
   display: flex; flex-direction: column; gap: 8px;
 }
 .card-section-title {
@@ -488,13 +483,14 @@ html, body {
   border: 0.5px solid var(--border-default);
   border-radius: var(--radius-md);
   display: flex; align-items: center; justify-content: center;
-  padding: var(--space-4);
+  padding: 12px;
   width: 100%;
+  height: 126px;
+  overflow: hidden;
 }
 .biome-image-wrap img {
-  width: 124px; height: 102px;
-  object-fit: cover; display: block;
-  border-radius: 4px;
+  width: 107px; height: 102px;
+  object-fit: contain; display: block;
 }
 
 .biome-info {
@@ -546,22 +542,27 @@ html, body {
   align-items: center; justify-content: center;
   gap: 10px;
   padding: var(--space-5) var(--space-4);
-  /* Warm coral → golden → neutral → cool sky gradient */
-  background: radial-gradient(ellipse at 75% 90%,
-    rgba(253,188,170,1) 0%,
-    rgba(253,224,170,1) 30%,
-    rgba(239,233,213,1) 60%,
-    rgba(226,242,255,1) 100%);
+  background: #75818c;
 }
 .weather-temp {
   font-family: var(--font-serif);
   font-size: 69.5px; font-weight: 400;
-  color: #524e56;
+  color: var(--paper-500);
   line-height: 1.1;
   letter-spacing: -1.09px;
   position: relative; z-index: 1;
   flex: 1;
   display: flex; align-items: center;
+}
+.weather-bg-art {
+  position: absolute;
+  left: -8.28%;
+  top: -42.35%;
+  width: 178.65%;
+  height: 222.61%;
+  max-width: none;
+  object-fit: cover;
+  pointer-events: none;
 }
 .weather-curve {
   position: absolute;
@@ -575,7 +576,7 @@ html, body {
 .weather-text { display: flex; flex-direction: column; gap: 8px; }
 .weather-condition {
   font-family: var(--font-sans);
-  font-size: 16px; font-weight: 400;
+  font-size: 17px; font-weight: 400;
   color: var(--ink); line-height: 1.3;
   white-space: nowrap;
 }
@@ -600,8 +601,8 @@ html, body {
   padding: 8px var(--space-4);
 }
 .dq-items {
-  display: flex; align-items: center;
-  gap: 37px;
+  display: flex; align-items: center; justify-content: center;
+  gap: 24px;
   padding: var(--space-4);
 }
 .dq-item {
@@ -620,6 +621,9 @@ html, body {
   color: var(--grey-200); letter-spacing: 0.25px;
   text-align: center; line-height: 1.3;
 }
+.dq-item.is-active .dq-label {
+  color: var(--olive);
+}
 
 /* Projects card */
 .projects-card {
@@ -631,36 +635,88 @@ html, body {
   padding: var(--space-4);
   display: flex; flex-direction: column; gap: 8px;
 }
-.project-item {
-  background: var(--cream-50);
-  border: 0.5px solid var(--brown-200);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
+.projects-grid {
+  display: flex;
+  gap: 8px;
+}
+.find-project-card {
+  position: relative;
+  width: 169px;
   height: 129px;
+  border: 0.467px solid var(--border-default);
+  border-radius: 7.47px;
   overflow: hidden;
-  padding: var(--space-4);
-  display: flex; flex-direction: column;
-  justify-content: space-between;
+  background: var(--grey-50);
+  box-shadow: 0px 3.735px 18.674px rgba(128,105,38,0.09);
+  flex-shrink: 0;
 }
-.project-photo-placeholder {
-  flex: 1;
-  border-radius: var(--radius-md);
-  background: linear-gradient(135deg, var(--olive-100), var(--brown-100));
-  box-shadow: var(--shadow-small);
-  margin-bottom: 8px;
+.find-project-card-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
-.project-info { display: flex; flex-direction: column; }
-.project-name {
+.find-project-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 21.154%, rgba(0,0,0,0.5) 100%);
+  pointer-events: none;
+}
+.find-project-tag {
+  position: absolute;
+  top: 7.47px;
+  left: 7.47px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 20px;
+  padding: 0 10px;
+  border-radius: 250px;
+  border: 0.5px solid var(--grey-200);
+  background: rgba(0,0,0,0.5);
+  color: var(--paper-50);
   font-family: var(--font-sans);
-  font-size: 16px; font-weight: 400;
-  color: var(--brown-500); line-height: 20px;
+  font-size: 11px;
+  line-height: 1.3;
+  letter-spacing: 0.25px;
+}
+.find-project-info {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  padding: 11.204px;
+  display: flex;
+  flex-direction: column;
+  gap: 3.735px;
+}
+.find-project-title {
+  font-family: var(--font-serif);
+  font-size: 14.939px;
+  line-height: 16.807px;
+  color: var(--paper-50);
   white-space: nowrap;
 }
-.project-observers {
+.find-project-count {
+  display: flex;
+  align-items: center;
+  gap: 1.867px;
+  color: var(--paper-50);
   font-family: var(--font-sans);
-  font-size: 10px; font-weight: 400;
-  color: var(--ink-200); letter-spacing: 0.25px;
+  font-size: 9.337px;
   line-height: 1.3;
+  letter-spacing: 0.2334px;
+}
+.find-project-count img {
+  width: 13.072px;
+  height: 9.316px;
+  object-fit: contain;
+  display: block;
 }
 
 /* ── TAB PANELS ─────────────────────────────────────────── */
@@ -1117,7 +1173,7 @@ html, body {
           <div class="glass-darken2"></div>
           <div class="profile-card-inner">
             <div class="profile-avatar">
-              <img src="https://www.figma.com/api/mcp/asset/40a0d2cb-8979-45e2-81bb-d9f1a0c35ed2" alt="Alice Edwards">
+              <img src="assets/find-details/find-tab/avatar-alice.png" alt="Alice Edwards">
             </div>
             <div class="profile-info">
               <span class="profile-name">Alice Edwards</span>
@@ -1143,11 +1199,8 @@ html, body {
         <div class="glass-darken"></div>
         <div class="location-inner">
           <div class="location-row">
-            <!-- Location pin SVG -->
-            <svg class="toolbar-icon" width="10" height="14" viewBox="0 0 10 14" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
-              <path d="M5 0C2.24 0 0 2.24 0 5C0 8.5 5 14 5 14S10 8.5 10 5C10 2.24 7.76 0 5 0ZM5 6.75C4.04 6.75 3.25 5.96 3.25 5C3.25 4.04 4.04 3.25 5 3.25C5.96 3.25 6.75 4.04 6.75 5C6.75 5.96 5.96 6.75 5 6.75Z" fill="#454649"/>
-            </svg>
-            <span class="location-name">Avila Beach, CA</span>
+            <img src="assets/find-details/find-tab/location-pin.svg" alt="" style="width:10px;height:21px;object-fit:contain;display:block;flex-shrink:0;">
+            <span class="location-name">Avila Beach, CA, United States of America</span>
           </div>
           <span class="location-date">July 10, 2025, 10:19 AM</span>
         </div>
@@ -1158,8 +1211,6 @@ html, body {
   <!-- ══ FIND CONDITIONS ════════════════════════════════════ -->
   <div id="find-conditions">
 
-    <div class="section-label">Find Conditions</div>
-
     <!-- Condition card: Biome + Weather -->
     <div class="conditions-card">
       <div class="card-section-title">Condition</div>
@@ -1169,7 +1220,7 @@ html, body {
         <div class="biome-card">
           <div class="sub-card-label">Biome</div>
           <div class="biome-image-wrap">
-            <img src="https://www.figma.com/api/mcp/asset/b0f3b73c-5afd-4577-ae1d-5a54e017fa90" alt="Riparian biome">
+            <img src="assets/find-details/find-tab/biome-riparian.png" alt="Riparian biome">
           </div>
           <div class="biome-info">
             <div class="biome-text">
@@ -1177,7 +1228,7 @@ html, body {
               <span class="biome-sublabel">Perfumo Canyon</span>
             </div>
             <div class="chevron-icon" style="transform:rotate(180deg)">
-              <img src="https://www.figma.com/api/mcp/asset/dfbbc95a-4449-49e0-9bd7-96f87502a541" alt="">
+              <img src="assets/find-details/find-tab/chevron.svg" alt="">
             </div>
           </div>
         </div>
@@ -1186,10 +1237,8 @@ html, body {
         <div class="weather-card">
           <div class="sub-card-label">Weather</div>
           <div class="weather-gradient-box">
+            <img class="weather-bg-art" src="assets/find-details/find-tab/weather-bg.png" alt="">
             <span class="weather-temp">54º</span>
-            <img class="weather-curve"
-              src="https://www.figma.com/api/mcp/asset/ce47c01b-4e37-4043-a0f0-4ef257f4922e"
-              alt="">
           </div>
           <div class="weather-info">
             <div class="weather-text">
@@ -1197,7 +1246,7 @@ html, body {
               <span class="weather-date">July 10, 2025, 10:19 AM</span>
             </div>
             <div class="chevron-icon" style="transform:rotate(180deg)">
-              <img src="https://www.figma.com/api/mcp/asset/dfbbc95a-4449-49e0-9bd7-96f87502a541" alt="">
+              <img src="assets/find-details/find-tab/chevron.svg" alt="">
             </div>
           </div>
         </div>
@@ -1211,21 +1260,21 @@ html, body {
         <div class="card-section-title">Data Quality</div>
       </div>
       <div class="dq-items">
-        <div class="dq-item">
+        <div class="dq-item is-active">
           <div class="dq-badge">
-            <img src="https://www.figma.com/api/mcp/asset/51e8d904-ed53-4598-aaac-8596a647c041" alt="Casual Grade">
+            <img src="assets/find-details/find-tab/dq-casual.svg" alt="Casual Grade">
           </div>
           <span class="dq-label">Casual Grade</span>
         </div>
-        <div class="dq-item">
+        <div class="dq-item is-active">
           <div class="dq-badge">
-            <img src="https://www.figma.com/api/mcp/asset/512d16df-257a-481f-8ab4-edf23bbe9d3b" alt="Needs ID">
+            <img src="assets/find-details/find-tab/dq-needs-id.svg" alt="Needs ID">
           </div>
           <span class="dq-label">Needs ID</span>
         </div>
         <div class="dq-item">
           <div class="dq-badge">
-            <img src="https://www.figma.com/api/mcp/asset/71de89af-dff3-40ac-a25a-692364f36d23" alt="Research Grade">
+            <img src="assets/find-details/find-tab/dq-research.svg" alt="Research Grade">
           </div>
           <span class="dq-label">Research Grade</span>
         </div>
@@ -1235,18 +1284,28 @@ html, body {
     <!-- Projects card -->
     <div class="projects-card">
       <div class="card-section-title">Projects</div>
-      <div class="project-item">
-        <div class="project-photo-placeholder"></div>
-        <div class="project-info">
-          <span class="project-name">Creek Recovery</span>
-          <span class="project-observers">12 Observers</span>
+      <div class="projects-grid">
+        <div class="find-project-card">
+          <img class="find-project-card-bg" src="assets/find-details/find-tab/project-creek-recovery.png" alt="Creek Recovery">
+          <span class="find-project-tag">Wetland</span>
+          <div class="find-project-info">
+            <span class="find-project-title">Creek Recovery</span>
+            <span class="find-project-count">
+              <img src="assets/find-details/find-tab/project-count-icon.svg" alt="">
+              <span>12</span>
+            </span>
+          </div>
         </div>
-      </div>
-      <div class="project-item">
-        <div class="project-photo-placeholder"></div>
-        <div class="project-info">
-          <span class="project-name">Pollinator Corridor</span>
-          <span class="project-observers">12 Observers</span>
+        <div class="find-project-card">
+          <img class="find-project-card-bg" src="assets/find-details/find-tab/project-pollinator-corridor.png" alt="Pollinator Corridor">
+          <span class="find-project-tag">Wetland</span>
+          <div class="find-project-info">
+            <span class="find-project-title">Pollinator Corridor</span>
+            <span class="find-project-count">
+              <img src="assets/find-details/find-tab/project-count-icon.svg" alt="">
+              <span>12</span>
+            </span>
+          </div>
         </div>
       </div>
     </div>
