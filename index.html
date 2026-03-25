@@ -803,8 +803,8 @@ html, body {
   cursor: pointer;
   overflow: visible;
   box-shadow: var(--pin-glow-stack);
-  backdrop-filter: blur(3px) saturate(115%);
-  -webkit-backdrop-filter: blur(3px) saturate(115%);
+  backdrop-filter: blur(0.8px) saturate(120%);
+  -webkit-backdrop-filter: blur(0.8px) saturate(120%);
   touch-action: manipulation;
 }
 .gaia-number-pin svg {
@@ -820,8 +820,8 @@ html, body {
   border-radius: 50%;
   pointer-events: none;
   background:
-    linear-gradient(160deg, rgba(255,255,255,0.34) 0%, rgba(255,255,255,0.10) 34%, rgba(255,255,255,0) 68%),
-    radial-gradient(120% 110% at 24% 18%, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 48%);
+    linear-gradient(160deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 34%, rgba(255,255,255,0) 68%),
+    radial-gradient(120% 110% at 24% 18%, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0) 48%);
 }
 .gaia-number-pin__count {
   position: absolute;
@@ -3925,7 +3925,7 @@ function makeNumberPinEl(count) {
           '<stop offset="1" stop-color="#6E9152"/>' +
         '</linearGradient>' +
       '</defs>' +
-      `<circle cx="30.9822" cy="30.9822" r="30.9822" fill="url(#${gradId})" fill-opacity="0.2"/>` +
+      `<circle cx="30.9822" cy="30.9822" r="30.9822" fill="url(#${gradId})" fill-opacity="0.42"/>` +
       '<circle cx="30.9822" cy="30.9822" r="30.2292" stroke="#FFFFFF" stroke-opacity="0.5" stroke-width="1.50598"/>' +
     '</svg>' +
     '<span class="gaia-number-pin__glass" aria-hidden="true"></span>' +
@@ -3951,34 +3951,61 @@ function makeSingleSvgEl(lng, lat) {
   return el;
 }
 
+function normalizeLngToMap(lng) {
+  const refLng = map.getCenter().lng;
+  let wrappedLng = Number(lng);
+  while (wrappedLng - refLng > 180) wrappedLng -= 360;
+  while (wrappedLng - refLng < -180) wrappedLng += 360;
+  return wrappedLng;
+}
+
 function syncClusterMarkers() {
   if (pinsPhotoMode) return;
   const features = map.querySourceFeatures('gaia-pins');
   const seen = new Set();
-  const toAdd = [];
 
   for (const f of features) {
-    const isCluster = f.properties.cluster;
+    const isCluster = Boolean(f.properties.cluster);
     const key = isCluster ? 'c' + f.properties.cluster_id : 's' + f.properties.id;
     if (seen.has(key)) continue;
     seen.add(key);
-    if (!clusterMarkers[key]) toAdd.push({ key, feature: f, isCluster });
-  }
 
-  // Remove stale
-  for (const key of Object.keys(clusterMarkers)) {
-    if (!seen.has(key)) { clusterMarkers[key].marker.remove(); delete clusterMarkers[key]; }
-  }
+    const rawLng = f.geometry.coordinates[0];
+    const lat = f.geometry.coordinates[1];
+    const lng = normalizeLngToMap(rawLng);
 
-  // Add new
-  for (const { key, feature, isCluster } of toAdd) {
-    const [lng, lat] = feature.geometry.coordinates;
+    const existing = clusterMarkers[key];
+    if (existing) {
+      existing.marker.setLngLat([lng, lat]);
+      if (isCluster) {
+        const safeCount = Math.max(1, Number(f.properties.point_count) || 1);
+        const countEl = existing.el.querySelector('.gaia-number-pin__count');
+        if (countEl) {
+          countEl.textContent = String(safeCount);
+          countEl.style.fontSize = safeCount >= 100 ? '26px' : '32.512px';
+        }
+        existing.el.setAttribute('aria-label', `${safeCount} observations`);
+      }
+      continue;
+    }
+
     const el = isCluster
-      ? makeClusterSvgEl(feature.properties.point_count, feature.properties.cluster_id, lng, lat)
+      ? makeClusterSvgEl(f.properties.point_count, f.properties.cluster_id, lng, lat)
       : makeSingleSvgEl(lng, lat);
+
     const marker = new mapboxgl.Marker({ element: el, anchor: 'center' })
-      .setLngLat([lng, lat]).addTo(map);
+      .setLngLat([lng, lat])
+      .addTo(map);
+
     clusterMarkers[key] = { marker, el };
+  }
+
+  // Remove stale markers no longer represented at current zoom/tile set
+  for (const key of Object.keys(clusterMarkers)) {
+    if (!seen.has(key)) {
+      clusterMarkers[key].marker.remove();
+      delete clusterMarkers[key];
+    }
   }
 }
 
@@ -4045,6 +4072,7 @@ function initMap() {
 
     // ── SVG CLUSTER MARKERS (managed via querySourceFeatures) ──
     map.once('idle', () => { if (!pinsPhotoMode) syncClusterMarkers(); });
+    map.on('move', () => { if (!pinsPhotoMode) syncClusterMarkers(); });
     map.on('moveend', () => { if (!pinsPhotoMode) syncClusterMarkers(); });
     map.on('sourcedata', e => {
       if (e.sourceId === 'gaia-pins' && !pinsPhotoMode) syncClusterMarkers();
@@ -4065,6 +4093,7 @@ function initMap() {
       const threshold = pinsPhotoMode ? PHOTO_ZOOM - ZOOM_HYST : PHOTO_ZOOM;
       const shouldBePhoto = z >= threshold;
       if (shouldBePhoto !== pinsPhotoMode) setPinMode(shouldBePhoto);
+      if (!pinsPhotoMode) syncClusterMarkers();
     });
   });
 
