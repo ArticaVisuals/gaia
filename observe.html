@@ -294,16 +294,13 @@ html, body {
 .flash-card:nth-child(3) { transform: translate(-48%, -48%) rotate(0deg); z-index: 1; }
 .flash-card:nth-child(3) img { filter: blur(0.5px); }
 
-/* Flip animation for cards */
-@keyframes cardFlip {
-  0%   { transform: translate(-50%, -50%) rotate(-3.3deg) scale(1); }
-  25%  { transform: translate(-50%, -50%) rotate(8deg) scale(1.05) translateY(-20px); }
-  50%  { transform: translate(-50%, -50%) rotate(-5deg) scale(0.98); }
-  75%  { transform: translate(-50%, -50%) rotate(3deg) scale(1.02) translateY(-10px); }
-  100% { transform: translate(-50%, -50%) rotate(-3.3deg) scale(1); }
-}
-.card-stack.animating .flash-card:nth-child(1) {
-  animation: cardFlip 0.6s var(--spring) infinite;
+/* Shuffle animation — top card lifts, flips, and lands behind */
+@keyframes cardShuffle {
+  0%   { transform: translate(-50%, -50%) rotate(-3.3deg) scale(1); z-index: 3; }
+  20%  { transform: translate(-50%, -70%) rotate(4deg) scale(1.06); z-index: 3; }
+  50%  { transform: translate(-50%, -60%) rotate(-2deg) scale(0.95); z-index: 0; opacity: 0.7; }
+  80%  { transform: translate(-50%, -50%) rotate(1deg) scale(0.96); z-index: 0; opacity: 0.85; }
+  100% { transform: translate(-50%, -50%) rotate(-3.3deg) scale(1); z-index: 3; }
 }
 
 /* Loading dots */
@@ -839,6 +836,15 @@ html, body {
   align-items: center;
   justify-content: center;
 }
+/* Subtle green gradient wash — matches Figma */
+#screen-celebration::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 0% 0%, rgba(138,155,126,0.12) 0%, transparent 50%),
+              radial-gradient(ellipse at 100% 100%, rgba(138,155,126,0.10) 0%, transparent 45%);
+  pointer-events: none; z-index: 0;
+}
+#screen-celebration > * { position: relative; z-index: 1; }
 
 .celeb-content {
   width: min(315.134px, calc(100% - 86px));
@@ -917,8 +923,9 @@ html, body {
 .celeb-bottom {
   position: fixed; bottom: 0; left: 0; right: 0;
   padding: 16px 20px;
-  padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
+  padding-bottom: max(20px, env(safe-area-inset-bottom, 20px));
   z-index: 20;
+  background: linear-gradient(to bottom, transparent 0%, var(--paper-50) 40%);
 }
 .btn-collection {
   width: 100%; height: 50px;
@@ -1625,9 +1632,14 @@ function goTo(screenId) {
   });
   const target = document.getElementById(screenId);
   if (target) {
-    // Force reflow for CSS animations in celebration screen
+    // Restart CSS animations by toggling a class
     if (screenId === 'screen-celebration') {
-      target.innerHTML = target.innerHTML; // Reset animations
+      const animEls = target.querySelectorAll('.celeb-title, .celeb-card, .celeb-sub, .btn-collection');
+      animEls.forEach(el => {
+        el.style.animation = 'none';
+        void el.offsetWidth; // force reflow
+        el.style.animation = '';
+      });
     }
     target.classList.add('active');
   }
@@ -1708,30 +1720,53 @@ shutter.addEventListener('click', () => {
 // ═══════════════════════════════════════════════════════════
 //  CARD SHUFFLE ANIMATION (Loading screen)
 // ═══════════════════════════════════════════════════════════
-// Enhanced card shuffle: swap z-index and rotation every 500ms
 let shuffleInterval = null;
-const cardRotations = [
-  { rot: -3.3, z: 3 },
-  { rot: 3.5,  z: 2 },
-  { rot: 0,    z: 1 }
+const stackOrder = [
+  { rot: -3.3, z: 3, blur: false, tx: -50, ty: -50 },
+  { rot: 3.5,  z: 2, blur: true,  tx: -50, ty: -50 },
+  { rot: 0,    z: 1, blur: true,  tx: -48, ty: -48 }
 ];
 
 function startShuffle() {
-  const cards = document.querySelectorAll('.flash-card');
+  const cards = [...document.querySelectorAll('.flash-card')];
   let tick = 0;
+
+  // Immediately set initial state
+  cards.forEach((card, i) => applyStackPos(card, i));
+
   shuffleInterval = setInterval(() => {
     tick++;
+    // Top card lifts up and goes behind, others shift forward
     cards.forEach((card, i) => {
-      const offset = (i + tick) % 3;
-      const r = cardRotations[offset];
-      card.style.zIndex = r.z;
-      card.style.transform = `translate(-50%, -50%) rotate(${r.rot + (Math.random() * 4 - 2)}deg)`;
-      card.style.transition = 'transform 0.4s cubic-bezier(0.32,0.72,0,1)';
+      const slot = (i + tick) % 3;
+      const s = stackOrder[slot];
+      const jitter = (Math.random() - 0.5) * 3;
+      card.style.transition = 'transform 0.45s cubic-bezier(0.32,0.72,0,1), opacity 0.3s ease';
+      card.style.zIndex = s.z;
+      card.style.transform = `translate(${s.tx}%, ${s.ty}%) rotate(${s.rot + jitter}deg)`;
+
+      // Front card: no blur; back cards: slight blur
+      const blurEl = card.querySelector('.card-blur');
+      if (blurEl) blurEl.style.opacity = s.blur ? '1' : '0';
+      card.querySelector('img').style.filter = s.blur ? 'blur(0.5px)' : 'none';
     });
-  }, 400);
+  }, 500);
 }
+
+function applyStackPos(card, idx) {
+  const s = stackOrder[idx];
+  card.style.zIndex = s.z;
+  card.style.transform = `translate(${s.tx}%, ${s.ty}%) rotate(${s.rot}deg)`;
+}
+
 function stopShuffle() {
   clearInterval(shuffleInterval);
+  // Reset to default positions
+  const cards = [...document.querySelectorAll('.flash-card')];
+  cards.forEach((card, i) => {
+    card.style.transition = 'none';
+    applyStackPos(card, i);
+  });
 }
 
 // Observe screen-loading becoming active to start/stop shuffle
