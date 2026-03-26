@@ -343,9 +343,12 @@ html, body {
 
 /* Toolbar */
 .details-toolbar {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 52px 16px 0;
-  height: 99px; flex-shrink: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  min-height: 99px;
+  padding: 35px 16px 16px;
+  flex-shrink: 0;
 }
 .tb-btn-glass {
   width: 48px; height: 48px;
@@ -371,30 +374,49 @@ html, body {
 .tb-btn-glass .gaia-icon { position: relative; z-index: 1; }
 
 .tb-title {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  height: 48px;
   font-family: var(--font-serif);
-  font-size: 20px; font-weight: 500;
-  color: var(--ink);
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.3px;
+  color: var(--olive);
+  text-align: center;
 }
 .tb-save {
+  width: 48px;
+  height: 47px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-family: var(--font-sans);
-  font-size: 15px; font-weight: 400;
-  color: var(--olive);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 18px;
+  letter-spacing: -0.08px;
+  color: var(--brown-400);
   background: none; border: none;
-  cursor: pointer; padding: 8px;
+  cursor: pointer;
 }
 
 /* Details scroll area */
 .details-scroll {
   flex: 1; overflow-y: auto; overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-  padding-bottom: 120px;
+  padding-bottom: 126px;
 }
 .details-scroll::-webkit-scrollbar { display: none; }
 
 /* Photo strip */
 .photo-strip {
   display: flex; gap: 8px;
-  padding: 12px 16px 0;
+  padding: 0 16px;
   overflow-x: auto; scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
 }
@@ -402,8 +424,10 @@ html, body {
 .photo-card {
   flex-shrink: 0;
   border-radius: var(--radius-md);
-  border: 0.5px solid var(--brown-200);
-  overflow: hidden; position: relative;
+  border: 0.5px solid var(--border-default);
+  background: var(--paper);
+  overflow: hidden;
+  position: relative;
   height: 112px;
 }
 .photo-card img {
@@ -414,27 +438,35 @@ html, body {
 .photo-card.square    { width: 112px; }
 .photo-card.portrait  { width: 84px; }
 .photo-card .photo-x {
-  position: absolute; top: 6px; right: 6px;
-  width: 24px; height: 24px; border-radius: 50%;
+  position: absolute; top: 8px; right: 8px;
+  width: 24px; height: 24px; border-radius: 250px;
   background: rgba(0,0,0,0.5); border: none;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer; z-index: 2;
 }
-.photo-card .photo-x .gaia-icon { transform: scale(0.5); }
+.photo-card .photo-x img {
+  width: 12px;
+  height: 12px;
+  filter: brightness(0) invert(1);
+}
 .photo-card .pill-hl {
   position: absolute; bottom: 10px; left: 10px;
   background: rgba(0,0,0,0.5);
   border: 0.5px solid var(--grey-200);
   border-radius: 250px;
   padding: 4px 10px;
-  font-size: 11px; font-weight: 400;
-  color: var(--paper-50);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.3;
   letter-spacing: 0.25px;
+  color: var(--paper-50);
 }
 .photo-add {
   flex-shrink: 0; width: 60px; height: 112px;
   border-radius: var(--radius-md);
   border: 0.5px solid var(--ink-300);
+  background: #fff;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
 }
@@ -442,50 +474,63 @@ html, body {
 
 /* Section */
 .dt-section {
-  padding: 20px 16px 0;
+  padding: 22px 16px 0;
 }
 .dt-section-title {
   font-family: var(--font-serif);
   font-size: 20px; font-weight: 400;
+  line-height: 1.3;
   color: var(--ink);
   margin-bottom: 12px;
 }
 
 /* Top suggestion card */
 .top-suggestion {
-  display: flex; align-items: center;
-  background: var(--paper-200);
-  border: 1px solid var(--brown-200);
-  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  background: var(--paper-400);
+  border: 0.5px solid var(--border-default);
+  border-radius: var(--radius-md);
   padding: 12px;
   gap: 12px;
   margin-bottom: 12px;
+  min-height: 72px;
 }
 .top-suggestion .ts-thumb {
   width: 48px; height: 48px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
+  border: 0.5px solid var(--border-default);
   object-fit: cover; flex-shrink: 0;
 }
 .ts-info { flex: 1; }
 .ts-name {
-  font-family: var(--font-serif);
-  font-size: 16px; font-weight: 500;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 20px;
   color: var(--ink);
-  line-height: 1.2;
+  white-space: nowrap;
 }
 .ts-sci {
   font-family: var(--font-sans);
-  font-size: 12px; font-weight: 400;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 20px;
   color: var(--brown-500);
-  line-height: 1.3;
 }
 .ts-match {
   flex-shrink: 0;
   background: var(--olive);
   border-radius: 250px;
-  padding: 4px 10px;
+  padding: 0 10px;
+  min-height: 20px;
+  display: inline-flex;
+  align-items: center;
   font-family: var(--font-sans);
-  font-size: 12px; font-weight: 500;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: 0.25px;
   color: var(--paper-50);
 }
 
@@ -498,93 +543,154 @@ html, body {
   flex: 1;
   display: flex; align-items: center;
   gap: 8px;
-  background: var(--paper-200);
-  border: 1px solid var(--brown-200);
-  border-radius: 10px;
+  min-width: 0;
+  height: 52px;
+  background: var(--paper-400);
+  border: 0.5px solid var(--border-default);
+  border-radius: var(--radius-md);
   padding: 10px;
 }
 .sec-sug .sug-thumb {
   width: 32px; height: 32px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
+  border: 0.5px solid var(--border-default);
   object-fit: cover; flex-shrink: 0;
 }
 .sug-name {
   font-family: var(--font-sans);
-  font-size: 12px; font-weight: 400;
-  color: var(--ink);
+  font-size: 12px;
+  font-weight: 500;
   line-height: 1.2;
+  color: var(--ink);
+  white-space: nowrap;
 }
 .sug-pct {
   font-family: var(--font-sans);
-  font-size: 11px; font-weight: 400;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: 0.25px;
   color: var(--brown-500);
 }
 
 /* Species search bar */
 .species-search {
   display: flex; align-items: center;
-  background: var(--paper-200);
-  border: 1px solid var(--brown-200);
-  border-radius: 10px;
-  padding: 10px 12px;
-  gap: 8px;
+  gap: 4px;
+  height: 40px;
+  background: #fff;
+  border: 0.5px solid var(--border-default);
+  border-radius: 250px;
+  padding: 4px 8px;
 }
 .species-search input {
   flex: 1; border: none; background: none;
   font-family: var(--font-sans);
-  font-size: 14px; font-weight: 400;
-  color: var(--ink); outline: none;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--ink);
+  outline: none;
 }
-.species-search input::placeholder { color: var(--grey-200); }
+.species-search input::placeholder { color: var(--brown-400); }
 .species-search .gaia-icon { flex-shrink: 0; }
+.species-search .gaia-icon--search-20 {
+  width: 26px;
+  height: 26px;
+}
+.species-search .gaia-icon--microphone-20 {
+  width: 32px;
+  height: 32px;
+}
 
 /* Notes field */
 .notes-field {
   width: 100%;
   min-height: 68px;
-  background: var(--paper-200);
-  border: 1px solid var(--brown-200);
-  border-radius: 10px;
+  background: #fff;
+  border: 0.5px solid var(--border-default);
+  border-radius: var(--radius-md);
   padding: 12px;
   font-family: var(--font-sans);
-  font-size: 14px; font-weight: 400;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 20px;
   color: var(--ink);
-  border: 1px solid var(--brown-200);
   resize: none; outline: none;
 }
-.notes-field::placeholder { color: var(--grey-200); }
+.notes-field::placeholder { color: var(--brown-400); }
 
 /* Location card */
 .loc-card {
-  background: var(--paper-200);
-  border: 1px solid var(--brown-200);
-  border-radius: 14px;
+  background: #fff;
+  border: 0.5px solid var(--border-default);
+  border-radius: var(--radius-md);
   overflow: hidden;
 }
 .loc-map {
   width: 100%; height: 96px;
   object-fit: cover; display: block;
 }
-.loc-info { padding: 12px 14px; }
+.loc-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 14px;
+}
 .loc-row {
-  display: flex; align-items: center;
+  display: flex;
+  align-items: center;
   justify-content: space-between;
-  padding: 6px 0;
+  gap: 12px;
+  min-height: 45px;
 }
-.loc-addr {
+.loc-texts {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.loc-primary {
   font-family: var(--font-sans);
-  font-size: 14px; font-weight: 400;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 20px;
   color: var(--ink);
-  line-height: 1.3;
 }
-.loc-coords {
+.loc-secondary {
   font-family: var(--font-sans);
-  font-size: 12px; font-weight: 400;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 20px;
   color: var(--brown-500);
-  line-height: 1.4;
+}
+.loc-inline {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+.loc-label {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--ink);
+}
+.loc-date {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 18px;
+  letter-spacing: -0.08px;
+  color: var(--brown-500);
 }
 .loc-divider {
-  height: 1px; background: var(--brown-200);
+  height: 1px; background: var(--border-default);
 }
 
 /* Condition stat cards */
@@ -593,51 +699,107 @@ html, body {
 }
 .stat-card {
   flex: 1;
-  background: var(--paper-200);
-  border: 1px solid var(--brown-200);
-  border-radius: 10px;
+  background: #fff;
+  border: 0.5px solid var(--border-default);
+  border-radius: var(--radius-md);
   padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.stat-card-header {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
 }
 .stat-card-label {
   font-family: var(--font-sans);
-  font-size: 11px; font-weight: 400;
-  color: var(--brown-500);
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--ink-300);
   letter-spacing: 0.25px;
-  margin-bottom: 4px;
 }
-.stat-card-value {
-  font-family: var(--font-serif);
-  font-size: 16px; font-weight: 500;
+.stat-card-primary {
+  font-family: var(--font-sans);
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.3;
   color: var(--ink);
+}
+.stat-card-secondary {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: 0.25px;
+  color: var(--ink-200);
 }
 
 /* Details settings rows */
 .settings-card {
-  background: var(--paper-200);
-  border: 1px solid var(--brown-200);
-  border-radius: 14px;
+  background: #fff;
+  border: 0.5px solid var(--border-default);
+  border-radius: 16px;
   overflow: hidden;
+  padding: 2px 14px;
 }
 .settings-row {
-  display: flex; align-items: center;
-  padding: 12px 14px;
-  gap: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 13px 0;
 }
 .settings-row + .settings-row {
-  border-top: 1px solid var(--brown-200);
+  border-top: 0.5px solid var(--border-default);
+}
+.settings-icon-chip {
+  width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  background: #f3f0e6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.settings-icon-chip svg {
+  width: 12px;
+  height: 12px;
+  stroke: var(--olive);
 }
 .settings-row-text {
   flex: 1;
   font-family: var(--font-sans);
-  font-size: 14px; font-weight: 400;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 20px;
   color: var(--ink);
 }
-.pill-tag {
-  background: rgba(103,118,91,0.10);
-  border-radius: 250px;
-  padding: 3px 10px;
+.settings-row-meta {
   font-family: var(--font-sans);
-  font-size: 11px; font-weight: 400;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 18px;
+  letter-spacing: -0.08px;
+  color: var(--brown-500);
+}
+.pill-tag {
+  background: var(--paper-50);
+  border: 0.5px solid var(--olive);
+  border-radius: 250px;
+  min-height: 20px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: 0.25px;
   color: var(--olive);
 }
 .chevron-right {
@@ -650,8 +812,9 @@ html, body {
 /* Bottom save button */
 .details-bottom {
   position: fixed; bottom: 0; left: 0; right: 0;
-  background: #fff;
+  background: var(--paper-50);
   padding: 16px 20px;
+  padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
   box-shadow: 0px -8px 40px rgba(155,133,107,0.24);
   z-index: 20;
 }
@@ -678,20 +841,21 @@ html, body {
 }
 
 .celeb-content {
-  display: flex; flex-direction: column;
+  width: min(315.134px, calc(100% - 86px));
+  display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 32px;
-  padding: 0 43px;
-  width: 100%;
 }
 
 .celeb-title {
   font-family: var(--font-serif);
-  font-size: 58px; font-weight: 500;
+  font-size: 58.775px;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.918px;
   color: var(--ink);
   text-align: center;
-  line-height: 1.1;
-  letter-spacing: -0.9px;
   opacity: 0;
   transform: translateY(30px) scale(0.9);
   animation: celebTitleIn 0.7s var(--spring) 0.2s forwards;
@@ -722,15 +886,16 @@ html, body {
 .celeb-species {
   font-family: var(--font-serif);
   font-size: 32px; font-weight: 500;
+  width: 100%;
   color: var(--brown-500);
   line-height: 1.1;
   letter-spacing: -0.5px;
 }
 .celeb-photo {
   width: 100%;
-  aspect-ratio: 267 / 150;
-  border-radius: 14px;
-  border: 0.87px solid var(--brown-200);
+  height: 195px;
+  border-radius: 13.929px;
+  border: 0.871px solid var(--brown-200);
   object-fit: cover; display: block;
 }
 
@@ -789,7 +954,7 @@ html, body {
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   display: flex;
-  gap: 16px;
+  gap: 23px;
   padding: 0 43px;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
@@ -798,13 +963,15 @@ html, body {
 
 .share-card {
   flex-shrink: 0;
-  width: calc(100% - 86px);
+  width: min(315.134px, calc(100% - 86px));
+  min-height: 386.712px;
   scroll-snap-align: center;
   background: var(--paper-200);
   border: 1px solid var(--brown-200);
   border-radius: var(--radius-xl);
   padding: 24px;
-  display: flex; flex-direction: column;
+  display: flex;
+  flex-direction: column;
   gap: 16px;
 }
 .share-card-title {
@@ -815,36 +982,44 @@ html, body {
   line-height: 1.1;
   letter-spacing: -0.3px;
 }
-.share-card-img {
-  width: 100%;
-  aspect-ratio: 267 / 150;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--brown-200);
-  object-fit: cover; display: block;
-  position: relative;
-}
 .share-card-img-wrap {
   width: 100%;
-  aspect-ratio: 267 / 150;
+  height: 149.712px;
   border-radius: var(--radius-md);
   border: 1px solid var(--brown-200);
-  overflow: hidden; position: relative;
+  overflow: hidden;
+  position: relative;
+  background: var(--paper-500);
 }
 .share-card-img-wrap::before {
   content: '';
   position: absolute; inset: 0;
-  background: linear-gradient(to bottom, rgba(200,199,111,0.5) 0%, #fcfaf0 48%);
+  background: linear-gradient(to bottom, rgba(200,199,111,0.5) 0%, #fcfaf0 48.016%);
   z-index: 1;
 }
 .share-card-img-wrap img {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  object-fit: cover; display: block;
+  position: absolute;
+  display: block;
   z-index: 2;
+}
+.share-card--impact .share-card-img-wrap img {
+  top: -13.4%;
+  left: 0;
+  width: 100%;
+  height: 120.22%;
+  object-fit: cover;
+}
+.share-card--why .share-card-img-wrap img {
+  top: 2.69%;
+  left: 7.16%;
+  width: 85.72%;
+  height: 103.06%;
+  object-fit: contain;
 }
 .share-card-caption {
   font-family: var(--font-sans);
   font-size: 11px; font-weight: 400;
+  line-height: 1.3;
   color: var(--brown-500);
   letter-spacing: 0.25px;
 }
@@ -860,10 +1035,20 @@ html, body {
   border: 1px solid var(--brown-200);
   border-radius: var(--radius-md);
   padding: 8px;
+  min-height: 51px;
+  display: flex;
+  align-items: center;
   overflow: hidden;
 }
 .stat-cell-value {
-  display: flex; align-items: center; gap: 2px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+.stat-cell-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 .stat-cell-num {
   font-family: var(--font-serif);
@@ -874,20 +1059,25 @@ html, body {
 .stat-cell-label {
   font-family: var(--font-sans);
   font-size: 12px; font-weight: 400;
-  color: var(--brown-500);
   line-height: 20px;
+  color: var(--brown-500);
 }
 .stat-cell-icon {
-  width: 24px; height: 24px;
+  width: 24px;
+  height: 24px;
+  display: block;
   flex-shrink: 0;
+}
+.stat-cell-icon + .stat-cell-num {
+  margin-left: 0;
 }
 
 /* Card 2: Why It Matters */
 .share-card-desc {
   font-family: var(--font-sans);
   font-size: 15px; font-weight: 400;
-  color: var(--brown-500);
   line-height: 20px;
+  color: var(--brown-500);
 }
 .btn-learn-more {
   width: 100%; height: 50px;
@@ -904,15 +1094,15 @@ html, body {
 .page-dots {
   display: flex; gap: 8px;
   justify-content: center;
-  margin-top: 16px;
+  margin-top: 24px;
 }
 .page-dot {
   width: 8px; height: 8px;
   border-radius: 50%;
-  background: #bfbfbf;
+  background: var(--ink-200);
   transition: background 0.2s;
 }
-.page-dot.active { background: #1a1a1a; }
+.page-dot.active { background: var(--ink); }
 
 /* Share action buttons */
 .share-actions {
@@ -937,16 +1127,14 @@ html, body {
 <div class="screen active" id="screen-camera">
   <div id="viewfinder">
     <video id="camera" autoplay playsinline muted></video>
-    <img id="fallback-img" src="https://www.figma.com/api/mcp/asset/6ce759e0-8a2b-41bb-a697-974c5ad9fd24"
-         alt="Viewfinder" style="display:none">
     <div class="focus-ring" id="focus-ring"></div>
 
     <!-- Close X -->
     <button class="cam-close" onclick="history.back()">
-      <span class="gaia-icon gaia-icon--cross-20 gaia-icon--inverse" aria-hidden="true">
+      <span class="gaia-icon gaia-icon--cross-32 gaia-icon--inverse" aria-hidden="true">
         <span class="gaia-icon__slot">
           <span class="gaia-icon__part">
-            <img src="assets/icons/system/cross-20.svg" alt="">
+            <img src="assets/icons/system/cross-32.svg" alt="">
           </span>
         </span>
       </span>
@@ -973,7 +1161,7 @@ html, body {
       <!-- Import / thumbnail -->
       <button class="cam-side-btn" id="btn-import">
         <div class="glass-bg"></div>
-        <img class="thumb-img" src="https://www.figma.com/api/mcp/asset/67489df2-52ea-400c-9d86-8515d1b683a1" alt="">
+        <img class="thumb-img" src="assets/observe/camera-thumb.png" alt="">
       </button>
 
       <!-- Shutter -->
@@ -1005,14 +1193,14 @@ html, body {
   <div class="loading-content">
     <div class="card-stack" id="card-stack">
       <div class="flash-card">
-        <img src="https://www.figma.com/api/mcp/asset/e0092b9b-098f-40d2-b07d-3ce60848f0cc" alt="">
+        <img src="assets/observe/loading-card-front.png" alt="">
       </div>
       <div class="flash-card">
-        <img src="https://www.figma.com/api/mcp/asset/fb222c40-907e-4c08-9ef2-916b41a7f0a4" alt="">
+        <img src="assets/observe/loading-card-middle.png" alt="">
         <div class="card-blur"></div>
       </div>
       <div class="flash-card">
-        <img src="https://www.figma.com/api/mcp/asset/ece5fd7d-ff80-4fcc-b5f0-d0205b554366" alt="">
+        <img src="assets/observe/loading-card-back.png" alt="">
         <div class="card-blur"></div>
       </div>
     </div>
@@ -1029,10 +1217,10 @@ html, body {
 <div class="screen" id="screen-details">
   <div class="details-toolbar">
     <button class="tb-btn-glass" onclick="goTo('screen-camera')">
-      <span class="gaia-icon gaia-icon--chevron-left-16" aria-hidden="true" style="transform:scale(1.12);">
+      <span class="gaia-icon gaia-icon--left-arrow-32" aria-hidden="true">
         <span class="gaia-icon__slot">
           <span class="gaia-icon__part">
-            <img src="assets/icons/system/chevron-16.svg" alt="">
+            <img src="assets/icons/system/left-arrow-32.svg" alt="">
           </span>
         </span>
       </span>
@@ -1045,40 +1233,22 @@ html, body {
     <!-- Photo strip -->
     <div class="photo-strip">
       <div class="photo-card landscape">
-        <img src="https://www.figma.com/api/mcp/asset/7846cf03-fb04-4c7a-8e5d-7ed43874de88" alt="">
+        <img src="assets/observe/photo-highlight.png" alt="">
         <button class="photo-x">
-          <span class="gaia-icon gaia-icon--cross-20 gaia-icon--inverse" aria-hidden="true">
-            <span class="gaia-icon__slot">
-              <span class="gaia-icon__part">
-                <img src="assets/icons/system/cross-20.svg" alt="">
-              </span>
-            </span>
-          </span>
+          <img src="assets/icons/system/cross-20.svg" alt="">
         </button>
         <span class="pill-hl">Highlight</span>
       </div>
       <div class="photo-card square">
-        <img src="https://www.figma.com/api/mcp/asset/94b99fe4-81a6-481c-83e1-96ecd55737e1" alt="">
+        <img src="assets/observe/photo-square.png" alt="">
         <button class="photo-x">
-          <span class="gaia-icon gaia-icon--cross-20 gaia-icon--inverse" aria-hidden="true">
-            <span class="gaia-icon__slot">
-              <span class="gaia-icon__part">
-                <img src="assets/icons/system/cross-20.svg" alt="">
-              </span>
-            </span>
-          </span>
+          <img src="assets/icons/system/cross-20.svg" alt="">
         </button>
       </div>
       <div class="photo-card portrait">
-        <img src="https://www.figma.com/api/mcp/asset/b2c00af4-3a45-4d42-972a-210c794833de" alt="">
+        <img src="assets/observe/photo-portrait.png" alt="">
         <button class="photo-x">
-          <span class="gaia-icon gaia-icon--cross-20 gaia-icon--inverse" aria-hidden="true">
-            <span class="gaia-icon__slot">
-              <span class="gaia-icon__part">
-                <img src="assets/icons/system/cross-20.svg" alt="">
-              </span>
-            </span>
-          </span>
+          <img src="assets/icons/system/cross-20.svg" alt="">
         </button>
       </div>
       <div class="photo-add">
@@ -1094,7 +1264,7 @@ html, body {
     <div class="dt-section">
       <div class="dt-section-title">Identification</div>
       <div class="top-suggestion">
-        <img class="ts-thumb" src="https://www.figma.com/api/mcp/asset/1d8e56b9-64df-4ef6-b864-6ba2059a5a29" alt="">
+        <img class="ts-thumb" src="assets/observe/suggestion-top.png" alt="">
         <div class="ts-info">
           <div class="ts-name">Coast Live Oak</div>
           <div class="ts-sci">Quercus agrifolia</div>
@@ -1103,14 +1273,14 @@ html, body {
       </div>
       <div class="sec-suggestions">
         <div class="sec-sug">
-          <img class="sug-thumb" src="https://www.figma.com/api/mcp/asset/46fad7fc-9ed1-43a7-a852-c6f6e5785e30" alt="">
+          <img class="sug-thumb" src="assets/observe/suggestion-secondary-1.png" alt="">
           <div>
             <div class="sug-name">California Black Oak</div>
             <div class="sug-pct">78%</div>
           </div>
         </div>
         <div class="sec-sug">
-          <img class="sug-thumb" src="https://www.figma.com/api/mcp/asset/8d9704fb-bb1a-4dfb-bab5-e222065d608b" alt="">
+          <img class="sug-thumb" src="assets/observe/suggestion-secondary-2.png" alt="">
           <div>
             <div class="sug-name">Shumard Oak</div>
             <div class="sug-pct">45%</div>
@@ -1145,18 +1315,18 @@ html, body {
     <div class="dt-section">
       <div class="dt-section-title">Location</div>
       <div class="loc-card">
-        <img class="loc-map" src="https://www.figma.com/api/mcp/asset/d3d69add-2c0c-4901-b846-43078be99014" alt="Map">
+        <img class="loc-map" src="assets/observe/location-map.png" alt="Map">
         <div class="loc-info">
           <div class="loc-row">
-            <div>
-              <div class="loc-addr">E Del Mar Blvd, Pasadena, CA</div>
-              <div class="loc-coords">34.14, -118.14 · 9m accuracy</div>
+            <div class="loc-texts">
+              <div class="loc-primary">E Del Mar Blvd, Pasadena, CA</div>
+              <div class="loc-secondary">34.14, -118.14 · 9m accuracy</div>
             </div>
             <div class="chevron-right">
-              <span class="gaia-icon gaia-icon--chevron-right-16" aria-hidden="true">
+              <span class="gaia-icon gaia-icon--chevron-right-20" aria-hidden="true">
                 <span class="gaia-icon__slot">
                   <span class="gaia-icon__part">
-                    <img src="assets/icons/system/chevron-16.svg" alt="">
+                    <img src="assets/icons/system/chevron-20.svg" alt="">
                   </span>
                 </span>
               </span>
@@ -1164,12 +1334,12 @@ html, body {
           </div>
           <div class="loc-divider"></div>
           <div class="loc-row">
-            <div class="loc-addr">Mar 22, 2026 · 10:53 PM PT</div>
+            <div class="loc-date">Mar 22, 2026 · 10:53 PM PT</div>
             <div class="chevron-right">
-              <span class="gaia-icon gaia-icon--chevron-right-16" aria-hidden="true">
+              <span class="gaia-icon gaia-icon--chevron-right-20" aria-hidden="true">
                 <span class="gaia-icon__slot">
                   <span class="gaia-icon__part">
-                    <img src="assets/icons/system/chevron-16.svg" alt="">
+                    <img src="assets/icons/system/chevron-20.svg" alt="">
                   </span>
                 </span>
               </span>
@@ -1177,17 +1347,21 @@ html, body {
           </div>
           <div class="loc-divider"></div>
           <div class="loc-row">
-            <div style="display:flex;align-items:center;gap:8px">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="#252024" stroke-width="1.3"/><path d="M10 5v5l3 3" stroke="#252024" stroke-width="1.3" stroke-linecap="round"/></svg>
-              <span class="loc-addr">Geoprivacy</span>
+            <div class="loc-inline">
+              <span class="gaia-icon gaia-icon--globe-24" aria-hidden="true">
+                <span class="gaia-icon__part">
+                  <img src="assets/icons/system/globe-24.svg" alt="">
+                </span>
+              </span>
+              <span class="loc-label">Geoprivacy</span>
             </div>
-            <div style="display:flex;align-items:center;gap:8px">
+            <div style="display:flex;align-items:center;gap:12px">
               <span class="pill-tag">Open</span>
               <div class="chevron-right">
-                <span class="gaia-icon gaia-icon--chevron-right-16" aria-hidden="true">
+                <span class="gaia-icon gaia-icon--chevron-right-20" aria-hidden="true">
                   <span class="gaia-icon__slot">
                     <span class="gaia-icon__part">
-                      <img src="assets/icons/system/chevron-16.svg" alt="">
+                      <img src="assets/icons/system/chevron-20.svg" alt="">
                     </span>
                   </span>
                 </span>
@@ -1203,28 +1377,36 @@ html, body {
       <div class="dt-section-title">Details</div>
       <div class="settings-card">
         <div class="settings-row">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1C5.1 1 2 4.1 2 8c0 2.4 1.2 4.5 3 5.7V16l2.5-1.5c.5.1 1 .2 1.5.2 3.9 0 7-3.1 7-7s-3.1-7-7-7Z" stroke="#67765b" stroke-width="1.3"/></svg>
-          <span class="settings-row-text">Captive / Cultivated</span>
-          <span class="pill-tag">No</span>
+          <span class="settings-icon-chip" aria-hidden="true">
+            <svg viewBox="0 0 18 18" fill="none">
+              <path d="M8.997 2.25C6.368 2.25 4.237 4.383 4.237 7.01c0 1.613.808 3.047 2.046 3.906V14l1.708-.989c.335.067.671.101 1.006.101 2.629 0 4.761-2.132 4.761-4.76 0-2.628-2.132-4.76-4.761-4.76Z" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span class="settings-row-text">Captured</span>
+          <span class="pill-tag">N/A</span>
           <div class="chevron-right">
-            <span class="gaia-icon gaia-icon--chevron-right-16" aria-hidden="true">
+            <span class="gaia-icon gaia-icon--chevron-right-20" aria-hidden="true">
               <span class="gaia-icon__slot">
                 <span class="gaia-icon__part">
-                  <img src="assets/icons/system/chevron-16.svg" alt="">
+                  <img src="assets/icons/system/chevron-20.svg" alt="">
                 </span>
               </span>
             </span>
           </div>
         </div>
         <div class="settings-row">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="3" width="14" height="12" rx="2" stroke="#67765b" stroke-width="1.3"/><path d="M6 1v4M12 1v4" stroke="#67765b" stroke-width="1.3" stroke-linecap="round"/></svg>
+          <span class="settings-icon-chip" aria-hidden="true">
+            <svg viewBox="0 0 18 18" fill="none">
+              <path d="M3.75 5.75A1.25 1.25 0 0 1 5 4.5h2.087c.331 0 .649-.132.884-.366l.896-.897c.235-.234.553-.366.884-.366H13a1.25 1.25 0 0 1 1.25 1.25v7.629A1.25 1.25 0 0 1 13 13H5a1.25 1.25 0 0 1-1.25-1.25V5.75Z" stroke-width="1.4" stroke-linejoin="round"/>
+            </svg>
+          </span>
           <span class="settings-row-text">Projects</span>
-          <span style="font-size:13px;color:var(--ink-300)">None</span>
+          <span class="settings-row-meta">None</span>
           <div class="chevron-right">
-            <span class="gaia-icon gaia-icon--chevron-right-16" aria-hidden="true">
+            <span class="gaia-icon gaia-icon--chevron-right-20" aria-hidden="true">
               <span class="gaia-icon__slot">
                 <span class="gaia-icon__part">
-                  <img src="assets/icons/system/chevron-16.svg" alt="">
+                  <img src="assets/icons/system/chevron-20.svg" alt="">
                 </span>
               </span>
             </span>
@@ -1238,12 +1420,40 @@ html, body {
       <div class="dt-section-title">Condition</div>
       <div class="stat-row">
         <div class="stat-card">
-          <div class="stat-card-label">Health</div>
-          <div class="stat-card-value">Good</div>
+          <div class="stat-card-label">Biome</div>
+          <div class="stat-card-header">
+            <div>
+              <div class="stat-card-primary">Riparian Edge</div>
+              <div class="stat-card-secondary">Perfumo Canyon</div>
+            </div>
+            <div class="chevron-right">
+              <span class="gaia-icon gaia-icon--chevron-right-16" aria-hidden="true">
+                <span class="gaia-icon__slot">
+                  <span class="gaia-icon__part">
+                    <img src="assets/icons/system/chevron-16.svg" alt="">
+                  </span>
+                </span>
+              </span>
+            </div>
+          </div>
         </div>
         <div class="stat-card">
-          <div class="stat-card-label">Life Stage</div>
-          <div class="stat-card-value">Adult</div>
+          <div class="stat-card-label">Weather</div>
+          <div class="stat-card-header">
+            <div>
+              <div class="stat-card-primary">Partly Cloudy</div>
+              <div class="stat-card-secondary">Mar 22, 2026 · 10:53 PM PT</div>
+            </div>
+            <div class="chevron-right">
+              <span class="gaia-icon gaia-icon--chevron-right-16" aria-hidden="true">
+                <span class="gaia-icon__slot">
+                  <span class="gaia-icon__part">
+                    <img src="assets/icons/system/chevron-16.svg" alt="">
+                  </span>
+                </span>
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1261,7 +1471,7 @@ html, body {
     <div class="celeb-title">Nice Find!</div>
     <div class="celeb-card">
       <div class="celeb-species">Quercus<br>agrifolia</div>
-      <img class="celeb-photo" src="https://www.figma.com/api/mcp/asset/f3f1baa7-b4eb-4018-a5dc-ae11f96bdd83" alt="">
+      <img class="celeb-photo" src="assets/observe/photo-highlight.png" alt="">
     </div>
     <div class="celeb-sub">Every sighting adds clarity to the bigger picture.</div>
   </div>
@@ -1273,10 +1483,10 @@ html, body {
 <!-- ═══════ SCREEN 5: SHARE CARDS ═════════════════════════ -->
 <div class="screen" id="screen-share">
   <button class="tb-btn-glass share-close" onclick="window.location.href='index.html'">
-    <span class="gaia-icon gaia-icon--cross-20" aria-hidden="true">
+    <span class="gaia-icon gaia-icon--cross-32" aria-hidden="true">
       <span class="gaia-icon__slot">
         <span class="gaia-icon__part">
-          <img src="assets/icons/system/cross-20.svg" alt="">
+          <img src="assets/icons/system/cross-32.svg" alt="">
         </span>
       </span>
     </span>
@@ -1285,47 +1495,72 @@ html, body {
   <div style="width:100%;display:flex;flex-direction:column;align-items:center">
     <div class="card-carousel" id="card-carousel">
       <!-- Card 1: My Impact -->
-      <div class="share-card">
+      <div class="share-card share-card--impact">
         <div class="share-card-title">My Impact</div>
         <div class="share-card-img-wrap">
-          <img src="https://www.figma.com/api/mcp/asset/e75e0f3c-0bf9-48dc-b636-e84b614e2ae4" alt="">
+          <img src="assets/observe/share-impact.png" alt="">
         </div>
         <div class="share-card-caption">Quercus agrifolia</div>
         <div class="stats-grid">
           <div class="stat-cell">
-            <div class="stat-cell-value">
-              <svg class="stat-cell-icon" viewBox="0 0 24 24" fill="none"><path d="M3 15.5C3 15.5 5.5 11 12 11s9 4.5 9 4.5" stroke="#252024" stroke-width="1.3"/><circle cx="12" cy="14" r="3" stroke="#252024" stroke-width="1.3"/></svg>
-              <span class="stat-cell-num">127</span>
+            <div class="stat-cell-copy">
+              <div class="stat-cell-value">
+                <span class="gaia-icon gaia-icon--binoculars-32" aria-hidden="true">
+                  <span class="gaia-icon__part">
+                    <img src="assets/icons/system/binoculars-32.svg" alt="">
+                  </span>
+                </span>
+                <span class="stat-cell-num">127</span>
+              </div>
+              <div class="stat-cell-label">Total Finds</div>
             </div>
-            <div class="stat-cell-label">Total Finds</div>
           </div>
           <div class="stat-cell">
-            <div class="stat-cell-value">
-              <span class="stat-cell-num">6 days</span>
+            <div class="stat-cell-copy">
+              <div class="stat-cell-value">
+                <span class="stat-cell-num">6 days</span>
+              </div>
+              <div class="stat-cell-label">Current Streak</div>
             </div>
-            <div class="stat-cell-label">Current Streak</div>
           </div>
           <div class="stat-cell">
-            <div class="stat-cell-value">
-              <span class="stat-cell-num">Top 8%</span>
+            <div class="stat-cell-copy">
+              <div class="stat-cell-value">
+                <span class="stat-cell-num">Top 8%</span>
+              </div>
+              <div class="stat-cell-label">Regional Rank</div>
             </div>
-            <div class="stat-cell-label">Regional Rank</div>
           </div>
           <div class="stat-cell">
-            <div class="stat-cell-value">
-              <svg class="stat-cell-icon" viewBox="0 0 24 24" fill="none"><rect x="5" y="4" width="14" height="16" rx="2" stroke="#252024" stroke-width="1.3"/><path d="M9 8h6M9 12h4M9 16h5" stroke="#252024" stroke-width="1.3" stroke-linecap="round"/></svg>
-              <span class="stat-cell-num">127</span>
+            <div class="stat-cell-copy">
+              <div class="stat-cell-value">
+                <span class="gaia-icon gaia-icon--logbook-32" aria-hidden="true">
+                  <span class="gaia-icon__part gaia-icon__part--outline">
+                    <img src="assets/icons/system/logbook-32-outline.svg" alt="">
+                  </span>
+                  <span class="gaia-icon__part gaia-icon__part--line-1">
+                    <img src="assets/icons/system/logbook-32-line-1.svg" alt="">
+                  </span>
+                  <span class="gaia-icon__part gaia-icon__part--line-2">
+                    <img src="assets/icons/system/logbook-32-line-2.svg" alt="">
+                  </span>
+                  <span class="gaia-icon__part gaia-icon__part--line-3">
+                    <img src="assets/icons/system/logbook-32-line-3.svg" alt="">
+                  </span>
+                </span>
+                <span class="stat-cell-num">127</span>
+              </div>
+              <div class="stat-cell-label">Total Contributions</div>
             </div>
-            <div class="stat-cell-label">Total Contributions</div>
           </div>
         </div>
       </div>
 
       <!-- Card 2: Why It Matters -->
-      <div class="share-card">
+      <div class="share-card share-card--why">
         <div class="share-card-title">Why It Matters</div>
         <div class="share-card-img-wrap">
-          <img src="https://www.figma.com/api/mcp/asset/66d2409a-754e-441b-9e15-21c2b019462d" alt="">
+          <img src="assets/observe/share-why-matters.png" alt="">
         </div>
         <div class="share-card-desc">Your observation of Coast Live Oak contributes to understanding urban canopy health in the San Gabriel Valley across 3 active datasets.</div>
         <button class="btn-learn-more">Learn More</button>
@@ -1340,34 +1575,36 @@ html, body {
     <div class="share-actions">
       <!-- Share -->
       <button class="share-action-btn">
-        <span class="gaia-icon gaia-icon--share-24" aria-hidden="true">
+        <span class="gaia-icon gaia-icon--share-32" aria-hidden="true">
           <span class="gaia-icon__part gaia-icon__part--base">
-            <img src="assets/icons/system/share-24-base.svg" alt="">
+            <img src="assets/icons/system/share-32-base.svg" alt="">
           </span>
           <span class="gaia-icon__part gaia-icon__part--arrow">
-            <img src="assets/icons/system/share-24-arrow.svg" alt="">
+            <img src="assets/icons/system/share-32-arrow.svg" alt="">
           </span>
         </span>
       </button>
       <!-- Save/Download -->
       <button class="share-action-btn">
-        <span class="gaia-icon gaia-icon--save-20" aria-hidden="true">
+        <span class="gaia-icon gaia-icon--save-32" aria-hidden="true">
           <span class="gaia-icon__part gaia-icon__part--left">
-            <img src="assets/icons/system/save-20-left.svg" alt="">
+            <img src="assets/icons/system/save-32-left.svg" alt="">
           </span>
           <span class="gaia-icon__part gaia-icon__part--right">
-            <img src="assets/icons/system/save-20-right.svg" alt="">
+            <img src="assets/icons/system/save-32-right.svg" alt="">
           </span>
           <span class="gaia-icon__part gaia-icon__part--base">
-            <img src="assets/icons/system/save-20-base.svg" alt="">
+            <img src="assets/icons/system/save-32-base.svg" alt="">
           </span>
         </span>
       </button>
       <!-- More -->
       <button class="share-action-btn">
-        <span class="gaia-icon gaia-icon--ellipses-20" aria-hidden="true">
-          <span class="gaia-icon__part">
-            <img src="assets/icons/system/ellipses-20.svg" alt="">
+        <span class="gaia-icon gaia-icon--ellipses-32" aria-hidden="true">
+          <span class="gaia-icon__slot">
+            <span class="gaia-icon__part">
+              <img src="assets/icons/system/ellipses-32.svg" alt="">
+            </span>
           </span>
         </span>
       </button>
@@ -1399,8 +1636,7 @@ function goTo(screenId) {
 // ═══════════════════════════════════════════════════════════
 //  CAMERA
 // ═══════════════════════════════════════════════════════════
-const video    = document.getElementById('camera');
-const fallback = document.getElementById('fallback-img');
+const video = document.getElementById('camera');
 
 (async () => {
   try {
@@ -1409,9 +1645,9 @@ const fallback = document.getElementById('fallback-img');
       audio: false
     });
     video.srcObject = stream;
+    await video.play().catch(() => {});
   } catch (e) {
-    video.style.display = 'none';
-    fallback.style.display = 'block';
+    console.warn('Camera unavailable for observe flow.', e);
   }
 })();
 
@@ -1521,7 +1757,8 @@ if (carousel) {
   carousel.addEventListener('scroll', () => {
     const scrollLeft = carousel.scrollLeft;
     const cardWidth  = carousel.querySelector('.share-card')?.offsetWidth || 1;
-    const idx = Math.round(scrollLeft / (cardWidth + 16));
+    const gap = parseFloat(getComputedStyle(carousel).columnGap || getComputedStyle(carousel).gap || '0');
+    const idx = Math.round(scrollLeft / (cardWidth + gap));
     dots.forEach((d, i) => d.classList.toggle('active', i === idx));
   });
 }

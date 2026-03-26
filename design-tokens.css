@@ -67,6 +67,8 @@
   --cream-900: #5f5e5a;
   --paper:     var(--cream-200);
   --paper-50:  var(--cream-50);
+  --paper-200: var(--cream-200);
+  --paper-400: var(--cream-400);
   --paper-500: var(--cream-500);
   --cream:     var(--cream-200);
 

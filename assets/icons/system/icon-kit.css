@@ -83,6 +83,21 @@
   transform: rotate(-90deg);
 }
 
+.gaia-icon--left-arrow-32 {
+  width: 32px;
+  height: 32px;
+}
+
+.gaia-icon--left-arrow-32 .gaia-icon__slot {
+  inset: 25.96% 16.73% 25.32% 20.45%;
+}
+
+.gaia-icon--left-arrow-32 .gaia-icon__part {
+  width: 15.59px;
+  height: 20.103px;
+  transform: rotate(-90deg);
+}
+
 .gaia-icon--plus-24 {
   width: 24px;
   height: 24px;
@@ -159,6 +174,21 @@
   transform: rotate(-45deg);
 }
 
+.gaia-icon--cross-32 {
+  width: 32px;
+  height: 32px;
+}
+
+.gaia-icon--cross-32 .gaia-icon__slot {
+  inset: 5.23% 4.79% 4.36%;
+}
+
+.gaia-icon--cross-32 .gaia-icon__part {
+  width: 20px;
+  height: 20.918px;
+  transform: rotate(-45deg);
+}
+
 .gaia-icon--chevron-left-16,
 .gaia-icon--chevron-right-16 {
   width: 16px;
@@ -181,6 +211,21 @@
 }
 
 .gaia-icon--chevron-right-16 .gaia-icon__part {
+  transform: rotate(90deg);
+}
+
+.gaia-icon--chevron-right-20 {
+  width: 20px;
+  height: 20px;
+}
+
+.gaia-icon--chevron-right-20 .gaia-icon__slot {
+  inset: 16.3% 35.16% 16.51% 30.2%;
+}
+
+.gaia-icon--chevron-right-20 .gaia-icon__part {
+  width: 13.437px;
+  height: 6.929px;
   transform: rotate(90deg);
 }
 
@@ -210,6 +255,23 @@
   inset: 63.06% 15.62% 17.3% 15.63%;
 }
 
+.gaia-icon--save-32 {
+  width: 32px;
+  height: 32px;
+}
+
+.gaia-icon--save-32 .gaia-icon__part--left {
+  inset: 20.41% 30.02% 28.34% 47.71%;
+}
+
+.gaia-icon--save-32 .gaia-icon__part--right {
+  inset: 20.41% 47.71% 28.34% 30.02%;
+}
+
+.gaia-icon--save-32 .gaia-icon__part--base {
+  inset: 63.06% 15.62% 17.3% 15.63%;
+}
+
 .gaia-icon--pin-20 {
   width: 20px;
   height: 20px;
@@ -226,6 +288,72 @@
 
 .gaia-icon--ellipses-20 .gaia-icon__part {
   inset: 40.97% 6.07% 40.98%;
+}
+
+.gaia-icon--ellipses-32 {
+  width: 32px;
+  height: 32px;
+}
+
+.gaia-icon--ellipses-32 .gaia-icon__slot {
+  inset: 22.56% 22.56%;
+}
+
+.gaia-icon--ellipses-32 .gaia-icon__part {
+  width: 17.571px;
+  height: 3.611px;
+}
+
+.gaia-icon--globe-24 {
+  width: 24px;
+  height: 24px;
+}
+
+.gaia-icon--globe-24 .gaia-icon__part {
+  inset: 14.59%;
+}
+
+.gaia-icon--share-32 {
+  width: 32px;
+  height: 32px;
+}
+
+.gaia-icon--share-32 .gaia-icon__part--base {
+  inset: 36.86% 23.58% 12.5% 22.71%;
+}
+
+.gaia-icon--share-32 .gaia-icon__part--arrow {
+  inset: 12.5% 35.8% 37.03% 34.92%;
+}
+
+.gaia-icon--binoculars-32 {
+  width: 32px;
+  height: 32px;
+}
+
+.gaia-icon--binoculars-32 .gaia-icon__part {
+  inset: 25.5% 16.06% 25.5% 15.19%;
+}
+
+.gaia-icon--logbook-32 {
+  width: 32px;
+  height: 32px;
+}
+
+.gaia-icon--logbook-32 .gaia-icon__part--outline {
+  inset: 15.63% 20.95% 15.83% 18.39%;
+}
+
+.gaia-icon--logbook-32 .gaia-icon__part--line-1 {
+  inset: 32.15% 40.48% 47.86% 36.58%;
+}
+
+.gaia-icon--logbook-32 .gaia-icon__part--line-2 {
+  inset: 57.52% 40.49% 39.01% 36.58%;
+}
+
+.gaia-icon--logbook-32 .gaia-icon__part--line-3 {
+  inset: 63.52% 40.49% 33.02% 36.58%;
 }
 
 .gaia-icon--grid-32,
