@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Activity — Gaia</title>
+<link rel="stylesheet" href="https://use.typekit.net/atn6inh.css">
+<link rel="stylesheet" href="design-tokens.css">
+<link rel="stylesheet" href="assets/icons/system/icon-kit.css">
+<style>
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%; width: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: var(--paper-50);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  user-select: none; -webkit-user-select: none;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   STICKY HEADER — Title + Filter Chips
+   ═══════════════════════════════════════════════════════════ */
+.act-header {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 40;
+  background: var(--paper-50);
+  border-bottom: 1px solid var(--brown-200);
+  box-shadow: 0px 4px 20px rgba(155,133,107,0.16);
+  display: flex; flex-direction: column; align-items: center;
+  padding-bottom: 16px;
+}
+
+.act-toolbar {
+  width: 100%;
+  padding: 56px 16px 0;
+  display: flex; align-items: flex-end; justify-content: center;
+  height: 99px;
+}
+
+.act-title {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--olive);
+  text-align: center;
+  line-height: 1.1;
+  letter-spacing: -0.3px;
+}
+
+/* Filter chips row */
+.act-chips {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 0 16px;
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.act-chips::-webkit-scrollbar { display: none; }
+
+.act-chip {
+  flex-shrink: 0;
+  height: 28px;
+  padding: 4px 10px;
+  border-radius: 1000px;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.08px;
+  white-space: nowrap;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+/* Active chip — solid olive bg */
+.act-chip.active {
+  background: var(--olive);
+  color: var(--paper-50);
+}
+/* Inactive chip — olive at 20% opacity bg */
+.act-chip:not(.active) {
+  background: transparent;
+  color: var(--ink-300);
+}
+.act-chip:not(.active)::before {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: 1000px;
+  background: var(--olive);
+  opacity: 0.20;
+  pointer-events: none;
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   SCROLLABLE FEED
+   ═══════════════════════════════════════════════════════════ */
+.act-feed {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding-top: 148px;  /* clear sticky header */
+  padding-bottom: 120px; /* clear nav bar */
+}
+.act-feed::-webkit-scrollbar { display: none; }
+
+/* Day group */
+.act-day-label {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--grey);
+  line-height: 1.3;
+  padding: 16px 16px 12px;
+}
+
+/* Activity card */
+.act-card {
+  background: var(--paper-50);
+  border-top: 0.5px solid var(--brown-200);
+  border-bottom: 0.5px solid var(--brown-200);
+  padding: 14px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.act-card + .act-card {
+  margin-top: -0.5px; /* collapse borders */
+}
+
+/* Card icon */
+.act-card-icon {
+  width: 32px; height: 32px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Card body */
+.act-card-body {
+  flex: 1;
+  min-width: 0;
+  display: flex; flex-direction: column;
+  gap: 16px;
+  letter-spacing: -0.08px;
+}
+
+.act-card-head {
+  display: flex; flex-direction: column;
+  gap: 4px;
+}
+
+.act-card-title {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  line-height: 18px;
+}
+
+.act-card-desc {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--grey);
+  line-height: 1.2;
+}
+
+/* Species name highlight — terracotta */
+.act-species {
+  font-weight: 500;
+  color: var(--verm-300);
+}
+
+/* Action link — grass green */
+.act-action {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--grass-500);
+  line-height: 18px;
+  background: none; border: none;
+  cursor: pointer; padding: 0;
+  text-align: left;
+}
+
+/* Timestamp */
+.act-card-time {
+  flex-shrink: 0;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--grey);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* Card row: body + time */
+.act-card-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  flex: 1;
+  min-width: 0;
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   NAV BAR — copied from index.html (shared nav structure)
+   ═══════════════════════════════════════════════════════════ */
+#nav-bar {
+  position: fixed;
+  left: 15px; right: 15px;
+  bottom: 26px;
+  z-index: 50;
+  height: 56px;
+  border-radius: 296px;
+  background: rgba(255,255,255,0.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0px 8px 40px rgba(0,0,0,0.12);
+  display: flex; align-items: center; justify-content: center;
+  padding: 4px 9px 4px 5px;
+  touch-action: none;
+  isolation: isolate;
+  overflow: hidden;
+}
+#nav-bar::before {
+  content: ''; position: absolute; inset: 0;
+  border-radius: 296px;
+  background: var(--paper-50);
+  mix-blend-mode: color-burn;
+  pointer-events: none; z-index: 0;
+}
+#nav-bar::after {
+  content: ''; position: absolute; inset: 0;
+  border-radius: 296px;
+  background: var(--paper-50);
+  mix-blend-mode: darken;
+  pointer-events: none; z-index: 0;
+}
+.nav-item {
+  flex: 1 0 0; min-width: 1px;
+  height: 48px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 0; border: none; background: transparent;
+  cursor: pointer; padding: 2px 4px 4px;
+  border-radius: 250px;
+  font-family: var(--font-sans);
+  font-size: 10px; font-weight: 400;
+  letter-spacing: 0.25px;
+  color: var(--olive);
+  margin-right: -4px;
+  position: relative; z-index: 1;
+  white-space: nowrap;
+}
+.nav-item:last-child { margin-right: 0; }
+.nav-indicator {
+  position: absolute;
+  left: 0; top: 4px;
+  width: 76px;
+  height: calc(100% - 8px);
+  border-radius: 250px;
+  background: var(--fill-vibrant-tert);
+  pointer-events: none;
+  z-index: 0;
+}
+.nav-item .icon-32 {
+  width: 32px; height: 32px;
+  position: relative; overflow: hidden;
+  flex-shrink: 0;
+}
+.nav-label {
+  display: block;
+  width: 44px;
+  text-align: center;
+  line-height: 1.3;
+  min-height: 1px;
+  flex: 1 0 0;
+}
+.icon-inset {
+  position: absolute;
+}
+.icon-inset img {
+  position: absolute;
+  width: 100%; height: 100%;
+  display: block;
+  object-fit: contain;
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════ STICKY HEADER ═══════════════════════════════════ -->
+<div class="act-header">
+  <div class="act-toolbar">
+    <div class="act-title">Activity</div>
+  </div>
+  <div class="act-chips">
+    <button class="act-chip active" data-filter="all">All</button>
+    <button class="act-chip" data-filter="attention">Needs Attention</button>
+    <button class="act-chip" data-filter="id">ID Updates</button>
+    <button class="act-chip" data-filter="comments">Comments</button>
+  </div>
+</div>
+
+<!-- ═══════ SCROLLABLE FEED ════════════════════════════════ -->
+<div class="act-feed">
+
+  <!-- Today -->
+  <div class="act-day-label">Today</div>
+
+  <div class="act-card">
+    <img class="act-card-icon" src="https://www.figma.com/api/mcp/asset/be710ef9-8e97-4449-838c-4f660c20f5f4" alt="">
+    <div class="act-card-row">
+      <div class="act-card-body">
+        <div class="act-card-head">
+          <div class="act-card-title">New find logged</div>
+          <div class="act-card-desc"><span class="act-species">Anna's Hummingbird</span>: Arlington Garden, Pasadena</div>
+        </div>
+        <button class="act-action">View find</button>
+      </div>
+      <span class="act-card-time">10:42 AM</span>
+    </div>
+  </div>
+
+  <div class="act-card">
+    <img class="act-card-icon" src="https://www.figma.com/api/mcp/asset/be710ef9-8e97-4449-838c-4f660c20f5f4" alt="">
+    <div class="act-card-row">
+      <div class="act-card-body">
+        <div class="act-card-head">
+          <div class="act-card-title">Community agreed with your ID</div>
+          <div class="act-card-desc">Your <span class="act-species">Western Fence Lizard</span> find now matches the community ID.</div>
+        </div>
+        <button class="act-action">View find</button>
+      </div>
+      <span class="act-card-time">9:18 AM</span>
+    </div>
+  </div>
+
+  <div class="act-card">
+    <img class="act-card-icon" src="https://www.figma.com/api/mcp/asset/be710ef9-8e97-4449-838c-4f660c20f5f4" alt="">
+    <div class="act-card-row">
+      <div class="act-card-body">
+        <div class="act-card-head">
+          <div class="act-card-title">Community agreed with your ID</div>
+          <div class="act-card-desc">Your <span class="act-species">Western Fence Lizard</span> find now matches the community ID.</div>
+        </div>
+        <button class="act-action">View find</button>
+      </div>
+      <span class="act-card-time">8:32 AM</span>
+    </div>
+  </div>
+
+  <div class="act-card">
+    <img class="act-card-icon" src="https://www.figma.com/api/mcp/asset/be710ef9-8e97-4449-838c-4f660c20f5f4" alt="">
+    <div class="act-card-row">
+      <div class="act-card-body">
+        <div class="act-card-head">
+          <div class="act-card-title">Research-grade reached</div>
+          <div class="act-card-desc"><span class="act-species">Monarch Butterfly</span> is now research grade. Your find can now support biodiversity research.</div>
+        </div>
+        <button class="act-action">Why it matters</button>
+      </div>
+      <span class="act-card-time">8:03 AM</span>
+    </div>
+  </div>
+
+  <div class="act-card">
+    <img class="act-card-icon" src="https://www.figma.com/api/mcp/asset/be710ef9-8e97-4449-838c-4f660c20f5f4" alt="">
+    <div class="act-card-row">
+      <div class="act-card-body">
+        <div class="act-card-head">
+          <div class="act-card-title">Research-grade reached</div>
+          <div class="act-card-desc">"Great find. The wing pattern looks consistent with a juvenile."</div>
+        </div>
+        <button class="act-action">View comment</button>
+      </div>
+      <span class="act-card-time">7:51 AM</span>
+    </div>
+  </div>
+
+  <!-- Yesterday -->
+  <div class="act-day-label">Yesterday</div>
+
+  <div class="act-card">
+    <img class="act-card-icon" src="https://www.figma.com/api/mcp/asset/be710ef9-8e97-4449-838c-4f660c20f5f4" alt="">
+    <div class="act-card-row">
+      <div class="act-card-body">
+        <div class="act-card-head">
+          <div class="act-card-title">Draft saved</div>
+          <div class="act-card-desc">You started a find and saved it for later.<br><span class="act-species">Unknown Plant</span></div>
+        </div>
+        <button class="act-action">Finish draft</button>
+      </div>
+      <span class="act-card-time">6:14 PM</span>
+    </div>
+  </div>
+
+  <div class="act-card">
+    <img class="act-card-icon" src="https://www.figma.com/api/mcp/asset/be710ef9-8e97-4449-838c-4f660c20f5f4" alt="">
+    <div class="act-card-row">
+      <div class="act-card-body">
+        <div class="act-card-head">
+          <div class="act-card-title">ID refined by community</div>
+          <div class="act-card-desc">Your find was updated from <span class="act-species">Red-tailed Hawk</span> to <span class="act-species">Cooper's Hawk</span>.</div>
+        </div>
+        <button class="act-action">Learn why</button>
+      </div>
+      <span class="act-card-time">6:14 PM</span>
+    </div>
+  </div>
+
+  <div class="act-card">
+    <img class="act-card-icon" src="https://www.figma.com/api/mcp/asset/be710ef9-8e97-4449-838c-4f660c20f5f4" alt="">
+    <div class="act-card-row">
+      <div class="act-card-body">
+        <div class="act-card-head">
+          <div class="act-card-title">Find needs more detail</div>
+          <div class="act-card-desc">Your mushroom find may need a clearer photo for identification.</div>
+        </div>
+        <button class="act-action">Add another image</button>
+      </div>
+      <span class="act-card-time">6:14 PM</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════ NAV BAR ═════════════════════════════════════════ -->
+<div id="nav-bar">
+  <div class="nav-indicator"></div>
+
+  <button class="nav-item" data-nav="explore">
+    <div class="icon-32">
+      <div class="icon-inset" style="inset:15.76% 15.49% 15.49% 15.76%">
+        <img src="assets/icons/system/explore-32-ring-olive.svg" alt="">
+      </div>
+      <div class="icon-inset" style="inset:34.52% 32.86% 32.85% 34.52%">
+        <img src="assets/icons/system/explore-32-dot-olive.svg" alt="">
+      </div>
+    </div>
+    <span class="nav-label">Explore</span>
+  </button>
+
+  <button class="nav-item" data-nav="log">
+    <div class="icon-32">
+      <div class="icon-inset" style="inset:15.63% 20.95% 15.83% 18.39%">
+        <img src="assets/icons/system/logbook-32-outline-olive.svg" alt="">
+      </div>
+      <div class="icon-inset" style="inset:32.15% 40.48% 47.86% 36.58%">
+        <img src="assets/icons/system/logbook-32-line-1-olive.svg" alt="">
+      </div>
+      <div class="icon-inset" style="inset:57.52% 40.49% 39.01% 36.58%">
+        <img src="assets/icons/system/logbook-32-line-2-olive.svg" alt="">
+      </div>
+      <div class="icon-inset" style="inset:63.52% 40.49% 33.02% 36.58%">
+        <img src="assets/icons/system/logbook-32-line-3-olive.svg" alt="">
+      </div>
+    </div>
+    <span class="nav-label">Log</span>
+  </button>
+
+  <button class="nav-item" data-nav="observe">
+    <div class="icon-32">
+      <div class="icon-inset" style="inset:25.5% 16.06% 25.5% 15.19%">
+        <img src="assets/icons/system/binoculars-32-olive.svg" alt="">
+      </div>
+    </div>
+    <span class="nav-label">Observe</span>
+  </button>
+
+  <button class="nav-item active" data-nav="activity">
+    <div class="icon-32">
+      <div class="icon-inset" style="inset:15.52% 20.6% 15.73% 20.07%">
+        <img src="assets/icons/system/bell-32-olive.svg" alt="">
+      </div>
+    </div>
+    <span class="nav-label">Activity</span>
+  </button>
+
+  <button class="nav-item" data-nav="profile">
+    <div class="icon-32">
+      <div class="icon-inset" style="inset:15.4% 15.84% 15.52% 15.4%">
+        <img src="assets/icons/system/profile-32-olive.svg" alt="">
+      </div>
+    </div>
+    <span class="nav-label">Profile</span>
+  </button>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  FILTER CHIP TOGGLE
+// ═══════════════════════════════════════════════════════════
+document.querySelectorAll('.act-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.act-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+  });
+});
+
+// ═══════════════════════════════════════════════════════════
+//  NAV BAR — simple tap routing
+// ═══════════════════════════════════════════════════════════
+const navBar = document.getElementById('nav-bar');
+const navIndicator = document.querySelector('.nav-indicator');
+const navItems = [...document.querySelectorAll('.nav-item')];
+
+// Position indicator on the active tab
+function positionIndicator(btn, animate) {
+  const barRect = navBar.getBoundingClientRect();
+  const btnRect = btn.getBoundingClientRect();
+  const x = btnRect.left - barRect.left;
+  navIndicator.style.width = btnRect.width + 'px';
+  navIndicator.style.transition = animate
+    ? 'transform 0.35s cubic-bezier(0.34,1.4,0.64,1), width 0.35s cubic-bezier(0.34,1.4,0.64,1)'
+    : 'none';
+  navIndicator.style.transform = `translateX(${x}px)`;
+}
+
+// Init indicator position
+const activeBtn = document.querySelector('.nav-item.active');
+if (activeBtn) {
+  requestAnimationFrame(() => positionIndicator(activeBtn, false));
+}
+
+navItems.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const nav = btn.dataset.nav;
+    if (nav === 'explore') { window.location.href = 'index.html'; return; }
+    if (nav === 'observe') { window.location.href = 'observe.html'; return; }
+    if (nav === 'activity') return; // already here
+
+    // Switch active state
+    navItems.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    positionIndicator(btn, true);
+  });
+});
+</script>
+</body>
+</html>

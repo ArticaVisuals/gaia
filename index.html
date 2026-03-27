@@ -3238,6 +3238,11 @@ function navPointerUp() {
       window.location.href = 'observe.html';
       return;
     }
+    // Navigate to Activity page
+    if (state.tapBtn.dataset.nav === 'activity') {
+      window.location.href = 'activity.html';
+      return;
+    }
     // Simple tap — switch to tapped button
     document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
     state.tapBtn.classList.add('active');
