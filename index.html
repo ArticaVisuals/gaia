@@ -1634,7 +1634,7 @@ html, body {
 #profile-page {
   position: fixed; inset: 0;
   z-index: 45; /* above sheet (40), below nav (50) */
-  background: var(--cream-50);
+  background: var(--paper-50);
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
@@ -1642,6 +1642,7 @@ html, body {
   flex-direction: column;
 }
 #profile-page.visible { display: flex; }
+#profile-page.profile-modal-active { z-index: 80; }
 /* Hide main header when profile page is active */
 #header.profile-hidden { display: none; }
 
@@ -1690,6 +1691,16 @@ html, body {
   padding: 0 16px 120px; /* bottom padding for nav bar */
   margin-top: -56px; /* overlap toolbar so avatar sits at top */
 }
+.profile-cards-stack,
+.profile-sections-stack {
+  display: flex;
+  flex-direction: column;
+}
+.profile-cards-stack { gap: 16px; }
+.profile-sections-stack { gap: 16px; }
+.profile-sections-stack > [id] {
+  scroll-margin-top: 96px;
+}
 
 /* Profile header */
 .profile-header {
@@ -1723,7 +1734,7 @@ html, body {
 /* Profile tab switcher */
 .profile-tabs {
   display: flex; align-items: center;
-  border-bottom: 1px solid #b1b2b5;
+  border-bottom: 1px solid var(--grey-200);
   width: calc(100% + 32px); /* bleed to edges */
   margin-left: -16px;
 }
@@ -1783,7 +1794,7 @@ html, body {
 }
 .level-bar-fill {
   background: var(--cream-50); height: 8px; border-radius: 250px;
-  width: 55%; /* 55% progress */
+  width: 61%;
 }
 .level-bar-footer {
   display: flex; align-items: center; justify-content: space-between;
@@ -1833,35 +1844,40 @@ html, body {
 }
 .profile-section-action {
   font-family: var(--font-sans); font-size: 12px; font-weight: 400;
-  letter-spacing: 0.2px; color: #b0adb3;
+  line-height: 1.2;
+  letter-spacing: 0;
+  color: var(--ink-300);
 }
 .stats-card {
-  background: var(--cream-50);
-  border: 0.5px solid var(--brown-200);
+  background: var(--paper-50);
+  border: 0.5px solid var(--border-default);
   border-radius: var(--radius-md);
   padding: 12px 16px;
   display: flex; align-items: center; justify-content: space-between;
   box-shadow: var(--shadow-small);
 }
-.stat-item { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.stat-item {
+  display: flex; flex-direction: column; gap: 8px; flex: 1;
+  padding: 8px 0;
+}
 .stat-label {
   font-family: var(--font-sans); font-size: 11px; font-weight: 400;
-  letter-spacing: 0.1px; color: #b1b2b5; line-height: 1.3;
+  letter-spacing: 0.25px; color: var(--grey-200); line-height: 1.3;
 }
 .stat-value {
-  font-family: var(--font-serif); font-size: 30px; font-weight: 400;
-  line-height: 1.14; color: var(--olive);
+  font-family: var(--font-serif); font-size: 32px; font-weight: 400;
+  line-height: 1.1; letter-spacing: -0.5px; color: var(--olive);
 }
 .stat-divider {
   width: 1px; height: 56px;
-  background: var(--brown-200);
+  background: var(--border-default);
   flex-shrink: 0; margin: 0 8px;
 }
 
-/* ── Working on section ── */
+/* ── Goals ── */
 .working-card {
-  background: var(--cream-50);
-  border: 0.5px solid var(--brown-200);
+  background: var(--paper-50);
+  border: 0.5px solid var(--border-default);
   border-radius: var(--radius-md);
   padding: 16px;
   display: flex; flex-direction: column; gap: 12px;
@@ -1871,20 +1887,25 @@ html, body {
   display: flex; align-items: flex-start; justify-content: space-between;
 }
 .working-title {
-  font-family: var(--font-serif); font-size: 22px; font-weight: 400;
-  line-height: 1.2; letter-spacing: -0.25px;
+  font-family: var(--font-serif); font-size: 20px; font-weight: 400;
+  line-height: 1.3; letter-spacing: 0;
   color: var(--olive);
+  max-width: 196px;
 }
 .working-title.brown { color: var(--brown-500); }
 .working-pill {
-  background: var(--olive-100);
-  border-radius: 250px; padding: 5px 6px;
-  font-family: var(--font-sans); font-size: 10px; font-weight: 400;
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 20px; padding: 0 10px;
+  background: var(--paper-50);
+  border: 0.5px solid var(--olive);
+  border-radius: 250px;
+  font-family: var(--font-sans); font-size: 11px; font-weight: 400;
   letter-spacing: 0.25px; color: var(--olive); line-height: 1.3;
   text-align: center; white-space: nowrap; flex-shrink: 0;
 }
 .working-pill.brown {
-  background: var(--brown-100); color: var(--brown-500);
+  border-color: var(--brown-500);
+  color: var(--brown-500);
 }
 .working-progress-track {
   background: var(--grey-50); height: 6px; border-radius: 250px;
@@ -1895,33 +1916,282 @@ html, body {
 }
 .working-progress-fill.brown { background: var(--brown-500); }
 
+/* ── Profile cards ── */
+.profile-card {
+  background: var(--paper-50);
+  border: 0.5px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-small);
+}
+.profile-card-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+.profile-card-title {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--ink-300);
+}
+.profile-card-meta {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--ink-300);
+  white-space: nowrap;
+}
+
+/* ── Bio Calendar ── */
+.profile-calendar-card {
+  padding: 16px 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.profile-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 4px;
+}
+.profile-calendar-cell {
+  aspect-ratio: 1 / 1;
+  border-radius: 4px;
+  background: var(--paper-500);
+}
+.profile-calendar-cell.heat-1,
+.profile-calendar-legend-swatches .heat-1 { background: var(--olive-50); }
+.profile-calendar-cell.heat-2,
+.profile-calendar-legend-swatches .heat-2 { background: var(--olive-100); }
+.profile-calendar-cell.heat-3,
+.profile-calendar-legend-swatches .heat-3 { background: var(--olive-200); }
+.profile-calendar-cell.heat-4,
+.profile-calendar-legend-swatches .heat-4 { background: var(--olive-400); }
+.profile-calendar-cell.heat-5,
+.profile-calendar-legend-swatches .heat-5 { background: var(--olive-500); }
+.profile-calendar-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.profile-calendar-days {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: 0.25px;
+  color: var(--ink-300);
+}
+.profile-calendar-legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: 0.25px;
+  color: var(--ink-300);
+}
+.profile-calendar-legend-swatches {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.profile-calendar-legend-swatches span {
+  width: 15px;
+  height: 15px;
+  border-radius: 4px;
+  display: block;
+}
+
+/* ── Tree of Life ── */
+.tree-card {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.tree-card-details {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 31px;
+}
+.tree-chart {
+  width: 147px;
+  height: 147px;
+  border-radius: 50%;
+  position: relative;
+  background:
+    conic-gradient(
+      from 90deg,
+      var(--indigo-500) 0 25%,
+      var(--siskin-500) 25% 33%,
+      var(--grass-500) 33% 56%,
+      var(--verm-500) 56% 100%
+    );
+}
+.tree-chart::after {
+  content: '';
+  position: absolute;
+  inset: 35px;
+  border-radius: 50%;
+  background: var(--paper-50);
+}
+.tree-chart-stat {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.tree-chart-count {
+  font-family: var(--font-serif);
+  font-size: 36px;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.39px;
+  color: var(--ink-500);
+}
+.tree-chart-label {
+  margin-top: -2px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: 0.25px;
+  color: var(--ink-300);
+}
+.tree-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.tree-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--ink-300);
+}
+.tree-legend-swatch {
+  width: 15px;
+  height: 15px;
+  border-radius: 1.867px;
+  border: 0.247px solid var(--cream-600);
+  flex-shrink: 0;
+}
+
 /* ── Your impact ── */
 .impact-card {
-  background: var(--cream-50);
-  border: 0.5px solid var(--brown-200);
+  background: var(--paper-50);
+  border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
-  height: 193px;
-  display: flex; align-items: flex-end;
-  padding: 8px;
-  box-shadow: var(--shadow-small);
+  box-shadow: var(--shadow-lg);
   position: relative;
   overflow: hidden;
 }
-.impact-card-meta {
-  display: flex; gap: 16px; align-items: center;
-  font-family: var(--font-sans); font-size: 10px; font-weight: 400;
-  letter-spacing: 0.25px; color: #b1b2b5; line-height: 1.3;
+.impact-map-stage {
+  position: relative;
+  height: 214px;
+  background: var(--olive-50);
 }
-/* Placeholder chart bars */
-.impact-bars {
-  position: absolute; bottom: 36px; left: 16px; right: 16px;
-  display: flex; align-items: flex-end; gap: 6px; height: 120px;
+.impact-map {
+  position: absolute;
+  inset: 0;
 }
-.impact-bar {
-  flex: 1; border-radius: 3px 3px 0 0;
-  background: var(--olive-100);
+#profile-impact-map .mapboxgl-ctrl-bottom-left,
+#profile-impact-map .mapboxgl-ctrl-bottom-right {
+  display: none;
 }
-.impact-bar.active { background: var(--olive-400); }
+.impact-map-stage .fd-expand-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+}
+.impact-card-footer {
+  display: flex;
+  align-items: center;
+  min-height: 41px;
+  padding: 16px;
+  background: var(--paper-50);
+}
+.impact-card-count {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--ink-300);
+}
+
+/* ── Expanded impact map ── */
+#profile-impact-map-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: none;
+  background: var(--paper-50);
+}
+#profile-impact-map-modal.visible { display: block; }
+.profile-impact-map-expanded {
+  position: absolute;
+  inset: 0;
+}
+.profile-impact-map-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+.profile-impact-map-topbar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 55px 16px 0;
+}
+.profile-impact-map-summary {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 220px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(254, 253, 249, 0.78);
+  border: 0.5px solid rgba(216, 201, 184, 0.82);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-lg);
+}
+.profile-impact-map-summary-label {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--ink-300);
+}
+.profile-impact-map-summary-meta {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: 0.25px;
+  color: var(--ink-300);
+}
 
 /* ── Medals ── */
 .medals-row {
@@ -2651,7 +2921,7 @@ html, body {
     <div class="profile-header">
       <div class="profile-user-row">
         <div class="profile-avatar">
-          <img src="https://www.figma.com/api/mcp/asset/b09e4255-dca9-405c-b49f-bb5886f5979f" alt="Alice Edwards">
+          <img src="assets/find-details/find-tab/avatar-alice.png" alt="Alice Edwards">
         </div>
         <div class="profile-name-col">
           <div class="profile-name">Alice Edwards</div>
@@ -2667,164 +2937,231 @@ html, body {
       </div>
     </div>
 
-    <!-- Level card -->
-    <div class="level-card">
-      <div class="level-card-top">
-        <div class="level-col">
-          <div class="level-label">Current Level</div>
-          <div class="level-number">3</div>
+    <div class="profile-cards-stack">
+      <div class="level-card">
+        <div class="level-card-top">
+          <div class="level-col">
+            <div class="level-label">Current Level</div>
+            <div class="level-number">3</div>
+          </div>
+          <div class="level-next-col">
+            <div class="level-next-label">Next</div>
+            <div class="level-next-number">4</div>
+          </div>
         </div>
-        <div class="level-next-col">
-          <div class="level-next-label">Next</div>
-          <div class="level-next-number">4</div>
+        <div class="level-progress-section">
+          <div class="level-bar-track">
+            <div class="level-bar-fill"></div>
+          </div>
+          <div class="level-bar-footer">
+            <div class="level-bar-label">12 finds to level 4</div>
+            <div class="level-pct-pill">55% there</div>
+          </div>
         </div>
       </div>
-      <div class="level-progress-section">
-        <div class="level-bar-track">
-          <div class="level-bar-fill"></div>
-        </div>
-        <div class="level-bar-footer">
-          <div class="level-bar-label">12 finds to level 4</div>
-          <div class="level-pct-pill">55% there</div>
-        </div>
+
+      <div class="monthly-card">
+        <div class="monthly-label">March 2026</div>
+        <div class="monthly-text">You discovered <strong class="species">3 new species</strong> and made <strong class="contrib">4 contributions</strong> this month.</div>
       </div>
     </div>
 
-    <!-- Monthly summary -->
-    <div class="monthly-card">
-      <div class="monthly-label">March 2026</div>
-      <div class="monthly-text">You discovered <strong class="species">3 new species</strong> and made <strong class="contrib">4 contributions</strong> this month.</div>
-    </div>
+    <div class="profile-sections-stack">
+      <div id="profile-stats-section">
+        <div class="profile-section-header">
+          <div class="profile-section-title">Stats</div>
+        </div>
+        <div class="stats-card">
+          <div class="stat-item">
+            <div class="stat-label">Species</div>
+            <div class="stat-value">63</div>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <div class="stat-label">IDs Labeled</div>
+            <div class="stat-value">23</div>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <div class="stat-label">Projects</div>
+            <div class="stat-value">4</div>
+          </div>
+        </div>
+      </div>
 
-    <!-- Quick stats -->
-    <div>
-      <div class="profile-section-header">
-        <div class="profile-section-title">Quick stats</div>
+      <div id="profile-goals-section">
+        <div class="profile-section-header">
+          <div class="profile-section-title">Goals</div>
+          <div class="profile-section-action">2 active</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div class="working-card">
+            <div class="working-card-top">
+              <div class="working-title">Urban Fungi Challenge</div>
+              <div class="working-pill">2 of 5 finds</div>
+            </div>
+            <div class="working-progress-track">
+              <div class="working-progress-fill" style="width:45.86%"></div>
+            </div>
+          </div>
+          <div class="working-card">
+            <div class="working-card-top">
+              <div class="working-title brown">ID Support Goal</div>
+              <div class="working-pill brown">3 of 5 contributions</div>
+            </div>
+            <div class="working-progress-track">
+              <div class="working-progress-fill brown" style="width:65.09%"></div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="stats-card">
-        <div class="stat-item">
-          <div class="stat-label">Species</div>
-          <div class="stat-value">63</div>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
-          <div class="stat-label">IDs Labeled</div>
-          <div class="stat-value">23</div>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
-          <div class="stat-label">Projects</div>
-          <div class="stat-value">4</div>
-        </div>
-      </div>
-    </div>
 
-    <!-- What you're working on -->
-    <div>
-      <div class="profile-section-header">
-        <div class="profile-section-title">What you're working on</div>
-        <div class="profile-section-action">2 active</div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <!-- Urban Fungi Challenge -->
-        <div class="working-card">
-          <div class="working-card-top">
-            <div class="working-title">Urban Fungi Challenge</div>
-            <div class="working-pill">2 of 5 finds</div>
-          </div>
-          <div class="working-progress-track">
-            <div class="working-progress-fill" style="width:40%"></div>
+      <div class="profile-card profile-calendar-card" id="profile-calendar-section">
+        <div class="profile-card-header">
+          <div class="profile-card-title">Bio Calendar</div>
+          <div class="profile-card-meta">Last 60 days</div>
+        </div>
+        <div class="profile-calendar-grid" aria-label="Bio calendar activity over the last 60 days">
+          <div class="profile-calendar-cell heat-0"></div><div class="profile-calendar-cell heat-1"></div><div class="profile-calendar-cell heat-1"></div><div class="profile-calendar-cell heat-1"></div><div class="profile-calendar-cell heat-0"></div><div class="profile-calendar-cell heat-4"></div><div class="profile-calendar-cell heat-4"></div><div class="profile-calendar-cell heat-1"></div><div class="profile-calendar-cell heat-3"></div><div class="profile-calendar-cell heat-0"></div>
+          <div class="profile-calendar-cell heat-1"></div><div class="profile-calendar-cell heat-0"></div><div class="profile-calendar-cell heat-5"></div><div class="profile-calendar-cell heat-2"></div><div class="profile-calendar-cell heat-4"></div><div class="profile-calendar-cell heat-4"></div><div class="profile-calendar-cell heat-1"></div><div class="profile-calendar-cell heat-0"></div><div class="profile-calendar-cell heat-0"></div><div class="profile-calendar-cell heat-5"></div>
+          <div class="profile-calendar-cell heat-1"></div><div class="profile-calendar-cell heat-4"></div><div class="profile-calendar-cell heat-2"></div><div class="profile-calendar-cell heat-0"></div><div class="profile-calendar-cell heat-1"></div><div class="profile-calendar-cell heat-4"></div><div class="profile-calendar-cell heat-0"></div><div class="profile-calendar-cell heat-2"></div><div class="profile-calendar-cell heat-3"></div><div class="profile-calendar-cell heat-0"></div>
+          <div class="profile-calendar-cell heat-2"></div><div class="profile-calendar-cell heat-5"></div><div class="profile-calendar-cell heat-3"></div><div class="profile-calendar-cell heat-0"></div><div class="profile-calendar-cell heat-0"></div><div class="profile-calendar-cell heat-5"></div><div class="profile-calendar-cell heat-0"></div><div class="profile-calendar-cell heat-4"></div><div class="profile-calendar-cell heat-4"></div><div class="profile-calendar-cell heat-1"></div>
+          <div class="profile-calendar-cell heat-4"></div><div class="profile-calendar-cell heat-4"></div><div class="profile-calendar-cell heat-2"></div><div class="profile-calendar-cell heat-0"></div><div class="profile-calendar-cell heat-1"></div><div class="profile-calendar-cell heat-4"></div><div class="profile-calendar-cell heat-0"></div><div class="profile-calendar-cell heat-1"></div><div class="profile-calendar-cell heat-0"></div><div class="profile-calendar-cell heat-0"></div>
+          <div class="profile-calendar-cell heat-3"></div><div class="profile-calendar-cell heat-4"></div><div class="profile-calendar-cell heat-1"></div><div class="profile-calendar-cell heat-1"></div><div class="profile-calendar-cell heat-0"></div><div class="profile-calendar-cell heat-4"></div><div class="profile-calendar-cell heat-4"></div><div class="profile-calendar-cell heat-0"></div><div class="profile-calendar-cell heat-0"></div><div class="profile-calendar-cell heat-5"></div>
+        </div>
+        <div class="profile-calendar-footer">
+          <div class="profile-calendar-days">41 active days</div>
+          <div class="profile-calendar-legend" aria-hidden="true">
+            <span>1</span>
+            <div class="profile-calendar-legend-swatches">
+              <span class="heat-1"></span>
+              <span class="heat-2"></span>
+              <span class="heat-3"></span>
+              <span class="heat-4"></span>
+            </div>
+            <span>4+</span>
           </div>
         </div>
-        <!-- ID Support Goal -->
-        <div class="working-card">
-          <div class="working-card-top">
-            <div class="working-title brown">ID Support Goal</div>
-            <div class="working-pill brown">3 of 5 finds</div>
-          </div>
-          <div class="working-progress-track">
-            <div class="working-progress-fill brown" style="width:60%"></div>
-          </div>
-        </div>
       </div>
-    </div>
 
-    <!-- Your impact -->
-    <div>
-      <div class="profile-section-header">
-        <div class="profile-section-title">Your impact</div>
-      </div>
-      <div class="impact-card">
-        <!-- Placeholder bar chart -->
-        <div class="impact-bars">
-          <div class="impact-bar" style="height:30%"></div>
-          <div class="impact-bar" style="height:50%"></div>
-          <div class="impact-bar active" style="height:75%"></div>
-          <div class="impact-bar" style="height:45%"></div>
-          <div class="impact-bar" style="height:60%"></div>
-          <div class="impact-bar" style="height:35%"></div>
-          <div class="impact-bar active" style="height:80%"></div>
-          <div class="impact-bar" style="height:55%"></div>
-          <div class="impact-bar" style="height:40%"></div>
+      <div class="profile-card tree-card" id="profile-tree-section">
+        <div class="profile-card-header">
+          <div class="profile-card-title">Tree of Life</div>
+          <div class="profile-card-meta">4 kingdoms</div>
         </div>
-        <div class="impact-card-meta">
-          <span>9 finds</span>
-          <span>Pasadena, CA</span>
+        <div class="tree-card-details">
+          <div class="tree-chart" aria-hidden="true">
+            <div class="tree-chart-stat">
+              <div class="tree-chart-count">63</div>
+              <div class="tree-chart-label">species</div>
+            </div>
+          </div>
+          <div class="tree-legend">
+            <div class="tree-legend-item"><span class="tree-legend-swatch" style="background:var(--verm-500)"></span><span>Mammal</span></div>
+            <div class="tree-legend-item"><span class="tree-legend-swatch" style="background:var(--indigo-500)"></span><span>Insect</span></div>
+            <div class="tree-legend-item"><span class="tree-legend-swatch" style="background:var(--siskin-500)"></span><span>Reptile</span></div>
+            <div class="tree-legend-item"><span class="tree-legend-swatch" style="background:var(--grass-500)"></span><span>Plant</span></div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Medals -->
-    <div>
-      <div class="profile-section-header">
-        <div class="profile-section-title">Medals</div>
-        <div class="profile-section-action">View all</div>
+      <div id="profile-impact-section">
+        <div class="profile-section-header">
+          <div class="profile-section-title">Your impact</div>
+          <div class="profile-section-action">5 finds</div>
+        </div>
+        <div class="impact-card">
+          <div class="impact-map-stage">
+            <div id="profile-impact-map" class="impact-map" aria-label="Interactive impact map"></div>
+            <button class="fd-expand-btn" id="profile-impact-expand" type="button" aria-label="Expand impact map">
+              <span class="gaia-icon gaia-icon--expand-20" aria-hidden="true">
+                <span class="gaia-icon__slot gaia-icon__slot--a">
+                  <span class="gaia-icon__part gaia-icon__part--a">
+                    <img src="assets/icons/system/expand-20-a.svg" alt="">
+                  </span>
+                </span>
+                <span class="gaia-icon__slot gaia-icon__slot--b">
+                  <span class="gaia-icon__part gaia-icon__part--b">
+                    <img src="assets/icons/system/expand-20-b.svg" alt="">
+                  </span>
+                </span>
+              </span>
+            </button>
+          </div>
+          <div class="impact-card-footer">
+            <div class="impact-card-count">127 finds</div>
+          </div>
+        </div>
       </div>
-      <div class="medals-row">
-        <!-- Plant — 12 -->
-        <div class="medal-item">
-          <div class="medal-badge">
-            <img src="https://www.figma.com/api/mcp/asset/e00a24b2-6acb-4b4d-a6c3-a7e35ca9a7ac" alt="Plant badge">
-          </div>
-          <div class="medal-label">Plant</div>
-          <div class="medal-count"><span>12</span></div>
+
+      <div id="profile-medals-section">
+        <div class="profile-section-header">
+          <div class="profile-section-title profile-card-title">Medals</div>
+          <div class="profile-section-action">View all</div>
         </div>
-        <!-- Mammal — 10 -->
-        <div class="medal-item">
-          <div class="medal-badge">
-            <img src="https://www.figma.com/api/mcp/asset/e12ec30e-cc21-4806-bb83-151c4be08003" alt="Mammal badge">
+        <div class="medals-row">
+          <div class="medal-item">
+            <div class="medal-badge">
+              <img src="https://www.figma.com/api/mcp/asset/e00a24b2-6acb-4b4d-a6c3-a7e35ca9a7ac" alt="Plant badge">
+            </div>
+            <div class="medal-label">Plant</div>
+            <div class="medal-count"><span>12</span></div>
           </div>
-          <div class="medal-label dim">Mammal</div>
-          <div class="medal-count"><span>10</span></div>
-        </div>
-        <!-- Fungus — 4 -->
-        <div class="medal-item">
-          <div class="medal-badge">
-            <img src="https://www.figma.com/api/mcp/asset/ed033ae8-62b7-4e23-9e27-aca87b8cca5f" alt="Fungus badge">
+          <div class="medal-item">
+            <div class="medal-badge">
+              <img src="https://www.figma.com/api/mcp/asset/e12ec30e-cc21-4806-bb83-151c4be08003" alt="Mammal badge">
+            </div>
+            <div class="medal-label dim">Mammal</div>
+            <div class="medal-count"><span>10</span></div>
           </div>
-          <div class="medal-label dim">Fungus</div>
-          <div class="medal-count"><span>4</span></div>
-        </div>
-        <!-- Insect — 3 -->
-        <div class="medal-item">
-          <div class="medal-badge">
-            <img src="https://www.figma.com/api/mcp/asset/7b82c050-b8de-44ce-8351-42edbe48d0ec" alt="Insect badge">
+          <div class="medal-item">
+            <div class="medal-badge">
+              <img src="https://www.figma.com/api/mcp/asset/ed033ae8-62b7-4e23-9e27-aca87b8cca5f" alt="Fungus badge">
+            </div>
+            <div class="medal-label dim">Fungus</div>
+            <div class="medal-count"><span>4</span></div>
           </div>
-          <div class="medal-label dim">Insect</div>
-          <div class="medal-count"><span>3</span></div>
-        </div>
-        <!-- Reptile — 2 -->
-        <div class="medal-item">
-          <div class="medal-badge">
-            <img src="https://www.figma.com/api/mcp/asset/f6b72964-8e18-4509-b0fc-b52d7e6a0900" alt="Reptile badge">
+          <div class="medal-item">
+            <div class="medal-badge">
+              <img src="https://www.figma.com/api/mcp/asset/7b82c050-b8de-44ce-8351-42edbe48d0ec" alt="Insect badge">
+            </div>
+            <div class="medal-label dim">Insect</div>
+            <div class="medal-count"><span>3</span></div>
           </div>
-          <div class="medal-label dim">Reptile</div>
-          <div class="medal-count"><span>2</span></div>
+          <div class="medal-item">
+            <div class="medal-badge">
+              <img src="https://www.figma.com/api/mcp/asset/f6b72964-8e18-4509-b0fc-b52d7e6a0900" alt="Reptile badge">
+            </div>
+            <div class="medal-label dim">Reptile</div>
+            <div class="medal-count"><span>2</span></div>
+          </div>
         </div>
       </div>
     </div>
 
   </div><!-- /profile-content -->
+  <div id="profile-impact-map-modal" aria-hidden="true">
+    <div id="profile-impact-expanded-map" class="profile-impact-map-expanded" aria-label="Expanded impact map"></div>
+    <div class="profile-impact-map-overlay">
+      <div class="profile-impact-map-topbar">
+        <button class="profile-toolbar-btn" id="profile-impact-close" type="button" aria-label="Close expanded impact map" style="pointer-events:auto">
+          <div class="icon-36" style="display:flex;align-items:center;justify-content:center;">
+            <span class="gaia-icon gaia-icon--cross-20" aria-hidden="true">
+              <span class="gaia-icon__slot">
+                <span class="gaia-icon__part">
+                  <img src="assets/icons/system/cross-20.svg" alt="">
+                </span>
+              </span>
+            </span>
+          </div>
+        </button>
+      </div>
+      <div class="profile-impact-map-summary">
+        <div class="profile-impact-map-summary-label">Your impact</div>
+        <div class="profile-impact-map-summary-meta">127 finds across 5 recent regions</div>
+      </div>
+    </div>
+  </div>
 </div><!-- /profile-page -->
 
 <!-- ══ NAV BAR — fixed, always visible in all 3 sheet states ══════════ -->
@@ -2906,6 +3243,14 @@ const HEADER_H = 108;
 const PEEK_H   = 150;  // 8px top + 134px card (Figma spec) + 8px bottom
 const NAV_H    = 82;   // nav pill (56px) + bottom gap (26px)
 const SPRING   = 'cubic-bezier(0.32,0.72,0,1)';
+const PROFILE_IMPACT_SOURCE_ID = 'profile-impact-finds';
+const PROFILE_IMPACT_POINTS = [
+  [-118.1300, 34.1520],
+  [-121.8081, 36.2704],
+  [-119.5383, 37.8651],
+  [-115.9000, 33.8734],
+  [-111.76099, 34.8697]
+];
 
 // ════════════════════════════════════════════════
 //  STATE
@@ -2913,8 +3258,48 @@ const SPRING   = 'cubic-bezier(0.32,0.72,0,1)';
 let map         = null;
 let currentSnap = 'collapsed';
 let currentY    = 0;
+let profileImpactMap = null;
+let profileImpactExpandedMap = null;
 
 let SNAPS = {};
+
+function setProfilePageVisible(isVisible) {
+  const profilePage = document.getElementById('profile-page');
+  if (profilePage) profilePage.classList.toggle('visible', isVisible);
+  document.getElementById('header')?.classList.toggle('profile-hidden', isVisible);
+
+  if (isVisible) {
+    requestAnimationFrame(() => {
+      initProfileImpactMap();
+      profileImpactMap?.resize();
+    });
+    return;
+  }
+
+  closeProfileImpactMapModal({ syncView: false });
+}
+
+function applyInitialHashState() {
+  const hash = window.location.hash;
+  if (!hash || !hash.startsWith('#profile')) return;
+
+  const profileBtn = document.querySelector('.nav-item[data-nav="profile"]');
+  if (profileBtn) {
+    document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+    profileBtn.classList.add('active');
+    moveNavIndicator(profileBtn);
+  }
+
+  setProfilePageVisible(true);
+
+  if (hash !== '#profile') {
+    const targetId = hash === '#profile-impact-expanded' ? 'profile-impact-section' : hash.slice(1);
+    requestAnimationFrame(() => {
+      document.getElementById(targetId)?.scrollIntoView({ block: 'start' });
+      if (hash === '#profile-impact-expanded') openProfileImpactMapModal();
+    });
+  }
+}
 
 function calcSnaps() {
   const sh = window.innerHeight - HEADER_H;
@@ -3221,10 +3606,8 @@ function navPointerMove(e) {
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
   near.btn.classList.add('active');
   // Show/hide profile page during drag
-  const profilePage = document.getElementById('profile-page');
   const isProfileDrag = near.btn.dataset.nav === 'profile';
-  if (profilePage) profilePage.classList.toggle('visible', isProfileDrag);
-  document.getElementById('header')?.classList.toggle('profile-hidden', isProfileDrag);
+  setProfilePageVisible(isProfileDrag);
 }
 
 function navPointerUp() {
@@ -3249,9 +3632,7 @@ function navPointerUp() {
     moveNavIndicator(state.tapBtn);
     // Show/hide profile page
     const isProfile = state.tapBtn.dataset.nav === 'profile';
-    const profilePage = document.getElementById('profile-page');
-    if (profilePage) profilePage.classList.toggle('visible', isProfile);
-    document.getElementById('header')?.classList.toggle('profile-hidden', isProfile);
+    setProfilePageVisible(isProfile);
     return;
   }
 
@@ -3263,6 +3644,7 @@ function navPointerUp() {
   moveNavIndicator(nearest.btn);
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
   nearest.btn.classList.add('active');
+  setProfilePageVisible(nearest.btn.dataset.nav === 'profile');
 }
 
 // ════════════════════════════════════════════════
@@ -3273,6 +3655,8 @@ function setupEvents() {
   const handle  = document.getElementById('drag-handle');
   const peek    = document.getElementById('peek-row');
   const content = document.getElementById('sheet-content');
+  const profileImpactExpand = document.getElementById('profile-impact-expand');
+  const profileImpactClose = document.getElementById('profile-impact-close');
 
   // Touch drag
   [handle, peek].forEach(el => el.addEventListener('touchstart', dragStart, { passive: true }));
@@ -3324,6 +3708,12 @@ function setupEvents() {
   document.addEventListener('pointermove', navPointerMove, { passive: false });
   document.addEventListener('pointerup', navPointerUp);
   document.addEventListener('pointercancel', navPointerUp);
+
+  profileImpactExpand?.addEventListener('click', openProfileImpactMapModal);
+  profileImpactClose?.addEventListener('click', () => closeProfileImpactMapModal());
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeProfileImpactMapModal();
+  });
 
   // Position indicator for the initially active tab (no transition on load)
   const initTab = document.querySelector('.nav-item.active');
@@ -3392,6 +3782,8 @@ function setupEvents() {
     cacheTabSlots();
     const at = document.querySelector('.nav-item.active');
     if (at) moveNavIndicator(at);
+    profileImpactMap?.resize();
+    profileImpactExpandedMap?.resize();
   });
 }
 
@@ -3558,6 +3950,146 @@ function initLearnDetailMap() {
     interactive: false,
     attributionControl: false
   });
+}
+
+function ensureMapboxAccessToken() {
+  const candidate = [
+    mapboxgl.accessToken,
+    document.getElementById('tokenInput')?.value,
+    localStorage.getItem('gaiaToken'),
+    GAIA_DEFAULT_TOKEN
+  ].find(token => typeof token === 'string' && token.trim().startsWith('pk.'));
+
+  if (!candidate) return false;
+  mapboxgl.accessToken = candidate.trim();
+  return true;
+}
+
+function createProfileImpactGeoJSON() {
+  return {
+    type: 'FeatureCollection',
+    features: PROFILE_IMPACT_POINTS.map((coordinates, index) => ({
+      type: 'Feature',
+      properties: { id: `impact_${index + 1}` },
+      geometry: { type: 'Point', coordinates }
+    }))
+  };
+}
+
+function fitProfileImpactBounds(targetMap) {
+  const bounds = PROFILE_IMPACT_POINTS.reduce(
+    (acc, coordinates) => acc.extend(coordinates),
+    new mapboxgl.LngLatBounds(PROFILE_IMPACT_POINTS[0], PROFILE_IMPACT_POINTS[0])
+  );
+
+  targetMap.fitBounds(bounds, {
+    padding: { top: 32, right: 32, bottom: 32, left: 32 },
+    duration: 0,
+    maxZoom: 5.5
+  });
+}
+
+function addProfileImpactLayers(targetMap) {
+  if (targetMap.getSource(PROFILE_IMPACT_SOURCE_ID)) return;
+
+  targetMap.addSource(PROFILE_IMPACT_SOURCE_ID, {
+    type: 'geojson',
+    data: createProfileImpactGeoJSON()
+  });
+}
+
+function syncProfileImpactView(sourceMap, targetMap) {
+  if (!sourceMap || !targetMap) return;
+
+  targetMap.jumpTo({
+    center: sourceMap.getCenter(),
+    zoom: sourceMap.getZoom(),
+    bearing: sourceMap.getBearing(),
+    pitch: sourceMap.getPitch()
+  });
+}
+
+function initProfileImpactMap() {
+  if (profileImpactMap) return profileImpactMap;
+  if (!ensureMapboxAccessToken()) return null;
+
+  const container = document.getElementById('profile-impact-map');
+  if (!container) return null;
+
+  profileImpactMap = new mapboxgl.Map({
+    container: 'profile-impact-map',
+    style: GAIA_STYLE,
+    center: PROFILE_IMPACT_POINTS[0],
+    zoom: 4.6,
+    attributionControl: false,
+    dragRotate: false,
+    pitchWithRotate: false
+  });
+
+  profileImpactMap.touchZoomRotate.disableRotation();
+  profileImpactMap.once('load', () => {
+    addProfileImpactLayers(profileImpactMap);
+    fitProfileImpactBounds(profileImpactMap);
+  });
+  return profileImpactMap;
+}
+
+function initProfileImpactExpandedMap() {
+  if (profileImpactExpandedMap) return profileImpactExpandedMap;
+  if (!ensureMapboxAccessToken()) return null;
+
+  const container = document.getElementById('profile-impact-expanded-map');
+  if (!container) return null;
+
+  profileImpactExpandedMap = new mapboxgl.Map({
+    container: 'profile-impact-expanded-map',
+    style: GAIA_STYLE,
+    center: PROFILE_IMPACT_POINTS[0],
+    zoom: 4.6,
+    attributionControl: true,
+    dragRotate: false,
+    pitchWithRotate: false
+  });
+
+  profileImpactExpandedMap.touchZoomRotate.disableRotation();
+  profileImpactExpandedMap.once('load', () => {
+    addProfileImpactLayers(profileImpactExpandedMap);
+    if (profileImpactMap) syncProfileImpactView(profileImpactMap, profileImpactExpandedMap);
+    else fitProfileImpactBounds(profileImpactExpandedMap);
+  });
+  return profileImpactExpandedMap;
+}
+
+function openProfileImpactMapModal() {
+  const modal = document.getElementById('profile-impact-map-modal');
+  if (!modal) return;
+
+  document.getElementById('profile-page')?.classList.add('profile-modal-active');
+  document.getElementById('nav-bar').style.display = 'none';
+  modal.classList.add('visible');
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+
+  initProfileImpactExpandedMap();
+
+  requestAnimationFrame(() => {
+    profileImpactExpandedMap?.resize();
+    syncProfileImpactView(profileImpactMap, profileImpactExpandedMap);
+  });
+}
+
+function closeProfileImpactMapModal({ syncView = true } = {}) {
+  const modal = document.getElementById('profile-impact-map-modal');
+  if (!modal || !modal.classList.contains('visible')) return;
+
+  if (syncView) syncProfileImpactView(profileImpactExpandedMap, profileImpactMap);
+
+  document.getElementById('profile-page')?.classList.remove('profile-modal-active');
+  document.getElementById('nav-bar').style.display = '';
+  modal.classList.remove('visible');
+  modal.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+  profileImpactMap?.resize();
 }
 
 // Wire up fd-tab clicks — switch both tab highlight and panel visibility
@@ -4177,6 +4709,7 @@ function initMap() {
   initSheetLayout();
   setupEvents();
   snapTo('collapsed');
+  requestAnimationFrame(applyInitialHashState);
 }
 
 // ════════════════════════════════════════════════
@@ -4185,6 +4718,7 @@ function initMap() {
 document.addEventListener('DOMContentLoaded', () => {
   const savedToken = localStorage.getItem('gaiaToken') || GAIA_DEFAULT_TOKEN;
   document.getElementById('tokenInput').value = savedToken;
+  window.addEventListener('hashchange', applyInitialHashState);
 
   if (savedToken && savedToken.startsWith('pk.')) { initMap(); return; }
 
