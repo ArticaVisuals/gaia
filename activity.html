@@ -261,6 +261,7 @@ html, body {
   letter-spacing: 0.25px;
   color: var(--olive);
   margin-right: -4px;
+  touch-action: none;
   position: relative; z-index: 1;
   white-space: nowrap;
 }
@@ -272,8 +273,11 @@ html, body {
   height: calc(100% - 8px);
   border-radius: 250px;
   background: var(--fill-vibrant-tert);
+  transition: transform 0.35s cubic-bezier(0.34, 1.4, 0.64, 1),
+              width 0.35s cubic-bezier(0.34, 1.4, 0.64, 1);
   pointer-events: none;
   z-index: 0;
+  will-change: transform, width;
 }
 .nav-item .icon-32 {
   width: 32px; height: 32px;
@@ -516,38 +520,158 @@ document.querySelectorAll('.act-chip').forEach(chip => {
 const navBar = document.getElementById('nav-bar');
 const navIndicator = document.querySelector('.nav-indicator');
 const navItems = [...document.querySelectorAll('.nav-item')];
+const NAV_ROUTE_DELAY_MS = 260;
+const NAV_ROUTES = {
+  explore: 'index.html',
+  log: 'index.html#profile-log',
+  observe: 'observe.html',
+  activity: '',
+  profile: 'index.html#profile'
+};
 
-// Position indicator on the active tab
-function positionIndicator(btn, animate) {
-  const barRect = navBar.getBoundingClientRect();
-  const btnRect = btn.getBoundingClientRect();
-  const x = btnRect.left - barRect.left;
-  navIndicator.style.width = btnRect.width + 'px';
-  navIndicator.style.transition = animate
-    ? 'transform 0.35s cubic-bezier(0.34,1.4,0.64,1), width 0.35s cubic-bezier(0.34,1.4,0.64,1)'
-    : 'none';
-  navIndicator.style.transform = `translateX(${x}px)`;
+let navDrag = null;
+let navSlots = [];
+let navRouteTimer = null;
+
+function clearPendingNavRoute() {
+  if (navRouteTimer == null) return;
+  clearTimeout(navRouteTimer);
+  navRouteTimer = null;
 }
 
-// Init indicator position
-const activeBtn = document.querySelector('.nav-item.active');
-if (activeBtn) {
-  requestAnimationFrame(() => positionIndicator(activeBtn, false));
+function getNavPillWidth() {
+  return navIndicator.offsetWidth || parseFloat(getComputedStyle(navIndicator).width) || 76;
 }
 
-navItems.forEach(btn => {
-  btn.addEventListener('click', () => {
-    const nav = btn.dataset.nav;
-    if (nav === 'explore') { window.location.href = 'index.html'; return; }
-    if (nav === 'observe') { window.location.href = 'observe.html'; return; }
-    if (nav === 'profile') { window.location.href = 'index.html#profile'; return; }
-    if (nav === 'activity') return; // already here
-
-    // Switch active state
-    navItems.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    positionIndicator(btn, true);
+function cacheNavSlots() {
+  const pillW = getNavPillWidth();
+  navSlots = navItems.map(btn => {
+    const left = btn.offsetLeft + ((btn.offsetWidth - pillW) / 2);
+    return { left, center: left + (pillW / 2), btn };
   });
+}
+
+function setActiveNav(btn) {
+  navItems.forEach(item => item.classList.toggle('active', item === btn));
+}
+
+function moveIndicator(btn, animate = true) {
+  if (!btn) return;
+  const pillW = getNavPillWidth();
+  const left = btn.offsetLeft + ((btn.offsetWidth - pillW) / 2);
+  navIndicator.style.width = `${pillW}px`;
+  navIndicator.style.transition = animate && !navDrag?.dragging ? '' : 'none';
+  navIndicator.style.transform = `translateX(${Math.max(0, left)}px)`;
+  if (!animate) {
+    requestAnimationFrame(() => {
+      if (!navDrag) navIndicator.style.transition = '';
+    });
+  }
+}
+
+function nearestSlot(x) {
+  const pillW = getNavPillWidth();
+  const center = x + (pillW / 2);
+  return navSlots.reduce((nearest, slot) => {
+    if (!nearest) return slot;
+    return Math.abs(slot.center - center) < Math.abs(nearest.center - center) ? slot : nearest;
+  }, null);
+}
+
+function scheduleRoute(navName) {
+  const href = NAV_ROUTES[navName];
+  if (!href) return;
+  clearPendingNavRoute();
+  navRouteTimer = window.setTimeout(() => {
+    window.location.href = href;
+  }, NAV_ROUTE_DELAY_MS);
+}
+
+function commitNav(btn, { animate = true } = {}) {
+  if (!btn) return;
+  setActiveNav(btn);
+  moveIndicator(btn, animate);
+  scheduleRoute(btn.dataset.nav);
+}
+
+function navPointerDown(event) {
+  const btn = event.target.closest('.nav-item');
+  if (!btn) return;
+
+  const match = navIndicator.style.transform.match(/translateX\((.+?)px\)/);
+  navDrag = {
+    pointerId: event.pointerId,
+    startX: event.clientX,
+    startTx: match ? parseFloat(match[1]) : 0,
+    currentTx: match ? parseFloat(match[1]) : 0,
+    dragging: false,
+    tapBtn: btn
+  };
+  cacheNavSlots();
+  navBar.setPointerCapture?.(event.pointerId);
+}
+
+function navPointerMove(event) {
+  if (!navDrag || event.pointerId !== navDrag.pointerId) return;
+
+  const dx = event.clientX - navDrag.startX;
+  if (!navDrag.dragging && Math.abs(dx) > 5) {
+    navDrag.dragging = true;
+    navIndicator.style.transition = 'none';
+  }
+  if (!navDrag.dragging) return;
+
+  event.preventDefault();
+
+  const minX = navSlots[0].left;
+  const maxX = navSlots[navSlots.length - 1].left;
+  let x = navDrag.startTx + dx;
+
+  if (x < minX) x = minX - ((minX - x) * 0.3);
+  else if (x > maxX) x = maxX + ((x - maxX) * 0.3);
+
+  const nearest = nearestSlot(x);
+  const dist = Math.abs((x + (getNavPillWidth() / 2)) - nearest.center);
+  const zone = 35;
+  if (dist < zone) {
+    const pull = Math.pow(1 - (dist / zone), 2) * 0.4;
+    x += (nearest.left - x) * pull;
+  }
+
+  navDrag.currentTx = x;
+  navIndicator.style.transform = `translateX(${x}px)`;
+  setActiveNav(nearest.btn);
+}
+
+function navPointerUp(event) {
+  if (!navDrag) return;
+  if (event.pointerId != null && navDrag.pointerId != null && event.pointerId !== navDrag.pointerId) return;
+
+  const dragState = navDrag;
+  navDrag = null;
+  navBar.releasePointerCapture?.(dragState.pointerId);
+
+  if (!dragState.dragging) {
+    commitNav(dragState.tapBtn);
+    return;
+  }
+
+  const nearest = nearestSlot(dragState.currentTx ?? dragState.startTx);
+  commitNav(nearest?.btn, { animate: true });
+}
+
+const activeBtn = document.querySelector('.nav-item.active') || navItems[0];
+if (activeBtn) {
+  requestAnimationFrame(() => moveIndicator(activeBtn, false));
+}
+
+navBar.addEventListener('pointerdown', navPointerDown);
+document.addEventListener('pointermove', navPointerMove, { passive: false });
+document.addEventListener('pointerup', navPointerUp);
+document.addEventListener('pointercancel', navPointerUp);
+window.addEventListener('resize', () => {
+  const current = document.querySelector('.nav-item.active') || navItems[0];
+  if (current) moveIndicator(current, false);
 });
 </script>
 </body>

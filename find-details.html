@@ -1632,33 +1632,161 @@ expandBtn.addEventListener('click', () => {
 (function() {
   const bar  = document.getElementById('nav-bar');
   const ind  = bar.querySelector('.nav-indicator');
-  const btns = bar.querySelectorAll('.nav-item');
+  const btns = Array.from(bar.querySelectorAll('.nav-item'));
+  const NAV_ROUTE_DELAY_MS = 260;
+  const NAV_ROUTES = {
+    explore: 'index.html',
+    log: 'index.html#profile-log',
+    observe: 'observe.html',
+    activity: 'activity.html',
+    profile: 'index.html#profile'
+  };
 
-  function moveIndicator(btn) {
-    const barRect = bar.getBoundingClientRect();
-    const btnRect = btn.getBoundingClientRect();
-    ind.style.width     = btnRect.width + 'px';
-    ind.style.transform = `translateX(${btnRect.left - barRect.left}px)`;
+  let drag = null;
+  let slots = [];
+  let routeTimer = null;
+
+  function clearPendingRoute() {
+    if (routeTimer == null) return;
+    clearTimeout(routeTimer);
+    routeTimer = null;
   }
 
-  btns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      // Navigate to Observe page
-      if (btn.dataset.nav === 'observe') {
-        window.location.href = 'observe.html';
-        return;
-      }
-      btns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      moveIndicator(btn);
+  function getPillWidth() {
+    return ind.offsetWidth || parseFloat(getComputedStyle(ind).width) || 72;
+  }
+
+  function cacheSlots() {
+    const pillW = getPillWidth();
+    slots = btns.map(btn => {
+      const left = btn.offsetLeft + ((btn.offsetWidth - pillW) / 2);
+      return { left, center: left + (pillW / 2), btn };
     });
-  });
+  }
+
+  function setActive(btn) {
+    btns.forEach(item => item.classList.toggle('active', item === btn));
+  }
+
+  function moveIndicator(btn, animate = true) {
+    if (!btn) return;
+    const pillW = getPillWidth();
+    const left = btn.offsetLeft + ((btn.offsetWidth - pillW) / 2);
+    ind.style.width = `${pillW}px`;
+    ind.style.transition = animate && !drag?.dragging ? '' : 'none';
+    ind.style.transform = `translateX(${Math.max(0, left)}px)`;
+    if (!animate) {
+      requestAnimationFrame(() => {
+        if (!drag) ind.style.transition = '';
+      });
+    }
+  }
+
+  function nearestSlot(x) {
+    const pillW = getPillWidth();
+    const center = x + (pillW / 2);
+    return slots.reduce((nearest, slot) => {
+      if (!nearest) return slot;
+      return Math.abs(slot.center - center) < Math.abs(nearest.center - center) ? slot : nearest;
+    }, null);
+  }
+
+  function scheduleRoute(navName) {
+    const href = NAV_ROUTES[navName];
+    if (!href) return;
+    clearPendingRoute();
+    routeTimer = window.setTimeout(() => {
+      window.location.href = href;
+    }, NAV_ROUTE_DELAY_MS);
+  }
+
+  function commitNav(btn, { animate = true } = {}) {
+    if (!btn) return;
+    setActive(btn);
+    moveIndicator(btn, animate);
+    scheduleRoute(btn.dataset.nav);
+  }
+
+  function pointerDown(event) {
+    const btn = event.target.closest('.nav-item');
+    if (!btn) return;
+
+    const match = ind.style.transform.match(/translateX\((.+?)px\)/);
+    drag = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startTx: match ? parseFloat(match[1]) : 0,
+      currentTx: match ? parseFloat(match[1]) : 0,
+      dragging: false,
+      tapBtn: btn
+    };
+    cacheSlots();
+    bar.setPointerCapture?.(event.pointerId);
+  }
+
+  function pointerMove(event) {
+    if (!drag || event.pointerId !== drag.pointerId) return;
+
+    const dx = event.clientX - drag.startX;
+    if (!drag.dragging && Math.abs(dx) > 5) {
+      drag.dragging = true;
+      ind.style.transition = 'none';
+    }
+    if (!drag.dragging) return;
+
+    event.preventDefault();
+
+    const minX = slots[0].left;
+    const maxX = slots[slots.length - 1].left;
+    let x = drag.startTx + dx;
+
+    if (x < minX) x = minX - ((minX - x) * 0.3);
+    else if (x > maxX) x = maxX + ((x - maxX) * 0.3);
+
+    const nearest = nearestSlot(x);
+    const dist = Math.abs((x + (getPillWidth() / 2)) - nearest.center);
+    const zone = 35;
+    if (dist < zone) {
+      const pull = Math.pow(1 - (dist / zone), 2) * 0.4;
+      x += (nearest.left - x) * pull;
+    }
+
+    drag.currentTx = x;
+    ind.style.transform = `translateX(${x}px)`;
+    setActive(nearest.btn);
+  }
+
+  function pointerUp(event) {
+    if (!drag) return;
+    if (event.pointerId != null && drag.pointerId != null && event.pointerId !== drag.pointerId) return;
+
+    const dragState = drag;
+    drag = null;
+    bar.releasePointerCapture?.(dragState.pointerId);
+
+    if (!dragState.dragging) {
+      commitNav(dragState.tapBtn);
+      return;
+    }
+
+    const nearest = nearestSlot(dragState.currentTx ?? dragState.startTx);
+    commitNav(nearest?.btn, { animate: true });
+  }
 
   const defaultBtn = bar.querySelector('[data-nav="explore"]');
   if (defaultBtn) {
     defaultBtn.classList.add('active');
-    requestAnimationFrame(() => moveIndicator(defaultBtn));
+    requestAnimationFrame(() => moveIndicator(defaultBtn, false));
   }
+
+  bar.addEventListener('pointerdown', pointerDown);
+  document.addEventListener('pointermove', pointerMove, { passive: false });
+  document.addEventListener('pointerup', pointerUp);
+  document.addEventListener('pointercancel', pointerUp);
+  window.addEventListener('resize', () => {
+    const current = bar.querySelector('.nav-item.active') || defaultBtn;
+    if (current) moveIndicator(current, false);
+  });
 })();
 
 // ── Tab switcher ─────────────────────────────────────────

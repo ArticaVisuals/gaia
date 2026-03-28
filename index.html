@@ -4116,7 +4116,7 @@ function initDraggableTabSwitch({ container, buttonSelector, getValue, onChange 
   };
 }
 
-function applyProfileTabState(tabName = 'impact', { resetScroll = false } = {}) {
+function applyProfileTabState(tabName = 'impact', { resetScroll = false, source = 'programmatic' } = {}) {
   const tabs = Array.from(document.querySelectorAll('.profile-tab'));
   const panels = Array.from(document.querySelectorAll('.profile-tab-panel'));
   if (!tabs.length || !panels.length) return;
@@ -4129,6 +4129,9 @@ function applyProfileTabState(tabName = 'impact', { resetScroll = false } = {}) 
   panels.forEach(panel => {
     panel.classList.toggle('active', panel.dataset.profilePanel === resolvedTab);
   });
+  if (source !== 'primary-nav' && source !== 'nav-preview') {
+    syncBottomNavForProfileTab(resolvedTab, false);
+  }
 
   if (resetScroll) {
     const content = document.querySelector('#profile-page .profile-content');
@@ -4173,15 +4176,29 @@ function setProfilePageVisible(isVisible) {
   closeProfileImpactMapModal({ syncView: false });
 }
 
+function syncBottomNavForProfileTab(tabName, animate = true) {
+  const profilePage = document.getElementById('profile-page');
+  if (!profilePage?.classList.contains('visible') || navDrag?.dragging) return;
+
+  const navName = tabName === 'log' ? 'log' : 'profile';
+  const btn = document.querySelector(`.nav-item[data-nav="${navName}"]`);
+  if (!btn) return;
+
+  setActiveNavButton(btn);
+  moveNavIndicator(btn, animate);
+  syncPrimaryNavHash(navName, tabName);
+}
+
 function applyInitialHashState() {
   const hash = window.location.hash;
   if (!hash || !hash.startsWith('#profile')) return;
 
-  const profileBtn = document.querySelector('.nav-item[data-nav="profile"]');
-  if (profileBtn) {
+  const navName = hash === '#profile-log' ? 'log' : 'profile';
+  const activeNavBtn = document.querySelector(`.nav-item[data-nav="${navName}"]`);
+  if (activeNavBtn) {
     document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
-    profileBtn.classList.add('active');
-    moveNavIndicator(profileBtn);
+    activeNavBtn.classList.add('active');
+    moveNavIndicator(activeNavBtn, false);
   }
 
   setProfilePageVisible(true);
@@ -4427,14 +4444,113 @@ function dragEnd() {
 // ════════════════════════════════════════════════
 //  NAV INDICATOR
 // ════════════════════════════════════════════════
-function moveNavIndicator(btn) {
+const NAV_ROUTE_DELAY_MS = 260;
+let navRouteTimer = null;
+
+function moveNavIndicator(btn, animate = true) {
   const ind = document.querySelector('.nav-indicator');
   if (!ind || !btn) return;
-  // Figma: selected pill is always 76×48px, centered on the button
-  const pillW = 76;
+  const pillW = ind.offsetWidth || 76;
   ind.style.width = pillW + 'px';
+  ind.style.transition = animate ? '' : 'none';
   const centered = btn.offsetLeft + (btn.offsetWidth - pillW) / 2;
   ind.style.transform = `translateX(${Math.max(0, centered)}px)`;
+  if (!animate) {
+    requestAnimationFrame(() => {
+      if (!navDrag) ind.style.transition = '';
+    });
+  }
+}
+
+function clearPendingNavRoute() {
+  if (navRouteTimer == null) return;
+  clearTimeout(navRouteTimer);
+  navRouteTimer = null;
+}
+
+function setActiveNavButton(btn) {
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.classList.toggle('active', item === btn);
+  });
+}
+
+function syncPrimaryNavHash(navName, profileTab = 'impact') {
+  const baseUrl = `${window.location.pathname}${window.location.search}`;
+  let nextUrl = baseUrl;
+
+  if (navName === 'log') nextUrl += '#profile-log';
+  else if (navName === 'profile') nextUrl += profileTab === 'community' ? '#profile-community' : '#profile';
+
+  history.replaceState(null, '', nextUrl);
+}
+
+function getProfileNavCommitTab() {
+  const currentTab = getActiveProfileTab();
+  return currentTab === 'community' ? 'community' : 'impact';
+}
+
+function previewPrimaryNav(navName) {
+  if (navName === 'log') {
+    setProfilePageVisible(true);
+    setActiveProfileTab('log', { resetScroll: false, source: 'nav-preview' });
+    return;
+  }
+
+  if (navName === 'profile') {
+    setProfilePageVisible(true);
+    setActiveProfileTab(getProfileNavCommitTab(), { resetScroll: false, source: 'nav-preview' });
+    return;
+  }
+
+  setProfilePageVisible(false);
+}
+
+function schedulePrimaryNavRoute(navName) {
+  const href = navName === 'observe'
+    ? 'observe.html'
+    : navName === 'activity'
+      ? 'activity.html'
+      : '';
+  if (!href) return;
+
+  clearPendingNavRoute();
+  navRouteTimer = window.setTimeout(() => {
+    window.location.href = href;
+  }, NAV_ROUTE_DELAY_MS);
+}
+
+function commitPrimaryNav(btn, { animate = true, resetScroll = true } = {}) {
+  if (!btn) return;
+
+  const navName = btn.dataset.nav;
+  clearPendingNavRoute();
+  setActiveNavButton(btn);
+  moveNavIndicator(btn, animate);
+
+  if (navName === 'observe' || navName === 'activity') {
+    setProfilePageVisible(false);
+    syncPrimaryNavHash('explore');
+    schedulePrimaryNavRoute(navName);
+    return;
+  }
+
+  if (navName === 'log') {
+    setProfilePageVisible(true);
+    setActiveProfileTab('log', { resetScroll, source: 'primary-nav' });
+    syncPrimaryNavHash('log', 'log');
+    return;
+  }
+
+  if (navName === 'profile') {
+    const targetTab = getProfileNavCommitTab();
+    setProfilePageVisible(true);
+    setActiveProfileTab(targetTab, { resetScroll, source: 'primary-nav' });
+    syncPrimaryNavHash('profile', targetTab);
+    return;
+  }
+
+  setProfilePageVisible(false);
+  syncPrimaryNavHash('explore');
 }
 
 // --- NAV DRAG (Liquid Glass-inspired) ---
@@ -4442,11 +4558,14 @@ let navDrag = null;   // null when inactive
 let tabSlots = [];    // [{left, center, btn}, ...]
 
 function cacheTabSlots() {
+  const ind = document.querySelector('.nav-indicator');
+  const pillW = ind?.offsetWidth || 76;
   tabSlots = [...document.querySelectorAll('.nav-item')].map(btn => {
+    const left = btn.offsetLeft + (btn.offsetWidth - pillW) / 2;
     return {
-      left:   btn.offsetLeft,                         // indicator left edge aligns here
-      center: btn.offsetLeft + btn.offsetWidth / 2,   // used for nearest-slot math
-      width:  btn.offsetWidth,
+      left,
+      center: left + pillW / 2,
+      width: pillW,
       btn
     };
   });
@@ -4455,7 +4574,7 @@ function cacheTabSlots() {
 function nearestSlot(x) {
   // x = current indicator translateX (its left edge)
   // find the slot whose center is closest to the indicator's center
-  const indW = 76;  // Figma: selected pill always 76px
+  const indW = document.querySelector('.nav-indicator')?.offsetWidth || 76;
   const cx = x + indW / 2;
   return tabSlots.reduce((best, s) =>
     Math.abs(s.center - cx) < Math.abs(best.center - cx) ? s : best
@@ -4504,11 +4623,8 @@ function navPointerMove(e) {
   document.querySelector('.nav-indicator').style.transform = `translateX(${x}px)`;
 
   // Update active tab in real time
-  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-  near.btn.classList.add('active');
-  // Show/hide profile page during drag
-  const isProfileDrag = near.btn.dataset.nav === 'profile';
-  setProfilePageVisible(isProfileDrag);
+  setActiveNavButton(near.btn);
+  previewPrimaryNav(near.btn.dataset.nav);
 }
 
 function navPointerUp() {
@@ -4517,23 +4633,7 @@ function navPointerUp() {
   navDrag = null;
 
   if (!state.dragging) {
-    // Navigate to Observe page
-    if (state.tapBtn.dataset.nav === 'observe') {
-      window.location.href = 'observe.html';
-      return;
-    }
-    // Navigate to Activity page
-    if (state.tapBtn.dataset.nav === 'activity') {
-      window.location.href = 'activity.html';
-      return;
-    }
-    // Simple tap — switch to tapped button
-    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-    state.tapBtn.classList.add('active');
-    moveNavIndicator(state.tapBtn);
-    // Show/hide profile page
-    const isProfile = state.tapBtn.dataset.nav === 'profile';
-    setProfilePageVisible(isProfile);
+    commitPrimaryNav(state.tapBtn);
     return;
   }
 
@@ -4542,10 +4642,7 @@ function navPointerUp() {
   ind.style.transition = '';  // re-enable CSS spring for both transform and width
   const m = ind.style.transform.match(/translateX\((.+?)px\)/);
   const nearest = nearestSlot(m ? parseFloat(m[1]) : 0);
-  moveNavIndicator(nearest.btn);
-  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-  nearest.btn.classList.add('active');
-  setProfilePageVisible(nearest.btn.dataset.nav === 'profile');
+  commitPrimaryNav(nearest.btn, { animate: true, resetScroll: false });
 }
 
 // ════════════════════════════════════════════════
