@@ -19,6 +19,14 @@ html, body {
   -webkit-font-smoothing: antialiased;
   user-select: none; -webkit-user-select: none;
 }
+body.nav-page-transition {
+  transition: opacity 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+  will-change: opacity;
+}
+body.nav-page-enter,
+body.nav-page-exit {
+  opacity: 0;
+}
 
 /* ═══════════════════════════════════════════════════════════
    STICKY HEADER — Title + Filter Chips
@@ -520,7 +528,8 @@ document.querySelectorAll('.act-chip').forEach(chip => {
 const navBar = document.getElementById('nav-bar');
 const navIndicator = document.querySelector('.nav-indicator');
 const navItems = [...document.querySelectorAll('.nav-item')];
-const NAV_ROUTE_DELAY_MS = 260;
+const NAV_ROUTE_DELAY_MS = 320;
+const NAV_PAGE_TRANSITION_KEY = 'gaia-nav-transition';
 const NAV_ROUTES = {
   explore: 'index.html',
   log: 'index.html#profile-log',
@@ -533,10 +542,37 @@ let navDrag = null;
 let navSlots = [];
 let navRouteTimer = null;
 
+function primeNavPageTransition() {
+  let transitionState = null;
+  try {
+    transitionState = JSON.parse(sessionStorage.getItem(NAV_PAGE_TRANSITION_KEY) || 'null');
+  } catch (error) {
+    transitionState = null;
+  }
+
+  if (!transitionState || (Date.now() - transitionState.ts) > 1600) {
+    sessionStorage.removeItem(NAV_PAGE_TRANSITION_KEY);
+    return;
+  }
+
+  document.body.classList.add('nav-page-transition', 'nav-page-enter');
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      document.body.classList.remove('nav-page-enter');
+      window.setTimeout(() => {
+        sessionStorage.removeItem(NAV_PAGE_TRANSITION_KEY);
+      }, NAV_ROUTE_DELAY_MS);
+    });
+  });
+}
+
+primeNavPageTransition();
+
 function clearPendingNavRoute() {
   if (navRouteTimer == null) return;
   clearTimeout(navRouteTimer);
   navRouteTimer = null;
+  document.body.classList.remove('nav-page-exit');
 }
 
 function getNavPillWidth() {
@@ -582,6 +618,8 @@ function scheduleRoute(navName) {
   const href = NAV_ROUTES[navName];
   if (!href) return;
   clearPendingNavRoute();
+  sessionStorage.setItem(NAV_PAGE_TRANSITION_KEY, JSON.stringify({ nav: navName, ts: Date.now() }));
+  document.body.classList.add('nav-page-transition', 'nav-page-exit');
   navRouteTimer = window.setTimeout(() => {
     window.location.href = href;
   }, NAV_ROUTE_DELAY_MS);

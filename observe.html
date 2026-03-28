@@ -20,6 +20,14 @@ html, body {
   -webkit-font-smoothing: antialiased;
   user-select: none; -webkit-user-select: none;
 }
+body.nav-page-transition {
+  transition: opacity 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+  will-change: opacity;
+}
+body.nav-page-enter,
+body.nav-page-exit {
+  opacity: 0;
+}
 
 /* ═══════════════════════════════════════════════════════════
    SCREEN CONTAINER — Each screen is a full-viewport layer
@@ -1623,6 +1631,35 @@ html, body {
 <div id="flash"></div>
 
 <script>
+const NAV_ROUTE_DELAY_MS = 320;
+const NAV_PAGE_TRANSITION_KEY = 'gaia-nav-transition';
+
+function primeNavPageTransition() {
+  let transitionState = null;
+  try {
+    transitionState = JSON.parse(sessionStorage.getItem(NAV_PAGE_TRANSITION_KEY) || 'null');
+  } catch (error) {
+    transitionState = null;
+  }
+
+  if (!transitionState || (Date.now() - transitionState.ts) > 1600) {
+    sessionStorage.removeItem(NAV_PAGE_TRANSITION_KEY);
+    return;
+  }
+
+  document.body.classList.add('nav-page-transition', 'nav-page-enter');
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      document.body.classList.remove('nav-page-enter');
+      window.setTimeout(() => {
+        sessionStorage.removeItem(NAV_PAGE_TRANSITION_KEY);
+      }, NAV_ROUTE_DELAY_MS);
+    });
+  });
+}
+
+primeNavPageTransition();
+
 // ═══════════════════════════════════════════════════════════
 //  SCREEN TRANSITIONS
 // ═══════════════════════════════════════════════════════════

@@ -24,6 +24,14 @@ html, body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
 }
+body.nav-page-transition {
+  transition: opacity 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+  will-change: opacity;
+}
+body.nav-page-enter,
+body.nav-page-exit {
+  opacity: 0;
+}
 
 /* ── MAP ─────────────────────────────────────────────────── */
 #map { position: fixed; inset: 0; z-index: 0;
@@ -39,6 +47,7 @@ html, body {
   display: flex; align-items: flex-end; gap: 8px;
   z-index: 50;
   pointer-events: none;
+  transition: opacity 0.24s ease, transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 /* Search bar — Liquid Glass pill (matches Figma node 467:2841) */
@@ -1672,13 +1681,18 @@ html, body {
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-  display: none; /* hidden by default; shown when Profile tab active */
+  display: flex;
   flex-direction: column;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(18px);
+  transition: opacity 0.28s ease, transform 0.42s cubic-bezier(0.32, 0.72, 0, 1);
+  will-change: opacity, transform;
 }
-#profile-page.visible { display: flex; }
+#profile-page.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
 #profile-page.profile-modal-active { z-index: 80; }
 /* Hide main header when profile page is active */
-#header.profile-hidden { display: none; }
+#header.profile-hidden { opacity: 0; pointer-events: none; transform: translateY(-10px); }
 
 /* Profile toolbar (top-right glass buttons) */
 .profile-toolbar {
@@ -4444,8 +4458,35 @@ function dragEnd() {
 // ════════════════════════════════════════════════
 //  NAV INDICATOR
 // ════════════════════════════════════════════════
-const NAV_ROUTE_DELAY_MS = 260;
+const NAV_ROUTE_DELAY_MS = 320;
+const NAV_PAGE_TRANSITION_KEY = 'gaia-nav-transition';
 let navRouteTimer = null;
+
+function primeNavPageTransition() {
+  let transitionState = null;
+  try {
+    transitionState = JSON.parse(sessionStorage.getItem(NAV_PAGE_TRANSITION_KEY) || 'null');
+  } catch (error) {
+    transitionState = null;
+  }
+
+  if (!transitionState || (Date.now() - transitionState.ts) > 1600) {
+    sessionStorage.removeItem(NAV_PAGE_TRANSITION_KEY);
+    return;
+  }
+
+  document.body.classList.add('nav-page-transition', 'nav-page-enter');
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      document.body.classList.remove('nav-page-enter');
+      window.setTimeout(() => {
+        sessionStorage.removeItem(NAV_PAGE_TRANSITION_KEY);
+      }, NAV_ROUTE_DELAY_MS);
+    });
+  });
+}
+
+primeNavPageTransition();
 
 function moveNavIndicator(btn, animate = true) {
   const ind = document.querySelector('.nav-indicator');
@@ -4466,6 +4507,7 @@ function clearPendingNavRoute() {
   if (navRouteTimer == null) return;
   clearTimeout(navRouteTimer);
   navRouteTimer = null;
+  document.body.classList.remove('nav-page-exit');
 }
 
 function setActiveNavButton(btn) {
@@ -4514,6 +4556,8 @@ function schedulePrimaryNavRoute(navName) {
   if (!href) return;
 
   clearPendingNavRoute();
+  sessionStorage.setItem(NAV_PAGE_TRANSITION_KEY, JSON.stringify({ nav: navName, ts: Date.now() }));
+  document.body.classList.add('nav-page-transition', 'nav-page-exit');
   navRouteTimer = window.setTimeout(() => {
     window.location.href = href;
   }, NAV_ROUTE_DELAY_MS);
