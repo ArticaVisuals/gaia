@@ -1647,12 +1647,16 @@ function primeNavPageTransition() {
     return;
   }
 
+  if (transitionState.surface) {
+    document.documentElement.style.backgroundColor = transitionState.surface;
+  }
   document.body.classList.add('nav-page-transition', 'nav-page-enter');
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       document.body.classList.remove('nav-page-enter');
       window.setTimeout(() => {
         sessionStorage.removeItem(NAV_PAGE_TRANSITION_KEY);
+        document.documentElement.style.backgroundColor = '';
       }, NAV_ROUTE_DELAY_MS);
     });
   });

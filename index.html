@@ -4475,12 +4475,16 @@ function primeNavPageTransition() {
     return;
   }
 
+  if (transitionState.surface) {
+    document.documentElement.style.backgroundColor = transitionState.surface;
+  }
   document.body.classList.add('nav-page-transition', 'nav-page-enter');
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       document.body.classList.remove('nav-page-enter');
       window.setTimeout(() => {
         sessionStorage.removeItem(NAV_PAGE_TRANSITION_KEY);
+        document.documentElement.style.backgroundColor = '';
       }, NAV_ROUTE_DELAY_MS);
     });
   });
@@ -4508,6 +4512,7 @@ function clearPendingNavRoute() {
   clearTimeout(navRouteTimer);
   navRouteTimer = null;
   document.body.classList.remove('nav-page-exit');
+  document.documentElement.style.backgroundColor = '';
 }
 
 function setActiveNavButton(btn) {
@@ -4556,7 +4561,9 @@ function schedulePrimaryNavRoute(navName) {
   if (!href) return;
 
   clearPendingNavRoute();
-  sessionStorage.setItem(NAV_PAGE_TRANSITION_KEY, JSON.stringify({ nav: navName, ts: Date.now() }));
+  const surface = getComputedStyle(document.body).backgroundColor;
+  sessionStorage.setItem(NAV_PAGE_TRANSITION_KEY, JSON.stringify({ nav: navName, ts: Date.now(), surface }));
+  document.documentElement.style.backgroundColor = surface;
   document.body.classList.add('nav-page-transition', 'nav-page-exit');
   navRouteTimer = window.setTimeout(() => {
     window.location.href = href;
