@@ -649,8 +649,10 @@ html, body {
 .gaia-pin__photo-shell {
   position: absolute;
   inset: 0;
+  display: block;
   border-radius: 50%;
   overflow: visible;
+  box-shadow: var(--pin-glow-stack);
 }
 .gaia-pin__photo-img-wrap {
   position: absolute;
@@ -658,8 +660,11 @@ html, body {
   left: 2.486px;
   width: 57.343px;
   height: 57.343px;
+  box-sizing: border-box;
   border-radius: 50%;
   overflow: hidden;
+  border: 1.506px solid var(--pin-ring);
+  background: var(--paper-50);
 }
 .gaia-pin__photo-img {
   position: absolute;
@@ -667,14 +672,6 @@ html, body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-.gaia-pin__photo-overlay {
-  position: absolute;
-  left: -5.809px;
-  top: -2.908px;
-  width: 109.447px;
-  height: 134.622px;
-  pointer-events: none;
 }
 .gaia-pin.is-hovered .gaia-pin__photo-shell,
 .gaia-pin.is-active .gaia-pin__photo-shell {
@@ -4800,7 +4797,6 @@ const PIN_SIZE = 62;
 const NUMBER_PIN_FONT_SIZE = 32.512;
 const NUMBER_PIN_LARGE_FONT_SIZE = 26;
 const NUMBER_PIN_LARGE_THRESHOLD = 100;
-const CLUSTER_CENTROID_CACHE_TTL_MS = 700;
 
 // ── FIND DETAILS FULL-SCREEN OVERLAY ─────────────────────
 let fdFindMap = null;
@@ -5172,63 +5168,6 @@ document.addEventListener('click', (e) => {
   }
 });
 
-function buildPhotoOverlaySvg(id) {
-  const svgNS = 'http://www.w3.org/2000/svg';
-  const suffix = id.replace(/[^a-zA-Z0-9_-]/g, '_');
-  const filterId = `gaia-pin-filter-${suffix}`;
-  const gradId = `gaia-pin-grad-${suffix}`;
-
-  const svg = document.createElementNS(svgNS, 'svg');
-  svg.setAttribute('class', 'gaia-pin__photo-overlay');
-  svg.setAttribute('viewBox', '0 0 109.447 134.622');
-  svg.setAttribute('fill', 'none');
-  svg.setAttribute('aria-hidden', 'true');
-
-  svg.innerHTML = [
-    `<g filter="url(#${filterId})">`,
-    '<circle cx="36.8098" cy="33.9049" r="31" fill="black" fill-opacity="0.01"/>',
-    `<circle cx="36.8098" cy="33.9049" r="27" stroke="url(#${gradId})" stroke-opacity="0.5" stroke-width="8"/>`,
-    '</g>',
-    '<defs>',
-    `<filter id="${filterId}" x="0" y="0" width="109.447" height="134.622" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">`,
-    '<feFlood flood-opacity="0" result="BackgroundImageFix"/>',
-    '<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>',
-    '<feOffset dx="0.968298" dy="1.9366"/>',
-    '<feGaussianBlur stdDeviation="2.42075"/>',
-    '<feColorMatrix type="matrix" values="0 0 0 0 0.454902 0 0 0 0 0.631373 0 0 0 0 0.364706 0 0 0 0.55 0"/>',
-    '<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow"/>',
-    '<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>',
-    '<feOffset dx="3.87319" dy="8.71468"/>',
-    '<feGaussianBlur stdDeviation="4.84149"/>',
-    '<feColorMatrix type="matrix" values="0 0 0 0 0.454902 0 0 0 0 0.631373 0 0 0 0 0.364706 0 0 0 0.48 0"/>',
-    '<feBlend mode="normal" in2="effect1_dropShadow" result="effect2_dropShadow"/>',
-    '<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>',
-    '<feOffset dx="9.68298" dy="19.366"/>',
-    '<feGaussianBlur stdDeviation="6.29394"/>',
-    '<feColorMatrix type="matrix" values="0 0 0 0 0.454902 0 0 0 0 0.631373 0 0 0 0 0.364706 0 0 0 0.28 0"/>',
-    '<feBlend mode="normal" in2="effect2_dropShadow" result="effect3_dropShadow"/>',
-    '<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>',
-    '<feOffset dx="16.4611" dy="33.8904"/>',
-    '<feGaussianBlur stdDeviation="7.74638"/>',
-    '<feColorMatrix type="matrix" values="0 0 0 0 0.454902 0 0 0 0 0.631373 0 0 0 0 0.364706 0 0 0 0.08 0"/>',
-    '<feBlend mode="normal" in2="effect3_dropShadow" result="effect4_dropShadow"/>',
-    '<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>',
-    '<feOffset dx="25.1757" dy="53.2564"/>',
-    '<feGaussianBlur stdDeviation="8.23053"/>',
-    '<feColorMatrix type="matrix" values="0 0 0 0 0.454902 0 0 0 0 0.631373 0 0 0 0 0.364706 0 0 0 0.01 0"/>',
-    '<feBlend mode="normal" in2="effect4_dropShadow" result="effect5_dropShadow"/>',
-    '<feBlend mode="normal" in="SourceGraphic" in2="effect5_dropShadow" result="shape"/>',
-    '</filter>',
-    `<linearGradient id="${gradId}" x1="36.8098" y1="2.9049" x2="36.8098" y2="64.9049" gradientUnits="userSpaceOnUse">`,
-    '<stop stop-color="white"/>',
-    '<stop offset="1" stop-color="white"/>',
-    '</linearGradient>',
-    '</defs>'
-  ].join('');
-
-  return svg;
-}
-
 function buildPhotoPinEl(id, imgUrl) {
   const btn = document.createElement('button');
   btn.className = 'gaia-pin gaia-pin--photo';
@@ -5249,11 +5188,8 @@ function buildPhotoPinEl(id, imgUrl) {
   img.alt = '';
   img.loading = 'lazy';
 
-  const overlay = buildPhotoOverlaySvg(id);
-
   imgWrap.appendChild(img);
   shell.appendChild(imgWrap);
-  shell.appendChild(overlay);
   btn.appendChild(shell);
 
   btn.addEventListener('pointerenter', () => {
@@ -5287,38 +5223,15 @@ function buildPhotoPinEl(id, imgUrl) {
   return btn;
 }
 
-// Pin container — direct child of map, manually positioned for zero-lag
-let _pinContainer;
-
 function initPhotoMarkers() {
-  // Create a container that sits inside the map div for manual positioning
-  _pinContainer = document.createElement('div');
-  _pinContainer.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;overflow:hidden;';
-  document.getElementById('map').appendChild(_pinContainer);
-
   PINS_DATA.forEach(p => {
     const btn = buildPhotoPinEl(p.id, p.img);
-    // Enable pointer events on individual pins
-    btn.style.pointerEvents = 'auto';
-    btn.style.position = 'absolute';
-    btn.style.left = '0';
-    btn.style.top = '0';
-    _pinContainer.appendChild(btn);
-    photoMarkers[p.id] = { el: btn, lng: p.lng, lat: p.lat };
+    const marker = new mapboxgl.Marker({ element: btn, anchor: 'center' })
+      .setLngLat([p.lng, p.lat])
+      .addTo(map);
+
+    photoMarkers[p.id] = { el: btn, marker, lng: p.lng, lat: p.lat };
   });
-
-  // Sync pin screen positions on every render frame — no lag, no shifting
-  map.on('render', syncPinPositions);
-}
-
-function syncPinPositions() {
-  if (!pinsPhotoMode) return;
-  for (const id of Object.keys(photoMarkers)) {
-    const pm = photoMarkers[id];
-    const pos = map.project([pm.lng, pm.lat]);
-    // Circle marker is center-anchored on the geo coordinate
-    pm.el.style.transform = `translate(${pos.x - PIN_SIZE / 2}px, ${pos.y - PIN_SIZE / 2}px)`;
-  }
 }
 
 let clusterMarkers = {}; // key → { marker, el }
@@ -5380,13 +5293,6 @@ function normalizeLngToMap(lng) {
   return wrappedLng;
 }
 
-function normalizeLngAround(lng, refLng) {
-  let wrappedLng = Number(lng);
-  while (wrappedLng - refLng > 180) wrappedLng -= 360;
-  while (wrappedLng - refLng < -180) wrappedLng += 360;
-  return wrappedLng;
-}
-
 function setNumberPinCount(el, count) {
   const safeCount = Math.max(1, Number(count) || 1);
   const countEl = el.querySelector('.gaia-number-pin__count');
@@ -5399,8 +5305,6 @@ function setNumberPinCount(el, count) {
 }
 
 let _clusterSyncRaf = null;
-let _clusterSyncVersion = 0;
-const _clusterCentroidCache = new Map();
 
 function requestClusterSync() {
   if (pinsPhotoMode || !map) return;
@@ -5416,48 +5320,6 @@ function getPinSource() {
   const source = map.getSource(GAIA_PIN_SOURCE_ID);
   if (!source || typeof source.getClusterLeaves !== 'function') return null;
   return source;
-}
-
-function resolveClusterCentroid(clusterId, pointCount, fallbackLng, fallbackLat) {
-  const source = getPinSource();
-  if (!source || !Number.isFinite(Number(clusterId))) {
-    return Promise.resolve({ lng: fallbackLng, lat: fallbackLat });
-  }
-
-  const cacheKey = `${clusterId}:${pointCount}`;
-  const now = Date.now();
-  const cached = _clusterCentroidCache.get(cacheKey);
-  if (cached && (now - cached.ts) < CLUSTER_CENTROID_CACHE_TTL_MS) {
-    return Promise.resolve(cached.value);
-  }
-
-  return new Promise(resolve => {
-    source.getClusterLeaves(clusterId, pointCount, 0, (err, leaves) => {
-      if (err || !Array.isArray(leaves) || leaves.length === 0) {
-        resolve({ lng: fallbackLng, lat: fallbackLat });
-        return;
-      }
-
-      const refLng = Number(leaves[0].geometry.coordinates[0]);
-      let lngSum = 0;
-      let latSum = 0;
-
-      for (const leaf of leaves) {
-        const rawLng = Number(leaf.geometry.coordinates[0]);
-        const rawLat = Number(leaf.geometry.coordinates[1]);
-        lngSum += normalizeLngAround(rawLng, refLng);
-        latSum += rawLat;
-      }
-
-      const centroid = {
-        lng: normalizeLngToMap(lngSum / leaves.length),
-        lat: latSum / leaves.length
-      };
-
-      _clusterCentroidCache.set(cacheKey, { ts: Date.now(), value: centroid });
-      resolve(centroid);
-    });
-  });
 }
 
 function applyClusterMarkerBuckets(resolvedBuckets) {
@@ -5508,7 +5370,8 @@ function syncClusterMarkers() {
   const features = map.querySourceFeatures(GAIA_PIN_SOURCE_ID);
   const buckets = {};
 
-  // Deduplicate cluster/single features across source tiles and stabilize their center.
+  // Deduplicate cluster/single features across source tiles while preserving
+  // each feature's actual map coordinate so pins stay anchored to real positions.
   for (const f of features) {
     const isCluster = Boolean(f.properties.cluster);
     const key = isCluster ? 'c' + f.properties.cluster_id : 's' + f.properties.id;
@@ -5521,59 +5384,30 @@ function syncClusterMarkers() {
         isCluster,
         clusterId: isCluster ? f.properties.cluster_id : null,
         pointCount: isCluster ? Math.max(1, Number(f.properties.point_count) || 1) : 1,
-        lngSum: 0,
-        latSum: 0,
-        n: 0
+        lng,
+        lat
       };
+      continue;
     }
 
     const b = buckets[key];
-    b.lngSum += lng;
-    b.latSum += lat;
-    b.n += 1;
     if (isCluster) {
       b.pointCount = Math.max(b.pointCount, Math.max(1, Number(f.properties.point_count) || 1));
       b.clusterId = f.properties.cluster_id;
     }
   }
 
-  const syncVersion = ++_clusterSyncVersion;
-  const bucketList = Object.values(buckets);
-  const bucketPromises = bucketList.map(async b => {
-    const fallbackLng = b.lngSum / b.n;
-    const fallbackLat = b.latSum / b.n;
-
-    if (!b.isCluster) {
-      return { ...b, lng: fallbackLng, lat: fallbackLat };
-    }
-
-    const centroid = await resolveClusterCentroid(b.clusterId, b.pointCount, fallbackLng, fallbackLat);
-    return { ...b, lng: centroid.lng, lat: centroid.lat };
-  });
-
-  Promise.all(bucketPromises)
-    .then(resolvedBuckets => {
-      if (syncVersion !== _clusterSyncVersion || pinsPhotoMode || !map) return;
-      applyClusterMarkerBuckets(resolvedBuckets);
-    })
-    .catch(err => {
-      console.warn('Failed to sync cluster markers', err);
-    });
+  applyClusterMarkerBuckets(Object.values(buckets));
 }
 
 function setPinMode(photoMode) {
-  _clusterSyncVersion += 1;
   pinsPhotoMode = photoMode;
   for (const { el } of Object.values(photoMarkers)) {
     el.classList.toggle('pin-visible', photoMode);
   }
-  // Position pins immediately when entering photo mode
-  if (photoMode) {
-    if (_clusterSyncRaf !== null) {
-      cancelAnimationFrame(_clusterSyncRaf);
-      _clusterSyncRaf = null;
-    }
-    syncPinPositions();
+  if (photoMode && _clusterSyncRaf !== null) {
+    cancelAnimationFrame(_clusterSyncRaf);
+    _clusterSyncRaf = null;
   }
   // Toggle cluster markers
   for (const { el } of Object.values(clusterMarkers)) {
@@ -5635,7 +5469,6 @@ function initMap() {
     map.on('moveend', requestClusterSync);
     map.on('sourcedata', e => {
       if (e.sourceId === GAIA_PIN_SOURCE_ID) {
-        _clusterCentroidCache.clear();
         requestClusterSync();
       }
     });
