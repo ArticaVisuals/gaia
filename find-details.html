@@ -224,30 +224,57 @@ html, body {
 .dot.active { background: #1a1a1a; }
 
 /* ── TAB SWITCHER ───────────────────────────────────────── */
-#tab-switcher {
-  display: flex; align-items: center; justify-content: center;
+.gaia-tab-switch {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
   border-bottom: 1px solid var(--grey-200);
   width: 100%;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
 }
-.tab-item {
-  flex: none;
-  display: flex; align-items: center; justify-content: center;
+.gaia-tab-switch__indicator {
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  height: 3px;
+  background: var(--olive);
+  pointer-events: none;
+  will-change: transform, width;
+  transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1), width 360ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.gaia-tab-switch.is-dragging .gaia-tab-switch__indicator {
+  transition: none;
+}
+.gaia-tab-switch__tab {
+  flex: 0 0 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 16px 18px;
   width: 96px;
   font-family: var(--font-sans);
-  font-size: 17px; font-weight: 400;
+  font-size: 17px;
+  font-weight: 400;
   line-height: 1.3;
   cursor: pointer;
   white-space: nowrap;
-  border: none; background: transparent;
+  border: none;
+  background: transparent;
   color: var(--grey-200);
-  border-bottom: 3px solid transparent;
-  margin-bottom: -1px;
-  transition: color 0.18s, border-color 0.18s;
+  transition: color 0.18s ease;
+  position: relative;
+  z-index: 1;
 }
-.tab-item.active {
+.gaia-tab-switch__tab.active {
   color: var(--olive);
-  border-bottom-color: var(--olive);
+}
+.gaia-tab-switch__tab:focus-visible {
+  outline: 2px solid var(--olive-200);
+  outline-offset: -2px;
 }
 
 /* ── MAP SECTION ────────────────────────────────────────── */
@@ -1162,10 +1189,11 @@ html, body {
   </div>
 
   <!-- Tab switcher: Find / Activity / Log -->
-  <div id="tab-switcher">
-    <button class="tab-item" data-tab="find">Find</button>
-    <button class="tab-item" data-tab="activity">Activity</button>
-    <button class="tab-item active" data-tab="learn">Learn</button>
+  <div id="tab-switcher" class="gaia-tab-switch">
+    <div class="gaia-tab-switch__indicator" aria-hidden="true"></div>
+    <button class="tab-item gaia-tab-switch__tab" data-tab="find">Find</button>
+    <button class="tab-item gaia-tab-switch__tab" data-tab="activity">Activity</button>
+    <button class="tab-item gaia-tab-switch__tab active" data-tab="learn">Learn</button>
   </div>
 
   <!-- ══ FIND TAB PANEL ═════════════════════════════════════ -->
@@ -1634,23 +1662,192 @@ expandBtn.addEventListener('click', () => {
 })();
 
 // ── Tab switcher ─────────────────────────────────────────
-const tabBtns  = document.querySelectorAll('.tab-item');
-const panels   = document.querySelectorAll('.tab-panel');
+function initDraggableTabSwitch({ container, buttonSelector, getValue, onChange }) {
+  if (!container) return null;
 
-tabBtns.forEach(tab => {
-  tab.addEventListener('click', () => {
-    tabBtns.forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
+  const buttons = Array.from(container.querySelectorAll(buttonSelector));
+  const indicator = container.querySelector('.gaia-tab-switch__indicator');
+  if (!buttons.length || !indicator) return null;
 
-    const target = tab.dataset.tab;
-    panels.forEach(p => {
-      const match = p.id === `panel-${target}`;
-      p.hidden = !match;
+  let slots = [];
+  let drag = null;
+  let suppressClick = false;
+  let activeValue = getValue(buttons.find(button => button.classList.contains('active')) || buttons[0]);
+  let previewValue = activeValue;
+
+  function cacheSlots() {
+    slots = buttons.map(button => ({
+      button,
+      left: button.offsetLeft,
+      width: button.offsetWidth,
+      center: button.offsetLeft + (button.offsetWidth / 2)
+    }));
+  }
+
+  function getButtonByValue(value) {
+    return buttons.find(button => getValue(button) === value) || buttons[0];
+  }
+
+  function syncActiveButtons(value) {
+    buttons.forEach(button => {
+      button.classList.toggle('active', getValue(button) === value);
     });
+  }
 
-    // Scroll to top of page when switching tabs
-    document.getElementById('page').scrollTop = 0;
+  function moveIndicator(left, width, animate = true) {
+    indicator.style.width = `${width}px`;
+    indicator.style.transition = animate && !container.classList.contains('is-dragging') ? '' : 'none';
+    indicator.style.transform = `translateX(${left}px)`;
+    if (!animate) {
+      requestAnimationFrame(() => {
+        if (!container.classList.contains('is-dragging')) indicator.style.transition = '';
+      });
+    }
+  }
+
+  function findNearestSlot(left, width) {
+    if (!slots.length) cacheSlots();
+    const center = left + (width / 2);
+    return slots.reduce((nearest, slot) => {
+      if (!nearest) return slot;
+      return Math.abs(slot.center - center) < Math.abs(nearest.center - center) ? slot : nearest;
+    }, null);
+  }
+
+  function preview(value) {
+    const button = getButtonByValue(value);
+    const resolvedValue = getValue(button);
+    if (resolvedValue === previewValue) return;
+    previewValue = resolvedValue;
+    syncActiveButtons(resolvedValue);
+    onChange?.(resolvedValue, { preview: true, resetScroll: false, source: 'drag' });
+  }
+
+  function commit(value, { animate = true, resetScroll = true, source = 'programmatic' } = {}) {
+    const button = getButtonByValue(value);
+    const resolvedValue = getValue(button);
+    activeValue = resolvedValue;
+    previewValue = resolvedValue;
+    syncActiveButtons(resolvedValue);
+    moveIndicator(button.offsetLeft, button.offsetWidth, animate);
+    onChange?.(resolvedValue, { preview: false, resetScroll, source });
+  }
+
+  function endDrag(event) {
+    if (!drag || (event.pointerId != null && event.pointerId !== drag.pointerId)) return;
+
+    const wasDragging = drag.dragging;
+    const finalLeft = drag.currentLeft ?? drag.startLeft;
+    const nearest = findNearestSlot(finalLeft, drag.width);
+
+    if (container.hasPointerCapture?.(drag.pointerId)) {
+      container.releasePointerCapture(drag.pointerId);
+    }
+
+    container.classList.remove('is-dragging');
+    drag = null;
+
+    if (!wasDragging) {
+      const activeButton = getButtonByValue(activeValue);
+      moveIndicator(activeButton.offsetLeft, activeButton.offsetWidth, true);
+      return;
+    }
+
+    suppressClick = true;
+    commit(getValue(nearest.button), { animate: true, resetScroll: true, source: 'drag' });
+  }
+
+  container.addEventListener('pointerdown', event => {
+    if (event.button != null && event.button !== 0) return;
+
+    const activeButton = getButtonByValue(activeValue);
+    cacheSlots();
+    drag = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startLeft: activeButton.offsetLeft,
+      currentLeft: activeButton.offsetLeft,
+      width: activeButton.offsetWidth,
+      dragging: false
+    };
+    container.classList.add('is-dragging');
+    container.setPointerCapture?.(event.pointerId);
   });
+
+  container.addEventListener('pointermove', event => {
+    if (!drag || event.pointerId !== drag.pointerId) return;
+
+    const delta = event.clientX - drag.startX;
+    if (!drag.dragging && Math.abs(delta) > 4) drag.dragging = true;
+    if (!drag.dragging) return;
+
+    event.preventDefault();
+
+    const minLeft = slots[0].left;
+    const maxLeft = slots[slots.length - 1].left;
+    let left = drag.startLeft + delta;
+
+    if (left < minLeft) left = minLeft - ((minLeft - left) * 0.28);
+    else if (left > maxLeft) left = maxLeft + ((left - maxLeft) * 0.28);
+
+    const nearest = findNearestSlot(left, drag.width);
+    const dist = Math.abs((left + (drag.width / 2)) - nearest.center);
+    const zone = Math.max(24, nearest.width * 0.5);
+    if (dist < zone) {
+      const pull = Math.pow(1 - (dist / zone), 2) * 0.35;
+      left += (nearest.left - left) * pull;
+    }
+
+    drag.currentLeft = left;
+    moveIndicator(left, nearest.width, false);
+    preview(getValue(nearest.button));
+  });
+
+  container.addEventListener('pointerup', endDrag);
+  container.addEventListener('pointercancel', endDrag);
+
+  container.addEventListener('click', event => {
+    if (suppressClick) {
+      suppressClick = false;
+      return;
+    }
+    const button = event.target.closest(buttonSelector);
+    if (!button) return;
+    commit(getValue(button), { animate: true, resetScroll: true, source: 'tap' });
+  });
+
+  function refresh() {
+    cacheSlots();
+    const activeButton = getButtonByValue(activeValue);
+    syncActiveButtons(activeValue);
+    moveIndicator(activeButton.offsetLeft, activeButton.offsetWidth, false);
+  }
+
+  refresh();
+
+  return {
+    refresh,
+    setActive: (value, options = {}) => commit(value, options)
+  };
+}
+
+const panels = document.querySelectorAll('.tab-panel');
+function applyTabState(value, { resetScroll = true } = {}) {
+  panels.forEach(panel => {
+    panel.hidden = panel.id !== `panel-${value}`;
+  });
+  if (resetScroll) document.getElementById('page').scrollTop = 0;
+}
+
+const tabSwitch = initDraggableTabSwitch({
+  container: document.getElementById('tab-switcher'),
+  buttonSelector: '.tab-item',
+  getValue: button => button.dataset.tab,
+  onChange: (value, meta) => applyTabState(value, meta)
+});
+
+window.addEventListener('resize', () => {
+  tabSwitch?.refresh();
 });
 </script>
 </body>
