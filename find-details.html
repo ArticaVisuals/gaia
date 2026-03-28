@@ -1739,6 +1739,7 @@ function initDraggableTabSwitch({ container, buttonSelector, getValue, onChange 
     const wasDragging = drag.dragging;
     const finalLeft = drag.currentLeft ?? drag.startLeft;
     const nearest = findNearestSlot(finalLeft, drag.width);
+    const targetButton = drag.targetButton;
 
     if (container.hasPointerCapture?.(drag.pointerId)) {
       container.releasePointerCapture(drag.pointerId);
@@ -1748,8 +1749,13 @@ function initDraggableTabSwitch({ container, buttonSelector, getValue, onChange 
     drag = null;
 
     if (!wasDragging) {
-      const activeButton = getButtonByValue(activeValue);
-      moveIndicator(activeButton.offsetLeft, activeButton.offsetWidth, true);
+      if (targetButton) {
+        suppressClick = true;
+        commit(getValue(targetButton), { animate: true, resetScroll: true, source: 'tap' });
+      } else {
+        const activeButton = getButtonByValue(activeValue);
+        moveIndicator(activeButton.offsetLeft, activeButton.offsetWidth, true);
+      }
       return;
     }
 
@@ -1768,6 +1774,7 @@ function initDraggableTabSwitch({ container, buttonSelector, getValue, onChange 
       startLeft: activeButton.offsetLeft,
       currentLeft: activeButton.offsetLeft,
       width: activeButton.offsetWidth,
+      targetButton: event.target.closest(buttonSelector),
       dragging: false
     };
     container.classList.add('is-dragging');

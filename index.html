@@ -4013,6 +4013,7 @@ function initDraggableTabSwitch({ container, buttonSelector, getValue, onChange 
     const finalLeft = drag.currentLeft ?? drag.startLeft;
     const finalWidth = drag.width;
     const nearest = findNearestSlot(finalLeft, finalWidth);
+    const targetButton = drag.targetButton;
 
     if (container.hasPointerCapture?.(drag.pointerId)) {
       container.releasePointerCapture(drag.pointerId);
@@ -4022,8 +4023,13 @@ function initDraggableTabSwitch({ container, buttonSelector, getValue, onChange 
     drag = null;
 
     if (!wasDragging) {
-      const activeButton = getButtonByValue(activeValue);
-      moveIndicator(activeButton.offsetLeft, activeButton.offsetWidth, true);
+      if (targetButton) {
+        suppressClick = true;
+        commit(getValue(targetButton), { animate: true, resetScroll: true, source: 'tap' });
+      } else {
+        const activeButton = getButtonByValue(activeValue);
+        moveIndicator(activeButton.offsetLeft, activeButton.offsetWidth, true);
+      }
       return;
     }
 
@@ -4042,6 +4048,7 @@ function initDraggableTabSwitch({ container, buttonSelector, getValue, onChange 
       startLeft: activeButton.offsetLeft,
       currentLeft: activeButton.offsetLeft,
       width: activeButton.offsetWidth,
+      targetButton: event.target.closest(buttonSelector),
       dragging: false
     };
     container.classList.add('is-dragging');
@@ -4728,7 +4735,8 @@ const MAP_INITIAL_ZOOM = 12;
 const MAP_EASE_DURATION_MS = 350;
 
 const GAIA_PIN_SOURCE_ID = 'gaia-pins';
-const GAIA_PIN_HIDDEN_LAYER_ID = 'gaia-pins-hidden';
+const GAIA_PIN_CLUSTER_QUERY_LAYER_ID = 'gaia-pins-cluster-query';
+const GAIA_PIN_UNCLUSTERED_QUERY_LAYER_ID = 'gaia-pins-unclustered-query';
 const GAIA_CLUSTER_MAX_ZOOM = 14;
 const GAIA_CLUSTER_RADIUS = 50;
 
@@ -5365,9 +5373,11 @@ function applyClusterMarkerBuckets(resolvedBuckets) {
 
 function syncClusterMarkers() {
   if (pinsPhotoMode || !map || !map.isStyleLoaded()) return;
-  if (!map.getSource(GAIA_PIN_SOURCE_ID)) return;
+  if (!map.getLayer(GAIA_PIN_CLUSTER_QUERY_LAYER_ID) || !map.getLayer(GAIA_PIN_UNCLUSTERED_QUERY_LAYER_ID)) return;
 
-  const features = map.querySourceFeatures(GAIA_PIN_SOURCE_ID);
+  const features = map.queryRenderedFeatures({
+    layers: [GAIA_PIN_CLUSTER_QUERY_LAYER_ID, GAIA_PIN_UNCLUSTERED_QUERY_LAYER_ID]
+  });
   const buckets = {};
 
   // Deduplicate cluster/single features across source tiles while preserving
@@ -5457,13 +5467,32 @@ function initMap() {
       clusterRadius: GAIA_CLUSTER_RADIUS
     });
 
-    // Hidden layer forces Mapbox to process source tiles (required for querySourceFeatures)
+    // Invisible query layers expose the live clustered and unclustered features
+    // so we can attach custom DOM markers to the exact rendered map positions.
     map.addLayer({
-      id: GAIA_PIN_HIDDEN_LAYER_ID, type: 'circle', source: GAIA_PIN_SOURCE_ID,
-      paint: { 'circle-radius': 0, 'circle-opacity': 0 }
+      id: GAIA_PIN_CLUSTER_QUERY_LAYER_ID,
+      type: 'circle',
+      source: GAIA_PIN_SOURCE_ID,
+      filter: ['has', 'point_count'],
+      paint: {
+        'circle-radius': PIN_SIZE / 2,
+        'circle-opacity': 0,
+        'circle-stroke-opacity': 0
+      }
+    });
+    map.addLayer({
+      id: GAIA_PIN_UNCLUSTERED_QUERY_LAYER_ID,
+      type: 'circle',
+      source: GAIA_PIN_SOURCE_ID,
+      filter: ['!', ['has', 'point_count']],
+      paint: {
+        'circle-radius': PIN_SIZE / 2,
+        'circle-opacity': 0,
+        'circle-stroke-opacity': 0
+      }
     });
 
-    // ── SVG CLUSTER MARKERS (managed via querySourceFeatures) ──
+    // ── SVG CLUSTER MARKERS (managed via rendered cluster features) ──
     map.once('idle', requestClusterSync);
     map.on('move', requestClusterSync);
     map.on('moveend', requestClusterSync);

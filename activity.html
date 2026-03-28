@@ -540,6 +540,7 @@ navItems.forEach(btn => {
     const nav = btn.dataset.nav;
     if (nav === 'explore') { window.location.href = 'index.html'; return; }
     if (nav === 'observe') { window.location.href = 'observe.html'; return; }
+    if (nav === 'profile') { window.location.href = 'index.html#profile'; return; }
     if (nav === 'activity') return; // already here
 
     // Switch active state
