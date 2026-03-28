@@ -2270,8 +2270,8 @@ body.nav-page-exit {
 .profile-log-title-bar {
   display: none;
   flex-direction: column;
-  gap: 12px;
-  padding: 60px 16px 0;
+  gap: 16px;
+  padding: 19px 16px 0;
 }
 #profile-page.profile-log-mode .profile-log-title-bar { display: flex; }
 .profile-log-title {
@@ -2280,26 +2280,34 @@ body.nav-page-exit {
   font-weight: 500;
   color: var(--olive);
   text-align: center;
-  line-height: 1.2;
+  line-height: 1.1;
+  letter-spacing: -0.3px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Log search bar */
 .profile-log-search {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
   height: 40px;
   border-radius: 250px;
   border: 0.5px solid #d8c9b8;
   background: #fff;
-  padding: 4px 12px;
+  padding: 0 8px;
 }
-.profile-log-search img {
-  width: 20px; height: 20px; flex-shrink: 0; object-fit: contain; opacity: 0.5;
+.profile-log-search-icon {
+  width: 26px; height: 26px; flex-shrink: 0; object-fit: contain;
+}
+.profile-log-search-mic {
+  width: 32px; height: 32px; flex-shrink: 0; object-fit: contain;
 }
 .profile-log-search input {
   flex: 1; border: none; outline: none; background: transparent;
-  font-family: var(--font-sans); font-size: 14px; color: var(--ink);
+  font-family: var(--font-sans); font-size: 15px; color: var(--ink);
   min-width: 0;
 }
 .profile-log-search input::placeholder { color: #AC9479; }
@@ -2372,12 +2380,12 @@ body.nav-page-exit {
   background: var(--olive);
 }
 .profile-view-btn img {
-  width: 32px;
-  height: 32px;
+  width: 18px;
+  height: 18px;
   object-fit: contain;
 }
 .profile-view-btn svg {
-  width: 20px; height: 20px;
+  width: 18px; height: 18px;
   color: var(--ink);
 }
 .profile-view-btn.active svg {
@@ -2389,6 +2397,18 @@ body.nav-page-exit {
   color: #b0adb3;
   white-space: nowrap;
 }
+/* Separator after view row */
+.profile-log-view-row::after {
+  content: '';
+  position: absolute;
+  bottom: -8px; left: -16px; right: -16px;
+  height: 0.5px;
+  background: var(--olive-200);
+}
+.profile-log-view-row {
+  position: relative;
+  padding-bottom: 8px;
+}
 
 /* ── List view ── */
 .profile-log-list { display: none; }
@@ -2399,11 +2419,10 @@ body.nav-page-exit {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 0;
   background: #ededee;
-  border-radius: 6px;
   padding: 12px 10px;
-  margin-bottom: 4px;
+  margin-left: -16px;
+  margin-right: -16px;
 }
 .log-date-label {
   font-family: var(--font-sans);
@@ -2433,7 +2452,7 @@ body.nav-page-exit {
   background: var(--verm); object-fit: cover;
 }
 .log-species-info {
-  flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;
+  flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px;
 }
 .log-species-name {
   font-family: var(--font-serif);
@@ -2452,7 +2471,8 @@ body.nav-page-exit {
   flex-shrink: 0;
   display: inline-flex; align-items: center; justify-content: center;
   padding: 4px 10px; border-radius: 1000px;
-  font-family: var(--font-sans); font-size: 13px; font-weight: 400;
+  font-family: var(--font-sans); font-size: 15px; font-weight: 400;
+  line-height: 1.2;
   background: transparent; cursor: default;
 }
 .log-status-pill--verified {
@@ -3775,9 +3795,9 @@ body.nav-page-exit {
         <div class="profile-log-title-bar">
           <div class="profile-log-title">Log</div>
           <div class="profile-log-search">
-            <img src="assets/icons/system/search-20.svg" alt="">
+            <img class="profile-log-search-icon" src="assets/icons/system/search-20.svg" alt="">
             <input type="text" placeholder="Search species, location, notes...">
-            <img src="assets/icons/system/microphone-20-base.svg" alt="">
+            <img class="profile-log-search-mic" src="assets/icons/system/microphone-20-base.svg" alt="">
           </div>
         </div>
 
