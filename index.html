@@ -694,12 +694,14 @@ html, body {
   box-shadow: var(--pin-glow-stack);
   touch-action: manipulation;
 }
-.gaia-number-pin svg {
+.gaia-number-pin__orb {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
   display: block;
+  border-radius: 50%;
+  box-sizing: border-box;
+  background: linear-gradient(to bottom, var(--pin-fill-top), var(--pin-fill-bottom));
+  border: 1.506px solid var(--pin-ring);
 }
 .gaia-number-pin__count {
   position: absolute;
@@ -4735,8 +4737,6 @@ const MAP_INITIAL_ZOOM = 12;
 const MAP_EASE_DURATION_MS = 350;
 
 const GAIA_PIN_SOURCE_ID = 'gaia-pins';
-const GAIA_PIN_CLUSTER_QUERY_LAYER_ID = 'gaia-pins-cluster-query';
-const GAIA_PIN_UNCLUSTERED_QUERY_LAYER_ID = 'gaia-pins-unclustered-query';
 const GAIA_CLUSTER_MAX_ZOOM = 14;
 const GAIA_CLUSTER_RADIUS = 50;
 
@@ -5242,27 +5242,32 @@ function initPhotoMarkers() {
   });
 }
 
-let clusterMarkers = {}; // key → { marker, el }
-let numberPinUid = 0;
+let clusterMarkers = {}; // key → { el, lng, lat }
+let _clusterContainer = null;
+
+function initClusterMarkerContainer() {
+  if (_clusterContainer) return;
+  _clusterContainer = document.createElement('div');
+  _clusterContainer.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:2;overflow:hidden;';
+  map.getContainer().appendChild(_clusterContainer);
+}
+
+function syncClusterMarkerPositions() {
+  if (!map || !_clusterContainer || pinsPhotoMode) return;
+  for (const marker of Object.values(clusterMarkers)) {
+    const pos = map.project([marker.lng, marker.lat]);
+    marker.el.style.transform = `translate3d(${pos.x - (PIN_SIZE / 2)}px, ${pos.y - (PIN_SIZE / 2)}px, 0)`;
+  }
+}
 
 function makeNumberPinEl(count) {
   const safeCount = Math.max(1, Number(count) || 1);
-  const gradId = `gaia-pin-grad-${numberPinUid++}`;
 
   const el = document.createElement('button');
   el.type = 'button';
   el.className = 'gaia-cluster gaia-number-pin';
   el.innerHTML =
-    `<svg xmlns="http://www.w3.org/2000/svg" width="62" height="62" viewBox="0 0 61.9644 61.9644" fill="none" aria-hidden="true">` +
-      '<defs>' +
-        `<linearGradient id="${gradId}" x1="30.9822" y1="0" x2="30.9822" y2="61.9644" gradientUnits="userSpaceOnUse">` +
-          '<stop stop-color="#7BB369"/>' +
-          '<stop offset="1" stop-color="#6E9152"/>' +
-        '</linearGradient>' +
-      '</defs>' +
-      `<circle cx="30.9822" cy="30.9822" r="30.9822" fill="url(#${gradId})" />` +
-      '<circle cx="30.9822" cy="30.9822" r="30.2292" stroke="#FFFFFF" stroke-opacity="0.5" stroke-width="1.50598"/>' +
-    '</svg>' +
+    '<span class="gaia-number-pin__orb" aria-hidden="true"></span>' +
     '<span class="gaia-number-pin__count"></span>';
 
   setNumberPinCount(el, safeCount);
@@ -5336,7 +5341,8 @@ function applyClusterMarkerBuckets(resolvedBuckets) {
   for (const b of resolvedBuckets) {
     const existing = clusterMarkers[b.key];
     if (existing) {
-      existing.marker.setLngLat([b.lng, b.lat]);
+      existing.lng = b.lng;
+      existing.lat = b.lat;
 
       if (b.isCluster) {
         setNumberPinCount(existing.el, b.pointCount);
@@ -5355,59 +5361,51 @@ function applyClusterMarkerBuckets(resolvedBuckets) {
     const el = b.isCluster
       ? makeClusterSvgEl(b.pointCount, b.clusterId, b.lng, b.lat)
       : makeSingleSvgEl(b.lng, b.lat);
+    el.style.position = 'absolute';
+    el.style.left = '0';
+    el.style.top = '0';
+    el.style.pointerEvents = 'auto';
+    _clusterContainer.appendChild(el);
 
-    const marker = new mapboxgl.Marker({ element: el, anchor: 'center' })
-      .setLngLat([b.lng, b.lat])
-      .addTo(map);
-
-    clusterMarkers[b.key] = { marker, el };
+    clusterMarkers[b.key] = { el, lng: b.lng, lat: b.lat };
   }
 
   for (const key of Object.keys(clusterMarkers)) {
     if (!seen.has(key)) {
-      clusterMarkers[key].marker.remove();
+      clusterMarkers[key].el.remove();
       delete clusterMarkers[key];
     }
   }
+
+  syncClusterMarkerPositions();
 }
 
 function syncClusterMarkers() {
   if (pinsPhotoMode || !map || !map.isStyleLoaded()) return;
-  if (!map.getLayer(GAIA_PIN_CLUSTER_QUERY_LAYER_ID) || !map.getLayer(GAIA_PIN_UNCLUSTERED_QUERY_LAYER_ID)) return;
+  if (!map.getSource(GAIA_PIN_SOURCE_ID)) return;
 
-  const features = map.queryRenderedFeatures({
-    layers: [GAIA_PIN_CLUSTER_QUERY_LAYER_ID, GAIA_PIN_UNCLUSTERED_QUERY_LAYER_ID]
-  });
+  const features = map.querySourceFeatures(GAIA_PIN_SOURCE_ID);
   const buckets = {};
 
   // Deduplicate cluster/single features across source tiles while preserving
-  // each feature's actual map coordinate so pins stay anchored to real positions.
+  // the canonical cluster/point coordinate reported by the source.
   for (const f of features) {
     const isCluster = Boolean(f.properties.cluster);
     const key = isCluster ? 'c' + f.properties.cluster_id : 's' + f.properties.id;
-    const lng = normalizeLngToMap(f.geometry.coordinates[0]);
-    const lat = Number(f.geometry.coordinates[1]);
+    if (buckets[key]) continue;
 
-    if (!buckets[key]) {
-      buckets[key] = {
-        key,
-        isCluster,
-        clusterId: isCluster ? f.properties.cluster_id : null,
-        pointCount: isCluster ? Math.max(1, Number(f.properties.point_count) || 1) : 1,
-        lng,
-        lat
-      };
-      continue;
-    }
-
-    const b = buckets[key];
-    if (isCluster) {
-      b.pointCount = Math.max(b.pointCount, Math.max(1, Number(f.properties.point_count) || 1));
-      b.clusterId = f.properties.cluster_id;
-    }
+    buckets[key] = {
+      key,
+      isCluster,
+      clusterId: isCluster ? f.properties.cluster_id : null,
+      pointCount: isCluster ? Math.max(1, Number(f.properties.point_count) || 1) : 1,
+      lng: normalizeLngToMap(f.geometry.coordinates[0]),
+      lat: Number(f.geometry.coordinates[1])
+    };
   }
 
-  applyClusterMarkerBuckets(Object.values(buckets));
+  const bucketValues = Object.values(buckets);
+  applyClusterMarkerBuckets(bucketValues);
 }
 
 function setPinMode(photoMode) {
@@ -5467,35 +5465,24 @@ function initMap() {
       clusterRadius: GAIA_CLUSTER_RADIUS
     });
 
-    // Invisible query layers expose the live clustered and unclustered features
-    // so we can attach custom DOM markers to the exact rendered map positions.
+    // Hidden query layer ensures the clustered source stays active for feature queries.
     map.addLayer({
-      id: GAIA_PIN_CLUSTER_QUERY_LAYER_ID,
+      id: 'gaia-pins-hidden-query',
       type: 'circle',
       source: GAIA_PIN_SOURCE_ID,
-      filter: ['has', 'point_count'],
       paint: {
-        'circle-radius': PIN_SIZE / 2,
-        'circle-opacity': 0,
-        'circle-stroke-opacity': 0
-      }
-    });
-    map.addLayer({
-      id: GAIA_PIN_UNCLUSTERED_QUERY_LAYER_ID,
-      type: 'circle',
-      source: GAIA_PIN_SOURCE_ID,
-      filter: ['!', ['has', 'point_count']],
-      paint: {
-        'circle-radius': PIN_SIZE / 2,
+        'circle-radius': 1,
         'circle-opacity': 0,
         'circle-stroke-opacity': 0
       }
     });
 
-    // ── SVG CLUSTER MARKERS (managed via rendered cluster features) ──
+    // ── SVG CLUSTER MARKERS (managed via source features) ──
+    initClusterMarkerContainer();
     map.once('idle', requestClusterSync);
     map.on('move', requestClusterSync);
     map.on('moveend', requestClusterSync);
+    map.on('render', syncClusterMarkerPositions);
     map.on('sourcedata', e => {
       if (e.sourceId === GAIA_PIN_SOURCE_ID) {
         requestClusterSync();
