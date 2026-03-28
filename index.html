@@ -1690,9 +1690,12 @@ body.nav-page-exit {
   will-change: opacity, transform;
 }
 #profile-page.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+/* Disable CSS transition during nav-bar drag — JS drives opacity directly */
+#profile-page.nav-dragging { transition: none !important; }
 #profile-page.profile-modal-active { z-index: 80; }
 /* Hide main header when profile page is active */
 #header.profile-hidden { opacity: 0; pointer-events: none; transform: translateY(-10px); }
+#header.nav-dragging { transition: none !important; }
 
 /* Profile toolbar (top-right glass buttons) */
 .profile-toolbar {
@@ -2248,12 +2251,59 @@ body.nav-page-exit {
   gap: 16px;
   padding-top: 20px;
 }
+#profile-page.profile-log-mode .profile-tab-panel--log {
+  padding-top: 0;
+}
 .profile-tab-panel--community {
   gap: 24px;
   padding-top: 20px;
 }
 
 /* ── Log tab ── */
+
+/* Log mode: hide profile header, toolbar, and tabs when log is active */
+#profile-page.profile-log-mode .profile-toolbar { opacity: 0; pointer-events: none; }
+#profile-page.profile-log-mode .profile-header { display: none; }
+#profile-page.profile-log-mode .profile-content { margin-top: 0; padding-top: 0; }
+
+/* Log title toolbar (replaces profile header) */
+.profile-log-title-bar {
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+  padding: 60px 16px 0;
+}
+#profile-page.profile-log-mode .profile-log-title-bar { display: flex; }
+.profile-log-title {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--olive);
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* Log search bar */
+.profile-log-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  border-radius: 250px;
+  border: 0.5px solid #d8c9b8;
+  background: #fff;
+  padding: 4px 12px;
+}
+.profile-log-search img {
+  width: 20px; height: 20px; flex-shrink: 0; object-fit: contain; opacity: 0.5;
+}
+.profile-log-search input {
+  flex: 1; border: none; outline: none; background: transparent;
+  font-family: var(--font-sans); font-size: 14px; color: var(--ink);
+  min-width: 0;
+}
+.profile-log-search input::placeholder { color: #AC9479; }
+
 .profile-log-toolbar {
   display: flex;
   align-items: center;
@@ -2293,6 +2343,13 @@ body.nav-page-exit {
   background: var(--olive);
   color: var(--paper-50);
 }
+
+/* View controls row */
+.profile-log-view-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 .profile-view-toggle {
   display: inline-flex;
   align-items: center;
@@ -2319,10 +2376,109 @@ body.nav-page-exit {
   height: 32px;
   object-fit: contain;
 }
+.profile-view-btn svg {
+  width: 20px; height: 20px;
+  color: var(--ink);
+}
+.profile-view-btn.active svg {
+  color: var(--paper-50);
+}
+.profile-log-finds-count {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: #b0adb3;
+  white-space: nowrap;
+}
+
+/* ── List view ── */
+.profile-log-list { display: none; }
+.profile-log-list.active { display: block; }
+
+.log-date-section {}
+.log-date-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  background: #ededee;
+  border-radius: 6px;
+  padding: 12px 10px;
+  margin-bottom: 4px;
+}
+.log-date-label {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.log-date-count {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 400;
+  color: #b1b2b5;
+}
+
+.log-species-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0;
+  min-height: 100px;
+  border-bottom: 1px solid var(--olive-100);
+}
+.log-species-row:last-child { border-bottom: none; }
+
+.log-species-thumb {
+  width: 55px; height: 55px; border-radius: 8px; flex-shrink: 0;
+  background: var(--verm); object-fit: cover;
+}
+.log-species-info {
+  flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;
+}
+.log-species-name {
+  font-family: var(--font-serif);
+  font-size: 16px; font-weight: 400; color: var(--ink); line-height: 1.3;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.log-species-latin {
+  font-family: var(--font-sans);
+  font-size: 13px; font-style: italic; color: var(--ink-300); line-height: 1.3;
+}
+.log-species-meta {
+  font-family: var(--font-sans);
+  font-size: 12px; font-weight: 400; color: var(--ink-300);
+}
+.log-status-pill {
+  flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 4px 10px; border-radius: 1000px;
+  font-family: var(--font-sans); font-size: 13px; font-weight: 400;
+  background: transparent; cursor: default;
+}
+.log-status-pill--verified {
+  border: 1px solid var(--olive); color: var(--olive);
+}
+.log-status-pill--needs-id {
+  border: 1px solid #9B856B; color: #9B856B;
+}
+.log-status-pill--draft {
+  border: 1px solid #b1b2b5; color: #b1b2b5;
+}
+
+/* Map placeholder view */
+.profile-log-map { display: none; }
+.profile-log-map.active {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 300px; border-radius: 12px; background: var(--olive-100);
+  font-family: var(--font-sans); font-size: 14px; color: var(--ink-300);
+}
 .profile-organism-grid {
-  display: grid;
+  display: none;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
+}
+.profile-organism-grid.active {
+  display: grid;
 }
 .profile-organism-card {
   position: relative;
@@ -3615,23 +3771,44 @@ body.nav-page-exit {
 
       </div>
       <div class="profile-tab-panel profile-tab-panel--log" data-profile-panel="log">
+        <!-- Log title bar (visible only in log mode) -->
+        <div class="profile-log-title-bar">
+          <div class="profile-log-title">Log</div>
+          <div class="profile-log-search">
+            <img src="assets/icons/system/search-20.svg" alt="">
+            <input type="text" placeholder="Search species, location, notes...">
+            <img src="assets/icons/system/microphone-20-base.svg" alt="">
+          </div>
+        </div>
+
         <div class="profile-log-toolbar">
           <div class="profile-log-filters">
             <button class="profile-chip active" type="button">All</button>
-            <button class="profile-chip" type="button">Needs ID</button>
-            <button class="profile-chip" type="button">Verified</button>
-            <button class="profile-chip" type="button">Drafts</button>
-          </div>
-          <div class="profile-view-toggle" aria-label="Log view options">
-            <button class="profile-view-btn active" type="button" aria-label="Grid view">
-              <img src="assets/icons/system/grid-32.svg" alt="">
-            </button>
-            <button class="profile-view-btn" type="button" aria-label="List view">
-              <img src="assets/icons/system/list-32.svg" alt="">
-            </button>
+            <button class="profile-chip" type="button">Birds</button>
+            <button class="profile-chip" type="button">Plants</button>
+            <button class="profile-chip" type="button">Mammals</button>
+            <button class="profile-chip" type="button">Reptiles</button>
           </div>
         </div>
-        <div class="profile-organism-grid">
+
+        <div class="profile-log-view-row">
+          <div class="profile-view-toggle" aria-label="Log view options">
+            <button class="profile-view-btn active" type="button" data-log-view="grid" aria-label="Grid view">
+              <img src="assets/icons/system/grid-32.svg" alt="">
+            </button>
+            <button class="profile-view-btn" type="button" data-log-view="list" aria-label="List view">
+              <img src="assets/icons/system/list-32.svg" alt="">
+            </button>
+            <button class="profile-view-btn" type="button" data-log-view="map" aria-label="Map view">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 6L6 9V26L12 23M12 6L20 9M12 6V23M20 9L26 6V23L20 26M20 9V26M12 23L20 26" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+          <span class="profile-log-finds-count">127 finds</span>
+        </div>
+
+        <div class="profile-organism-grid active">
           <article class="profile-organism-card">
             <img class="profile-organism-card-blur" src="https://www.figma.com/api/mcp/asset/2e4ece4a-e9f3-4a6a-b76c-2146c08e35e0" alt="">
             <img class="profile-organism-card-media" src="https://www.figma.com/api/mcp/asset/2e4ece4a-e9f3-4a6a-b76c-2146c08e35e0" alt="">
@@ -3687,6 +3864,113 @@ body.nav-page-exit {
             <div class="profile-organism-card-title">Spiny Starowort</div>
           </article>
         </div>
+
+        <!-- List view -->
+        <div class="profile-log-list">
+          <div class="log-date-section">
+            <div class="log-date-header">
+              <span class="log-date-label">Today</span>
+              <span class="log-date-count">2 finds</span>
+            </div>
+            <div class="log-species-row">
+              <div class="log-species-thumb"></div>
+              <div class="log-species-info">
+                <div class="log-species-name">Red Fox</div>
+                <div class="log-species-latin">Vulpes vulpes</div>
+                <div class="log-species-meta">Eaton Canyon &middot; 2:15 PM</div>
+              </div>
+              <span class="log-status-pill log-status-pill--verified">Verified</span>
+            </div>
+            <div class="log-species-row">
+              <div class="log-species-thumb"></div>
+              <div class="log-species-info">
+                <div class="log-species-name">Unknown Moth</div>
+                <div class="log-species-latin">Needs ID</div>
+                <div class="log-species-meta">Eaton Canyon &middot; 2:08 PM</div>
+              </div>
+              <span class="log-status-pill log-status-pill--needs-id">Needs ID</span>
+            </div>
+          </div>
+
+          <div class="log-date-section">
+            <div class="log-date-header">
+              <span class="log-date-label">Yesterday</span>
+              <span class="log-date-count">1 find</span>
+            </div>
+            <div class="log-species-row">
+              <div class="log-species-thumb"></div>
+              <div class="log-species-info">
+                <div class="log-species-name">Coast Live Oak</div>
+                <div class="log-species-latin">Quercus agrifolia</div>
+                <div class="log-species-meta">Arroyo Seco &middot; 10:30 AM</div>
+              </div>
+              <span class="log-status-pill log-status-pill--verified">Verified</span>
+            </div>
+          </div>
+
+          <div class="log-date-section">
+            <div class="log-date-header">
+              <span class="log-date-label">Mar 25</span>
+              <span class="log-date-count">3 finds</span>
+            </div>
+            <div class="log-species-row">
+              <div class="log-species-thumb"></div>
+              <div class="log-species-info">
+                <div class="log-species-name">Western Fence Lizard</div>
+                <div class="log-species-latin">Needs ID</div>
+                <div class="log-species-meta">Hahamongna &middot; 3:45 PM</div>
+              </div>
+              <span class="log-status-pill log-status-pill--needs-id">Needs ID</span>
+            </div>
+            <div class="log-species-row">
+              <div class="log-species-thumb"></div>
+              <div class="log-species-info">
+                <div class="log-species-name">Black Phoebe</div>
+                <div class="log-species-latin">Sayornis nigricans</div>
+                <div class="log-species-meta">Rose Bowl Trail &middot; 1:20 PM</div>
+              </div>
+              <span class="log-status-pill log-status-pill--verified">Verified</span>
+            </div>
+            <div class="log-species-row">
+              <div class="log-species-thumb"></div>
+              <div class="log-species-info">
+                <div class="log-species-name">California Poppy</div>
+                <div class="log-species-latin">Eschscholzia californica</div>
+                <div class="log-species-meta">Eaton Canyon &middot; 11:00 AM</div>
+              </div>
+              <span class="log-status-pill log-status-pill--verified">Verified</span>
+            </div>
+          </div>
+
+          <div class="log-date-section">
+            <div class="log-date-header">
+              <span class="log-date-label">Mar 24</span>
+              <span class="log-date-count">2 finds</span>
+            </div>
+            <div class="log-species-row">
+              <div class="log-species-thumb"></div>
+              <div class="log-species-info">
+                <div class="log-species-name">Red-tailed Hawk</div>
+                <div class="log-species-latin">Buteo jamaicensis</div>
+                <div class="log-species-meta">JPL Trail &middot; 4:10 PM</div>
+              </div>
+              <span class="log-status-pill log-status-pill--verified">Verified</span>
+            </div>
+            <div class="log-species-row">
+              <div class="log-species-thumb"></div>
+              <div class="log-species-info">
+                <div class="log-species-name">Buckwheat</div>
+                <div class="log-species-latin">Eriogonum fasciculatum</div>
+                <div class="log-species-meta">Altadena Trail &middot; 9:30 AM</div>
+              </div>
+              <span class="log-status-pill log-status-pill--draft">Draft</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Map placeholder view -->
+        <div class="profile-log-map">Map view coming soon</div>
+
       </div>
       <div class="profile-tab-panel profile-tab-panel--community" data-profile-panel="community">
         <div class="community-summary-card">
@@ -4143,6 +4427,13 @@ function applyProfileTabState(tabName = 'impact', { resetScroll = false, source 
   panels.forEach(panel => {
     panel.classList.toggle('active', panel.dataset.profilePanel === resolvedTab);
   });
+
+  // Toggle log mode on the profile page
+  const profilePageEl = document.getElementById('profile-page');
+  if (profilePageEl) {
+    profilePageEl.classList.toggle('profile-log-mode', resolvedTab === 'log');
+  }
+
   if (source !== 'primary-nav' && source !== 'nav-preview') {
     syncBottomNavForProfileTab(resolvedTab, false);
   }
@@ -4561,7 +4852,9 @@ function schedulePrimaryNavRoute(navName) {
   if (!href) return;
 
   clearPendingNavRoute();
-  const surface = getComputedStyle(document.body).backgroundColor;
+  // Use the visible surface color (cream) not the dark body bg, to avoid a black flash
+  const profileVisible = document.getElementById('profile-page')?.classList.contains('visible');
+  const surface = profileVisible ? '#fefdf9' : getComputedStyle(document.body).backgroundColor;
   sessionStorage.setItem(NAV_PAGE_TRANSITION_KEY, JSON.stringify({ nav: navName, ts: Date.now(), surface }));
   document.documentElement.style.backgroundColor = surface;
   document.body.classList.add('nav-page-transition', 'nav-page-exit');
@@ -4642,6 +4935,65 @@ function navPointerDown(e) {
   cacheTabSlots();
 }
 
+// Returns true if a nav tab shows the profile page overlay
+function navShowsProfile(btn) {
+  const n = btn.dataset.nav;
+  return n === 'log' || n === 'profile';
+}
+
+// Compute 0→1 profile opacity based on indicator position during drag
+function calcProfileDragOpacity(x) {
+  const indW = document.querySelector('.nav-indicator')?.offsetWidth || 76;
+  const center = x + indW / 2;
+
+  // Find bounding pair of slots
+  if (center <= tabSlots[0].center)                   return navShowsProfile(tabSlots[0].btn) ? 1 : 0;
+  if (center >= tabSlots[tabSlots.length - 1].center) return navShowsProfile(tabSlots[tabSlots.length - 1].btn) ? 1 : 0;
+
+  for (let i = 0; i < tabSlots.length - 1; i++) {
+    const L = tabSlots[i], R = tabSlots[i + 1];
+    if (center >= L.center && center <= R.center) {
+      const t = (center - L.center) / (R.center - L.center);
+      const lp = navShowsProfile(L.btn), rp = navShowsProfile(R.btn);
+      if (lp && rp)  return 1;
+      if (!lp && !rp) return 0;
+      return lp ? 1 - t : t;    // crossfade between profile / non-profile
+    }
+  }
+  return 0;
+}
+
+function applyProfileDragOpacity(opacity) {
+  const pp = document.getElementById('profile-page');
+  const hd = document.getElementById('header');
+  if (pp) {
+    pp.classList.add('nav-dragging');
+    pp.style.opacity = opacity;
+    pp.style.visibility = opacity > 0.01 ? 'visible' : 'hidden';
+    pp.style.pointerEvents = opacity > 0.5 ? 'auto' : 'none';
+    pp.style.transform = `translateY(${(1 - opacity) * 18}px)`;
+  }
+  if (hd) {
+    hd.classList.add('nav-dragging');
+    hd.style.opacity = 1 - opacity;
+    hd.style.pointerEvents = opacity < 0.5 ? '' : 'none';
+    hd.style.transform = `translateY(${opacity * -10}px)`;
+  }
+}
+
+function clearProfileDragState() {
+  const pp = document.getElementById('profile-page');
+  const hd = document.getElementById('header');
+  [pp, hd].forEach(el => {
+    if (!el) return;
+    el.classList.remove('nav-dragging');
+    el.style.opacity = '';
+    el.style.visibility = '';
+    el.style.pointerEvents = '';
+    el.style.transform = '';
+  });
+}
+
 function navPointerMove(e) {
   if (!navDrag) return;
   const dx = e.clientX - navDrag.startX;
@@ -4675,7 +5027,22 @@ function navPointerMove(e) {
 
   // Update active tab in real time
   setActiveNavButton(near.btn);
-  previewPrimaryNav(near.btn.dataset.nav);
+
+  // Smoothly interpolate profile page opacity based on indicator position
+  const profileOpacity = calcProfileDragOpacity(x);
+  applyProfileDragOpacity(profileOpacity);
+
+  // Still update the profile tab content (log vs impact) for the nearest tab
+  const navName = near.btn.dataset.nav;
+  if (navShowsProfile(near.btn)) {
+    const pp = document.getElementById('profile-page');
+    if (pp && !pp.classList.contains('visible')) pp.classList.add('visible');
+    if (navName === 'log') {
+      setActiveProfileTab('log', { resetScroll: false, source: 'nav-preview' });
+    } else {
+      setActiveProfileTab(getProfileNavCommitTab(), { resetScroll: false, source: 'nav-preview' });
+    }
+  }
 }
 
 function navPointerUp() {
@@ -4687,6 +5054,9 @@ function navPointerUp() {
     commitPrimaryNav(state.tapBtn);
     return;
   }
+
+  // Clear inline drag styles, then commit — CSS transitions handle the snap
+  clearProfileDragState();
 
   // Drag release — spring-snap to nearest tab (width + position animate together)
   const ind = document.querySelector('.nav-indicator');
@@ -4785,6 +5155,17 @@ function setupEvents() {
     if (!btn) return;
     profileViewToggle.querySelectorAll('.profile-view-btn').forEach(item => item.classList.remove('active'));
     btn.classList.add('active');
+
+    // Switch between grid / list / map views
+    const view = btn.dataset.logView;
+    const logPanel = document.querySelector('.profile-tab-panel--log');
+    if (!logPanel || !view) return;
+    const grid = logPanel.querySelector('.profile-organism-grid');
+    const list = logPanel.querySelector('.profile-log-list');
+    const map  = logPanel.querySelector('.profile-log-map');
+    if (grid) grid.classList.toggle('active', view === 'grid');
+    if (list) list.classList.toggle('active', view === 'list');
+    if (map)  map.classList.toggle('active',  view === 'map');
   });
 
   // Nav bar — pointer-based drag + tap (Liquid Glass-inspired)
