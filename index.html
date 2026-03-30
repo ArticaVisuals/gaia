@@ -833,6 +833,7 @@ body.nav-page-exit {
 .fd-back-btn .fd-glass-multiply {
   position: absolute; inset: 0; border-radius: 296px;
   background: white; mix-blend-mode: multiply; pointer-events: none;
+  display: none;
 }
 /* Figma Fill + Shadow BG */
 .fd-back-btn .fd-glass-bg {
@@ -843,6 +844,8 @@ body.nav-page-exit {
 .fd-back-btn .fd-glass-bg::before {
   content: ''; position: absolute; inset: 0; border-radius: 296px;
   background: rgba(255,255,255,0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 .fd-back-btn .fd-glass-bg .fd-glass-burn {
   position: absolute; inset: 0; border-radius: 296px;
@@ -858,6 +861,10 @@ body.nav-page-exit {
   display: flex; align-items: center; justify-content: center;
 }
 .fd-back-icon-wrap .gaia-icon { position: relative; z-index: 1; }
+.fd-back-icon-wrap .gaia-icon--left-arrow-20 {
+  width: 32px;
+  height: 32px;
+}
 
 /* Right pill — glass cool, contains icon buttons */
 .fd-toolbar-right {
@@ -870,6 +877,7 @@ body.nav-page-exit {
 .fd-toolbar-right .fd-glass-multiply {
   position: absolute; inset: 0; border-radius: 296px;
   background: white; mix-blend-mode: multiply; pointer-events: none;
+  display: none;
 }
 .fd-toolbar-right .fd-glass-bg {
   position: absolute; inset: 0; border-radius: 296px;
@@ -879,6 +887,8 @@ body.nav-page-exit {
 .fd-toolbar-right .fd-glass-bg::before {
   content: ''; position: absolute; inset: 0; border-radius: 296px;
   background: rgba(255,255,255,0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 .fd-toolbar-right .fd-glass-bg .fd-glass-burn {
   position: absolute; inset: 0; border-radius: 296px;
@@ -895,6 +905,11 @@ body.nav-page-exit {
   display: flex; align-items: center; justify-content: center;
 }
 .fd-toolbar-icon-btn .gaia-icon { position: relative; z-index: 1; }
+.fd-toolbar-icon-btn .gaia-icon--plus-24,
+.fd-toolbar-icon-btn .gaia-icon--share-24 {
+  width: 36px;
+  height: 36px;
+}
 /* ── Hero blur — faded progressive blur ────────────────────
    Two layers:
    1. Backdrop-blur with mask-image so blur fades in smoothly
@@ -1078,6 +1093,10 @@ body.nav-page-exit {
   background: #f7f7f7; mix-blend-mode: darken; pointer-events: none;
 }
 .fd-expand-btn .gaia-icon { position: relative; z-index: 1; }
+.fd-expand-btn .gaia-icon--expand-20 {
+  width: 24px;
+  height: 24px;
+}
 /* Location bar on map — glass effect */
 .fd-location-bar {
   position: relative; z-index: 1;
@@ -1785,8 +1804,8 @@ body.nav-page-exit {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  object-position: center bottom;
+  object-fit: cover;
+  object-position: center 68%;
   display: block;
 }
 .fd-learn-story-image::after {
@@ -1837,19 +1856,15 @@ body.nav-page-exit {
   width: 40px;
   height: 40px;
   flex-shrink: 0;
+  border: 2.2px solid var(--paper-50);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .fd-learn-story-arrow img {
-  position: absolute;
+  position: relative;
   display: block;
-}
-.fd-learn-story-arrow img:first-child {
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-.fd-learn-story-arrow img:last-child {
-  top: 9.95px;
-  left: 7.3px;
   width: 15.59px;
   height: 20.103px;
   transform: rotate(90deg);
@@ -3824,7 +3839,6 @@ body.nav-page-exit {
                   <div class="fd-learn-story-headline">
                     <div class="fd-learn-story-title">The Story of<br>a Keystone</div>
                     <span class="fd-learn-story-arrow" aria-hidden="true">
-                      <img src="assets/find-details/learn-v2/story-arrow-circle.svg" alt="">
                       <img src="assets/find-details/learn-v2/story-arrow.svg" alt="">
                     </span>
                   </div>
