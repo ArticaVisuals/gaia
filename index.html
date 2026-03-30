@@ -826,34 +826,43 @@ body.nav-page-exit {
   width: 48px; height: 48px; border-radius: 296px; border: none;
   cursor: pointer; display: flex; align-items: center; justify-content: center;
   padding: 0 6px; position: relative;
-  background: transparent;
+  background: var(--glass-toolbar-fill);
+  border: 1px solid var(--glass-toolbar-border);
+  box-shadow: var(--glass-toolbar-shadow), var(--glass-toolbar-inner-shadow);
+  backdrop-filter: blur(var(--glass-toolbar-blur)) saturate(var(--glass-toolbar-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-toolbar-blur)) saturate(var(--glass-toolbar-saturate));
   isolation: isolate; overflow: hidden;
 }
-/* Figma mix-blend-multiply white base */
+.fd-back-btn::before,
+.fd-toolbar-right::before,
+.fd-expand-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--glass-toolbar-highlight);
+  pointer-events: none;
+  z-index: 0;
+}
+.fd-back-btn::after,
+.fd-toolbar-right::after,
+.fd-expand-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--glass-toolbar-depth);
+  pointer-events: none;
+  z-index: 0;
+}
+/* Legacy inner glass layers — hidden in favor of shared liquid glass recipe */
 .fd-back-btn .fd-glass-multiply {
   position: absolute; inset: 0; border-radius: 296px;
   background: white; mix-blend-mode: multiply; pointer-events: none;
   display: none;
 }
-/* Figma Fill + Shadow BG */
 .fd-back-btn .fd-glass-bg {
-  position: absolute; inset: 0; border-radius: 296px;
-  box-shadow: 0px 8px 40px 0px rgba(0,0,0,0.12);
-  overflow: hidden;
-}
-.fd-back-btn .fd-glass-bg::before {
-  content: ''; position: absolute; inset: 0; border-radius: 296px;
-  background: rgba(255,255,255,0.65);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-}
-.fd-back-btn .fd-glass-bg .fd-glass-burn {
-  position: absolute; inset: 0; border-radius: 296px;
-  background: #ddd; mix-blend-mode: color-burn; pointer-events: none;
-}
-.fd-back-btn .fd-glass-bg .fd-glass-darken {
-  position: absolute; inset: 0; border-radius: 296px;
-  background: #f7f7f7; mix-blend-mode: darken; pointer-events: none;
+  display: none;
 }
 /* Back icon container — 32×32, icon inset per Figma */
 .fd-back-icon-wrap {
@@ -862,8 +871,8 @@ body.nav-page-exit {
 }
 .fd-back-icon-wrap .gaia-icon { position: relative; z-index: 1; }
 .fd-back-icon-wrap .gaia-icon--left-arrow-20 {
-  width: 32px;
-  height: 32px;
+  width: 20px;
+  height: 20px;
 }
 
 /* Right pill — glass cool, contains icon buttons */
@@ -871,7 +880,11 @@ body.nav-page-exit {
   display: flex; gap: 18px; align-items: center;
   padding: 0 10px; border-radius: 296px; height: 48px;
   position: relative;
-  background: transparent;
+  background: var(--glass-toolbar-fill);
+  border: 1px solid var(--glass-toolbar-border);
+  box-shadow: var(--glass-toolbar-shadow), var(--glass-toolbar-inner-shadow);
+  backdrop-filter: blur(var(--glass-toolbar-blur)) saturate(var(--glass-toolbar-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-toolbar-blur)) saturate(var(--glass-toolbar-saturate));
   isolation: isolate; overflow: hidden;
 }
 .fd-toolbar-right .fd-glass-multiply {
@@ -880,23 +893,7 @@ body.nav-page-exit {
   display: none;
 }
 .fd-toolbar-right .fd-glass-bg {
-  position: absolute; inset: 0; border-radius: 296px;
-  box-shadow: 0px 8px 40px 0px rgba(0,0,0,0.12);
-  overflow: hidden;
-}
-.fd-toolbar-right .fd-glass-bg::before {
-  content: ''; position: absolute; inset: 0; border-radius: 296px;
-  background: rgba(255,255,255,0.65);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-}
-.fd-toolbar-right .fd-glass-bg .fd-glass-burn {
-  position: absolute; inset: 0; border-radius: 296px;
-  background: #ddd; mix-blend-mode: color-burn; pointer-events: none;
-}
-.fd-toolbar-right .fd-glass-bg .fd-glass-darken {
-  position: absolute; inset: 0; border-radius: 296px;
-  background: #f7f7f7; mix-blend-mode: darken; pointer-events: none;
+  display: none;
 }
 /* Icon buttons inside right pill — 36×36 */
 .fd-toolbar-icon-btn {
@@ -907,8 +904,8 @@ body.nav-page-exit {
 .fd-toolbar-icon-btn .gaia-icon { position: relative; z-index: 1; }
 .fd-toolbar-icon-btn .gaia-icon--plus-24,
 .fd-toolbar-icon-btn .gaia-icon--share-24 {
-  width: 36px;
-  height: 36px;
+  width: 24px;
+  height: 24px;
 }
 /* ── Hero blur — faded progressive blur ────────────────────
    Two layers:
@@ -1079,23 +1076,18 @@ body.nav-page-exit {
   width: 44px; height: 44px; border-radius: 296px; border: none;
   position: relative; cursor: pointer; display: flex;
   align-items: center; justify-content: center;
-  background: rgba(255,255,255,0.65);
-  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0px 8px 40px rgba(0,0,0,0.12);
+  background: var(--glass-toolbar-fill);
+  border: 1px solid var(--glass-toolbar-border);
+  backdrop-filter: blur(var(--glass-toolbar-blur)) saturate(var(--glass-toolbar-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-toolbar-blur)) saturate(var(--glass-toolbar-saturate));
+  box-shadow: var(--glass-toolbar-shadow), var(--glass-toolbar-inner-shadow);
   overflow: hidden; isolation: isolate;
-}
-.fd-expand-btn::before {
-  content: ''; position: absolute; inset: 0; border-radius: 296px;
-  background: #ddd; mix-blend-mode: color-burn; pointer-events: none;
-}
-.fd-expand-btn::after {
-  content: ''; position: absolute; inset: 0; border-radius: 296px;
-  background: #f7f7f7; mix-blend-mode: darken; pointer-events: none;
 }
 .fd-expand-btn .gaia-icon { position: relative; z-index: 1; }
 .fd-expand-btn .gaia-icon--expand-20 {
   width: 24px;
   height: 24px;
+  display: block;
 }
 /* Location bar on map — glass effect */
 .fd-location-bar {
@@ -2002,23 +1994,29 @@ body.nav-page-exit {
   width: 48px; height: 48px; border-radius: 296px;
   position: relative;
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0px 8px 40px 0px rgba(0,0,0,0.12);
   cursor: pointer; flex-shrink: 0;
   isolation: isolate; overflow: hidden;
   pointer-events: all;
   border: none;
-  background: rgba(255,255,255,0.65);
-  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  background: var(--glass-toolbar-fill);
+  border: 1px solid var(--glass-toolbar-border);
+  box-shadow: var(--glass-toolbar-shadow), var(--glass-toolbar-inner-shadow);
+  backdrop-filter: blur(var(--glass-toolbar-blur)) saturate(var(--glass-toolbar-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-toolbar-blur)) saturate(var(--glass-toolbar-saturate));
 }
 .profile-toolbar-btn::before {
   content: ''; position: absolute; inset: 0;
-  border-radius: 296px; background: #ddd;
-  mix-blend-mode: color-burn; pointer-events: none;
+  border-radius: 296px;
+  background: var(--glass-toolbar-highlight);
+  pointer-events: none;
+  z-index: 0;
 }
 .profile-toolbar-btn::after {
   content: ''; position: absolute; inset: 0;
-  border-radius: 296px; background: #f7f7f7;
-  mix-blend-mode: darken; pointer-events: none;
+  border-radius: 296px;
+  background: var(--glass-toolbar-depth);
+  pointer-events: none;
+  z-index: 0;
 }
 /* Legacy inner glass divs — no longer needed, hidden */
 .profile-toolbar-btn-glass { display: none; }

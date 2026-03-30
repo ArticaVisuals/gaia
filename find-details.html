@@ -56,8 +56,11 @@ body.nav-page-exit {
 .hero-btn {
   display: flex; align-items: center; justify-content: center;
   border-radius: 296px; border: none;
-  background: transparent;
-  box-shadow: var(--shadow-nav);
+  background: var(--glass-toolbar-fill);
+  border: 1px solid var(--glass-toolbar-border);
+  box-shadow: var(--glass-toolbar-shadow), var(--glass-toolbar-inner-shadow);
+  backdrop-filter: blur(var(--glass-toolbar-blur)) saturate(var(--glass-toolbar-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-toolbar-blur)) saturate(var(--glass-toolbar-saturate));
   cursor: pointer; position: relative;
   pointer-events: all;
   flex-shrink: 0;
@@ -69,9 +72,7 @@ body.nav-page-exit {
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(255,255,255,0.65);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: var(--glass-toolbar-highlight);
   border-radius: inherit;
   z-index: 0;
 }
@@ -80,24 +81,17 @@ body.nav-page-exit {
   content: '';
   position: absolute;
   inset: 0;
-  background: #ddd;
-  mix-blend-mode: color-burn;
+  background: var(--glass-toolbar-depth);
   border-radius: inherit;
   z-index: 1;
 }
 .hero-darken {
-  position: absolute;
-  inset: 0;
-  background: #f7f7f7;
-  mix-blend-mode: darken;
-  border-radius: inherit;
-  z-index: 2;
-  pointer-events: none;
+  display: none;
 }
 .hero-btn .gaia-icon,
 .hero-action-btn .gaia-icon {
   position: relative;
-  z-index: 3;
+  z-index: 2;
 }
 .hero-actions {
   position: relative;
@@ -107,15 +101,18 @@ body.nav-page-exit {
   height: 48px;
   padding: 0 10px;
   border-radius: 296px;
-  background: transparent;
-  box-shadow: var(--shadow-nav);
+  background: var(--glass-toolbar-fill);
+  border: 1px solid var(--glass-toolbar-border);
+  box-shadow: var(--glass-toolbar-shadow), var(--glass-toolbar-inner-shadow);
+  backdrop-filter: blur(var(--glass-toolbar-blur)) saturate(var(--glass-toolbar-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-toolbar-blur)) saturate(var(--glass-toolbar-saturate));
   isolation: isolate;
   overflow: hidden;
   pointer-events: all;
 }
 .hero-action-btn {
   position: relative;
-  z-index: 3;
+  z-index: 2;
   width: 36px;
   height: 36px;
   display: flex;
@@ -387,31 +384,30 @@ body.nav-page-exit {
   width: 44px; height: 44px;
   display: flex; align-items: center; justify-content: center;
   border-radius: var(--radius-full); border: none;
-  box-shadow: var(--shadow-nav);
+  border: 1px solid var(--glass-toolbar-border);
+  box-shadow: var(--glass-toolbar-shadow), var(--glass-toolbar-inner-shadow);
   cursor: pointer; position: relative;
   isolation: isolate; overflow: hidden;
-  background: transparent; flex-shrink: 0;
+  background: var(--glass-toolbar-fill); flex-shrink: 0;
+  backdrop-filter: blur(var(--glass-toolbar-blur)) saturate(var(--glass-toolbar-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-toolbar-blur)) saturate(var(--glass-toolbar-saturate));
 }
 .expand-btn::before {
   content: ''; position: absolute; inset: 0;
   border-radius: var(--radius-full);
-  background: rgba(255,255,255,0.65);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: var(--glass-toolbar-highlight);
   pointer-events: none;
+  z-index: 0;
 }
 .expand-btn::after {
   content: ''; position: absolute; inset: 0;
   border-radius: var(--radius-full);
-  background: #ddd;
-  mix-blend-mode: color-burn;
+  background: var(--glass-toolbar-depth);
   pointer-events: none;
+  z-index: 0;
 }
 .expand-btn .glass-darken {
-  position: absolute; inset: 0;
-  border-radius: var(--radius-full);
-  background: #f7f7f7;
-  mix-blend-mode: darken;
+  display: none;
 }
 .expand-btn .gaia-icon { position: relative; z-index: 1; }
 

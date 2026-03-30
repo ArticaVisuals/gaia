@@ -49,24 +49,24 @@ html, body {
   border: none; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   position: relative; isolation: isolate; overflow: hidden;
-  background: transparent;
-  box-shadow: var(--shadow-nav);
+  background: var(--glass-toolbar-fill);
+  border: 1px solid var(--glass-toolbar-border);
+  box-shadow: var(--glass-toolbar-shadow), var(--glass-toolbar-inner-shadow);
+  backdrop-filter: blur(var(--glass-toolbar-blur)) saturate(var(--glass-toolbar-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-toolbar-blur)) saturate(var(--glass-toolbar-saturate));
 }
 .back-btn::before {
   content: ''; position: absolute; inset: 0; border-radius: 250px;
-  background: rgba(255,255,255,0.65);
-  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  background: var(--glass-toolbar-highlight);
   z-index: 0; pointer-events: none;
 }
 .back-btn::after {
   content: ''; position: absolute; inset: 0; border-radius: 250px;
-  background: #ddd; mix-blend-mode: color-burn;
+  background: var(--glass-toolbar-depth);
   z-index: 1; pointer-events: none;
 }
 .back-btn .btn-darken {
-  position: absolute; inset: 0; border-radius: 250px;
-  background: #f7f7f7; mix-blend-mode: darken;
-  z-index: 2; pointer-events: none;
+  display: none;
 }
 .back-btn .gaia-icon { position: relative; z-index: 3; }
 
