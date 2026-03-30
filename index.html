@@ -779,6 +779,7 @@ body.nav-page-exit {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: 50% 44%;
   display: block;
   user-select: none;
   -webkit-user-drag: none;
@@ -921,8 +922,8 @@ body.nav-page-exit {
   line-height: 0.98; letter-spacing: -0.5px;
 }
 .fd-hero-sub {
-  font-family: var(--font-sans); font-size: 10px; font-weight: 400;
-  text-transform: uppercase; letter-spacing: 1.2px; margin-top: 4px;
+  font-family: var(--font-sans); font-size: 11px; font-weight: 400;
+  letter-spacing: 0.25px; margin-top: 4px;
 }
 .fd-dots {
   display: flex;
@@ -932,17 +933,14 @@ body.nav-page-exit {
   width: fit-content;
   margin: 12px auto;
   padding: 0 24px;
-  border-radius: 50px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
 }
 .fd-dot {
   width: 8px; height: 8px; border-radius: 50%;
-  background: #bfbfbf;
+  background: var(--olive-200);
   transition: background 0.25s ease;
   cursor: pointer;
 }
-.fd-dot.active { background: #1a1a1a; }
+.fd-dot.active { background: var(--olive); }
 
 /* Drag tab switch */
 .gaia-tab-switch {
@@ -1484,105 +1482,386 @@ body.nav-page-exit {
 }
 
 /* ── LEARN TAB ──────────────────────────────────────────── */
-.fd-learn-card {
-  border: 1px solid var(--brown-200); border-radius: 8px;
-  overflow: hidden; box-shadow: var(--shadow-lg);
+.fd-learn-panel-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 16px 0 64px;
+  background: var(--paper-50);
 }
-.fd-learn-header {
-  background: var(--olive); padding: 16px;
-  display: flex; flex-direction: column; gap: 16px;
-}
-.fd-learn-title {
-  font-family: var(--font-serif); font-size: 32px; font-weight: 500;
-  color: var(--paper-50); letter-spacing: -0.5px; line-height: 0.98;
-  padding-left: 3px;
-}
-.fd-learn-desc {
-  font-family: var(--font-sans); font-size: 11px; line-height: 1.3;
-  color: var(--olive-200); letter-spacing: 0.1px;
-  overflow: hidden; text-overflow: ellipsis;
-  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
-}
-.fd-learn-stats {
-  display: flex; align-items: center; justify-content: center; gap: 18px;
-}
-.fd-learn-stat {
-  display: flex; flex-direction: column; gap: 16px; width: 89px;
+.fd-learn-intro-card {
+  margin: 0 16px;
+  padding: 20px 24px;
+  background: var(--olive);
+  border: 0.5px solid var(--border-default);
+  border-radius: 8px;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
   overflow: hidden;
 }
+.fd-learn-intro-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+.fd-learn-intro-title {
+  font-family: var(--font-serif);
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 0.98;
+  letter-spacing: -0.5px;
+  color: var(--paper-50);
+}
+.fd-learn-intro-desc {
+  width: 274px;
+  max-width: 100%;
+  min-height: 51px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--paper-50);
+  overflow: hidden;
+}
+.fd-learn-intro-card.is-expanded .fd-learn-intro-desc {
+  min-height: 0;
+}
+.fd-learn-read-more {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  padding: 4px 10px;
+  border: none;
+  border-radius: 1000px;
+  background: var(--paper-50);
+  color: var(--olive);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.2;
+  cursor: pointer;
+}
+.fd-learn-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.fd-learn-section-title {
+  padding: 0 16px;
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--ink-300);
+}
+.fd-learn-gallery-viewport {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.fd-learn-gallery-viewport::-webkit-scrollbar { display: none; }
+.fd-learn-gallery-track {
+  display: flex;
+  gap: 8px;
+  width: max-content;
+  padding: 0 16px;
+}
+.fd-learn-gallery-card {
+  position: relative;
+  flex: 0 0 auto;
+  height: 112px;
+  overflow: hidden;
+  border: 0.5px solid var(--border-default);
+  border-radius: 8px;
+  background: var(--brown-50);
+}
+.fd-learn-gallery-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.fd-learn-gallery-card--landscape { width: 181px; }
+.fd-learn-gallery-card--square { width: 112px; }
+.fd-learn-gallery-card--portrait { width: 84px; }
+.fd-learn-gallery-card--wide { width: 181px; }
+.fd-learn-gallery-card--wide-alt { width: 182px; }
+.fd-learn-gallery-card--crop-landscape img {
+  position: absolute;
+  top: -11.87%;
+  left: -1.1%;
+  width: 102.21%;
+  height: 123.75%;
+  max-width: none;
+  object-fit: fill;
+}
+.fd-learn-gallery-card--crop-portrait img {
+  width: 243%;
+  max-width: none;
+  height: 100%;
+  object-position: 60% center;
+}
+.fd-learn-stats-wrap {
+  padding: 0 16px;
+}
+.fd-learn-stats-card {
+  background: var(--paper-50);
+  border: 0.5px solid var(--border-default);
+  border-radius: 8px;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+.fd-learn-stats-grid {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 15px;
+  padding: 24px 20px;
+}
+.fd-learn-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 92px;
+  min-width: 92px;
+  text-align: center;
+  color: var(--olive);
+}
 .fd-learn-stat-label {
-  font-family: var(--font-sans); font-size: 11px; color: var(--olive-200);
-  letter-spacing: 0.1px; line-height: 1.3;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--olive);
 }
 .fd-learn-stat-badge {
-  width: 50px; height: 50px;
+  width: 53.333px;
+  height: 53.333px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.fd-learn-stat-circle {
-  width: 50px; height: 50px; border-radius: 50%;
-  border: 3px solid var(--paper-50);
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-serif); font-size: 20px; font-weight: 500;
-  color: var(--paper-50); line-height: 1;
-}
-.fd-learn-stat-number {
-  font-family: var(--font-serif); font-size: 28px; font-weight: 500;
-  color: var(--paper-50); letter-spacing: -0.25px; line-height: 1.2;
+.fd-learn-stat-badge img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
 }
 .fd-learn-stat-divider {
-  width: 0.5px; height: 80px; background: rgba(255,255,255,0.2);
   align-self: center;
+  width: 1px;
+  height: 54px;
+  background: var(--border-default);
 }
-.fd-learn-map-wrap {
-  position: relative; height: 247px; overflow: hidden;
+.fd-learn-stat-circle {
+  width: 54.412px;
+  height: 54.412px;
+  border: 3.265px solid var(--olive);
+  border-radius: 272.059px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.fd-learn-map-wrap .mapboxgl-map { width: 100%; height: 100%; }
-
-/* Gallery */
-.fd-gallery-section { overflow: hidden; }
-.fd-gallery-title {
-  font-family: var(--font-serif); font-size: 20px; color: var(--ink-300);
-  line-height: 1.3; padding: 0 16px; margin-bottom: 8px;
+.fd-learn-stat-circle span {
+  font-family: var(--font-serif);
+  font-size: 21.765px;
+  font-weight: 700;
+  line-height: 12.437px;
+  color: var(--olive);
 }
-.fd-gallery-scroll {
-  display: flex; gap: 8px; overflow-x: auto; padding: 0 16px;
-  -webkit-overflow-scrolling: touch; scrollbar-width: none;
+.fd-learn-stat-number {
+  width: 58px;
+  min-height: 59px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-serif);
+  font-size: 30.471px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.2721px;
+  color: var(--olive);
 }
-.fd-gallery-scroll::-webkit-scrollbar { display: none; }
-.fd-gallery-item {
-  flex-shrink: 0; width: 181px; height: 112px;
-  border-radius: 8px; border: 1px solid var(--brown-200);
+.fd-learn-map-card {
+  position: relative;
+  width: 100%;
+  height: 270px;
+  overflow: hidden;
+  background: var(--olive-50);
 }
-
-/* Stories */
-.fd-stories-section { padding: 0 16px; }
-.fd-stories-title {
-  font-family: var(--font-serif); font-size: 20px; color: var(--ink-300);
-  line-height: 1.3; margin-bottom: 10px;
+.fd-learn-map-fallback {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: opacity 240ms ease;
 }
-.fd-story-card {
-  border: 1px solid var(--brown-200); border-radius: 8px; overflow: hidden;
-  cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease;
+.fd-learn-map-card.is-ready .fd-learn-map-fallback {
+  opacity: 0;
 }
-.fd-story-card:active {
+#fd-learn-map,
+#fd-learn-map-modal-map {
+  position: absolute;
+  inset: 0;
+}
+#fd-learn-map .mapboxgl-map,
+#fd-learn-map-modal-map .mapboxgl-map { width: 100%; height: 100%; }
+#fd-learn-map .mapboxgl-ctrl-attrib,
+#fd-learn-map .mapboxgl-ctrl-logo,
+#fd-learn-map-modal-map .mapboxgl-ctrl-attrib,
+#fd-learn-map-modal-map .mapboxgl-ctrl-logo { display: none; }
+.fd-learn-map-open-hit {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+.fd-learn-map-card .fd-expand-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+}
+.fd-learn-map-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 140;
+  background: var(--paper-50);
+}
+.fd-learn-map-modal.visible {
+  display: block;
+}
+.fd-learn-map-modal-toolbar {
+  position: absolute;
+  inset: 0 auto auto 0;
+  z-index: 1;
+  width: 100%;
+  padding: 35px 16px 0;
+  display: flex;
+  justify-content: flex-start;
+  pointer-events: none;
+}
+.fd-learn-map-modal-toolbar .fd-back-btn {
+  pointer-events: all;
+}
+.fd-learn-story-section {
+  padding: 0 16px;
+}
+.fd-learn-story-section .fd-learn-section-title {
+  padding: 0;
+}
+.fd-story-card.fd-learn-story-card {
+  border: 0.5px solid rgba(0,0,0,0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0px 4px 20px 0px rgba(155,133,107,0.55);
+  text-decoration: none;
+  display: block;
+}
+.fd-story-card.fd-learn-story-card:active {
   transform: scale(0.98);
   box-shadow: 0px 4px 20px rgba(155,133,107,0.24);
 }
-.fd-story-body {
-  background: var(--brown-500); padding: 16px;
-  display: flex; flex-direction: column; gap: 16px;
+.fd-learn-story-image {
+  position: relative;
+  aspect-ratio: 2912 / 1632;
+  overflow: hidden;
+  background: linear-gradient(to bottom, rgba(200,199,111,0.22) 0%, rgba(252,250,240,0.06) 52%, rgba(252,250,240,0) 100%);
 }
-.fd-story-label {
-  font-family: var(--font-sans); font-size: 10px; color: var(--paper-50);
-  letter-spacing: 1.2px; text-transform: uppercase;
+.fd-learn-story-image img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  display: block;
 }
-.fd-story-headline {
-  font-family: var(--font-serif); font-size: 32px; font-weight: 500;
-  color: var(--paper-50); letter-spacing: -0.5px; line-height: 0.98;
+.fd-learn-story-image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(200,199,111,0.22) 0%, rgba(252,250,240,0.06) 52%, rgba(252,250,240,0) 100%);
+  pointer-events: none;
 }
-.fd-story-excerpt {
-  font-family: var(--font-sans); font-size: 11px; color: var(--paper-50);
-  letter-spacing: 0.1px; line-height: 1.3;
-  overflow: hidden; text-overflow: ellipsis;
+.fd-learn-story-body {
+  background: var(--brown-500);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.fd-learn-story-top {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.fd-learn-story-eyebrow {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: 0.25px;
+  color: var(--paper-50);
+}
+.fd-learn-story-headline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.fd-learn-story-title {
+  width: 257px;
+  max-width: calc(100% - 52px);
+  font-family: var(--font-serif);
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.5px;
+  color: var(--paper-50);
+}
+.fd-learn-story-arrow {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+.fd-learn-story-arrow img {
+  position: absolute;
+  display: block;
+}
+.fd-learn-story-arrow img:first-child {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.fd-learn-story-arrow img:last-child {
+  top: 9.95px;
+  left: 7.3px;
+  width: 15.59px;
+  height: 20.103px;
+  transform: rotate(90deg);
+  transform-origin: center;
+}
+.fd-learn-story-desc {
+  max-width: 252px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--paper-500);
 }
 
 /* ── USER LOCATION DOT ──────────────────────────────────── */
@@ -3129,20 +3408,20 @@ body.nav-page-exit {
       <div class="fd-gallery" id="fd-gallery">
         <div class="fd-gallery-track" id="fd-gallery-track">
           <div class="fd-gallery-slide">
-            <img class="fd-gallery-slide-img" src="https://www.figma.com/api/mcp/asset/0c6834d0-8741-4582-9e87-8545161f9213" alt="Coast Live Oak">
-            <img class="fd-gallery-slide-img-blur" src="https://www.figma.com/api/mcp/asset/0c6834d0-8741-4582-9e87-8545161f9213" alt="">
+            <img class="fd-gallery-slide-img" src="assets/find-details/learn-v2/hero.png" alt="Coast Live Oak">
+            <img class="fd-gallery-slide-img-blur" src="assets/find-details/learn-v2/hero.png" alt="">
           </div>
           <div class="fd-gallery-slide">
-            <img class="fd-gallery-slide-img" src="https://www.figma.com/api/mcp/asset/0c6834d0-8741-4582-9e87-8545161f9213" alt="Coast Live Oak">
-            <img class="fd-gallery-slide-img-blur" src="https://www.figma.com/api/mcp/asset/0c6834d0-8741-4582-9e87-8545161f9213" alt="">
+            <img class="fd-gallery-slide-img" src="assets/find-details/learn-v2/gallery-2.png" alt="Coast Live Oak detail">
+            <img class="fd-gallery-slide-img-blur" src="assets/find-details/learn-v2/gallery-2.png" alt="">
           </div>
           <div class="fd-gallery-slide">
-            <img class="fd-gallery-slide-img" src="https://www.figma.com/api/mcp/asset/0c6834d0-8741-4582-9e87-8545161f9213" alt="Coast Live Oak">
-            <img class="fd-gallery-slide-img-blur" src="https://www.figma.com/api/mcp/asset/0c6834d0-8741-4582-9e87-8545161f9213" alt="">
+            <img class="fd-gallery-slide-img" src="assets/find-details/learn-v2/gallery-4.png" alt="Coast Live Oak canopy">
+            <img class="fd-gallery-slide-img-blur" src="assets/find-details/learn-v2/gallery-4.png" alt="">
           </div>
           <div class="fd-gallery-slide">
-            <img class="fd-gallery-slide-img" src="https://www.figma.com/api/mcp/asset/0c6834d0-8741-4582-9e87-8545161f9213" alt="Coast Live Oak">
-            <img class="fd-gallery-slide-img-blur" src="https://www.figma.com/api/mcp/asset/0c6834d0-8741-4582-9e87-8545161f9213" alt="">
+            <img class="fd-gallery-slide-img" src="assets/find-details/learn-v2/gallery-3.png" alt="Coast Live Oak bark detail">
+            <img class="fd-gallery-slide-img-blur" src="assets/find-details/learn-v2/gallery-3.png" alt="">
           </div>
         </div>
         <!-- Faded blur layer (mask fades blur in gradually) -->
@@ -3452,81 +3731,130 @@ body.nav-page-exit {
 
       <!-- ═══ LEARN TAB ═══════════════════════════════════════ -->
       <div class="fd-panel" data-fd-panel="learn">
-        <div class="fd-content" style="gap:32px;padding-bottom:64px;">
-          <!-- Species Info Card (olive green bg) -->
-          <div class="fd-learn-card">
-            <div class="fd-learn-header">
-              <div class="fd-learn-title-block">
-                <div class="fd-learn-title">Quercus agrifolia</div>
-                <p class="fd-learn-desc">The Coast Live Oak (Quercus agrifolia) is an iconic, majestic tree that serves as a cornerstone for wildlife and the surrounding ecosystem. It is easily-recognized by its gnarled branches and grand canopy.</p>
+        <div class="fd-learn-panel-content">
+          <div class="fd-learn-intro-card" id="fd-learn-intro-card">
+            <div class="fd-learn-intro-copy">
+              <div class="fd-learn-intro-title">Quercus agrifolia</div>
+              <p class="fd-learn-intro-desc">an iconic, majestic tree that serves as a cornerstone for wildlife and the surrounding ecosystem. It is easily-recognized by its gnarled branches and grand canopy.</p>
+            </div>
+            <button class="fd-learn-read-more" id="fd-learn-read-more" type="button">Read More</button>
+          </div>
+
+          <section class="fd-learn-section" aria-labelledby="fd-learn-gallery-title">
+            <h2 class="fd-learn-section-title" id="fd-learn-gallery-title">Gallery</h2>
+            <div class="fd-learn-gallery-viewport">
+              <div class="fd-learn-gallery-track">
+                <div class="fd-learn-gallery-card fd-learn-gallery-card--landscape fd-learn-gallery-card--crop-landscape">
+                  <img src="assets/find-details/learn-v2/gallery-1.png" alt="Close-up observation photo">
+                </div>
+                <div class="fd-learn-gallery-card fd-learn-gallery-card--square">
+                  <img src="assets/find-details/learn-v2/gallery-2.png" alt="Oak branch observation photo">
+                </div>
+                <div class="fd-learn-gallery-card fd-learn-gallery-card--portrait fd-learn-gallery-card--crop-portrait">
+                  <img src="assets/find-details/learn-v2/hero.png" alt="Oak acorn detail">
+                </div>
+                <div class="fd-learn-gallery-card fd-learn-gallery-card--wide">
+                  <img src="assets/find-details/learn-v2/gallery-4.png" alt="Canopy observation photo">
+                </div>
+                <div class="fd-learn-gallery-card fd-learn-gallery-card--wide-alt">
+                  <img src="assets/find-details/learn-v2/gallery-3.png" alt="Oak bark and branch observation photo">
+                </div>
               </div>
-              <div class="fd-learn-stats">
-                <div class="fd-learn-stat">
-                  <span class="fd-learn-stat-label">Category</span>
-                  <div class="fd-learn-stat-badge">
-                    <svg width="49" height="49" viewBox="0 0 49 49" fill="none"><circle cx="24.5" cy="24.5" r="24" stroke="#fefdf9" stroke-width="1"/><text x="24.5" y="30" text-anchor="middle" fill="#fefdf9" font-family="var(--font-serif)" font-size="14">&#127807;</text></svg>
+            </div>
+          </section>
+
+          <section class="fd-learn-section" aria-labelledby="fd-learn-stats-title">
+            <h2 class="fd-learn-section-title" id="fd-learn-stats-title">Stats</h2>
+            <div class="fd-learn-stats-wrap">
+              <div class="fd-learn-stats-card">
+                <div class="fd-learn-stats-grid">
+                  <div class="fd-learn-stat">
+                    <span class="fd-learn-stat-label">Category</span>
+                    <div class="fd-learn-stat-badge">
+                      <img src="assets/find-details/learn-v2/category-badge.svg" alt="Plant category badge">
+                    </div>
+                  </div>
+                  <div class="fd-learn-stat-divider" aria-hidden="true"></div>
+                  <div class="fd-learn-stat">
+                    <span class="fd-learn-stat-label">Status</span>
+                    <div class="fd-learn-stat-circle"><span>LC</span></div>
+                  </div>
+                  <div class="fd-learn-stat-divider" aria-hidden="true"></div>
+                  <div class="fd-learn-stat">
+                    <span class="fd-learn-stat-label">Finds</span>
+                    <div class="fd-learn-stat-number">56k</div>
                   </div>
                 </div>
-                <div class="fd-learn-stat-divider"></div>
-                <div class="fd-learn-stat">
-                  <span class="fd-learn-stat-label">Status</span>
-                  <div class="fd-learn-stat-circle">LC</div>
-                </div>
-                <div class="fd-learn-stat-divider"></div>
-                <div class="fd-learn-stat">
-                  <span class="fd-learn-stat-label">Finds</span>
-                  <div class="fd-learn-stat-number">55,916</div>
-                </div>
               </div>
             </div>
-            <!-- Map section with real Mapbox -->
-            <div class="fd-learn-map-wrap">
-              <div id="fd-learn-map" style="width:100%;height:100%;"></div>
-              <div style="position:absolute;bottom:16px;right:16px;z-index:2;">
-                <button class="fd-expand-btn" aria-label="Expand map">
-                  <span class="gaia-icon gaia-icon--expand-20" aria-hidden="true">
-                    <span class="gaia-icon__slot gaia-icon__slot--a">
-                      <span class="gaia-icon__part gaia-icon__part--a">
-                        <img src="assets/icons/system/expand-20-a.svg" alt="">
-                      </span>
-                    </span>
-                    <span class="gaia-icon__slot gaia-icon__slot--b">
-                      <span class="gaia-icon__part gaia-icon__part--b">
-                        <img src="assets/icons/system/expand-20-b.svg" alt="">
-                      </span>
+          </section>
+
+          <section class="fd-learn-section" aria-labelledby="fd-learn-map-title">
+            <h2 class="fd-learn-section-title" id="fd-learn-map-title">Map</h2>
+            <div class="fd-learn-map-card" id="fd-learn-map-card">
+              <img class="fd-learn-map-fallback" src="assets/find-details/learn-v2/map-fallback.png" alt="">
+              <div id="fd-learn-map"></div>
+              <button class="fd-learn-map-open-hit" id="fd-learn-map-open" type="button" aria-label="Open full map view"></button>
+              <button class="fd-expand-btn" id="fd-learn-map-expand" type="button" aria-label="Expand map">
+                <span class="gaia-icon gaia-icon--expand-20" aria-hidden="true">
+                  <span class="gaia-icon__slot gaia-icon__slot--a">
+                    <span class="gaia-icon__part gaia-icon__part--a">
+                      <img src="assets/icons/system/expand-20-a.svg" alt="">
                     </span>
                   </span>
-                </button>
-              </div>
+                  <span class="gaia-icon__slot gaia-icon__slot--b">
+                    <span class="gaia-icon__part gaia-icon__part--b">
+                      <img src="assets/icons/system/expand-20-b.svg" alt="">
+                    </span>
+                  </span>
+                </span>
+              </button>
             </div>
-          </div>
+          </section>
 
-          <!-- Observation Gallery -->
-          <div class="fd-gallery-section">
-            <div class="fd-gallery-title">Observation Gallery</div>
-            <div class="fd-gallery-scroll">
-              <div class="fd-gallery-item" style="background:#e3e7df;"></div>
-              <div class="fd-gallery-item" style="background:#d8c9b8;"></div>
-              <div class="fd-gallery-item" style="background:#c8cfbf;"></div>
-              <div class="fd-gallery-item" style="background:#ede5dc;"></div>
-            </div>
-            <div style="padding:0 16px;margin-top:16px;">
-              <button class="fd-btn-outline">View All</button>
-            </div>
-          </div>
-
-          <!-- Stories -->
-          <div class="fd-stories-section">
-            <div class="fd-stories-title">Stories</div>
-            <div class="fd-story-card">
-              <div class="fd-story-img" style="background:linear-gradient(to bottom, rgba(200,199,111,0.5), var(--paper-50));height:140px;"></div>
-              <div class="fd-story-body">
-                <span class="fd-story-label">WHY IT MATTERS</span>
-                <div class="fd-story-headline">The Story of<br>a Keystone</div>
-                <p class="fd-story-excerpt">270+ species. 5000 years of human history.<br>A disease that could end it all.</p>
+          <section class="fd-learn-section fd-learn-story-section" aria-labelledby="fd-learn-stories-title">
+            <h2 class="fd-learn-section-title" id="fd-learn-stories-title">Stories</h2>
+            <a href="story-cards.html" class="fd-story-card fd-learn-story-card">
+              <div class="fd-learn-story-image">
+                <img src="assets/find-details/learn-v2/story-tree.png" alt="Illustration of a coast live oak tree">
               </div>
+              <div class="fd-learn-story-body">
+                <div class="fd-learn-story-top">
+                  <span class="fd-learn-story-eyebrow">WHY IT MATTERS</span>
+                  <div class="fd-learn-story-headline">
+                    <div class="fd-learn-story-title">The Story of<br>a Keystone</div>
+                    <span class="fd-learn-story-arrow" aria-hidden="true">
+                      <img src="assets/find-details/learn-v2/story-arrow-circle.svg" alt="">
+                      <img src="assets/find-details/learn-v2/story-arrow.svg" alt="">
+                    </span>
+                  </div>
+                </div>
+                <p class="fd-learn-story-desc">270+ species. 5000 years of human history.<br>A disease that could end it all.</p>
+              </div>
+            </a>
+          </section>
+        </div>
+      </div>
+
+      <div id="fd-learn-map-modal" class="fd-learn-map-modal" aria-hidden="true">
+        <div id="fd-learn-map-modal-map"></div>
+        <div class="fd-learn-map-modal-toolbar">
+          <button class="fd-back-btn" id="fd-learn-map-close" type="button" aria-label="Close full map">
+            <div class="fd-glass-multiply"></div>
+            <div class="fd-glass-bg">
+              <div class="fd-glass-burn"></div>
+              <div class="fd-glass-darken"></div>
             </div>
-          </div>
+            <div class="fd-back-icon-wrap">
+              <span class="gaia-icon gaia-icon--left-arrow-20" aria-hidden="true">
+                <span class="gaia-icon__slot">
+                  <span class="gaia-icon__part">
+                    <img src="assets/icons/system/left-arrow-20.svg" alt="">
+                  </span>
+                </span>
+              </span>
+            </div>
+          </button>
         </div>
       </div>
 
@@ -5100,6 +5428,10 @@ function setupEvents() {
   const profileTabs = document.querySelector('.profile-tabs');
   const profileLogFilters = document.querySelector('.profile-log-filters');
   const profileViewToggle = document.querySelector('.profile-view-toggle');
+  const fdLearnReadMore = document.getElementById('fd-learn-read-more');
+  const fdLearnMapOpen = document.getElementById('fd-learn-map-open');
+  const fdLearnMapExpand = document.getElementById('fd-learn-map-expand');
+  const fdLearnMapClose = document.getElementById('fd-learn-map-close');
 
   // Touch drag
   [handle, peek].forEach(el => el.addEventListener('touchstart', dragStart, { passive: true }));
@@ -5162,6 +5494,17 @@ function setupEvents() {
       onChange: (value, meta) => applyProfileTabState(value, meta)
     });
   }
+
+  fdLearnReadMore?.addEventListener('click', () => {
+    const card = document.getElementById('fd-learn-intro-card');
+    if (!card) return;
+    const expanded = card.classList.toggle('is-expanded');
+    fdLearnReadMore.textContent = expanded ? 'Read Less' : 'Read More';
+  });
+
+  fdLearnMapOpen?.addEventListener('click', openLearnDetailMapModal);
+  fdLearnMapExpand?.addEventListener('click', openLearnDetailMapModal);
+  fdLearnMapClose?.addEventListener('click', closeLearnDetailMapModal);
 
   profileLogFilters?.addEventListener('click', e => {
     const chip = e.target.closest('.profile-chip');
@@ -5270,6 +5613,9 @@ function setupEvents() {
     if (at) moveNavIndicator(at);
     fdTabSwitch?.refresh();
     profileTabSwitch?.refresh();
+    fdFindMap?.resize();
+    fdLearnMap?.resize();
+    fdLearnModalMap?.resize();
     profileImpactMap?.resize();
     profileImpactExpandedMap?.resize();
   });
@@ -5358,6 +5704,9 @@ const NUMBER_PIN_LARGE_THRESHOLD = 100;
 // ── FIND DETAILS FULL-SCREEN OVERLAY ─────────────────────
 let fdFindMap = null;
 let fdLearnMap = null;
+let fdLearnModalMap = null;
+const FD_LEARN_MAP_CENTER = [-120.7361, 35.1797];
+const FD_LEARN_MAP_ZOOM = 10.15;
 
 function applyFindDetailsTabState(tabName = 'find', { resetScroll = true } = {}) {
   const fd = document.getElementById('find-details');
@@ -5407,6 +5756,10 @@ function showFindDetails(pinId, imgUrl) {
 
   fd.classList.add('visible');
   fd.scrollTop = 0;
+  document.getElementById('fd-learn-map-card')?.classList.remove('is-ready');
+  document.getElementById('fd-learn-intro-card')?.classList.remove('is-expanded');
+  const readMoreBtn = document.getElementById('fd-learn-read-more');
+  if (readMoreBtn) readMoreBtn.textContent = 'Read More';
 
   // Reset gallery to first slide
   const galleryTrack = document.getElementById('fd-gallery-track');
@@ -5429,6 +5782,7 @@ function hideFindDetails() {
   const fd = document.getElementById('find-details');
   if (!fd) return;
   fd.classList.remove('visible');
+  closeLearnDetailMapModal();
 
   // Show nav bar and bottom sheet again
   document.getElementById('nav-bar').style.display = '';
@@ -5445,6 +5799,7 @@ function hideFindDetails() {
   // Clean up detail maps
   if (fdFindMap) { fdFindMap.remove(); fdFindMap = null; }
   if (fdLearnMap) { fdLearnMap.remove(); fdLearnMap = null; }
+  if (fdLearnModalMap) { fdLearnModalMap.remove(); fdLearnModalMap = null; }
 }
 
 function initFindDetailMap() {
@@ -5470,11 +5825,61 @@ function initLearnDetailMap() {
   fdLearnMap = new mapboxgl.Map({
     container: 'fd-learn-map',
     style: GAIA_STYLE,
-    center: [-120.6625, 35.1802],
-    zoom: 12,
+    center: FD_LEARN_MAP_CENTER,
+    zoom: FD_LEARN_MAP_ZOOM,
     interactive: false,
     attributionControl: false
   });
+
+  fdLearnMap.once('idle', () => {
+    document.getElementById('fd-learn-map-card')?.classList.add('is-ready');
+  });
+}
+
+function ensureLearnDetailModalMap() {
+  if (fdLearnModalMap) return fdLearnModalMap;
+  const container = document.getElementById('fd-learn-map-modal-map');
+  if (!container) return null;
+
+  fdLearnModalMap = new mapboxgl.Map({
+    container: 'fd-learn-map-modal-map',
+    style: GAIA_STYLE,
+    center: FD_LEARN_MAP_CENTER,
+    zoom: FD_LEARN_MAP_ZOOM,
+    attributionControl: true
+  });
+
+  return fdLearnModalMap;
+}
+
+function openLearnDetailMapModal() {
+  const modal = document.getElementById('fd-learn-map-modal');
+  if (!modal) return;
+
+  modal.classList.add('visible');
+  modal.setAttribute('aria-hidden', 'false');
+  const modalMap = ensureLearnDetailModalMap();
+  if (!modalMap) return;
+
+  if (fdLearnMap?.loaded()) {
+    modalMap.jumpTo({
+      center: fdLearnMap.getCenter(),
+      zoom: fdLearnMap.getZoom(),
+      bearing: fdLearnMap.getBearing(),
+      pitch: fdLearnMap.getPitch()
+    });
+  }
+
+  requestAnimationFrame(() => {
+    modalMap.resize();
+  });
+}
+
+function closeLearnDetailMapModal() {
+  const modal = document.getElementById('fd-learn-map-modal');
+  if (!modal) return;
+  modal.classList.remove('visible');
+  modal.setAttribute('aria-hidden', 'true');
 }
 
 function ensureMapboxAccessToken() {
@@ -5619,8 +6024,24 @@ function closeProfileImpactMapModal({ syncView = true } = {}) {
 
 // Wire up back button in find-details toolbar
 document.addEventListener('click', (e) => {
+  if (e.target.closest('#fd-learn-map-close')) {
+    closeLearnDetailMapModal();
+    return;
+  }
   if (e.target.closest('.fd-back-btn')) {
     hideFindDetails();
+  }
+});
+
+document.addEventListener('click', (e) => {
+  if (e.target === document.getElementById('fd-learn-map-modal')) {
+    closeLearnDetailMapModal();
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeLearnDetailMapModal();
   }
 });
 
