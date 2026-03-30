@@ -156,7 +156,9 @@ body.nav-page-exit {
 .hero-img-blur {
   position: absolute; inset: 0;
   width: 100%; height: 100%;
-  object-fit: cover; display: block;
+  object-fit: cover;
+  object-position: 50% 44%;
+  display: block;
 }
 .hero-img-blur {
   inset: -3px;
@@ -210,10 +212,9 @@ body.nav-page-exit {
 }
 .hero-subtitle {
   font-family: var(--font-sans);
-  font-size: 10px; font-weight: 400;
+  font-size: 11px; font-weight: 400;
   color: var(--cream-50);
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
+  letter-spacing: 0.25px;
   line-height: 1.3;
 }
 
@@ -226,10 +227,10 @@ body.nav-page-exit {
 .dot {
   width: 8px; height: 8px;
   border-radius: 50%;
-  background: #bfbfbf;
+  background: var(--olive-200);
   flex-shrink: 0;
 }
-.dot.active { background: #1a1a1a; }
+.dot.active { background: var(--olive); }
 
 /* ── TAB SWITCHER ───────────────────────────────────────── */
 .gaia-tab-switch {
@@ -764,218 +765,130 @@ body.nav-page-exit {
 #panel-learn {
   display: flex;
   flex-direction: column;
-  gap: 32px;
-  padding-bottom: 0;
+  gap: 24px;
+  padding: 16px 0 0;
 }
 
-/* Species + Map card */
-.learn-main-card {
-  margin: 16px 16px 0;
-  border: 1px solid var(--border-default);
+.learn-species-card {
+  margin: 0 16px;
+  padding: 20px 24px;
+  background: var(--olive);
+  border: 0.5px solid var(--border-default);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
   overflow: hidden;
 }
 
-/* Olive species info section */
-.species-info {
-  background: var(--olive);
-  border-bottom: 0.5px solid var(--border-default);
-  box-shadow: var(--shadow-small);
-  padding: 16px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.species-text {
+.learn-species-copy {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  flex: 1 0 0;
-  min-width: 0;
+  gap: 12px;
+  width: 100%;
 }
 
-.species-name {
+.learn-species-title {
   font-family: var(--font-serif);
   font-size: 32px;
   font-weight: 500;
-  color: var(--paper-500);
   line-height: 0.98;
   letter-spacing: -0.5px;
-  padding-left: 3px;
-}
-
-.species-desc {
-  font-family: var(--font-sans);
-  font-size: 11px;
-  color: var(--olive-200);
-  letter-spacing: 0.1px;
-  line-height: 1.3;
-  max-height: 47px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 270px;
-}
-
-/* Stats row */
-.species-stats {
-  display: flex;
-  align-items: flex-start;
-  gap: 18px;
-}
-
-.stat-col {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  width: 89px;
-  overflow: hidden;
-}
-
-.stat-label {
-  font-family: var(--font-sans);
-  font-size: 11px;
-  color: var(--olive-200);
-  letter-spacing: 0.1px;
-  line-height: 1.3;
-  white-space: nowrap;
-}
-
-.stat-badge img {
-  width: 49px; height: 49px;
-  display: block;
-  object-fit: contain;
-}
-
-.stat-lc {
-  width: 50px; height: 50px;
-  border: 3px solid var(--paper-50);
-  border-radius: 250px;
-  display: flex; align-items: center; justify-content: center;
-}
-
-.stat-lc-text {
-  font-family: var(--font-serif);
-  font-size: 20px;
-  font-weight: 500;
   color: var(--paper-50);
-  line-height: 1;
 }
 
-.stat-finds {
-  font-family: var(--font-serif);
-  font-size: 28px;
-  font-weight: 500;
-  color: var(--paper-50);
-  letter-spacing: -0.25px;
+.learn-species-desc {
+  width: 274px;
+  max-width: 100%;
+  min-height: 51px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 400;
   line-height: 1.2;
-}
-
-.stat-divider {
-  width: 0;
-  align-self: stretch;
-  border-left: 0.5px solid rgba(200,207,191,0.35);
-  flex-shrink: 0;
-}
-
-/* Map section within learn card */
-.learn-map-wrap {
-  position: relative;
-  height: 247px;
+  color: var(--paper-50);
   overflow: hidden;
 }
 
-.learn-map-wrap img.learn-map-img {
-  position: absolute;
-  inset: 0;
-  width: 100%; height: 100%;
-  object-fit: cover;
-  display: block;
-  pointer-events: none;
+.learn-species-card.is-expanded .learn-species-desc {
+  min-height: 0;
 }
 
-.learn-map-expand {
-  position: absolute;
-  bottom: 16px; right: 16px;
-  width: 44px; height: 44px;
-  border-radius: 250px;
-  border: none; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  position: absolute;
-  isolation: isolate; overflow: hidden;
-  background: transparent;
-  box-shadow: 0px 8px 40px rgba(0,0,0,0.12);
+.learn-read-more {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  padding: 4px 10px;
+  border: none;
+  border-radius: 1000px;
+  background: var(--paper-50);
+  color: var(--olive);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.2;
+  cursor: pointer;
 }
-.learn-map-expand::before {
-  content: ''; position: absolute; inset: 0; border-radius: 250px;
-  background: rgba(255,255,255,0.65);
-  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  z-index: 0;
-}
-.learn-map-expand::after {
-  content: ''; position: absolute; inset: 0; border-radius: 250px;
-  background: #ddd; mix-blend-mode: color-burn;
-  z-index: 1; pointer-events: none;
-}
-.learn-map-expand .expand-darken {
-  position: absolute; inset: 0; border-radius: 250px;
-  background: #f7f7f7; mix-blend-mode: darken;
-  z-index: 2; pointer-events: none;
-}
-.learn-map-expand svg { position: relative; z-index: 3; }
 
-/* Observation Gallery */
-.learn-section {
+.learn-section-block {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 }
 
-.learn-section-header {
-  display: flex;
-  align-items: center;
+.learn-section-title {
   padding: 0 16px;
-}
-
-.section-title-serif {
   font-family: var(--font-serif);
   font-size: 20px;
   font-weight: 400;
-  color: var(--ink-300);
   line-height: 1.3;
-  white-space: nowrap;
+  color: var(--ink-300);
 }
 
-.gallery-scroll {
-  display: flex;
-  gap: 8px;
-  padding: 0 16px;
+.learn-gallery-viewport {
+  width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
 }
-.gallery-scroll::-webkit-scrollbar { display: none; }
 
-.gallery-photo {
-  flex-shrink: 0;
-  width: 181px; height: 112px;
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  scroll-snap-align: start;
-  background: var(--brown-50);
-  position: relative;
+.learn-gallery-viewport::-webkit-scrollbar {
+  display: none;
 }
-.gallery-photo img {
-  width: 100%; height: 100%;
+
+.learn-gallery-track {
+  display: flex;
+  gap: 8px;
+  width: max-content;
+  padding: 0 16px;
+}
+
+.learn-gallery-card {
+  position: relative;
+  flex: 0 0 auto;
+  height: 112px;
+  overflow: hidden;
+  border: 0.5px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--brown-50);
+}
+
+.learn-gallery-card img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   display: block;
-  pointer-events: none;
 }
-.gallery-photo.gallery-photo-crop-1 img {
+
+.learn-gallery-card--landscape { width: 181px; }
+.learn-gallery-card--square { width: 112px; }
+.learn-gallery-card--portrait { width: 84px; }
+.learn-gallery-card--wide { width: 181px; }
+.learn-gallery-card--wide-alt { width: 182px; }
+
+.learn-gallery-card--crop-landscape img {
   position: absolute;
   top: -11.87%;
   left: -1.1%;
@@ -985,98 +898,306 @@ body.nav-page-exit {
   object-fit: fill;
 }
 
-.view-all {
-  font-family: var(--font-sans);
-  font-size: 15px;
-  color: var(--olive);
-  letter-spacing: 0.5px;
-  margin-left: 16px;
-  padding: 7px 14px;
-  line-height: 1.3;
-  background: none;
-  border: 1px solid var(--olive);
-  border-radius: 1000px;
-  cursor: pointer;
-  text-align: left;
-  max-width: 120px;
+.learn-gallery-card--crop-portrait img {
+  width: 243%;
+  max-width: none;
+  height: 100%;
+  object-position: 60% center;
 }
 
-/* Story Card */
-.stories-section {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.learn-stats-wrap {
   padding: 0 16px;
 }
 
-.story-card {
-  border: 1px solid var(--border-default);
+.learn-stats-card {
+  background: var(--paper-50);
+  border: 0.5px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+.learn-stats-grid {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 15px;
+  padding: 24px 20px;
+}
+
+.learn-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 92px;
+  min-width: 92px;
+  text-align: center;
+  color: var(--olive);
+}
+
+.learn-stat-label {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--olive);
+}
+
+.learn-stat-badge {
+  width: 53.333px;
+  height: 53.333px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.learn-stat-badge img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+.learn-stat-divider {
+  align-self: center;
+  width: 1px;
+  height: 54px;
+  background: var(--border-default);
+}
+
+.learn-stat-circle {
+  width: 54.412px;
+  height: 54.412px;
+  border: 3.265px solid var(--olive);
+  border-radius: 272.059px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.learn-stat-circle span {
+  font-family: var(--font-serif);
+  font-size: 21.765px;
+  font-weight: 700;
+  line-height: 12.437px;
+  color: var(--olive);
+}
+
+.learn-stat-number {
+  width: 58px;
+  min-height: 59px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-serif);
+  font-size: 30.471px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.2721px;
+  color: var(--olive);
+}
+
+.learn-map-card {
+  position: relative;
+  width: 100%;
+  height: 270px;
+  overflow: hidden;
+  background: var(--olive-50);
+}
+
+.learn-map-fallback {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: opacity 240ms ease;
+}
+
+.learn-map-card.is-ready .learn-map-fallback {
+  opacity: 0;
+}
+
+#learn-map-preview,
+#learn-map-modal-map {
+  position: absolute;
+  inset: 0;
+}
+
+#learn-map-preview .mapboxgl-ctrl-attrib,
+#learn-map-preview .mapboxgl-ctrl-logo,
+#learn-map-modal-map .mapboxgl-ctrl-attrib,
+#learn-map-modal-map .mapboxgl-ctrl-logo {
+  display: none;
+}
+
+.learn-map-open-hit {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.learn-map-card .expand-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+}
+
+.learn-map-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 85;
+  background: var(--paper-50);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 280ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.learn-map-modal.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.learn-map-modal__toolbar {
+  position: absolute;
+  inset: 0 auto auto 0;
+  z-index: 1;
+  width: 100%;
+  padding: 56px 16px 0;
+  display: flex;
+  justify-content: flex-start;
+  pointer-events: none;
+}
+
+.learn-map-modal__toolbar .hero-btn {
+  pointer-events: all;
+}
+
+.learn-story-section {
+  padding: 0 16px;
+}
+
+.learn-story-section .learn-section-title {
+  padding: 0;
+}
+
+.learn-story-card {
+  border: 0.5px solid rgba(0,0,0,0.1);
   border-radius: var(--radius-md);
   overflow: hidden;
-  cursor: pointer;
+  box-shadow: 0px 4px 20px 0px rgba(155,133,107,0.55);
   text-decoration: none;
   display: block;
 }
 
-.story-card-image {
+.learn-story-image {
   position: relative;
   aspect-ratio: 2912 / 1632;
   overflow: hidden;
+  background: linear-gradient(to bottom, rgba(200,199,111,0.22) 0%, rgba(252,250,240,0.06) 52%, rgba(252,250,240,0) 100%);
 }
-.story-card-image img {
-  position: absolute;
-  left: 0;
-  top: -13.4%;
-  width: 100%;
-  height: 120.22%;
-  object-fit: cover;
-  display: block;
-}
-.story-card-image-overlay {
+
+.learn-story-image img {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(200,199,111,0.5) 0%, var(--paper-500) 48%);
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  display: block;
+}
+
+.learn-story-image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(200,199,111,0.22) 0%, rgba(252,250,240,0.06) 52%, rgba(252,250,240,0) 100%);
   pointer-events: none;
 }
 
-.story-card-body {
+.learn-story-body {
   background: var(--brown-500);
-  box-shadow: var(--shadow-small);
+  box-shadow: 0px 4px 20px 0px rgba(128,105,38,0.09);
   padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.story-label {
-  font-family: var(--font-sans);
-  font-size: 10px;
-  color: var(--paper-500);
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  line-height: 1.3;
+.learn-story-top {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.story-card-title {
+.learn-story-eyebrow {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: 0.25px;
+  color: var(--paper-50);
+}
+
+.learn-story-headline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.learn-story-title {
+  width: 257px;
+  max-width: calc(100% - 52px);
   font-family: var(--font-serif);
   font-size: 32px;
   font-weight: 500;
-  color: var(--paper-500);
-  line-height: 0.98;
+  line-height: 1;
   letter-spacing: -0.5px;
+  color: var(--paper-50);
 }
 
-.story-card-desc {
+.learn-story-arrow {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  margin-top: -4px;
+}
+
+.learn-story-arrow img {
+  position: absolute;
+  display: block;
+}
+
+.learn-story-arrow img:first-child {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.learn-story-arrow img:last-child {
+  top: 9.95px;
+  left: 7.3px;
+  width: 15.59px;
+  height: 20.103px;
+  transform: rotate(90deg);
+  transform-origin: center;
+}
+
+.learn-story-desc {
+  max-width: 252px;
   font-family: var(--font-sans);
-  font-size: 11px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.2;
   color: var(--paper-500);
-  letter-spacing: 0.1px;
-  line-height: 1.3;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
 }
 
 /* ── NAV BAR ─────────────────────────────────────────────── */
@@ -1179,8 +1300,8 @@ body.nav-page-exit {
 
   <!-- Hero image — slides behind the toolbar -->
   <div id="hero">
-    <img id="hero-img" src="assets/find-details/hero-coast-live-oak.png" alt="Coast Live Oak">
-    <img class="hero-img-blur" src="assets/find-details/hero-coast-live-oak.png" alt="">
+    <img id="hero-img" src="assets/find-details/learn-v2/hero.png" alt="Coast Live Oak">
+    <img class="hero-img-blur" src="assets/find-details/learn-v2/hero.png" alt="">
     <div id="hero-gradient"></div>
     <div id="hero-meta">
       <span class="hero-title">Coast Live Oak</span>
@@ -1386,53 +1507,71 @@ body.nav-page-exit {
 
   <!-- ══ LEARN TAB PANEL ════════════════════════════════════ -->
   <div id="panel-learn" class="tab-panel">
+    <div class="learn-species-card" id="learn-species-card">
+      <div class="learn-species-copy">
+        <div class="learn-species-title">Quercus agrifolia</div>
+        <p class="learn-species-desc">an iconic, majestic tree that serves as a cornerstone for wildlife and the surrounding ecosystem. It is easily-recognized by its gnarled branches and grand canopy.</p>
+      </div>
+      <button class="learn-read-more" id="learn-read-more" type="button">Read More</button>
+    </div>
 
-    <!-- Species info + map card -->
-    <div class="learn-main-card">
-
-      <!-- Olive species info -->
-      <div class="species-info">
-        <div class="species-text">
-          <div class="species-name">Quercus agrifolia</div>
-          <p class="species-desc">The Coast Live Oak (Quercus agrifolia) is an iconic, majestic tree that serves as a cornerstone for wildlife and the surrounding ecosystem. It is easily-recognized by its gnarled branches and grand canopy. The Coast Live Oak flowers each spring and its acorns attract a wide variety of birds and butterflies — over 270 species rely on these trees for habitat and food.</p>
-        </div>
-
-        <div class="species-stats">
-          <!-- Category -->
-          <div class="stat-col">
-            <span class="stat-label">Category</span>
-            <div class="stat-badge">
-              <img src="assets/find-details/category-plant-badge.svg" alt="Plant">
-            </div>
+    <section class="learn-section-block" aria-labelledby="learn-gallery-title">
+      <h2 class="learn-section-title" id="learn-gallery-title">Gallery</h2>
+      <div class="learn-gallery-viewport">
+        <div class="learn-gallery-track">
+          <div class="learn-gallery-card learn-gallery-card--landscape learn-gallery-card--crop-landscape">
+            <img src="assets/find-details/learn-v2/gallery-1.png" alt="Close-up observation photo">
           </div>
-
-          <div class="stat-divider"></div>
-
-          <!-- Status -->
-          <div class="stat-col">
-            <span class="stat-label">Status</span>
-            <div class="stat-lc">
-              <span class="stat-lc-text">LC</span>
-            </div>
+          <div class="learn-gallery-card learn-gallery-card--square">
+            <img src="assets/find-details/learn-v2/gallery-2.png" alt="Oak branch observation photo">
           </div>
-
-          <div class="stat-divider"></div>
-
-          <!-- Finds -->
-          <div class="stat-col" style="justify-content: space-between; align-self: stretch;">
-            <span class="stat-label">Finds</span>
-            <span class="stat-finds">55,916</span>
+          <div class="learn-gallery-card learn-gallery-card--portrait learn-gallery-card--crop-portrait">
+            <img src="assets/find-details/learn-v2/hero.png" alt="Oak acorn detail">
+          </div>
+          <div class="learn-gallery-card learn-gallery-card--wide">
+            <img src="assets/find-details/learn-v2/gallery-4.png" alt="Canopy observation photo">
+          </div>
+          <div class="learn-gallery-card learn-gallery-card--wide-alt">
+            <img src="assets/find-details/learn-v2/gallery-3.png" alt="Oak bark and branch observation photo">
           </div>
         </div>
       </div>
+    </section>
 
-      <!-- Map snapshot -->
-      <div class="learn-map-wrap">
-        <img class="learn-map-img"
-          src="assets/find-details/learn-map-card.png"
-          alt="Map">
-        <button class="learn-map-expand" aria-label="Expand map">
-          <span class="expand-darken"></span>
+    <section class="learn-section-block" aria-labelledby="learn-stats-title">
+      <h2 class="learn-section-title" id="learn-stats-title">Stats</h2>
+      <div class="learn-stats-wrap">
+        <div class="learn-stats-card">
+          <div class="learn-stats-grid">
+            <div class="learn-stat">
+              <span class="learn-stat-label">Category</span>
+              <div class="learn-stat-badge">
+                <img src="assets/find-details/learn-v2/category-badge.svg" alt="Plant category badge">
+              </div>
+            </div>
+            <div class="learn-stat-divider" aria-hidden="true"></div>
+            <div class="learn-stat">
+              <span class="learn-stat-label">Status</span>
+              <div class="learn-stat-circle"><span>LC</span></div>
+            </div>
+            <div class="learn-stat-divider" aria-hidden="true"></div>
+            <div class="learn-stat">
+              <span class="learn-stat-label">Finds</span>
+              <div class="learn-stat-number">56k</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="learn-section-block" aria-labelledby="learn-map-title">
+      <h2 class="learn-section-title" id="learn-map-title">Map</h2>
+      <div class="learn-map-card" id="learn-map-card">
+        <img class="learn-map-fallback" src="assets/find-details/learn-v2/map-fallback.png" alt="">
+        <div id="learn-map-preview" aria-hidden="true"></div>
+        <button class="learn-map-open-hit" id="learn-map-open" type="button" aria-label="Open full map view"></button>
+        <button class="expand-btn" id="learn-map-expand" type="button" aria-label="Expand map">
+          <div class="glass-darken"></div>
           <span class="gaia-icon gaia-icon--expand-20" aria-hidden="true">
             <span class="gaia-icon__slot gaia-icon__slot--a">
               <span class="gaia-icon__part gaia-icon__part--a">
@@ -1447,54 +1586,50 @@ body.nav-page-exit {
           </span>
         </button>
       </div>
-    </div><!-- /learn-main-card -->
+    </section>
 
-    <!-- Observation Gallery -->
-    <div class="learn-section">
-      <div class="learn-section-header">
-        <span class="section-title-serif">Observation Gallery</span>
-      </div>
-      <div class="gallery-scroll">
-        <div class="gallery-photo gallery-photo-crop-1">
-          <img src="assets/find-details/gallery-1.png" alt="">
+    <section class="learn-section-block learn-story-section" aria-labelledby="learn-stories-title">
+      <h2 class="learn-section-title" id="learn-stories-title">Stories</h2>
+      <a href="story-cards.html" class="learn-story-card">
+        <div class="learn-story-image">
+          <img src="assets/find-details/learn-v2/story-tree.png" alt="Illustration of a coast live oak tree">
         </div>
-        <div class="gallery-photo">
-          <img src="assets/find-details/gallery-2.png" alt="">
-        </div>
-        <div class="gallery-photo">
-          <img src="assets/find-details/gallery-3.png" alt="">
-        </div>
-        <div class="gallery-photo">
-          <img src="assets/find-details/gallery-4.png" alt="">
-        </div>
-      </div>
-      <button class="view-all">View All</button>
-    </div>
-
-    <!-- Stories -->
-    <div class="stories-section">
-      <span class="section-title-serif">Stories</span>
-      <a href="story-cards.html" class="story-card">
-        <div class="story-card-image">
-          <img src="assets/find-details/story-keystone.png" alt="Coast Live Oak">
-          <div class="story-card-image-overlay"></div>
-        </div>
-        <div class="story-card-body">
-          <div style="display:flex;flex-direction:column;gap:12px;">
-            <span class="story-label">WHY IT MATTERS</span>
-            <div style="display:flex;flex-direction:column;gap:4px;">
-              <div class="story-card-title">The Story of<br>a Keystone</div>
+        <div class="learn-story-body">
+          <div class="learn-story-top">
+            <span class="learn-story-eyebrow">WHY IT MATTERS</span>
+            <div class="learn-story-headline">
+              <div class="learn-story-title">The Story of<br>a Keystone</div>
+              <span class="learn-story-arrow" aria-hidden="true">
+                <img src="assets/find-details/learn-v2/story-arrow-circle.svg" alt="">
+                <img src="assets/find-details/learn-v2/story-arrow.svg" alt="">
+              </span>
             </div>
           </div>
-          <p class="story-card-desc">270+ species. 5000 years of human history. A disease that could end it all.</p>
+          <p class="learn-story-desc">270+ species. 5000 years of human history.<br>A disease that could end it all.</p>
         </div>
       </a>
-    </div>
+    </section>
 
     <!-- Bottom breathing room -->
     <div style="height: 16px;"></div>
 
   </div><!-- /panel-learn -->
+
+  <div class="learn-map-modal" id="learn-map-modal" aria-hidden="true">
+    <div id="learn-map-modal-map"></div>
+    <div class="learn-map-modal__toolbar">
+      <button class="hero-btn" id="learn-map-close" type="button" aria-label="Close full map">
+        <span class="hero-darken"></span>
+        <span class="gaia-icon gaia-icon--left-arrow-20" aria-hidden="true">
+          <span class="gaia-icon__slot">
+            <span class="gaia-icon__part">
+              <img src="assets/icons/system/left-arrow-20.svg" alt="">
+            </span>
+          </span>
+        </span>
+      </button>
+    </div>
+  </div>
 
 </div><!-- /page -->
 
@@ -1601,6 +1736,87 @@ findMap.on('load', () => {
     });
   };
   img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+});
+
+const LEARN_MAP_CENTER = FIND_CENTER;
+const LEARN_MAP_ZOOM = 10.15;
+
+const learnMapPreview = new mapboxgl.Map({
+  container: 'learn-map-preview',
+  style: GAIA_STYLE,
+  center: LEARN_MAP_CENTER,
+  zoom: LEARN_MAP_ZOOM,
+  pitch: 0,
+  interactive: false
+});
+
+const learnMapCard = document.getElementById('learn-map-card');
+const learnMapModalEl = document.getElementById('learn-map-modal');
+const learnMapOpenBtn = document.getElementById('learn-map-open');
+const learnMapExpandBtn = document.getElementById('learn-map-expand');
+const learnMapCloseBtn = document.getElementById('learn-map-close');
+let learnMapModal = null;
+
+learnMapPreview.on('idle', () => {
+  learnMapCard?.classList.add('is-ready');
+});
+
+function ensureLearnModalMap() {
+  if (learnMapModal) return learnMapModal;
+  learnMapModal = new mapboxgl.Map({
+    container: 'learn-map-modal-map',
+    style: GAIA_STYLE,
+    center: LEARN_MAP_CENTER,
+    zoom: LEARN_MAP_ZOOM,
+    pitch: 0
+  });
+  return learnMapModal;
+}
+
+function openLearnMapModal() {
+  learnMapModalEl.classList.add('is-open');
+  learnMapModalEl.setAttribute('aria-hidden', 'false');
+
+  const modalMap = ensureLearnModalMap();
+  if (learnMapPreview?.loaded()) {
+    modalMap.jumpTo({
+      center: learnMapPreview.getCenter(),
+      zoom: learnMapPreview.getZoom(),
+      bearing: learnMapPreview.getBearing(),
+      pitch: learnMapPreview.getPitch()
+    });
+  }
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => modalMap.resize());
+  });
+}
+
+function closeLearnMapModal() {
+  learnMapModalEl.classList.remove('is-open');
+  learnMapModalEl.setAttribute('aria-hidden', 'true');
+}
+
+learnMapOpenBtn?.addEventListener('click', openLearnMapModal);
+learnMapExpandBtn?.addEventListener('click', openLearnMapModal);
+learnMapCloseBtn?.addEventListener('click', closeLearnMapModal);
+
+learnMapModalEl?.addEventListener('click', event => {
+  if (event.target === learnMapModalEl) closeLearnMapModal();
+});
+
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && learnMapModalEl?.classList.contains('is-open')) {
+    closeLearnMapModal();
+  }
+});
+
+const learnReadMoreButton = document.getElementById('learn-read-more');
+const learnSpeciesCard = document.getElementById('learn-species-card');
+
+learnReadMoreButton?.addEventListener('click', () => {
+  const expanded = learnSpeciesCard.classList.toggle('is-expanded');
+  learnReadMoreButton.textContent = expanded ? 'Read Less' : 'Read More';
 });
 
 // ── Expand / collapse map ────────────────────────────────
@@ -2028,6 +2244,9 @@ const tabSwitch = initDraggableTabSwitch({
 
 window.addEventListener('resize', () => {
   tabSwitch?.refresh();
+  findMap.resize();
+  learnMapPreview.resize();
+  learnMapModal?.resize();
 });
 </script>
 </body>
