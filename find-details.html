@@ -56,11 +56,8 @@ body.nav-page-exit {
 .hero-btn {
   display: flex; align-items: center; justify-content: center;
   border-radius: 296px; border: none;
-  background: var(--glass-toolbar-fill);
-  border: 1px solid var(--glass-toolbar-border);
-  box-shadow: var(--glass-toolbar-shadow), var(--glass-toolbar-inner-shadow);
-  backdrop-filter: blur(var(--glass-toolbar-blur)) saturate(var(--glass-toolbar-saturate));
-  -webkit-backdrop-filter: blur(var(--glass-toolbar-blur)) saturate(var(--glass-toolbar-saturate));
+  background: transparent;
+  box-shadow: var(--glass-toolbar-shadow);
   cursor: pointer; position: relative;
   pointer-events: all;
   flex-shrink: 0;
@@ -72,7 +69,9 @@ body.nav-page-exit {
   content: '';
   position: absolute;
   inset: 0;
-  background: var(--glass-toolbar-highlight);
+  background: var(--glass-toolbar-fill);
+  backdrop-filter: blur(var(--glass-toolbar-blur)) saturate(var(--glass-toolbar-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-toolbar-blur)) saturate(var(--glass-toolbar-saturate));
   border-radius: inherit;
   z-index: 0;
 }
@@ -81,17 +80,24 @@ body.nav-page-exit {
   content: '';
   position: absolute;
   inset: 0;
-  background: var(--glass-toolbar-depth);
+  background: var(--glass-toolbar-highlight);
+  mix-blend-mode: color-burn;
   border-radius: inherit;
   z-index: 1;
 }
 .hero-darken {
-  display: none;
+  position: absolute;
+  inset: 0;
+  background: var(--glass-toolbar-depth);
+  mix-blend-mode: darken;
+  border-radius: inherit;
+  z-index: 2;
+  pointer-events: none;
 }
 .hero-btn .gaia-icon,
 .hero-action-btn .gaia-icon {
   position: relative;
-  z-index: 2;
+  z-index: 3;
 }
 .hero-actions {
   position: relative;
@@ -101,18 +107,15 @@ body.nav-page-exit {
   height: 48px;
   padding: 0 10px;
   border-radius: 296px;
-  background: var(--glass-toolbar-fill);
-  border: 1px solid var(--glass-toolbar-border);
-  box-shadow: var(--glass-toolbar-shadow), var(--glass-toolbar-inner-shadow);
-  backdrop-filter: blur(var(--glass-toolbar-blur)) saturate(var(--glass-toolbar-saturate));
-  -webkit-backdrop-filter: blur(var(--glass-toolbar-blur)) saturate(var(--glass-toolbar-saturate));
+  background: transparent;
+  box-shadow: var(--glass-toolbar-shadow);
   isolation: isolate;
   overflow: hidden;
   pointer-events: all;
 }
 .hero-action-btn {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   width: 36px;
   height: 36px;
   display: flex;
@@ -384,32 +387,37 @@ body.nav-page-exit {
   width: 44px; height: 44px;
   display: flex; align-items: center; justify-content: center;
   border-radius: var(--radius-full); border: none;
-  border: 1px solid var(--glass-toolbar-border);
-  box-shadow: var(--glass-toolbar-shadow), var(--glass-toolbar-inner-shadow);
+  box-shadow: var(--glass-toolbar-shadow);
   cursor: pointer; position: relative;
   isolation: isolate; overflow: hidden;
-  background: var(--glass-toolbar-fill); flex-shrink: 0;
-  backdrop-filter: blur(var(--glass-toolbar-blur)) saturate(var(--glass-toolbar-saturate));
-  -webkit-backdrop-filter: blur(var(--glass-toolbar-blur)) saturate(var(--glass-toolbar-saturate));
+  background: transparent; flex-shrink: 0;
 }
 .expand-btn::before {
   content: ''; position: absolute; inset: 0;
   border-radius: var(--radius-full);
-  background: var(--glass-toolbar-highlight);
+  background: var(--glass-toolbar-fill);
+  backdrop-filter: blur(var(--glass-toolbar-blur)) saturate(var(--glass-toolbar-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-toolbar-blur)) saturate(var(--glass-toolbar-saturate));
   pointer-events: none;
   z-index: 0;
 }
 .expand-btn::after {
   content: ''; position: absolute; inset: 0;
   border-radius: var(--radius-full);
-  background: var(--glass-toolbar-depth);
+  background: var(--glass-toolbar-highlight);
+  mix-blend-mode: color-burn;
   pointer-events: none;
-  z-index: 0;
+  z-index: 1;
 }
 .expand-btn .glass-darken {
-  display: none;
+  position: absolute; inset: 0;
+  border-radius: var(--radius-full);
+  background: var(--glass-toolbar-depth);
+  mix-blend-mode: darken;
+  pointer-events: none;
+  z-index: 2;
 }
-.expand-btn .gaia-icon { position: relative; z-index: 1; }
+.expand-btn .gaia-icon { position: relative; z-index: 3; }
 
 /* Location card at bottom of map */
 .location-card {
@@ -1259,10 +1267,10 @@ body.nav-page-exit {
   <!-- Back button -->
   <button class="hero-btn" id="btn-back" onclick="history.back()">
     <span class="hero-darken"></span>
-    <span class="gaia-icon gaia-icon--left-arrow-20" aria-hidden="true">
+    <span class="gaia-icon gaia-icon--left-arrow-32" aria-hidden="true">
       <span class="gaia-icon__slot">
         <span class="gaia-icon__part">
-          <img src="assets/icons/system/left-arrow-20.svg" alt="">
+          <img src="assets/icons/system/left-arrow-32.svg" alt="">
         </span>
       </span>
     </span>
@@ -1347,15 +1355,15 @@ body.nav-page-exit {
         <!-- Expand button -->
         <button class="expand-btn" id="btn-expand">
           <div class="glass-darken"></div>
-          <span class="gaia-icon gaia-icon--expand-20" id="expand-icon" aria-hidden="true">
+          <span class="gaia-icon gaia-icon--expand-24" id="expand-icon" aria-hidden="true">
             <span class="gaia-icon__slot gaia-icon__slot--a">
               <span class="gaia-icon__part gaia-icon__part--a">
-                <img src="assets/icons/system/expand-20-a.svg" alt="">
+                <img src="assets/icons/system/expand-24-a.svg" alt="">
               </span>
             </span>
             <span class="gaia-icon__slot gaia-icon__slot--b">
               <span class="gaia-icon__part gaia-icon__part--b">
-                <img src="assets/icons/system/expand-20-b.svg" alt="">
+                <img src="assets/icons/system/expand-24-b.svg" alt="">
               </span>
             </span>
           </span>
@@ -1568,15 +1576,15 @@ body.nav-page-exit {
         <button class="learn-map-open-hit" id="learn-map-open" type="button" aria-label="Open full map view"></button>
         <button class="expand-btn" id="learn-map-expand" type="button" aria-label="Expand map">
           <div class="glass-darken"></div>
-          <span class="gaia-icon gaia-icon--expand-20" aria-hidden="true">
+          <span class="gaia-icon gaia-icon--expand-24" aria-hidden="true">
             <span class="gaia-icon__slot gaia-icon__slot--a">
               <span class="gaia-icon__part gaia-icon__part--a">
-                <img src="assets/icons/system/expand-20-a.svg" alt="">
+                <img src="assets/icons/system/expand-24-a.svg" alt="">
               </span>
             </span>
             <span class="gaia-icon__slot gaia-icon__slot--b">
               <span class="gaia-icon__part gaia-icon__part--b">
-                <img src="assets/icons/system/expand-20-b.svg" alt="">
+                <img src="assets/icons/system/expand-24-b.svg" alt="">
               </span>
             </span>
           </span>
@@ -1616,10 +1624,10 @@ body.nav-page-exit {
     <div class="learn-map-modal__toolbar">
       <button class="hero-btn" id="learn-map-close" type="button" aria-label="Close full map">
         <span class="hero-darken"></span>
-        <span class="gaia-icon gaia-icon--left-arrow-20" aria-hidden="true">
+        <span class="gaia-icon gaia-icon--left-arrow-32" aria-hidden="true">
           <span class="gaia-icon__slot">
             <span class="gaia-icon__part">
-              <img src="assets/icons/system/left-arrow-20.svg" alt="">
+              <img src="assets/icons/system/left-arrow-32.svg" alt="">
             </span>
           </span>
         </span>
