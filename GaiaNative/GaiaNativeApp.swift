@@ -1,4 +1,5 @@
 import CoreText
+import MapboxMaps
 import SwiftUI
 
 @main
@@ -8,6 +9,7 @@ struct GaiaNativeApp: App {
 
     init() {
         FontRegistrar.registerBundledFontsIfNeeded()
+        GaiaMapbox.configure()
     }
 
     var body: some Scene {

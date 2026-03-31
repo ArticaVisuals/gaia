@@ -12,31 +12,37 @@ struct ExploreBottomSheet: View {
 
     private let projects = ExploreSheetProject.sample
     private let finds = ExploreSheetFind.sample
+    private let sectionInset: CGFloat = 16
 
     var body: some View {
+        let topRadius: CGFloat = 48
         let sheetShape = UnevenRoundedRectangle(
             cornerRadii: .init(
-                topLeading: GaiaRadius.sheet,
+                topLeading: topRadius,
                 bottomLeading: 0,
                 bottomTrailing: 0,
-                topTrailing: GaiaRadius.sheet
+                topTrailing: topRadius
             ),
             style: .continuous
         )
 
         let content = ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading, spacing: 32) {
+            VStack(alignment: .leading, spacing: 0) {
                 Capsule()
                     .fill(GaiaColor.greyMuted.opacity(0.25))
                     .frame(width: 88, height: 4)
                     .frame(maxWidth: .infinity)
                     .padding(.top, 7)
+                    .padding(.bottom, 12)
 
-                VStack(alignment: .leading, spacing: 16) {
+                VStack(alignment: .leading, spacing: 0) {
                     Text("Nearby")
                         .font(GaiaTypography.displayMedium)
                         .foregroundStyle(GaiaColor.olive)
                         .tracking(-0.5)
+                        .padding(.horizontal, sectionInset)
+                        .padding(.top, 8)
+                        .padding(.bottom, 10)
 
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 8) {
@@ -57,12 +63,17 @@ struct ExploreBottomSheet: View {
                                 .buttonStyle(.plain)
                             }
                         }
+                        .padding(.horizontal, sectionInset)
                     }
                     .scrollClipDisabled()
+                    .padding(.bottom, 14)
                 }
 
-                VStack(alignment: .leading, spacing: 16) {
+                VStack(alignment: .leading, spacing: 0) {
                     ExploreSheetSectionHeader(title: "Projects", trailingText: "See all")
+                        .padding(.horizontal, sectionInset)
+                        .padding(.top, 4)
+                        .padding(.bottom, 14)
 
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 8) {
@@ -70,12 +81,13 @@ struct ExploreBottomSheet: View {
                                 ExploreSheetProjectCard(project: project)
                             }
                         }
-                        .padding(.bottom, 4)
+                        .padding(.horizontal, sectionInset)
+                        .padding(.bottom, 12)
                     }
                     .scrollClipDisabled()
                 }
 
-                VStack(alignment: .leading, spacing: 16) {
+                VStack(alignment: .leading, spacing: 0) {
                     HStack(alignment: .top) {
                         Text("Finds")
                             .font(GaiaTypography.titleRegular)
@@ -99,11 +111,16 @@ struct ExploreBottomSheet: View {
                             }
                         }
                     }
+                    .padding(.horizontal, sectionInset)
+                    .padding(.top, 0)
+                    .padding(.bottom, 10)
 
                     if viewMode == .grid {
                         ExploreSheetFindGrid(finds: finds) { _ in
                             selectPrimarySpecies()
                         }
+                        .padding(.horizontal, sectionInset)
+                        .padding(.bottom, 32)
                     } else {
                         VStack(spacing: 8) {
                             ForEach(finds) { find in
@@ -112,12 +129,12 @@ struct ExploreBottomSheet: View {
                                 }
                             }
                         }
+                        .padding(.horizontal, sectionInset)
+                        .padding(.bottom, 32)
                     }
                 }
             }
-            .padding(.horizontal, 16)
-            .padding(.top, 0)
-            .padding(.bottom, 32)
+            .padding(.bottom, 96)
             .frame(maxWidth: .infinity, alignment: .topLeading)
         }
         .scrollDisabled(!allowsScroll)
@@ -289,39 +306,40 @@ private struct ExploreSheetFindGrid: View {
     let finds: [ExploreSheetFind]
     let action: (ExploreSheetFind) -> Void
 
-    private let columns = 3
-    private let spacing: CGFloat = 4
-
     var body: some View {
-        VStack(spacing: spacing) {
-            ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
-                HStack(spacing: spacing) {
-                    ForEach(row) { find in
-                        ExploreSheetFindGridCard(find: find) {
-                            action(find)
-                        }
-                        .frame(maxWidth: .infinity)
-                    }
+        GeometryReader { proxy in
+            let spacing: CGFloat = 8
+            let columnCount = 3
+            let cardWidth = floor((proxy.size.width - (spacing * CGFloat(columnCount - 1))) / CGFloat(columnCount))
+            let columns = Array(
+                repeating: GridItem(.fixed(cardWidth), spacing: spacing, alignment: .top),
+                count: columnCount
+            )
 
-                    ForEach(0..<max(0, columns - row.count), id: \.self) { _ in
-                        Color.clear
-                            .aspectRatio(1, contentMode: .fit)
-                            .frame(maxWidth: .infinity)
+            LazyVGrid(columns: columns, alignment: .leading, spacing: spacing) {
+                ForEach(finds) { find in
+                    ExploreSheetFindGridCard(find: find, sideLength: cardWidth) {
+                        action(find)
                     }
                 }
             }
+            .frame(width: proxy.size.width, alignment: .leading)
         }
+        .frame(height: gridHeight(for: finds.count))
     }
 
-    private var rows: [[ExploreSheetFind]] {
-        stride(from: 0, to: finds.count, by: columns).map { start in
-            Array(finds[start..<min(start + columns, finds.count)])
-        }
+    private func gridHeight(for count: Int) -> CGFloat {
+        guard count > 0 else { return 0 }
+        let spacing: CGFloat = 8
+        let cardWidth: CGFloat = 118
+        let rows = CGFloat((count + 2) / 3)
+        return (rows * cardWidth) + (max(0, rows - 1) * spacing)
     }
 }
 
 private struct ExploreSheetFindGridCard: View {
     let find: ExploreSheetFind
+    let sideLength: CGFloat
     let action: () -> Void
 
     var body: some View {
@@ -354,17 +372,17 @@ private struct ExploreSheetFindGridCard: View {
                     .foregroundStyle(.white)
                     .multilineTextAlignment(.leading)
                     .lineLimit(2)
-                    .frame(maxWidth: 100, minHeight: 33, alignment: .bottomLeading)
+                    .frame(width: max(0, sideLength - 17), alignment: .bottomLeading)
                     .padding(.leading, 8.5)
                     .padding(.bottom, 7.5)
             }
-            .frame(maxWidth: .infinity)
-            .aspectRatio(1, contentMode: .fit)
+            .frame(width: sideLength, height: sideLength)
             .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
                     .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
             )
+            .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
             .contentShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
         }
         .buttonStyle(.plain)

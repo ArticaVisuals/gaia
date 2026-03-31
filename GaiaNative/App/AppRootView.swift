@@ -21,8 +21,8 @@ struct AppRootView: View {
                     )
                 )
                 .padding(.horizontal, GaiaSpacing.md)
-                .padding(.bottom, 4)
-                .offset(y: GaiaSpacing.sm)
+                .padding(.bottom, 0)
+                .offset(y: 20)
                 .ignoresSafeArea(.keyboard, edges: .bottom)
             }
         }

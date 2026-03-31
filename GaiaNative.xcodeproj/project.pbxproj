@@ -8,9 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		0336C918B8EA769EF03F5F2E /* StoryPreviewCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9646264F30FB6D0AD5E1E572 /* StoryPreviewCard.swift */; };
-		0A1B2C3D4E5F60718293A4B5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F60718293A4B4 /* Assets.xcassets */; };
-		0A1B2C3D4E5F60718293A4B7 /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F60718293A4B6 /* Fonts */; };
-		0A1B2C3D4E5F60718293A4B9 /* Icons in Resources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F60718293A4B8 /* Icons */; };
 		0DAE8C1B2DA7CA3962301E87 /* ObserveDetailsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67282C7460F9F823AD9AE245 /* ObserveDetailsScreen.swift */; };
 		0DD56CDC3A47A4DDFADB6854 /* ObserveCameraScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10B9C6679E3F4845C332D40C /* ObserveCameraScreen.swift */; };
 		13190C5C2DEFF28FEABD3C9A /* MapDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24DAC259706382EB914DA2F7 /* MapDataService.swift */; };
@@ -23,6 +20,7 @@
 		23C580EA85555D9107E5D127 /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3F324A2848976A4AD155662 /* Profile.swift */; };
 		25DB2E0C8AA50A2FB9F4D45B /* GaiaBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28074E03C039B184F5071499 /* GaiaBadge.swift */; };
 		2690928805DC4860E70CD806 /* ProfileImpactTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44940F559F9B5CA70C3CA42B /* ProfileImpactTab.swift */; };
+		28317C1E6A80AC7FDCF3496E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EC919F4D5C11CEED3715ED65 /* Assets.xcassets */; };
 		2A71395633CE89E8E0747B06 /* FindCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F20CB050256AA9670C4A3E9 /* FindCard.swift */; };
 		2BFFDF418B96C3C878FA39D2 /* GaiaDivider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4908DF30B56F9D2888EDA36C /* GaiaDivider.swift */; };
 		37DBEF790BACD986F2F554A9 /* GaiaAssetImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3771245A136A07017697132A /* GaiaAssetImage.swift */; };
@@ -51,6 +49,8 @@
 		730C6A996091B5BBA435016A /* GaiaTypography.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8DE9B011B1066EE1893D863 /* GaiaTypography.swift */; };
 		7322E4E568115E040CF8B5B6 /* GlassCardBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FDE1C4DD3009EBE75D338FC /* GlassCardBackground.swift */; };
 		732E6DF293D90357C0F0C3D1 /* StoryDeckScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D8CA1369BB83BC58B17FCB /* StoryDeckScreen.swift */; };
+		7683DFFD02AE08F612707BFD /* CameraPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 908766B172FE8957820D6F1B /* CameraPreviewView.swift */; };
+		7B8A22BDC74F48789C694800 /* Resources in Resources */ = {isa = PBXBuildFile; fileRef = EFF94C63923359F98E349562 /* Resources */; };
 		7C1F0CB8BA3C2C5BBDBC41B3 /* GaiaSpacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20B9ECC43DD462DCED4B2B6A /* GaiaSpacing.swift */; };
 		7D4BAEEC87BF5AD7DB0A9BF1 /* AppRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BD446C59D0C73730E439C6E /* AppRootView.swift */; };
 		7E3BCB247FC3F3A7F013173D /* AppCopy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9077E84A708E36557C59B298 /* AppCopy.swift */; };
@@ -68,7 +68,6 @@
 		9A158DBC9B1FF6BBA3380DAA /* GaiaNativeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 141B70A1432B81AED463BD52 /* GaiaNativeApp.swift */; };
 		9DBA101B91E5D16E26A5C85D /* ObserveViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53BCE849DF901351E323C781 /* ObserveViewModel.swift */; };
 		9DF69059AD40A6A00A55B568 /* GaiaAsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0936210E15DA895926002A94 /* GaiaAsyncImage.swift */; };
-		A1B2C3D4E5F60718293A4B0C /* CameraPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B0D /* CameraPreviewView.swift */; };
 		B1476856282321E55D9D3268 /* ExploreMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 474384ED9682C633E3840DF6 /* ExploreMapView.swift */; };
 		B190469C455A82D5271F9274 /* ImpactMapExpandedScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7943D60FFDCAB74CE34FDCC5 /* ImpactMapExpandedScreen.swift */; };
 		B3CD2642A022FEFF29531B97 /* FindDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5935E3D649A9470881E239D0 /* FindDetailsViewModel.swift */; };
@@ -79,6 +78,7 @@
 		BDA0F770C9E18FFE87336A47 /* StoryCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9772643A9E3A21797D13D84C /* StoryCard.swift */; };
 		BE3EF1BB4546C4807E9B0941 /* ActivityScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27DFF6D5DEA020C081FA395E /* ActivityScreen.swift */; };
 		BF7F22B769777BA684702726 /* HeroCarousel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A346E794FCAC0D6E082458D /* HeroCarousel.swift */; };
+		C360877A9AC7C2FF5CD461EE /* MapboxMaps in Frameworks */ = {isa = PBXBuildFile; productRef = F35852E7C67E2600F54B271C /* MapboxMaps */; };
 		C399176BFB12FF720B7B31A8 /* ProfileScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65E65A51075095419291E921 /* ProfileScreen.swift */; };
 		C4F28BBADBD876A16607D880 /* LearnTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D9D76AB88DCDA2E4EAAE901 /* LearnTabView.swift */; };
 		C5992085057A9286A2BF7712 /* GaiaMaterial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6715EF68DE19A34067992A4B /* GaiaMaterial.swift */; };
@@ -100,6 +100,7 @@
 		F074827F9FDD5AB0A17FED84 /* ProfileHeaderCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B41E620045247F57247304A /* ProfileHeaderCard.swift */; };
 		FA3FA3D3910D79D14171FBF0 /* ExploreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5018B910E6E734C56BBEE330 /* ExploreViewModel.swift */; };
 		FAEC4B81AA52000116BBDF66 /* ContentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD806563A8E2128D0813D870 /* ContentStore.swift */; };
+		FAFB6BCD15930BCC23556263 /* GaiaMapbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0A7674448C7BDB96F34884 /* GaiaMapbox.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -107,9 +108,6 @@
 		03F8E223E3FFF9D8CE4CE78E /* FindDetailsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindDetailsScreen.swift; sourceTree = "<group>"; };
 		07C1014FFD074B9B7F391996 /* Species.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Species.swift; sourceTree = "<group>"; };
 		0936210E15DA895926002A94 /* GaiaAsyncImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaiaAsyncImage.swift; sourceTree = "<group>"; };
-		0A1B2C3D4E5F60718293A4B4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = GaiaNative/Resources/Assets.xcassets; sourceTree = SOURCE_ROOT; };
-		0A1B2C3D4E5F60718293A4B6 /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Fonts; path = GaiaNative/Resources/Fonts; sourceTree = SOURCE_ROOT; };
-		0A1B2C3D4E5F60718293A4B8 /* Icons */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Icons; path = GaiaNative/Resources/Icons; sourceTree = SOURCE_ROOT; };
 		10B9C6679E3F4845C332D40C /* ObserveCameraScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObserveCameraScreen.swift; sourceTree = "<group>"; };
 		128C750EF810DF7DB55D895C /* BottomNavBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomNavBar.swift; sourceTree = "<group>"; };
 		13124E13356C5E5C3E2DF08D /* GaiaPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaiaPill.swift; sourceTree = "<group>"; };
@@ -152,6 +150,7 @@
 		6715EF68DE19A34067992A4B /* GaiaMaterial.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaiaMaterial.swift; sourceTree = "<group>"; };
 		67282C7460F9F823AD9AE245 /* ObserveDetailsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObserveDetailsScreen.swift; sourceTree = "<group>"; };
 		6A346E794FCAC0D6E082458D /* HeroCarousel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeroCarousel.swift; sourceTree = "<group>"; };
+		6B0A7674448C7BDB96F34884 /* GaiaMapbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaiaMapbox.swift; sourceTree = "<group>"; };
 		6B41E620045247F57247304A /* ProfileHeaderCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileHeaderCard.swift; sourceTree = "<group>"; };
 		6F20CB050256AA9670C4A3E9 /* FindCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindCard.swift; sourceTree = "<group>"; };
 		7943D60FFDCAB74CE34FDCC5 /* ImpactMapExpandedScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImpactMapExpandedScreen.swift; sourceTree = "<group>"; };
@@ -165,13 +164,13 @@
 		8D9D76AB88DCDA2E4EAAE901 /* LearnTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnTabView.swift; sourceTree = "<group>"; };
 		8FA4E0BC8A4F2683BFE1A0B7 /* ProfileCommunityTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileCommunityTab.swift; sourceTree = "<group>"; };
 		9077E84A708E36557C59B298 /* AppCopy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCopy.swift; sourceTree = "<group>"; };
+		908766B172FE8957820D6F1B /* CameraPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreviewView.swift; sourceTree = "<group>"; };
 		92AC85B3C084308B7FBBD040 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		9646264F30FB6D0AD5E1E572 /* StoryPreviewCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPreviewCard.swift; sourceTree = "<group>"; };
 		96603E9BD3CA66779600FB2E /* LearnMapExpandedScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnMapExpandedScreen.swift; sourceTree = "<group>"; };
 		9772643A9E3A21797D13D84C /* StoryCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCard.swift; sourceTree = "<group>"; };
 		9F70620C276DF78392C5D11E /* CommunityPost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityPost.swift; sourceTree = "<group>"; };
 		A1A2A5FD14BE53F99202C384 /* GaiaColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaiaColor.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F60718293A4B0D /* CameraPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreviewView.swift; sourceTree = "<group>"; };
 		A2BE948F394DEC9AE7215D99 /* Content */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Content; path = GaiaNative/Content; sourceTree = SOURCE_ROOT; };
 		A34808BB5A98003FE03CE01E /* FindTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindTabView.swift; sourceTree = "<group>"; };
 		A3F324A2848976A4AD155662 /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
@@ -194,11 +193,23 @@
 		E472B208F31A695300257E2C /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = assets; sourceTree = SOURCE_ROOT; };
 		E5D88BD85DEE8DF475A343C3 /* GaiaMotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaiaMotion.swift; sourceTree = "<group>"; };
 		E81E4B46008A4392C85C6C0E /* CameraService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraService.swift; sourceTree = "<group>"; };
+		EC919F4D5C11CEED3715ED65 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EFF94C63923359F98E349562 /* Resources */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Resources; path = GaiaNative/Resources; sourceTree = SOURCE_ROOT; };
 		F745800DE0CB2C42E869EEE8 /* PreviewProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewProfile.swift; sourceTree = "<group>"; };
 		FCFFDBD4F3C52CE19C95A739 /* GalleryRail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryRail.swift; sourceTree = "<group>"; };
 		FE44E4B2B4055BA89D58E91A /* ActivityViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8FE425F2CB871BC128759446 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C360877A9AC7C2FF5CD461EE /* MapboxMaps in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		0D254A419B8934974618480E /* Map */ = {
@@ -260,16 +271,6 @@
 				CD5C92AD3B2E2513234DBBF7 /* ToolbarGlassPill.swift */,
 			);
 			path = Navigation;
-			sourceTree = "<group>";
-		};
-		35DC99A32F7B7AB600B75781 /* Recovered References */ = {
-			isa = PBXGroup;
-			children = (
-				0A1B2C3D4E5F60718293A4B4 /* Assets.xcassets */,
-				0A1B2C3D4E5F60718293A4B6 /* Fonts */,
-				0A1B2C3D4E5F60718293A4B8 /* Icons */,
-			);
-			name = "Recovered References";
 			sourceTree = "<group>";
 		};
 		3C0E5C505AB53E00AE1ECDF3 /* Explore */ = {
@@ -350,7 +351,7 @@
 		6A5E16CB91E292308B655F67 /* Observe */ = {
 			isa = PBXGroup;
 			children = (
-				A1B2C3D4E5F60718293A4B0D /* CameraPreviewView.swift */,
+				908766B172FE8957820D6F1B /* CameraPreviewView.swift */,
 				10B9C6679E3F4845C332D40C /* ObserveCameraScreen.swift */,
 				67282C7460F9F823AD9AE245 /* ObserveDetailsScreen.swift */,
 				58135D266CB1039B4C6C08C4 /* ObserveFlowScreen.swift */,
@@ -368,8 +369,8 @@
 				A2BE948F394DEC9AE7215D99 /* Content */,
 				EFF94C63923359F98E349562 /* Resources */,
 				4BCC03A440EB22BED89FCE25 /* GaiaNative */,
+				A5CA9AB75BB7BF699BACDD16 /* Resources */,
 				3CC3E51BBCD39C46E3BD052C /* Products */,
-				35DC99A32F7B7AB600B75781 /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -422,6 +423,7 @@
 				A7E24A836A41B1EBBFE1111F /* AssetCatalog.swift */,
 				E81E4B46008A4392C85C6C0E /* CameraService.swift */,
 				BD806563A8E2128D0813D870 /* ContentStore.swift */,
+				6B0A7674448C7BDB96F34884 /* GaiaMapbox.swift */,
 				41BC95568CDC1A443634978C /* HapticsService.swift */,
 				24DAC259706382EB914DA2F7 /* MapDataService.swift */,
 			);
@@ -439,6 +441,15 @@
 				47C6CAC4F36184461E5DDF10 /* Stories */,
 			);
 			path = Features;
+			sourceTree = "<group>";
+		};
+		A5CA9AB75BB7BF699BACDD16 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				EC919F4D5C11CEED3715ED65 /* Assets.xcassets */,
+			);
+			name = Resources;
+			path = GaiaNative/Resources;
 			sourceTree = "<group>";
 		};
 		BF54255AC48BFBAB4CDAF8E4 /* Media */ = {
@@ -487,6 +498,7 @@
 			buildPhases = (
 				240F2684EA73993D355DF3DC /* Sources */,
 				440CF7BA179DE61B0BB4EC8F /* Resources */,
+				8FE425F2CB871BC128759446 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -494,6 +506,7 @@
 			);
 			name = GaiaNative;
 			packageProductDependencies = (
+				F35852E7C67E2600F54B271C /* MapboxMaps */,
 			);
 			productName = GaiaNative;
 			productReference = BCFD1B63C5FDC307F82BCACA /* GaiaNative.app */;
@@ -507,6 +520,11 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 2640;
+				TargetAttributes = {
+					A0F5AA237A60C220305ED721 = {
+						DevelopmentTeam = "";
+					};
+				};
 			};
 			buildConfigurationList = DD2525459FDE635C52FF19AC /* Build configuration list for PBXProject "GaiaNative" */;
 			developmentRegion = en;
@@ -517,6 +535,9 @@
 			);
 			mainGroup = 6D9CA16E1D81E1DAB422560B;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				91BE366298C6857349FD48B5 /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 3CC3E51BBCD39C46E3BD052C /* Products */;
 			projectDirPath = "";
@@ -532,10 +553,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0A1B2C3D4E5F60718293A4B5 /* Assets.xcassets in Resources */,
-				0A1B2C3D4E5F60718293A4B7 /* Fonts in Resources */,
-				0A1B2C3D4E5F60718293A4B9 /* Icons in Resources */,
+				28317C1E6A80AC7FDCF3496E /* Assets.xcassets in Resources */,
 				8A69F98BC3EF3490559AC1B4 /* Content in Resources */,
+				7B8A22BDC74F48789C694800 /* Resources in Resources */,
 				5B2B4845C15480D913931B44 /* assets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -559,7 +579,7 @@
 				E3C118E2CF86E0099D10690A /* AppState.swift in Sources */,
 				41F12A019F2AA6FAD5F51EDE /* AssetCatalog.swift in Sources */,
 				9143011B9773EE317A1DC5D5 /* BottomNavBar.swift in Sources */,
-				A1B2C3D4E5F60718293A4B0C /* CameraPreviewView.swift in Sources */,
+				7683DFFD02AE08F612707BFD /* CameraPreviewView.swift in Sources */,
 				8D89DC4884B8E2759D35C772 /* CameraService.swift in Sources */,
 				CD7C44DFD8E5266341E66C59 /* ComingSoonView.swift in Sources */,
 				19A974BF227F8195F04DCAA0 /* CommunityPost.swift in Sources */,
@@ -581,6 +601,7 @@
 				E5090830A81B3ABDD643EF81 /* GaiaCardSurfaces.swift in Sources */,
 				43C4C5F11FD5C7ADF288D67C /* GaiaColor.swift in Sources */,
 				2BFFDF418B96C3C878FA39D2 /* GaiaDivider.swift in Sources */,
+				FAFB6BCD15930BCC23556263 /* GaiaMapbox.swift in Sources */,
 				C5992085057A9286A2BF7712 /* GaiaMaterial.swift in Sources */,
 				1419364474A33BBCF20E3844 /* GaiaMaterialBackground.swift in Sources */,
 				5ABAD816AF0D26E003AC876A /* GaiaMotion.swift in Sources */,
@@ -675,6 +696,8 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGNING_ALLOWED[sdk=iphonesimulator*]" = NO;
+				"CODE_SIGNING_REQUIRED[sdk=iphonesimulator*]" = NO;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = "";
@@ -700,7 +723,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = Gaia;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Gaia uses the camera to observe living things.";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Gaia uses your location to center the map around you.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Gaia uses your location to center the map and show nearby finds.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
@@ -753,6 +776,8 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGNING_ALLOWED[sdk=iphonesimulator*]" = NO;
+				"CODE_SIGNING_REQUIRED[sdk=iphonesimulator*]" = NO;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = "";
@@ -772,7 +797,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = Gaia;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Gaia uses the camera to observe living things.";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Gaia uses your location to center the map around you.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Gaia uses your location to center the map and show nearby finds.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
@@ -796,7 +821,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_ASSET_PATHS = GaiaNative/PreviewData;
-				DEVELOPMENT_TEAM = 27DUVXTST5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -812,7 +836,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_ASSET_PATHS = GaiaNative/PreviewData;
-				DEVELOPMENT_TEAM = 27DUVXTST5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -844,6 +867,25 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		91BE366298C6857349FD48B5 /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/mapbox/mapbox-maps-ios.git";
+			requirement = {
+				kind = exactVersion;
+				version = 11.20.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F35852E7C67E2600F54B271C /* MapboxMaps */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 91BE366298C6857349FD48B5 /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */;
+			productName = MapboxMaps;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 92A795CD82FC78393385F76B /* Project object */;
 }

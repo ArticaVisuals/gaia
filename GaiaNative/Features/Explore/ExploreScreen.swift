@@ -103,7 +103,7 @@ private struct ExploreSheetMetrics {
         headerHeight = topInset + 48
         peekHeight = 150
         fullHeight = max(360, containerHeight - headerHeight)
-        fullOffset = 16
+        fullOffset = 12
         midOffset = max(fullOffset, round(fullHeight * 0.47))
         collapsedOffset = max(midOffset, fullHeight - peekHeight)
     }
@@ -164,8 +164,25 @@ private struct ExploreDraggableSheet: View {
     let onProgressChange: (CGFloat) -> Void
     let onPositionChange: (ExploreSheetSnapshot) -> Void
 
-    @State private var detent: ExploreSheetDetent = .collapsed
+    @State private var detent: ExploreSheetDetent
     @State private var dragTranslation: CGFloat = 0
+
+    init(
+        species: [Species],
+        projectCount: Int,
+        topInset: CGFloat,
+        onSelectFind: @escaping (Species) -> Void,
+        onProgressChange: @escaping (CGFloat) -> Void,
+        onPositionChange: @escaping (ExploreSheetSnapshot) -> Void
+    ) {
+        self.species = species
+        self.projectCount = projectCount
+        self.topInset = topInset
+        self.onSelectFind = onSelectFind
+        self.onProgressChange = onProgressChange
+        self.onPositionChange = onPositionChange
+        _detent = State(initialValue: Self.launchDetent)
+    }
 
     var body: some View {
         GeometryReader { proxy in
@@ -260,6 +277,24 @@ private struct ExploreDraggableSheet: View {
                     )
                 )
             }
+        }
+    }
+
+    private static var launchDetent: ExploreSheetDetent {
+        let arguments = ProcessInfo.processInfo.arguments
+
+        guard let flagIndex = arguments.firstIndex(of: "-gaiaExploreSheet"),
+              arguments.indices.contains(flagIndex + 1) else {
+            return .collapsed
+        }
+
+        switch arguments[flagIndex + 1].lowercased() {
+        case "full":
+            return .full
+        case "mid", "half":
+            return .mid
+        default:
+            return .collapsed
         }
     }
 
@@ -378,7 +413,7 @@ private struct ExploreSheetSurface: View {
     let contentReveal: CGFloat
 
     var body: some View {
-        let topCorner = 35 + (GaiaRadius.sheet - 35) * contentReveal
+        let topCorner = 35 + (48 - 35) * contentReveal
         let bottomCorner = 35 * (1 - contentReveal)
 
         UnevenRoundedRectangle(

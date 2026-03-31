@@ -12,6 +12,7 @@ settings:
     INFOPLIST_KEY_CFBundleDisplayName: Gaia
     INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.education
     INFOPLIST_KEY_NSCameraUsageDescription: Gaia uses the camera to observe living things.
+    INFOPLIST_KEY_NSLocationWhenInUseUsageDescription: Gaia uses your location to center the map and show nearby finds.
     INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
     INFOPLIST_KEY_UILaunchScreen_Generation: YES
     INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: UIInterfaceOrientationPortrait
@@ -19,6 +20,12 @@ settings:
     ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
     ENABLE_PREVIEWS: NO
     DEVELOPMENT_TEAM: ""
+    "CODE_SIGNING_ALLOWED[sdk=iphonesimulator*]": NO
+    "CODE_SIGNING_REQUIRED[sdk=iphonesimulator*]": NO
+packages:
+  MapboxMaps:
+    url: https://github.com/mapbox/mapbox-maps-ios.git
+    exactVersion: 11.20.2
 targets:
   GaiaNative:
     type: application
@@ -35,12 +42,18 @@ targets:
       - path: GaiaNative/Resources
         buildPhase: resources
         type: folder
+        excludes:
+          - Assets.xcassets
+      - path: GaiaNative/Resources/Assets.xcassets
+        buildPhase: resources
       - path: assets
         buildPhase: resources
         type: folder
     settings:
       base:
         DEVELOPMENT_ASSET_PATHS: GaiaNative/PreviewData
+    dependencies:
+      - package: MapboxMaps
 schemes:
   GaiaNative:
     build:
