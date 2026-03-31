@@ -24,31 +24,29 @@ struct ExploreScreen: View {
             )
             .ignoresSafeArea()
             .overlay(alignment: .bottom) {
-                ZStack(alignment: .bottomLeading) {
-                    GlassCircleButton(size: 44, action: {
-                        recenterRequestID = UUID()
-                        isSearchFocused = false
-                    }) {
-                        GaiaIcon(kind: .target, size: 24)
+                ExploreDraggableSheet(
+                    species: contentStore.species,
+                    projectCount: min(3, max(1, contentStore.observations.count)),
+                    topInset: searchBarTopInset,
+                    onSelectFind: { species in
+                        appState.openFindDetails(speciesID: species.id, tab: .learn)
+                    },
+                    onProgressChange: { _ in },
+                    onPositionChange: { snapshot in
+                        sheetSnapshot = snapshot
                     }
-                    .padding(.leading, GaiaSpacing.md)
-                    .padding(.bottom, locateButtonBottomInset)
-
-                    ExploreDraggableSheet(
-                        species: contentStore.species,
-                        projectCount: min(3, max(1, contentStore.observations.count)),
-                        topInset: searchBarTopInset,
-                        onSelectFind: { species in
-                            appState.openFindDetails(speciesID: species.id, tab: .learn)
-                        },
-                        onProgressChange: { _ in },
-                        onPositionChange: { snapshot in
-                            sheetSnapshot = snapshot
-                        }
-                    )
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-                }
+                )
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+            }
+            .overlay(alignment: .bottomLeading) {
+                GlassCircleButton(size: 44, action: {
+                    recenterRequestID = UUID()
+                    isSearchFocused = false
+                }) {
+                    GaiaIcon(kind: .target, size: 24)
+                }
+                .padding(.leading, GaiaSpacing.md)
+                .padding(.bottom, locateButtonBottomInset)
             }
             .overlay {
                 if isSearchFocused {
@@ -72,16 +70,8 @@ struct ExploreScreen: View {
     }
 
     private var locateButtonBottomInset: CGFloat {
-        guard sheetSnapshot.fullHeight > 0 else { return 164 }
-
-        if sheetSnapshot.liveOffset <= sheetSnapshot.midOffset {
-            let aboveNav: CGFloat = 76
-            let aboveSheet = (sheetSnapshot.fullHeight - sheetSnapshot.midOffset) + 14
-            let t = max(0, min(1, sheetSnapshot.liveOffset / max(sheetSnapshot.midOffset, 1)))
-            return aboveNav + (aboveSheet - aboveNav) * t
-        }
-
-        return (sheetSnapshot.fullHeight - sheetSnapshot.liveOffset) + 14
+        guard sheetSnapshot.fullHeight > 0 else { return 226 }
+        return max(120, (sheetSnapshot.fullHeight - sheetSnapshot.collapsedOffset) + 76)
     }
 }
 
@@ -154,6 +144,7 @@ private struct ExploreSheetSnapshot {
     var fullHeight: CGFloat = 0
     var liveOffset: CGFloat = 0
     var midOffset: CGFloat = 0
+    var collapsedOffset: CGFloat = 0
 }
 
 private struct ExploreDraggableSheet: View {
@@ -246,7 +237,8 @@ private struct ExploreDraggableSheet: View {
                     ExploreSheetSnapshot(
                         fullHeight: metrics.fullHeight,
                         liveOffset: liveOffset,
-                        midOffset: metrics.midOffset
+                        midOffset: metrics.midOffset,
+                        collapsedOffset: metrics.collapsedOffset
                     )
                 )
             }

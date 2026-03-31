@@ -5,38 +5,68 @@ struct HeroCarousel: View {
     let title: String
     let subtitle: String
     @State private var selection = 0
+    private let heroShadow = Color(red: 115 / 255, green: 115 / 255, blue: 100 / 255, opacity: 0.5)
+
+    private var carouselImages: [String] {
+        let preferredImages = Array(imageNames.prefix(4))
+        return preferredImages.isEmpty ? imageNames : preferredImages
+    }
 
     var body: some View {
-        VStack(spacing: GaiaSpacing.sm) {
+        VStack(spacing: 8) {
             TabView(selection: $selection) {
-                ForEach(Array(imageNames.enumerated()), id: \.offset) { index, imageName in
+                ForEach(Array(carouselImages.enumerated()), id: \.offset) { index, imageName in
                     ProgressiveBlurImage(imageName: imageName)
-                        .overlay(alignment: .bottomLeading) {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(title)
-                                    .font(GaiaTypography.displayMedium)
-                                    .foregroundStyle(GaiaColor.paperStrong)
-                                Text(subtitle.uppercased())
-                                    .font(GaiaTypography.caption2)
-                                    .foregroundStyle(GaiaColor.paperWhite100.opacity(0.92))
-                            }
-                            .padding(GaiaSpacing.md)
-                        }
-                        .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous))
                         .tag(index)
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
-            .frame(height: 286)
+            .frame(height: 262)
+            .overlay(alignment: .bottomLeading) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title)
+                        .font(GaiaTypography.displayMedium)
+                        .foregroundStyle(GaiaColor.paperStrong)
+                        .lineLimit(1)
+
+                    Text(subtitle)
+                        .font(.custom("Neue Haas Unica W1G", size: 11))
+                        .foregroundStyle(GaiaColor.paperWhite50.opacity(0.95))
+                        .tracking(0.25)
+                        .textCase(.none)
+                }
+                .padding(.leading, 15)
+                .padding(.bottom, 12)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .allowsHitTesting(false)
+            }
+            .clipShape(
+                UnevenRoundedRectangle(
+                    cornerRadii: .init(
+                        topLeading: 0,
+                        bottomLeading: 8,
+                        bottomTrailing: 8,
+                        topTrailing: 0
+                    ),
+                    style: .continuous
+                )
+            )
+            .shadow(
+                color: heroShadow,
+                radius: 16.2,
+                x: 0,
+                y: 4
+            )
 
             HStack(spacing: 8) {
-                ForEach(imageNames.indices, id: \.self) { index in
-                    Capsule()
-                        .fill(index == selection ? GaiaColor.olive : GaiaColor.border)
-                        .frame(width: index == selection ? 20 : 8, height: 8)
-                        .animation(GaiaMotion.quickEase, value: selection)
+                ForEach(carouselImages.indices, id: \.self) { index in
+                    Circle()
+                        .fill(index == selection ? GaiaColor.olive : GaiaColor.oliveGreen200)
+                        .frame(width: 8, height: 8)
                 }
             }
+            .padding(.horizontal, 24)
+            .frame(height: 16)
         }
     }
 }

@@ -13,38 +13,106 @@ enum GaiaColor {
     static let oliveGreen900 = Color(hex: 0x282D22)
 
     static let grassGreen100 = Color(hex: 0xB0D1A5)
+    static let grassGreen200 = Color(hex: 0xA3CA96)
     static let grassGreen300 = Color(hex: 0x95C287)
+    static let grassGreen400 = Color(hex: 0x88BB78)
     static let grassGreen500 = Color(hex: 0x7BB369)
+    static let grassGreen600 = Color(hex: 0x6FA15F)
     static let grassGreen700 = Color(hex: 0x628F54)
-
-    static let paperWhite50 = Color(hex: 0xFEFDF9)
-    static let paperWhite100 = Color(hex: 0xFEFCF7)
-    static let paperWhite200 = Color(hex: 0xFDFBF4)
-    static let paperWhite500 = Color(hex: 0xFCFAF0)
-    static let paperWhite700 = Color(hex: 0xBDBBB4)
+    static let grassGreen800 = Color(hex: 0x567D4A)
+    static let grassGreen900 = Color(hex: 0x4A6B3F)
 
     static let broccoliBrown50 = Color(hex: 0xF6F2EE)
     static let broccoliBrown100 = Color(hex: 0xEDE5DC)
     static let broccoliBrown200 = Color(hex: 0xD8C9B8)
+    static let broccoliBrown300 = Color(hex: 0xBFA98F)
     static let broccoliBrown400 = Color(hex: 0xAC9479)
     static let broccoliBrown500 = Color(hex: 0x9B856B)
+    static let broccoliBrown600 = Color(hex: 0x89755E)
+    static let broccoliBrown700 = Color(hex: 0x756350)
     static let broccoliBrown800 = Color(hex: 0x5A4C3E)
+    static let broccoliBrown900 = Color(hex: 0x3B3129)
 
+    static let asparagusGreen50 = Color(hex: 0xF7F7EE)
+    static let asparagusGreen100 = Color(hex: 0xEEEEDC)
+    static let asparagusGreen200 = Color(hex: 0xDDDCB6)
+    static let asparagusGreen300 = Color(hex: 0xCCCB8B)
+    static let asparagusGreen400 = Color(hex: 0xC9C87B)
+    static let asparagusGreen500 = Color(hex: 0xC2C190)
+    static let asparagusGreen600 = Color(hex: 0xABAA7F)
+    static let asparagusGreen700 = Color(hex: 0x91906C)
+    static let asparagusGreen800 = Color(hex: 0x707053)
+    static let asparagusGreen900 = Color(hex: 0x484837)
+
+    static let paperWhite50 = Color(hex: 0xFEFDF9)
+    static let paperWhite100 = Color(hex: 0xFEFCF7)
+    static let paperWhite200 = Color(hex: 0xFDFBF4)
+    static let paperWhite300 = Color(hex: 0xFDFAF1)
+    static let paperWhite400 = Color(hex: 0xFCFAF1)
+    static let paperWhite500 = Color(hex: 0xFCFAF0)
+    static let paperWhite600 = Color(hex: 0xDDDBD3)
+    static let paperWhite700 = Color(hex: 0xBDBBB4)
+    static let paperWhite800 = Color(hex: 0x929189)
+    static let paperWhite900 = Color(hex: 0x5F5E5A)
+
+    static let inkBlack50 = Color(hex: 0xEDECEE)
+    static let inkBlack100 = Color(hex: 0xD8D6DA)
+    static let inkBlack200 = Color(hex: 0xB0ADB3)
+    static let inkBlack300 = Color(hex: 0x7D7981)
+    static let inkBlack400 = Color(hex: 0x524E56)
+    static let inkBlack500 = Color(hex: 0x252024)
+    static let inkBlack600 = Color(hex: 0x201C20)
+    static let inkBlack700 = Color(hex: 0x1B181B)
+    static let inkBlack800 = Color(hex: 0x151315)
+    static let inkBlack900 = Color(hex: 0x0D0C0D)
+
+    static let blackishGrey50 = Color(hex: 0xEDEDEE)
+    static let blackishGrey100 = Color(hex: 0xD9D9DB)
     static let blackishGrey200 = Color(hex: 0xB1B2B5)
+    static let blackishGrey300 = Color(hex: 0x848589)
     static let blackishGrey400 = Color(hex: 0x6D6E73)
     static let blackishGrey500 = Color(hex: 0x5B5C61)
+    static let blackishGrey600 = Color(hex: 0x505156)
+    static let blackishGrey700 = Color(hex: 0x454649)
+    static let blackishGrey800 = Color(hex: 0x353638)
+    static let blackishGrey900 = Color(hex: 0x222324)
 
-    static let inkBlack900 = Color(hex: 0x0D0C0D)
-    static let inkBlack300 = Color(hex: 0x7D7981)
-    static let inkBlack500 = Color(hex: 0x252024)
-
+    static let indigoBlue50 = Color(hex: 0xECEEF3)
+    static let indigoBlue100 = Color(hex: 0xD5DAE5)
+    static let indigoBlue200 = Color(hex: 0xA9B4C9)
+    static let indigoBlue300 = Color(hex: 0x7589A9)
+    static let indigoBlue400 = Color(hex: 0x61739B)
     static let indigoBlue500 = Color(hex: 0x4F638D)
+    static let indigoBlue600 = Color(hex: 0x45577C)
+    static let indigoBlue700 = Color(hex: 0x3B4A6A)
+    static let indigoBlue800 = Color(hex: 0x2D3951)
+    static let indigoBlue900 = Color(hex: 0x1D2535)
+
+    static let vermillion50 = Color(hex: 0xF6EDEC)
+    static let vermillion100 = Color(hex: 0xECD8D5)
+    static let vermillion200 = Color(hex: 0xD6AFA9)
+    static let vermillion300 = Color(hex: 0xBC7D73)
+    static let vermillion400 = Color(hex: 0xBD6356)
     static let vermillion500 = Color(hex: 0xB5493A)
+    static let vermillion600 = Color(hex: 0x9F4033)
+    static let vermillion700 = Color(hex: 0x88372B)
+    static let vermillion800 = Color(hex: 0x692A21)
+    static let vermillion900 = Color(hex: 0x441B16)
+
+    static let siskin50 = Color(hex: 0xF8F8EE)
+    static let siskin100 = Color(hex: 0xF0F0DB)
+    static let siskin200 = Color(hex: 0xE0DFB5)
+    static let siskin300 = Color(hex: 0xCECD86)
+    static let siskin400 = Color(hex: 0xD2D17A)
     static let siskin500 = Color(hex: 0xC8C76F)
+    static let siskin600 = Color(hex: 0xB0AF62)
+    static let siskin700 = Color(hex: 0x969553)
+    static let siskin800 = Color(hex: 0x737240)
+    static let siskin900 = Color(hex: 0x4A4A2A)
 
     static let olive = oliveGreen500
     static let oliveDark = oliveGreen800
-    static let paper = paperWhite500
+    static let paper = paperWhite200
     static let paperStrong = paperWhite50
     static let brown = broccoliBrown500
     static let grey = blackishGrey500
@@ -66,7 +134,7 @@ enum GaiaColor {
     static let textInverseSecondary = oliveGreen200
     static let brandPrimary = oliveGreen500
     static let brandSecondary = broccoliBrown500
-    static let brandAccent = siskin500
+    static let brandAccent = asparagusGreen500
 }
 
 private extension Color {

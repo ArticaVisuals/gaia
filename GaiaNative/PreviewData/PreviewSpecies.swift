@@ -8,7 +8,7 @@ enum PreviewSpecies {
         category: "Plant",
         status: "LC",
         findCountLabel: "56k",
-        summary: "An iconic, majestic tree that serves as a cornerstone for wildlife and the surrounding ecosystem.",
+        summary: "an iconic, majestic tree that serves as a cornerstone for wildlife and the surrounding ecosystem. It is easily-recognized by its gnarled branches and grand canopy.",
         storyIDs: ["story-keystone"],
         galleryAssetNames: [
             "coast-live-oak-hero",

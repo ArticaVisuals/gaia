@@ -5,29 +5,7 @@ enum ToolbarGlassButtonIcon {
     case back
     case close
 
-    var gaiaIcon: GaiaIconKind {
-        switch self {
-        case .search:
-            return .search
-        case .back:
-            return .back
-        case .close:
-            return .close
-        }
-    }
-
-    var iconSize: CGFloat {
-        switch self {
-        case .search:
-            return 20
-        case .back, .close:
-            return 32
-        }
-    }
-
-    var slotSize: CGFloat {
-        32
-    }
+    var slotSize: CGFloat { 32 }
 }
 
 struct ToolbarGlassButton: View {
@@ -37,10 +15,29 @@ struct ToolbarGlassButton: View {
 
     var body: some View {
         GlassCircleButton(action: action) {
-            GaiaIcon(kind: icon.gaiaIcon, size: icon.iconSize)
+            ToolbarGlassIconArtwork(icon: icon)
                 .frame(width: icon.slotSize, height: icon.slotSize)
-                .fixedSize()
         }
         .accessibilityLabel(accessibilityLabel)
+    }
+}
+
+private struct ToolbarGlassIconArtwork: View {
+    let icon: ToolbarGlassButtonIcon
+
+    var body: some View {
+        ZStack {
+            switch icon {
+            case .search:
+                GaiaIcon(kind: .search, size: 20)
+            case .back:
+                GaiaAssetImage(name: "figma-left-arrow-tight", contentMode: .fit)
+                    .frame(width: 15.6, height: 20.1)
+                    .rotationEffect(.degrees(-90))
+            case .close:
+                GaiaIcon(kind: .close, size: 32)
+            }
+        }
+        .frame(width: 32, height: 32)
     }
 }

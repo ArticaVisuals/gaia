@@ -20,7 +20,7 @@ struct ProfileCommunityTab: View {
             GaiaSectionHeader(title: "Community")
 
             ForEach(posts) { post in
-                GaiaSurfaceCard {
+                GaiaDataCard {
                     VStack(alignment: .leading, spacing: GaiaSpacing.xs) {
                         Text(post.author)
                             .font(GaiaTypography.caption2)

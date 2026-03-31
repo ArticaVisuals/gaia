@@ -11,19 +11,30 @@ struct ProgressiveBlurImage: View {
 
             GaiaAssetImage(name: imageName)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .blur(radius: 16)
+                .blur(radius: 7.5)
                 .mask(
                     LinearGradient(
                         stops: [
                             .init(color: .clear, location: 0.0),
-                            .init(color: .clear, location: 0.42),
-                            .init(color: .black.opacity(0.58), location: 0.78),
+                            .init(color: .clear, location: 0.16),
+                            .init(color: .black.opacity(0.62), location: 0.78),
                             .init(color: .black, location: 1.0)
                         ],
                         startPoint: .top,
                         endPoint: .bottom
                     )
                 )
+                .frame(height: 128)
+
+            LinearGradient(
+                stops: [
+                    .init(color: .clear, location: 0),
+                    .init(color: Color.black.opacity(0.5), location: 1)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .frame(height: 128)
         }
         .clipped()
     }

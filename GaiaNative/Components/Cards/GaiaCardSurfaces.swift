@@ -10,11 +10,6 @@ struct GaiaSurfaceCard<Content: View>: View {
             .background(
                 RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
                     .fill(GaiaColor.surfaceCard)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
-                            .stroke(GaiaColor.broccoliBrown100, lineWidth: 1)
-                    )
-                    .shadow(color: GaiaShadow.smallColor, radius: 14, x: 0, y: 4)
             )
     }
 }
@@ -45,13 +40,13 @@ struct GaiaStoryCardSurface<Content: View>: View {
             .padding(20)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
-                RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous)
+                RoundedRectangle(cornerRadius: GaiaRadius.storyCard, style: .continuous)
                     .fill(GaiaColor.surfaceStory)
                     .overlay(
-                        RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous)
+                        RoundedRectangle(cornerRadius: GaiaRadius.storyCard, style: .continuous)
                             .stroke(GaiaColor.broccoliBrown100, lineWidth: 1)
                     )
-                    .shadow(color: GaiaShadow.smallColor, radius: 24, x: 0, y: 8)
+                    .shadow(color: GaiaShadow.storyColor, radius: GaiaShadow.storyRadius, x: 0, y: GaiaShadow.storyYOffset)
             )
     }
 }

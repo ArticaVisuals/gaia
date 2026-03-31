@@ -31,6 +31,12 @@ final class AppState: ObservableObject {
         } else {
             selectedSection = .explore
         }
+
+        if let launchFindDetails = Self.launchFindDetails {
+            selectedFindTab = launchFindDetails.tab
+            selectedSpeciesID = launchFindDetails.speciesID
+            showsFindDetails = true
+        }
     }
 
     func select(section: AppSection) {
@@ -80,5 +86,27 @@ final class AppState: ObservableObject {
         }
 
         return AppSection(rawValue: arguments[flagIndex + 1].lowercased())
+    }
+
+    private static var launchFindDetails: (speciesID: String?, tab: FindDetailsTab)? {
+        let arguments = ProcessInfo.processInfo.arguments
+
+        guard let speciesIndex = arguments.firstIndex(of: "-gaiaFindDetails"),
+              arguments.indices.contains(speciesIndex + 1) else {
+            return nil
+        }
+
+        let speciesID = arguments[speciesIndex + 1]
+        let tab: FindDetailsTab
+
+        if let tabIndex = arguments.firstIndex(of: "-gaiaFindTab"),
+           arguments.indices.contains(tabIndex + 1),
+           let launchTab = FindDetailsTab(rawValue: arguments[tabIndex + 1].capitalized) {
+            tab = launchTab
+        } else {
+            tab = .learn
+        }
+
+        return (speciesID: speciesID, tab: tab)
     }
 }

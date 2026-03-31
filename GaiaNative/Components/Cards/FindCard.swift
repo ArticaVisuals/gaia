@@ -32,11 +32,6 @@ struct FindCard: View {
                 .padding(GaiaSpacing.md)
             }
             .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
-                    .stroke(GaiaColor.broccoliBrown100, lineWidth: 1)
-            )
-            .shadow(color: GaiaShadow.smallColor, radius: 20, x: 0, y: 6)
         }
         .buttonStyle(.plain)
     }

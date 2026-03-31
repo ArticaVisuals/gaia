@@ -24,7 +24,7 @@ struct ObserveDetailsScreen: View {
                         HStack(alignment: .top, spacing: GaiaSpacing.md) {
                             GaiaAssetImage(name: "observe-suggestion-top")
                                 .frame(width: 64, height: 64)
-                                .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.sm, style: .continuous))
+                                .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
 
                             VStack(alignment: .leading, spacing: 4) {
                                 Text("Suggested ID")

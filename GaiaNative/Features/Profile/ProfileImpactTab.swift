@@ -40,9 +40,9 @@ struct ProfileImpactTab: View {
             ZStack(alignment: .topTrailing) {
                 ExploreMapView(observations: contentStore.observations, recenterRequestID: nil)
                     .frame(height: 220)
-                    .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous))
                     .overlay(
-                        RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                        RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
                             .stroke(GaiaColor.oliveGreen100, lineWidth: 1)
                     )
                 ExpandMapButton {

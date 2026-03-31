@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct FindDetailsScreen: View {
     let species: Species
@@ -8,43 +9,49 @@ struct FindDetailsScreen: View {
     @StateObject private var viewModel = FindDetailsViewModel()
 
     var body: some View {
-        ZStack(alignment: .top) {
-            GaiaColor.surfacePrimary.ignoresSafeArea()
+        GeometryReader { proxy in
+            let topInset = proxy.safeAreaInsets.top > 0 ? proxy.safeAreaInsets.top : windowSafeTopInset
 
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: GaiaSpacing.md) {
-                    HeroCarousel(
-                        imageNames: species.galleryAssetNames,
-                        title: species.commonName,
-                        subtitle: species.scientificName
-                    )
+            ZStack(alignment: .top) {
+                GaiaColor.surfacePrimary.ignoresSafeArea()
 
-                    DraggableTabSwitch(
-                        tabs: FindDetailsTab.allCases,
-                        selection: $viewModel.selectedTab,
-                        title: { $0.rawValue }
-                    )
-                    .padding(.horizontal, GaiaSpacing.md)
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: GaiaSpacing.md) {
+                        HeroCarousel(
+                            imageNames: species.galleryAssetNames,
+                            title: species.commonName,
+                            subtitle: species.scientificName
+                        )
+                        .padding(.top, -topInset)
 
-                    tabContent
-                        .padding(.bottom, 120)
-                }
-            }
+                        DraggableTabSwitch(
+                            tabs: FindDetailsTab.allCases,
+                            selection: $viewModel.selectedTab,
+                            title: { $0.rawValue }
+                        )
+                        .padding(.horizontal, GaiaSpacing.md)
 
-            VStack {
-                HStack {
-                    ToolbarGlassButton(icon: .back, accessibilityLabel: "Back") {
-                        appState.closeFindDetails()
+                        tabContent
+                            .padding(.bottom, 120)
                     }
-                    Spacer()
-                    ToolbarGlassPill(primaryAction: {}, secondaryAction: {})
                 }
-                .padding(.horizontal, GaiaSpacing.md)
-                .safeAreaPadding(.top, 8)
 
-                Spacer()
+                VStack {
+                    HStack {
+                        ToolbarGlassButton(icon: .back, accessibilityLabel: "Back") {
+                            appState.closeFindDetails()
+                        }
+                        Spacer()
+                        ToolbarGlassPill(primaryAction: {}, secondaryAction: {})
+                    }
+                    .padding(.horizontal, GaiaSpacing.md)
+                    .padding(.top, max(topInset + 8, 54))
+
+                    Spacer()
+                }
             }
         }
+        .ignoresSafeArea(edges: .top)
         .onAppear {
             viewModel.selectedTab = appState.selectedFindTab
         }
@@ -53,6 +60,14 @@ struct FindDetailsScreen: View {
                 viewModel.showsExpandedMap = false
             }
         }
+    }
+
+    private var windowSafeTopInset: CGFloat {
+        UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap(\.windows)
+            .first(where: \.isKeyWindow)?
+            .safeAreaInsets.top ?? 0
     }
 
     @ViewBuilder

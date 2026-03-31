@@ -20,6 +20,6 @@ struct MapOverlayProfileCard: View {
             Spacer()
         }
         .padding(8)
-        .background(GlassCardBackground(cornerRadius: GaiaRadius.md))
+        .background(GlassCardBackground(cornerRadius: GaiaRadius.card))
     }
 }

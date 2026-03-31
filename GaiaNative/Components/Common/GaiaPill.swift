@@ -7,10 +7,10 @@ struct GaiaPill: View {
 
     var body: some View {
         Text(title)
-            .font(GaiaTypography.caption)
+            .font(.custom("Neue Haas Unica W1G", size: 13))
             .foregroundStyle(foreground)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 7)
+            .padding(.horizontal, 16)
+            .frame(height: 29)
             .background(fill, in: Capsule())
     }
 }

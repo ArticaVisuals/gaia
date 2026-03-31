@@ -97,34 +97,12 @@ struct BottomNavBar: View {
                 .blendMode(.darken)
         }
         .compositingGroup()
-        .shadow(color: GaiaShadow.navColor, radius: 40, x: 0, y: 8)
+        .shadow(color: GaiaShadow.navColor, radius: GaiaShadow.navRadius, x: 0, y: GaiaShadow.navYOffset)
     }
 
     private var activePill: some View {
-        let shape = RoundedRectangle(cornerRadius: 250, style: .continuous)
-
-        return ZStack {
-            if #available(iOS 26.0, *) {
-                Color.clear
-                    .glassEffect(.regular, in: shape)
-            } else {
-                shape
-                    .fill(.white.opacity(0.18))
-                    .background(.ultraThinMaterial, in: shape)
-            }
-
-            shape
-                .fill(GaiaColor.fillVibrantTertiary.opacity(0.72))
-
-            shape
-                .fill(GaiaColor.olive.opacity(0.10))
-                .blendMode(.darken)
-
-            shape
-                .stroke(Color.white.opacity(0.22), lineWidth: 0.5)
-        }
-        .compositingGroup()
-        .shadow(color: GaiaColor.olive.opacity(0.14), radius: 10, x: 0, y: 2)
+        RoundedRectangle(cornerRadius: GaiaRadius.full, style: .continuous)
+            .fill(GaiaColor.fillVibrantTertiary)
     }
 
     private func navLayout(for totalWidth: CGFloat, count: Int) -> (contentWidth: CGFloat, slotWidth: CGFloat) {
@@ -188,13 +166,13 @@ struct BottomNavBar: View {
         case .explore:
             return .explore(selected: true)
         case .log:
-            return .log(selected: true)
+            return .log(selected: false)
         case .observe:
-            return .observe(selected: true)
+            return .observe(selected: false)
         case .activity:
-            return .activity(selected: true)
+            return .activity(selected: false)
         case .profile:
-            return .profile(selected: true)
+            return .profile(selected: false)
         }
     }
 

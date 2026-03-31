@@ -11,7 +11,7 @@ struct DraggableTabSwitch<T: Identifiable & Hashable>: View {
             let width = proxy.size.width / CGFloat(max(tabs.count, 1))
             ZStack(alignment: .bottomLeading) {
                 Rectangle()
-                    .fill(GaiaColor.border.opacity(0.75))
+                    .fill(GaiaColor.blackishGrey200)
                     .frame(height: 1)
                     .frame(maxHeight: .infinity, alignment: .bottom)
 
@@ -28,7 +28,7 @@ struct DraggableTabSwitch<T: Identifiable & Hashable>: View {
                         } label: {
                             Text(title(tab))
                                 .font(GaiaTypography.body)
-                                .foregroundStyle(selection == tab ? GaiaColor.olive : GaiaColor.greyMuted)
+                                .foregroundStyle(selection == tab ? GaiaColor.olive : GaiaColor.blackishGrey200)
                                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                                 .contentShape(Rectangle())
                         }

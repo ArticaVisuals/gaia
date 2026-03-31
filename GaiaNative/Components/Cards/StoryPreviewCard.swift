@@ -6,46 +6,67 @@ struct StoryPreviewCard: View {
 
     var body: some View {
         Button(action: action) {
-            GaiaStoryCardSurface {
-                VStack(alignment: .leading, spacing: GaiaSpacing.md) {
-                    GaiaAssetImage(name: story.imageAssetName)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 176)
-                        .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
+            VStack(spacing: 0) {
+                ZStack {
+                    LinearGradient(
+                        stops: [
+                            .init(color: GaiaColor.siskin500.opacity(0.5), location: 0),
+                            .init(color: GaiaColor.paperWhite500, location: 0.48)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
 
+                    GaiaAssetImage(name: story.imageAssetName, contentMode: .fill)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .scaleEffect(1.12)
+                        .offset(y: -12)
+                }
+                .frame(height: 208)
+                .clipped()
+
+                VStack(alignment: .leading, spacing: 12) {
                     Text(story.eyebrow)
-                        .font(GaiaTypography.caption2Medium)
-                        .foregroundStyle(GaiaColor.textWarmSecondary)
+                        .font(.custom("Neue Haas Unica W1G", size: 11))
+                        .foregroundStyle(GaiaColor.paperWhite50)
+                        .tracking(0.25)
                         .textCase(.uppercase)
 
-                    HStack(alignment: .top, spacing: GaiaSpacing.md) {
-                        VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
+                    HStack(alignment: .top, spacing: 12) {
+                        VStack(alignment: .leading, spacing: 4) {
                             Text(story.title)
-                                .font(GaiaTypography.title1)
-                                .foregroundStyle(GaiaColor.textPrimary)
+                                .font(GaiaTypography.displayMedium)
+                                .foregroundStyle(GaiaColor.paperWhite50)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+
                             Text(story.summary)
-                                .font(GaiaTypography.subheadline)
-                                .foregroundStyle(GaiaColor.textSecondary)
+                                .font(.custom("Neue Haas Unica W1G", size: 12))
+                                .foregroundStyle(GaiaColor.paperWhite500)
+                                .lineSpacing(2.4)
                                 .fixedSize(horizontal: false, vertical: true)
                         }
 
-                        Spacer(minLength: 0)
-
-                        Circle()
-                            .fill(GaiaColor.paperStrong.opacity(0.92))
-                            .frame(width: 36, height: 36)
-                            .overlay(
-                                GaiaIcon(kind: .circleArrowRight)
-                                    .frame(width: 14, height: 14)
-                                    .foregroundStyle(GaiaColor.olive)
-                            )
-                            .overlay(
-                                Circle()
-                                    .stroke(GaiaColor.broccoliBrown100, lineWidth: 1)
-                            )
+                        ZStack {
+                            GaiaAssetImage(name: "learn-story-arrow-circle", contentMode: .fit)
+                                .frame(width: 40, height: 40)
+                            GaiaAssetImage(name: "learn-story-arrow", contentMode: .fit)
+                                .frame(width: 15.6, height: 20.1)
+                                .rotationEffect(.degrees(90))
+                        }
+                        .frame(width: 40, height: 40)
+                        .padding(.top, 2)
                     }
                 }
+                .padding(16)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(GaiaColor.broccoliBrown500)
             }
+            .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                    .stroke(Color.black.opacity(0.1), lineWidth: 0.5)
+            )
+            .shadow(color: GaiaColor.broccoliBrown500.opacity(0.55), radius: 20, x: 0, y: 4)
         }
         .buttonStyle(.plain)
     }

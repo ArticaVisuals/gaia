@@ -4,7 +4,7 @@ struct ActivityCard: View {
     let event: ActivityEvent
 
     var body: some View {
-        GaiaSurfaceCard {
+        GaiaDataCard {
             VStack(alignment: .leading, spacing: GaiaSpacing.xs) {
                 Text(event.title)
                     .font(GaiaTypography.calloutMedium)
