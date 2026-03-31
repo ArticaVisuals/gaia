@@ -40,7 +40,7 @@ struct BottomNavBar: View {
                 HStack(spacing: 0) {
                     ForEach(sections, id: \.id) { section in
                         VStack(spacing: 0) {
-                            GaiaIcon(kind: iconKind(for: section), size: 32)
+                            GaiaIcon(kind: iconKind(for: section, currentSelection: visualSelection), size: 32)
 
                             Text(section.title)
                                 .font(GaiaTypography.nav)
@@ -161,18 +161,19 @@ struct BottomNavBar: View {
         return AppSection.allCases[clampedIndex]
     }
 
-    private func iconKind(for section: AppSection) -> GaiaIconKind {
+    private func iconKind(for section: AppSection, currentSelection: AppSection) -> GaiaIconKind {
+        let isSelected = (currentSelection == section)
         switch section {
         case .explore:
-            return .explore(selected: true)
+            return .explore(selected: isSelected)
         case .log:
-            return .log(selected: false)
+            return .log(selected: isSelected)
         case .observe:
-            return .observe(selected: false)
+            return .observe(selected: isSelected)
         case .activity:
-            return .activity(selected: false)
+            return .activity(selected: isSelected)
         case .profile:
-            return .profile(selected: false)
+            return .profile(selected: isSelected)
         }
     }
 
