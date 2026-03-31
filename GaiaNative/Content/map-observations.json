@@ -1,0 +1,30 @@
+[
+  {
+    "id": "obs-1",
+    "speciesID": "coast-live-oak",
+    "latitude": 34.1368,
+    "longitude": -118.1256,
+    "thumbnailAssetName": "coast-live-oak-hero"
+  },
+  {
+    "id": "obs-2",
+    "speciesID": "coast-live-oak",
+    "latitude": 34.1292,
+    "longitude": -118.1421,
+    "thumbnailAssetName": "coast-live-oak-gallery-1"
+  },
+  {
+    "id": "obs-3",
+    "speciesID": "coast-live-oak",
+    "latitude": 34.1456,
+    "longitude": -118.1134,
+    "thumbnailAssetName": "coast-live-oak-gallery-2"
+  },
+  {
+    "id": "obs-4",
+    "speciesID": "coast-live-oak",
+    "latitude": 34.1237,
+    "longitude": -118.1033,
+    "thumbnailAssetName": "coast-live-oak-gallery-3"
+  }
+]

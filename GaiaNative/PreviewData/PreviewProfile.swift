@@ -1,0 +1,10 @@
+import Foundation
+
+enum PreviewProfile {
+    static let me = ProfileSummary(
+        displayName: "Alice Edwards",
+        headline: "Growing a richer relationship with local ecology.",
+        impactSummary: "127 finds across trees, insects, birds, and fungi.",
+        medalsLabel: "12 medals"
+    )
+}

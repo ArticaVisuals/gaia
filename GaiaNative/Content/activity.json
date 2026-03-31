@@ -1,0 +1,20 @@
+[
+  {
+    "id": "evt-1",
+    "title": "Community agreed with your ID",
+    "subtitle": "Coast Live Oak was confirmed by 4 observers.",
+    "timestampLabel": "2h ago"
+  },
+  {
+    "id": "evt-2",
+    "title": "New observation saved",
+    "subtitle": "You added a Western fence lizard to your log.",
+    "timestampLabel": "Yesterday"
+  },
+  {
+    "id": "evt-3",
+    "title": "Project request nearby",
+    "subtitle": "A habitat recovery group is looking for more oak sightings in your area.",
+    "timestampLabel": "3d ago"
+  }
+]

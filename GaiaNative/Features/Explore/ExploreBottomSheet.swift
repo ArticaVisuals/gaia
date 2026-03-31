@@ -1,0 +1,457 @@
+import SwiftUI
+import UIKit
+
+struct ExploreBottomSheet: View {
+    let species: [Species]
+    let onSelectFind: (Species) -> Void
+    var allowsScroll: Bool = false
+    var showsSurface: Bool = true
+
+    @State private var activeFilter: ExploreSheetFilter = .trending
+    @State private var viewMode: ExploreSheetViewMode = .grid
+
+    private let projects = ExploreSheetProject.sample
+    private let finds = ExploreSheetFind.sample
+
+    var body: some View {
+        let sheetShape = UnevenRoundedRectangle(
+            cornerRadii: .init(
+                topLeading: GaiaRadius.sheet,
+                bottomLeading: 0,
+                bottomTrailing: 0,
+                topTrailing: GaiaRadius.sheet
+            ),
+            style: .continuous
+        )
+
+        let content = ScrollView(showsIndicators: false) {
+            VStack(alignment: .leading, spacing: 32) {
+                Capsule()
+                    .fill(GaiaColor.greyMuted.opacity(0.25))
+                    .frame(width: 88, height: 4)
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, 7)
+
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("Nearby")
+                        .font(GaiaTypography.displayMedium)
+                        .foregroundStyle(GaiaColor.olive)
+                        .tracking(-0.5)
+
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(ExploreSheetFilter.allCases) { filter in
+                                Button {
+                                    activeFilter = filter
+                                } label: {
+                                    Text(filter.title)
+                                        .font(GaiaTypography.footnote)
+                                        .foregroundStyle(filter == activeFilter ? GaiaColor.paperWhite50 : GaiaColor.paperWhite200)
+                                        .padding(.horizontal, 10)
+                                        .frame(height: 28)
+                                        .background(
+                                            Capsule()
+                                                .fill(filter == activeFilter ? GaiaColor.olive : GaiaColor.olive.opacity(0.2))
+                                        )
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                    }
+                    .scrollClipDisabled()
+                }
+
+                VStack(alignment: .leading, spacing: 16) {
+                    ExploreSheetSectionHeader(title: "Projects", trailingText: "See all")
+
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(projects) { project in
+                                ExploreSheetProjectCard(project: project)
+                            }
+                        }
+                        .padding(.bottom, 4)
+                    }
+                    .scrollClipDisabled()
+                }
+
+                VStack(alignment: .leading, spacing: 16) {
+                    HStack(alignment: .top) {
+                        Text("Finds")
+                            .font(GaiaTypography.titleRegular)
+                            .foregroundStyle(GaiaColor.inkBlack300)
+
+                        Spacer(minLength: 12)
+
+                        HStack(spacing: 4) {
+                            ExploreSheetViewToggleButton(
+                                iconPath: "Icons/System/grid-32.png",
+                                isActive: viewMode == .grid
+                            ) {
+                                viewMode = .grid
+                            }
+
+                            ExploreSheetViewToggleButton(
+                                iconPath: "Icons/System/list-32.png",
+                                isActive: viewMode == .list
+                            ) {
+                                viewMode = .list
+                            }
+                        }
+                    }
+
+                    if viewMode == .grid {
+                        ExploreSheetFindGrid(finds: finds) { _ in
+                            selectPrimarySpecies()
+                        }
+                    } else {
+                        VStack(spacing: 8) {
+                            ForEach(finds) { find in
+                                ExploreSheetFindListRow(find: find) {
+                                    selectPrimarySpecies()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 0)
+            .padding(.bottom, 32)
+            .frame(maxWidth: .infinity, alignment: .topLeading)
+        }
+        .scrollDisabled(!allowsScroll)
+
+        if showsSurface {
+            content
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                .background(sheetShape.fill(GaiaColor.surfaceSheet))
+                .overlay(
+                    sheetShape
+                        .stroke(GaiaColor.borderStrong, lineWidth: 0.5)
+                )
+                .clipShape(sheetShape)
+                .shadow(color: GaiaShadow.mediumColor, radius: 24, x: 0, y: -4)
+        } else {
+            content
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                .clipShape(sheetShape)
+        }
+    }
+
+    private func selectPrimarySpecies() {
+        onSelectFind(species.first ?? PreviewSpecies.coastLiveOak)
+    }
+}
+
+private enum ExploreSheetFilter: String, CaseIterable, Identifiable {
+    case trending = "Trending"
+    case needsID = "Needs ID"
+    case friends = "Friends"
+
+    var id: String { rawValue }
+    var title: String { rawValue }
+}
+
+private enum ExploreSheetViewMode {
+    case grid
+    case list
+}
+
+private struct ExploreSheetSectionHeader: View {
+    let title: String
+    let trailingText: String?
+
+    var body: some View {
+        HStack(alignment: .center) {
+            Text(title)
+                .font(GaiaTypography.titleRegular)
+                .foregroundStyle(GaiaColor.inkBlack300)
+
+            Spacer(minLength: 12)
+
+            if let trailingText {
+                Text(trailingText)
+                    .font(GaiaTypography.caption)
+                    .foregroundStyle(GaiaColor.olive)
+            }
+        }
+    }
+}
+
+private struct ExploreSheetViewToggleButton: View {
+    let iconPath: String
+    let isActive: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 4, style: .continuous)
+                    .fill(isActive ? GaiaColor.olive : GaiaColor.oliveGreen200)
+
+                if let uiImage = AssetCatalog.uiImage(named: iconPath) {
+                    Image(uiImage: uiImage)
+                        .renderingMode(.template)
+                        .resizable()
+                        .scaledToFit()
+                        .foregroundStyle(isActive ? GaiaColor.paperWhite50 : GaiaColor.paperWhite50.opacity(0.92))
+                        .padding(7)
+                }
+            }
+            .frame(width: 32, height: 32)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct ExploreSheetProjectCard: View {
+    let project: ExploreSheetProject
+
+    var body: some View {
+        Button(action: {}) {
+            ZStack(alignment: .topLeading) {
+                GaiaAssetImage(name: project.imageName)
+                    .frame(width: 181, height: 133)
+                    .clipped()
+
+                GaiaAssetImage(name: project.imageName)
+                    .frame(width: 181, height: 133)
+                    .clipped()
+                    .blur(radius: 4)
+                    .mask(
+                        LinearGradient(
+                            colors: [.clear, .black],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+
+                LinearGradient(
+                    colors: [.clear, Color.black.opacity(0.55)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+
+                VStack(alignment: .leading, spacing: 0) {
+                    Text(project.tag)
+                        .font(GaiaTypography.caption2)
+                        .foregroundStyle(GaiaColor.paperWhite50)
+                        .padding(.horizontal, 10)
+                        .frame(height: 20)
+                        .background(
+                            Capsule()
+                                .fill(Color.black.opacity(0.5))
+                                .overlay(
+                                    Capsule()
+                                        .stroke(GaiaColor.blackishGrey200, lineWidth: 0.5)
+                                )
+                        )
+                        .padding(.top, 8)
+                        .padding(.leading, 8)
+
+                    Spacer()
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(project.title)
+                            .font(GaiaTypography.subheadSerif)
+                            .foregroundStyle(GaiaColor.paperWhite50)
+                            .lineLimit(2)
+
+                        HStack(spacing: 2) {
+                            ExploreSheetTemplateIcon(
+                                path: "Icons/System/binoculars-20.png",
+                                tint: UIColor(GaiaColor.paperWhite50),
+                                size: CGSize(width: 14, height: 9.977)
+                            )
+
+                            Text(project.countLabel)
+                                .font(GaiaTypography.caption2)
+                                .foregroundStyle(GaiaColor.paperWhite50)
+                        }
+                    }
+                    .padding(12)
+                }
+            }
+            .frame(width: 181, height: 133)
+            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .stroke(Color.black.opacity(0.1), lineWidth: 0.5)
+            )
+            .shadow(color: GaiaColor.broccoliBrown500.opacity(0.16), radius: 20, x: 0, y: 4)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct ExploreSheetFindGrid: View {
+    let finds: [ExploreSheetFind]
+    let action: (ExploreSheetFind) -> Void
+
+    private let columns = 3
+    private let spacing: CGFloat = 4
+
+    var body: some View {
+        VStack(spacing: spacing) {
+            ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
+                HStack(spacing: spacing) {
+                    ForEach(row) { find in
+                        ExploreSheetFindGridCard(find: find) {
+                            action(find)
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+
+                    ForEach(0..<max(0, columns - row.count), id: \.self) { _ in
+                        Color.clear
+                            .aspectRatio(1, contentMode: .fit)
+                            .frame(maxWidth: .infinity)
+                    }
+                }
+            }
+        }
+    }
+
+    private var rows: [[ExploreSheetFind]] {
+        stride(from: 0, to: finds.count, by: columns).map { start in
+            Array(finds[start..<min(start + columns, finds.count)])
+        }
+    }
+}
+
+private struct ExploreSheetFindGridCard: View {
+    let find: ExploreSheetFind
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            ZStack(alignment: .bottomLeading) {
+                GaiaAssetImage(name: find.imageName)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .clipped()
+
+                GaiaAssetImage(name: find.imageName)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .clipped()
+                    .blur(radius: 3.7)
+                    .mask(
+                        LinearGradient(
+                            colors: [.clear, .black],
+                            startPoint: UnitPoint(x: 0.5, y: 0.25),
+                            endPoint: .bottom
+                        )
+                    )
+
+                LinearGradient(
+                    colors: [.clear, Color.black.opacity(0.75)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+
+                Text(find.title)
+                    .font(.custom("NewSpirit-Regular", size: 14, relativeTo: .body))
+                    .foregroundStyle(.white)
+                    .multilineTextAlignment(.leading)
+                    .lineLimit(2)
+                    .frame(maxWidth: 100, minHeight: 33, alignment: .bottomLeading)
+                    .padding(.leading, 8.5)
+                    .padding(.bottom, 7.5)
+            }
+            .frame(maxWidth: .infinity)
+            .aspectRatio(1, contentMode: .fit)
+            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
+            )
+            .contentShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct ExploreSheetFindListRow: View {
+    let find: ExploreSheetFind
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 12) {
+                GaiaAssetImage(name: find.imageName)
+                    .frame(width: 88, height: 88)
+                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+
+                Text(find.title)
+                    .font(GaiaTypography.titleRegular)
+                    .foregroundStyle(GaiaColor.textPrimary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                ExploreSheetTemplateIcon(
+                    path: "Icons/System/chevron-20.png",
+                    tint: UIColor(GaiaColor.greyMuted),
+                    size: CGSize(width: 12, height: 12)
+                )
+            }
+            .padding(12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(GaiaColor.surfaceCard)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .stroke(GaiaColor.broccoliBrown100, lineWidth: 0.5)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct ExploreSheetTemplateIcon: View {
+    let path: String
+    let tint: UIColor
+    let size: CGSize
+
+    var body: some View {
+        Group {
+            if let uiImage = AssetCatalog.uiImage(named: path) {
+                Image(uiImage: uiImage)
+                    .renderingMode(.template)
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundStyle(Color(uiColor: tint))
+            }
+        }
+        .frame(width: size.width, height: size.height)
+    }
+}
+
+private struct ExploreSheetProject: Identifiable {
+    let id: String
+    let title: String
+    let tag: String
+    let imageName: String
+    let countLabel: String
+
+    static let sample: [ExploreSheetProject] = [
+        .init(id: "project-creek", title: "Creek Recovery", tag: "Wetland", imageName: "find-project-creek", countLabel: "12"),
+        .init(id: "project-pollinator", title: "Pollinator Corridor", tag: "Garden", imageName: "find-project-pollinator", countLabel: "12"),
+        .init(id: "project-sea", title: "Sea Creatures", tag: "Ocean", imageName: "coast-live-oak-gallery-4", countLabel: "12")
+    ]
+}
+
+private struct ExploreSheetFind: Identifiable {
+    let id: String
+    let title: String
+    let imageName: String
+
+    static let sample: [ExploreSheetFind] = [
+        .init(id: "find-coast-live-oak", title: "Coast Live Oak", imageName: "coast-live-oak-hero"),
+        .init(id: "find-indian-cormorant", title: "Indian Cormorant", imageName: "coast-live-oak-gallery-1"),
+        .init(id: "find-european-roller", title: "European Roller", imageName: "coast-live-oak-gallery-2"),
+        .init(id: "find-bindweed-tribe", title: "Bindweed Tribe", imageName: "coast-live-oak-gallery-3"),
+        .init(id: "find-emperor-gum-moth", title: "Emperor Gum Moth", imageName: "coast-live-oak-gallery-4"),
+        .init(id: "find-garden-orbweaver", title: "Garden Orbweaver", imageName: "observe-photo-square")
+    ]
+}
