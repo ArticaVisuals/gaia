@@ -1,20 +1,74 @@
 [
   {
     "id": "evt-1",
-    "title": "Community agreed with your ID",
-    "subtitle": "Coast Live Oak was confirmed by 4 observers.",
-    "timestampLabel": "2h ago"
+    "groupLabel": "Today",
+    "title": "New find logged",
+    "subtitle": "**Anna's Hummingbird**: Arlington Garden, Pasadena",
+    "timestampLabel": "10:42 AM",
+    "actionLabel": "View find",
+    "categoryIDs": []
   },
   {
     "id": "evt-2",
-    "title": "New observation saved",
-    "subtitle": "You added a Western fence lizard to your log.",
-    "timestampLabel": "Yesterday"
+    "groupLabel": "Today",
+    "title": "Community agreed with your ID",
+    "subtitle": "**Your Western Fence Lizard** find now matches the community ID.",
+    "timestampLabel": "9:18 AM",
+    "actionLabel": "View find",
+    "categoryIDs": ["id-updates"]
   },
   {
     "id": "evt-3",
-    "title": "Project request nearby",
-    "subtitle": "A habitat recovery group is looking for more oak sightings in your area.",
-    "timestampLabel": "3d ago"
+    "groupLabel": "Today",
+    "title": "Community agreed with your ID",
+    "subtitle": "**Your Western Fence Lizard** find now matches the community ID.",
+    "timestampLabel": "8:32 AM",
+    "actionLabel": "View find",
+    "categoryIDs": ["id-updates"]
+  },
+  {
+    "id": "evt-4",
+    "groupLabel": "Today",
+    "title": "Research-grade reached",
+    "subtitle": "**Monarch Butterfly** is now research grade. Your find can now support biodiversity research.",
+    "timestampLabel": "8:32 AM",
+    "actionLabel": "Why it matters",
+    "categoryIDs": ["id-updates"]
+  },
+  {
+    "id": "evt-5",
+    "groupLabel": "Today",
+    "title": "Research-grade reached",
+    "subtitle": "\"Great find. The wing pattern looks consistent with a juvenile.\"",
+    "timestampLabel": "7:51 AM",
+    "actionLabel": "View comment",
+    "categoryIDs": ["comments"]
+  },
+  {
+    "id": "evt-6",
+    "groupLabel": "Yesterday",
+    "title": "Draft saved",
+    "subtitle": "You started an find and saved it for later.\n**Unknown Plant**",
+    "timestampLabel": "6:14 PM",
+    "actionLabel": "Finish draft",
+    "categoryIDs": ["needs-attention"]
+  },
+  {
+    "id": "evt-7",
+    "groupLabel": "Yesterday",
+    "title": "ID refined by community",
+    "subtitle": "Your find was updated from **Red-tailed Hawk** to **Cooper's Hawk**.",
+    "timestampLabel": "6:14 PM",
+    "actionLabel": "Learn why",
+    "categoryIDs": ["id-updates"]
+  },
+  {
+    "id": "evt-8",
+    "groupLabel": "Yesterday",
+    "title": "Find needs more detail",
+    "subtitle": "Your mushroom find may need a clearer photo for identification.",
+    "timestampLabel": "6:14 PM",
+    "actionLabel": "Add another image",
+    "categoryIDs": ["needs-attention"]
   }
 ]
