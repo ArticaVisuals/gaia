@@ -11,7 +11,7 @@ struct ToolbarGlassPill: View {
                     .frame(width: 22.5, height: 23.5)
                     .frame(width: 36, height: 36)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(GlassReactiveButtonStyle())
             .accessibilityLabel("Add")
 
             Button(action: secondaryAction) {
@@ -25,7 +25,7 @@ struct ToolbarGlassPill: View {
                 }
                 .frame(width: 36, height: 36)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(GlassReactiveButtonStyle())
             .accessibilityLabel("Share")
         }
     }

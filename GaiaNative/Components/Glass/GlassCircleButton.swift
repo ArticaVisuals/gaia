@@ -1,5 +1,13 @@
 import SwiftUI
 
+struct GlassReactiveButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.965 : 1)
+            .animation(.interactiveSpring(response: 0.22, dampingFraction: 0.8), value: configuration.isPressed)
+    }
+}
+
 struct GlassCircleButton<Label: View>: View {
     let size: CGFloat
     let action: () -> Void
@@ -13,13 +21,17 @@ struct GlassCircleButton<Label: View>: View {
 
     var body: some View {
         Button(action: action) {
-            label()
-                .fixedSize()
-                .frame(width: size, height: size)
-                .contentShape(Circle())
+            ZStack {
+                GaiaMaterialBackground(cornerRadius: size / 2)
+
+                label()
+                    .fixedSize()
+                    .frame(width: size, height: size)
+            }
+            .frame(width: size, height: size)
+            .contentShape(Circle())
+            .clipShape(Circle())
         }
-        .buttonStyle(.plain)
-        .background(GaiaMaterialBackground(cornerRadius: size / 2))
-        .clipShape(Circle())
+        .buttonStyle(GlassReactiveButtonStyle())
     }
 }
