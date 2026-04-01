@@ -51,7 +51,7 @@ struct ProfileScreen: View {
         case .impact:
             ProfileImpactTab(profile: contentStore.profile)
         case .log:
-            ProfileLogTab(events: contentStore.activityEvents)
+            ProfileLogTab(content: contentStore.profileLog, presentation: .embedded)
         case .community:
             ProfileCommunityTab(posts: contentStore.communityPosts)
         }

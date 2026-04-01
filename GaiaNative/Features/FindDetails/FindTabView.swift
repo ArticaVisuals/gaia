@@ -25,10 +25,10 @@ struct FindTabView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 10) {
             FindMapPreviewCard(observation: mapObservation, onExpandMap: onExpandMap)
 
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 10) {
                 sectionTitle("Condition")
 
                 HStack(alignment: .top, spacing: GaiaSpacing.sm) {
@@ -77,12 +77,12 @@ struct FindTabView: View {
                 }
             }
 
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 10) {
                 sectionTitle("Data Quality")
                 FindDataQualityCard()
             }
 
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 10) {
                 HStack(alignment: .center) {
                     sectionTitle("Projects")
                     Spacer()
@@ -187,13 +187,13 @@ private struct FindMapProfileCard: View {
         .padding(12)
         .background(
             RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
-                .fill(GaiaColor.paperWhite50.opacity(0.92))
+                .fill(GaiaColor.paperWhite50.opacity(0.985))
                 .overlay(
                     RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
-                        .stroke(Color.black.opacity(0.08), lineWidth: 0.5)
+                        .stroke(Color.black.opacity(0.06), lineWidth: 0.5)
                 )
         )
-        .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
+        .shadow(color: GaiaShadow.smallColor, radius: 18, x: 0, y: 4)
     }
 }
 
@@ -222,13 +222,13 @@ private struct FindLocationCard: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
-                .fill(GaiaColor.paperWhite50.opacity(0.92))
+                .fill(GaiaColor.paperWhite50.opacity(0.985))
                 .overlay(
                     RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
-                        .stroke(Color.black.opacity(0.08), lineWidth: 0.5)
+                        .stroke(Color.black.opacity(0.06), lineWidth: 0.5)
                 )
         )
-        .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
+        .shadow(color: GaiaShadow.smallColor, radius: 18, x: 0, y: 4)
     }
 }
 
@@ -247,7 +247,7 @@ private struct FindConditionCard<ImageContent: View>: View {
 
             imageContent()
                 .frame(maxWidth: .infinity)
-                .frame(height: 126)
+                .frame(height: 122)
                 .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)

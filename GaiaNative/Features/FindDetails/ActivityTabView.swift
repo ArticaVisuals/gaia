@@ -77,6 +77,7 @@ private struct ActivityFilterPill: View {
                 .background(GaiaColor.olive, in: Capsule())
         }
         .buttonStyle(.plain)
+        .shadow(color: GaiaShadow.navColor.opacity(0.16), radius: 14, x: 0, y: 4)
     }
 }
 
@@ -98,7 +99,7 @@ private struct ActivitySuggestionCard: View {
                             .font(GaiaTypography.titleRegular)
                             .foregroundStyle(GaiaColor.olive)
                         Text("Original suggested ID")
-                            .font(.custom("Neue Haas Unica W1G", size: 12))
+                            .font(.custom("Neue Haas Unica W1G", size: 11))
                             .foregroundStyle(GaiaColor.inkBlack300)
                     }
                     Spacer(minLength: 0)
@@ -134,7 +135,7 @@ private struct ActivityCommentCard: View {
             ActivityCardHeader(author: comment.author, actionText: "commented", timestamp: comment.timestamp)
 
             Text(comment.body)
-                .font(.custom("Neue Haas Unica W1G", size: 15))
+                .font(.custom("Neue Haas Unica W1G", size: 14))
                 .foregroundStyle(GaiaColor.blackishGrey300)
                 .padding(12)
                 .frame(maxWidth: .infinity, alignment: .leading)

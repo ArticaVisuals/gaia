@@ -12,7 +12,7 @@ struct LearnTabView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 24) {
+        VStack(alignment: .leading, spacing: 20) {
             LearnSpeciesCard(species: species)
 
             section(title: "Gallery") {
@@ -23,7 +23,7 @@ struct LearnTabView: View {
                 StatsCard(species: species)
             }
 
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 10) {
                 sectionTitle("Map")
 
                 ZStack(alignment: .topTrailing) {
@@ -60,7 +60,7 @@ struct LearnTabView: View {
             }
             .padding(.top, 4)
 
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 10) {
                 sectionTitle("Stories")
 
                 ForEach(stories) { story in

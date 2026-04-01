@@ -1,11 +1,47 @@
 import Foundation
 
+struct ProfileLogContent: Codable, Hashable {
+    let totalFindsLabel: String
+    let listSections: [ProfileLogSection]
+    let gridItems: [ProfileLogGridItem]
+}
+
+struct ProfileLogSection: Identifiable, Codable, Hashable {
+    let id: String
+    let title: String
+    let countLabel: String
+    let entries: [ProfileLogEntry]
+}
+
+struct ProfileLogEntry: Identifiable, Codable, Hashable {
+    let id: String
+    let commonName: String
+    let scientificName: String
+    let metaLabel: String
+    let statusLabel: String
+    let statusKind: ProfileLogStatusKind
+    let imageSource: String
+}
+
+struct ProfileLogGridItem: Identifiable, Codable, Hashable {
+    let id: String
+    let title: String
+    let imageSource: String
+}
+
+enum ProfileLogStatusKind: String, Codable, Hashable {
+    case researchGrade
+    case needsID
+    case draft
+}
+
 @MainActor
 final class ContentStore: ObservableObject {
     @Published var appCopy: AppCopy = .default
     @Published var species: [Species] = PreviewSpecies.all
     @Published var stories: [StoryCard] = PreviewStories.all
     @Published var profile: ProfileSummary = PreviewProfile.me
+    @Published var profileLog: ProfileLogContent = PreviewProfileLog.content
     @Published var activityEvents: [ActivityEvent] = PreviewActivity.events
     @Published var communityPosts: [CommunityPost] = PreviewActivity.community
     @Published var observations: [Observation] = [
@@ -24,6 +60,7 @@ final class ContentStore: ObservableObject {
         species = load("species", as: [Species].self) ?? species
         stories = load("stories", as: [StoryCard].self) ?? stories
         profile = load("profile", as: ProfileSummary.self) ?? profile
+        profileLog = load("profile-log", as: ProfileLogContent.self) ?? profileLog
         activityEvents = load("activity", as: [ActivityEvent].self) ?? activityEvents
         communityPosts = load("community", as: [CommunityPost].self) ?? communityPosts
         observations = load("map-observations", as: [Observation].self) ?? observations
@@ -41,4 +78,123 @@ final class ContentStore: ObservableObject {
             return nil
         }
     }
+}
+
+enum PreviewProfileLog {
+    static let content = ProfileLogContent(
+        totalFindsLabel: "127 finds",
+        listSections: [
+            .init(
+                id: "today",
+                title: "Today",
+                countLabel: "2 finds",
+                entries: [
+                    .init(
+                        id: "red-fox",
+                        commonName: "Red Fox",
+                        scientificName: "Vulpes vulpes",
+                        metaLabel: "Eaton Canyon · 2:15 PM",
+                        statusLabel: "Research Grade",
+                        statusKind: .researchGrade,
+                        imageSource: "https://www.figma.com/api/mcp/asset/f99a6cfd-ae56-4e80-aac0-92c673a070b5"
+                    ),
+                    .init(
+                        id: "unknown-moth",
+                        commonName: "Unknown Moth",
+                        scientificName: "Needs ID",
+                        metaLabel: "Eaton Canyon · 2:08 PM",
+                        statusLabel: "Needs ID",
+                        statusKind: .needsID,
+                        imageSource: "https://www.figma.com/api/mcp/asset/3de8ff3b-8537-438e-9014-164c92cd7265"
+                    )
+                ]
+            ),
+            .init(
+                id: "yesterday",
+                title: "Yesterday",
+                countLabel: "1 find",
+                entries: [
+                    .init(
+                        id: "coast-live-oak",
+                        commonName: "Coast Live Oak",
+                        scientificName: "Quercus agrifolia",
+                        metaLabel: "Arroyo Seco · 10:30 AM",
+                        statusLabel: "Research Grade",
+                        statusKind: .researchGrade,
+                        imageSource: "coast-live-oak-hero"
+                    )
+                ]
+            ),
+            .init(
+                id: "mar-25",
+                title: "Mar 25",
+                countLabel: "3 finds",
+                entries: [
+                    .init(
+                        id: "western-fence-lizard",
+                        commonName: "Western Fence Lizard",
+                        scientificName: "Needs ID",
+                        metaLabel: "Hahamongna · 3:45 PM",
+                        statusLabel: "Needs ID",
+                        statusKind: .needsID,
+                        imageSource: "observe-photo-square"
+                    ),
+                    .init(
+                        id: "black-phoebe",
+                        commonName: "Black Phoebe",
+                        scientificName: "Sayornis nigricans",
+                        metaLabel: "Rose Bowl Trail · 1:20 PM",
+                        statusLabel: "Research Grade",
+                        statusKind: .researchGrade,
+                        imageSource: "https://www.figma.com/api/mcp/asset/5480f314-a42a-4aff-b091-ade77472cf43"
+                    ),
+                    .init(
+                        id: "california-poppy",
+                        commonName: "California Poppy",
+                        scientificName: "Eschscholzia californica",
+                        metaLabel: "Eaton Canyon · 11:00 AM",
+                        statusLabel: "Research Grade",
+                        statusKind: .researchGrade,
+                        imageSource: "https://www.figma.com/api/mcp/asset/56a574ab-72a6-4985-a207-e84398659de6"
+                    )
+                ]
+            ),
+            .init(
+                id: "mar-24",
+                title: "Mar 24",
+                countLabel: "2 finds",
+                entries: [
+                    .init(
+                        id: "red-tailed-hawk",
+                        commonName: "Red-tailed Hawk",
+                        scientificName: "Buteo jamaicensis",
+                        metaLabel: "JPL Trail · 4:10 PM",
+                        statusLabel: "Research Grade",
+                        statusKind: .researchGrade,
+                        imageSource: "observe-photo-portrait"
+                    ),
+                    .init(
+                        id: "buckwheat",
+                        commonName: "Buckwheat",
+                        scientificName: "Eriogonum fasciculatum",
+                        metaLabel: "Altadena Trail · 9:30 AM",
+                        statusLabel: "Draft",
+                        statusKind: .draft,
+                        imageSource: "coast-live-oak-gallery-2"
+                    )
+                ]
+            )
+        ],
+        gridItems: [
+            .init(id: "cacti", title: "Cacti", imageSource: "https://www.figma.com/api/mcp/asset/2e4ece4a-e9f3-4a6a-b76c-2146c08e35e0"),
+            .init(id: "indian-cormorant", title: "Indian\nCormorant", imageSource: "https://www.figma.com/api/mcp/asset/f99a6cfd-ae56-4e80-aac0-92c673a070b5"),
+            .init(id: "european-roller", title: "European\nRoller", imageSource: "https://www.figma.com/api/mcp/asset/dfbddfc8-fc8f-458e-b30e-21497d574985"),
+            .init(id: "bindweed-tribe", title: "Bindweed\nTribe", imageSource: "https://www.figma.com/api/mcp/asset/f2391b2e-1a45-435b-acd7-1207dda76c0e"),
+            .init(id: "emperor-gum-moth", title: "Emperor\nGum Moth", imageSource: "https://www.figma.com/api/mcp/asset/3de8ff3b-8537-438e-9014-164c92cd7265"),
+            .init(id: "garden-orbweaver", title: "Garden\nOrbweaver", imageSource: "https://www.figma.com/api/mcp/asset/7911b149-22d8-416f-b72d-3bcd00c42a5b"),
+            .init(id: "southern-black-korhaan", title: "Southern Black\nKorhaan", imageSource: "https://www.figma.com/api/mcp/asset/5480f314-a42a-4aff-b091-ade77472cf43"),
+            .init(id: "phlogistus", title: "Phlogistus", imageSource: "https://www.figma.com/api/mcp/asset/0b80c8ea-d015-4df0-ac86-82f4da3979fe"),
+            .init(id: "spiny-starwort", title: "Spiny\nStarowort", imageSource: "https://www.figma.com/api/mcp/asset/56a574ab-72a6-4985-a207-e84398659de6")
+        ]
+    )
 }

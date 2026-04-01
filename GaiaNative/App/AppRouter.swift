@@ -38,7 +38,7 @@ struct AppRouter: View {
         case .explore:
             ExploreScreen()
         case .log:
-            ProfileScreen(forcedTab: .log)
+            LogScreen()
         case .observe:
             ObserveFlowScreen()
         case .activity:

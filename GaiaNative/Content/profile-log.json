@@ -1,0 +1,152 @@
+{
+  "totalFindsLabel": "127 finds",
+  "listSections": [
+    {
+      "id": "today",
+      "title": "Today",
+      "countLabel": "2 finds",
+      "entries": [
+        {
+          "id": "red-fox",
+          "commonName": "Red Fox",
+          "scientificName": "Vulpes vulpes",
+          "metaLabel": "Eaton Canyon · 2:15 PM",
+          "statusLabel": "Research Grade",
+          "statusKind": "researchGrade",
+          "imageSource": "https://www.figma.com/api/mcp/asset/f99a6cfd-ae56-4e80-aac0-92c673a070b5"
+        },
+        {
+          "id": "unknown-moth",
+          "commonName": "Unknown Moth",
+          "scientificName": "Needs ID",
+          "metaLabel": "Eaton Canyon · 2:08 PM",
+          "statusLabel": "Needs ID",
+          "statusKind": "needsID",
+          "imageSource": "https://www.figma.com/api/mcp/asset/3de8ff3b-8537-438e-9014-164c92cd7265"
+        }
+      ]
+    },
+    {
+      "id": "yesterday",
+      "title": "Yesterday",
+      "countLabel": "1 find",
+      "entries": [
+        {
+          "id": "coast-live-oak",
+          "commonName": "Coast Live Oak",
+          "scientificName": "Quercus agrifolia",
+          "metaLabel": "Arroyo Seco · 10:30 AM",
+          "statusLabel": "Research Grade",
+          "statusKind": "researchGrade",
+          "imageSource": "coast-live-oak-hero"
+        }
+      ]
+    },
+    {
+      "id": "mar-25",
+      "title": "Mar 25",
+      "countLabel": "3 finds",
+      "entries": [
+        {
+          "id": "western-fence-lizard",
+          "commonName": "Western Fence Lizard",
+          "scientificName": "Needs ID",
+          "metaLabel": "Hahamongna · 3:45 PM",
+          "statusLabel": "Needs ID",
+          "statusKind": "needsID",
+          "imageSource": "observe-photo-square"
+        },
+        {
+          "id": "black-phoebe",
+          "commonName": "Black Phoebe",
+          "scientificName": "Sayornis nigricans",
+          "metaLabel": "Rose Bowl Trail · 1:20 PM",
+          "statusLabel": "Research Grade",
+          "statusKind": "researchGrade",
+          "imageSource": "https://www.figma.com/api/mcp/asset/5480f314-a42a-4aff-b091-ade77472cf43"
+        },
+        {
+          "id": "california-poppy",
+          "commonName": "California Poppy",
+          "scientificName": "Eschscholzia californica",
+          "metaLabel": "Eaton Canyon · 11:00 AM",
+          "statusLabel": "Research Grade",
+          "statusKind": "researchGrade",
+          "imageSource": "https://www.figma.com/api/mcp/asset/56a574ab-72a6-4985-a207-e84398659de6"
+        }
+      ]
+    },
+    {
+      "id": "mar-24",
+      "title": "Mar 24",
+      "countLabel": "2 finds",
+      "entries": [
+        {
+          "id": "red-tailed-hawk",
+          "commonName": "Red-tailed Hawk",
+          "scientificName": "Buteo jamaicensis",
+          "metaLabel": "JPL Trail · 4:10 PM",
+          "statusLabel": "Research Grade",
+          "statusKind": "researchGrade",
+          "imageSource": "observe-photo-portrait"
+        },
+        {
+          "id": "buckwheat",
+          "commonName": "Buckwheat",
+          "scientificName": "Eriogonum fasciculatum",
+          "metaLabel": "Altadena Trail · 9:30 AM",
+          "statusLabel": "Draft",
+          "statusKind": "draft",
+          "imageSource": "coast-live-oak-gallery-2"
+        }
+      ]
+    }
+  ],
+  "gridItems": [
+    {
+      "id": "cacti",
+      "title": "Cacti",
+      "imageSource": "https://www.figma.com/api/mcp/asset/2e4ece4a-e9f3-4a6a-b76c-2146c08e35e0"
+    },
+    {
+      "id": "indian-cormorant",
+      "title": "Indian\\nCormorant",
+      "imageSource": "https://www.figma.com/api/mcp/asset/f99a6cfd-ae56-4e80-aac0-92c673a070b5"
+    },
+    {
+      "id": "european-roller",
+      "title": "European\\nRoller",
+      "imageSource": "https://www.figma.com/api/mcp/asset/dfbddfc8-fc8f-458e-b30e-21497d574985"
+    },
+    {
+      "id": "bindweed-tribe",
+      "title": "Bindweed\\nTribe",
+      "imageSource": "https://www.figma.com/api/mcp/asset/f2391b2e-1a45-435b-acd7-1207dda76c0e"
+    },
+    {
+      "id": "emperor-gum-moth",
+      "title": "Emperor\\nGum Moth",
+      "imageSource": "https://www.figma.com/api/mcp/asset/3de8ff3b-8537-438e-9014-164c92cd7265"
+    },
+    {
+      "id": "garden-orbweaver",
+      "title": "Garden\\nOrbweaver",
+      "imageSource": "https://www.figma.com/api/mcp/asset/7911b149-22d8-416f-b72d-3bcd00c42a5b"
+    },
+    {
+      "id": "southern-black-korhaan",
+      "title": "Southern Black\\nKorhaan",
+      "imageSource": "https://www.figma.com/api/mcp/asset/5480f314-a42a-4aff-b091-ade77472cf43"
+    },
+    {
+      "id": "phlogistus",
+      "title": "Phlogistus",
+      "imageSource": "https://www.figma.com/api/mcp/asset/0b80c8ea-d015-4df0-ac86-82f4da3979fe"
+    },
+    {
+      "id": "spiny-starwort",
+      "title": "Spiny\\nStarowort",
+      "imageSource": "https://www.figma.com/api/mcp/asset/56a574ab-72a6-4985-a207-e84398659de6"
+    }
+  ]
+}

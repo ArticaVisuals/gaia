@@ -27,7 +27,7 @@ struct LearnSpeciesCard: View {
             .buttonStyle(.plain)
         }
         .padding(.horizontal, 24)
-        .padding(.vertical, 20)
+        .padding(.vertical, 22)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
@@ -36,7 +36,7 @@ struct LearnSpeciesCard: View {
                     RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
                         .stroke(Color.black.opacity(0.1), lineWidth: 0.5)
                 )
-                .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
+                .shadow(color: GaiaShadow.darkColor.opacity(0.55), radius: 18, x: 0, y: 5)
         )
     }
 }
