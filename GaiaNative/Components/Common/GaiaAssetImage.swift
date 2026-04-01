@@ -143,28 +143,28 @@ enum GaiaIconKind {
             return GaiaIconLayout(
                 baseCanvas: 32,
                 layers: [
-                    .direct(assetPath: "Icons/System/logbook-32-figma.png", insets: .css(15.63, 18.39, 15.83, 20.95))
+                    .direct(assetPath: "Icons/System/logbook-32-figma.png", insets: .css(15.63, 20.95, 15.83, 18.39))
                 ]
             )
         case .observe:
             return GaiaIconLayout(
                 baseCanvas: 32,
                 layers: [
-                    .direct(assetPath: "Icons/System/binoculars-32-figma.png", insets: .css(25.5, 15.19, 25.5, 16.06))
+                    .direct(assetPath: "Icons/System/binoculars-32-figma.png", insets: .css(25.5, 16.06, 25.5, 15.19))
                 ]
             )
         case .activity:
             return GaiaIconLayout(
                 baseCanvas: 32,
                 layers: [
-                    .direct(assetPath: "Icons/System/bell-32-figma.png", insets: .css(15.52, 20.07, 15.73, 20.6))
+                    .direct(assetPath: "Icons/System/bell-32-figma.png", insets: .css(15.52, 20.6, 15.73, 20.07))
                 ]
             )
         case .profile:
             return GaiaIconLayout(
                 baseCanvas: 32,
                 layers: [
-                    .direct(assetPath: "Icons/System/profile-32-figma.png", insets: .css(15.4, 15.4, 15.52, 15.84))
+                    .direct(assetPath: "Icons/System/profile-32-figma.png", insets: .css(15.4, 15.84, 15.52, 15.4))
                 ]
             )
         case .circleArrowRight:

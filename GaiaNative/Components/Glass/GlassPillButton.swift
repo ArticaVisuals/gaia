@@ -9,7 +9,7 @@ struct GlassPillButton<Content: View>: View {
         }
         .padding(.horizontal, 10)
         .frame(height: 48)
-        .background(GaiaMaterialBackground(cornerRadius: GaiaRadius.full))
+        .background(GaiaMaterialBackground(cornerRadius: GaiaRadius.full, interactive: true))
         .clipShape(Capsule())
     }
 }

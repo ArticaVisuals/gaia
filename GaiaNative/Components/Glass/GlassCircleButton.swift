@@ -22,7 +22,7 @@ struct GlassCircleButton<Label: View>: View {
     var body: some View {
         Button(action: action) {
             ZStack {
-                GaiaMaterialBackground(cornerRadius: size / 2)
+                GaiaMaterialBackground(cornerRadius: size / 2, interactive: true)
 
                 label()
                     .fixedSize()

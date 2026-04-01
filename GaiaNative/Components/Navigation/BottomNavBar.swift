@@ -11,8 +11,8 @@ struct BottomNavBar: View {
     private let pillHeight: CGFloat = 54
     private let barHeight: CGFloat = 64
     private let buttonHeight: CGFloat = 48
-    private let leadingInset: CGFloat = 3
-    private let trailingInset: CGFloat = 3
+    private let leadingInset: CGFloat = 1
+    private let trailingInset: CGFloat = 2
     private let verticalInset: CGFloat = 5
 
     var body: some View {

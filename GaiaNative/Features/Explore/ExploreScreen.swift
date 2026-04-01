@@ -476,7 +476,7 @@ private struct ExploreSearchBar: View {
         .padding(.trailing, 10)
         .frame(maxWidth: .infinity)
         .frame(height: 48)
-        .background(GaiaMaterialBackground(cornerRadius: 296))
+        .background(GaiaMaterialBackground(cornerRadius: 296, interactive: true))
         .clipShape(Capsule())
         .contentShape(Capsule())
         .onTapGesture {
