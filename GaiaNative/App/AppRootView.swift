@@ -20,8 +20,8 @@ struct AppRootView: View {
                         set: { appState.select(section: $0) }
                     )
                 )
-                .padding(.horizontal, 24)
-                .padding(.bottom, 20)
+                .padding(.horizontal, 16)
+                .padding(.bottom, 0)
                 .ignoresSafeArea(.keyboard, edges: .bottom)
             }
         }

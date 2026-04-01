@@ -31,7 +31,7 @@ private struct ToolbarGlassIconArtwork: View {
             case .search:
                 GaiaIcon(kind: .search, size: 20)
             case .back:
-                GaiaAssetImage(name: "figma-left-arrow-tight", contentMode: .fit)
+                GaiaAssetImage(name: "gaia-icon-back-32", contentMode: .fit)
                     .frame(width: 15.6, height: 20.1)
                     .rotationEffect(.degrees(-90))
             case .close:
