@@ -28,7 +28,7 @@ struct LearnTabView: View {
 
                 ZStack(alignment: .topTrailing) {
                     GaiaAssetImage(name: "learn-map-fallback")
-                        .frame(height: 270)
+                        .frame(height: 252)
                         .overlay {
                             ExploreMapView(
                                 observations: [

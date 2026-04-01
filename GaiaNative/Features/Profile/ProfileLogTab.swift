@@ -20,8 +20,8 @@ struct LogScreen: View {
         ScrollView(showsIndicators: false) {
             ProfileLogTab(content: contentStore.profileLog, presentation: .standalone)
                 .padding(.horizontal, GaiaSpacing.md)
-                .padding(.top, 8)
-                .padding(.bottom, 120)
+                .padding(.top, 12)
+                .padding(.bottom, 156)
         }
         .background(GaiaColor.surfacePrimary)
     }
@@ -49,7 +49,7 @@ struct ProfileLogTab: View {
                     .font(GaiaTypography.title1Medium)
                     .foregroundStyle(GaiaColor.brandPrimary)
                     .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.top, GaiaSpacing.xs)
+                    .padding(.top, GaiaSpacing.sm)
             }
 
             ProfileLogSearchBar(text: $searchText)
@@ -225,7 +225,7 @@ private struct ProfileLogList: View {
     let sections: [ProfileLogSection]
 
     var body: some View {
-        LazyVStack(alignment: .leading, spacing: GaiaSpacing.md) {
+        LazyVStack(alignment: .leading, spacing: 14) {
             ForEach(sections) { section in
                 VStack(spacing: 0) {
                     HStack {
@@ -275,12 +275,12 @@ private struct ProfileLogRow: View {
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(entry.commonName)
-                    .font(GaiaTypography.title2)
+                    .font(GaiaTypography.subheadSerif)
                     .foregroundStyle(GaiaColor.textPrimary)
                     .lineLimit(1)
 
                 Text(entry.scientificName)
-                    .font(GaiaTypography.subheadline)
+                    .font(GaiaTypography.footnote)
                     .italic()
                     .foregroundStyle(GaiaColor.textSecondary)
                     .lineLimit(1)
@@ -294,8 +294,8 @@ private struct ProfileLogRow: View {
 
             ProfileLogStatusPill(title: entry.statusLabel, kind: entry.statusKind)
         }
-        .padding(.vertical, 18)
-        .frame(maxWidth: .infinity, minHeight: 92, alignment: .leading)
+        .padding(.vertical, 14)
+        .frame(maxWidth: .infinity, minHeight: 84, alignment: .leading)
     }
 }
 
@@ -305,10 +305,10 @@ private struct ProfileLogStatusPill: View {
 
     var body: some View {
         Text(title)
-            .font(GaiaTypography.footnote)
+            .font(GaiaTypography.caption)
             .foregroundStyle(foreground)
-            .padding(.horizontal, 12)
-            .frame(height: 30)
+            .padding(.horizontal, 10)
+            .frame(height: 28)
             .background(
                 Capsule()
                     .fill(fill)
@@ -390,11 +390,11 @@ private struct ProfileLogGridCard: View {
                     )
 
                 Text(item.title)
-                    .font(GaiaTypography.subheadSerif)
+                    .font(.custom("NewSpirit-Regular", size: 14))
                     .foregroundStyle(GaiaColor.paperWhite50)
                     .multilineTextAlignment(.leading)
                     .lineLimit(2)
-                    .padding(10)
+                    .padding(9)
             }
         }
         .aspectRatio(1, contentMode: .fit)

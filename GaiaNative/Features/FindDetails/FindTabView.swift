@@ -168,23 +168,24 @@ private struct FindMapProfileCard: View {
     var body: some View {
         HStack(spacing: 8) {
             GaiaAssetImage(name: "find-avatar-alice")
-                .frame(width: 48, height: 48)
+                .frame(width: 44, height: 44)
                 .clipShape(Circle())
                 .overlay(Circle().stroke(Color.black.opacity(0.1), lineWidth: 0.5))
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("Alice Edwards")
-                    .font(GaiaTypography.subheadSerif)
+                    .font(.custom("NewSpirit-Regular", size: 16))
                     .foregroundStyle(GaiaColor.olive)
                     .lineLimit(1)
                 Text("127 finds")
-                    .font(.custom("Neue Haas Unica W1G", size: 12))
+                    .font(.custom("Neue Haas Unica W1G", size: 11))
                     .foregroundStyle(GaiaColor.broccoliBrown500)
                     .lineLimit(1)
             }
         }
         .fixedSize(horizontal: true, vertical: false)
-        .padding(12)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 10)
         .background(
             RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
                 .fill(GaiaColor.paperWhite50.opacity(0.985))
@@ -205,20 +206,20 @@ private struct FindLocationCard: View {
                     .frame(width: 10, height: 20)
                     .opacity(0.48)
                 Text("Avila Beach, CA, United States of America")
-                    .font(.custom("Neue Haas Unica W1G", size: 12))
+                    .font(.custom("Neue Haas Unica W1G", size: 11))
                     .foregroundStyle(GaiaColor.blackishGrey400)
                     .lineLimit(1)
                     .minimumScaleFactor(0.88)
             }
 
             Text("July 10, 2025, 10:19 AM")
-                .font(.custom("Neue Haas Unica W1G", size: 11))
+                .font(.custom("Neue Haas Unica W1G", size: 10))
                 .foregroundStyle(GaiaColor.inkBlack200)
                 .tracking(0.25)
                 .lineLimit(1)
         }
         .padding(.horizontal, 12)
-        .padding(.vertical, 10)
+        .padding(.vertical, 8)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
@@ -290,13 +291,13 @@ private struct FindConditionCard<ImageContent: View>: View {
 
 private struct FindDataQualityCard: View {
     var body: some View {
-        HStack(spacing: 24) {
+        HStack(spacing: 18) {
             FindQualityItem(title: "Ungraded", state: .active)
             FindQualityItem(title: "Casual Grade", state: .active)
             FindQualityItem(title: "Research Grade", state: .inactive)
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, 16)
+        .padding(.vertical, 14)
         .frame(maxWidth: .infinity)
         .background(
             RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
@@ -320,7 +321,7 @@ private struct FindQualityItem: View {
     let state: FindQualityState
 
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 6) {
             FindQualityBadge(state: state)
             Text(title)
                 .font(.custom("Neue Haas Unica W1G", size: 11))
@@ -354,7 +355,7 @@ private struct FindQualityBadge: View {
                 .stroke(GaiaColor.paperWhite50, style: StrokeStyle(lineWidth: 2.1, lineCap: .round, lineJoin: .round))
             }
         }
-        .frame(width: 40, height: 40)
+        .frame(width: 36, height: 36)
     }
 }
 

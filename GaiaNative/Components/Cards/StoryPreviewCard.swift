@@ -22,7 +22,7 @@ struct StoryPreviewCard: View {
                         .scaleEffect(1.12)
                         .offset(y: -12)
                 }
-                .frame(height: 208)
+                .frame(height: 196)
                 .clipped()
 
                 VStack(alignment: .leading, spacing: 12) {
@@ -57,7 +57,7 @@ struct StoryPreviewCard: View {
                         .padding(.top, 2)
                     }
                 }
-                .padding(16)
+                .padding(14)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(GaiaColor.broccoliBrown500)
             }
