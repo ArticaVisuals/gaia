@@ -5,7 +5,7 @@ struct HeroCarousel: View {
     let title: String
     let subtitle: String
     @State private var selection = 0
-    private let heroShadow = Color(red: 115 / 255, green: 115 / 255, blue: 100 / 255, opacity: 0.5)
+    private let heroShadow = Color(red: 115 / 255, green: 115 / 255, blue: 100 / 255, opacity: 0.42)
 
     private var carouselImages: [String] {
         let preferredImages = Array(imageNames.prefix(4))
@@ -53,9 +53,9 @@ struct HeroCarousel: View {
             )
             .shadow(
                 color: heroShadow,
-                radius: 16.2,
+                radius: 20,
                 x: 0,
-                y: 4
+                y: 6
             )
 
             HStack(spacing: 8) {

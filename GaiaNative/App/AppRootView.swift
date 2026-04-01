@@ -20,9 +20,8 @@ struct AppRootView: View {
                         set: { appState.select(section: $0) }
                     )
                 )
-                .padding(.horizontal, GaiaSpacing.md)
-                .padding(.bottom, 0)
-                .offset(y: 20)
+                .padding(.horizontal, 24)
+                .padding(.bottom, 20)
                 .ignoresSafeArea(.keyboard, edges: .bottom)
             }
         }

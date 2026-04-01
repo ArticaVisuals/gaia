@@ -125,67 +125,46 @@ enum GaiaIconKind {
                     )
                 ]
             )
-        case .explore(let selected):
+        case .explore:
             return GaiaIconLayout(
                 baseCanvas: 32,
                 layers: [
                     .direct(
-                        assetPath: "Icons/System/explore-32-ring\(selected ? "-olive" : "").png",
+                        assetPath: "Icons/System/explore-32-ring-olive.png",
                         insets: .css(15.76, 15.49, 15.49, 15.76)
                     ),
                     .direct(
-                        assetPath: "Icons/System/explore-32-dot\(selected ? "-olive" : "").png",
+                        assetPath: "Icons/System/explore-32-dot-olive.png",
                         insets: .css(34.52, 32.86, 32.85, 34.52)
                     )
                 ]
             )
-        case .log(let selected):
-            if selected {
-                return GaiaIconLayout(
-                    baseCanvas: 32,
-                    layers: [
-                        .direct(assetPath: "Icons/System/logbook-32-composite-olive.png", insets: .css(15.63, 20.95, 15.83, 18.39))
-                    ]
-                )
-            }
-
+        case .log:
             return GaiaIconLayout(
                 baseCanvas: 32,
                 layers: [
-                    .direct(assetPath: "Icons/System/logbook-32-outline.png", insets: .css(15.63, 20.95, 15.83, 18.39)),
-                    .direct(assetPath: "Icons/System/logbook-32-line-1.png", insets: .css(32.15, 40.48, 47.86, 36.58)),
-                    .direct(assetPath: "Icons/System/logbook-32-line-2.png", insets: .css(57.52, 40.49, 39.01, 36.58)),
-                    .direct(assetPath: "Icons/System/logbook-32-line-3.png", insets: .css(63.52, 40.49, 33.02, 36.58))
+                    .direct(assetPath: "Icons/System/logbook-32-figma.png", insets: .css(15.63, 18.39, 15.83, 20.95))
                 ]
             )
-        case .observe(let selected):
+        case .observe:
             return GaiaIconLayout(
                 baseCanvas: 32,
                 layers: [
-                    .direct(
-                        assetPath: "Icons/System/binoculars-32\(selected ? "-olive" : "").png",
-                        insets: .css(25.5, 16.06, 25.5, 15.19)
-                    )
+                    .direct(assetPath: "Icons/System/binoculars-32-figma.png", insets: .css(25.5, 15.19, 25.5, 16.06))
                 ]
             )
-        case .activity(let selected):
+        case .activity:
             return GaiaIconLayout(
                 baseCanvas: 32,
                 layers: [
-                    .direct(
-                        assetPath: "Icons/System/bell-32\(selected ? "-olive" : "").png",
-                        insets: .css(15.52, 20.6, 15.73, 20.07)
-                    )
+                    .direct(assetPath: "Icons/System/bell-32-figma.png", insets: .css(15.52, 20.07, 15.73, 20.6))
                 ]
             )
-        case .profile(let selected):
+        case .profile:
             return GaiaIconLayout(
                 baseCanvas: 32,
                 layers: [
-                    .direct(
-                        assetPath: "Icons/System/profile-32\(selected ? "-olive" : "").png",
-                        insets: .css(15.4, 15.84, 15.52, 15.4)
-                    )
+                    .direct(assetPath: "Icons/System/profile-32-figma.png", insets: .css(15.4, 15.4, 15.52, 15.84))
                 ]
             )
         case .circleArrowRight:

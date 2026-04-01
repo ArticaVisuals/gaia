@@ -11,7 +11,7 @@ struct ExploreScreen: View {
     var body: some View {
         GeometryReader { proxy in
             let viewportWidth = min(proxy.size.width, UIScreen.main.bounds.width)
-            let horizontalInset = GaiaSpacing.md
+            let horizontalInset: CGFloat = 16
             let searchBarWidth = max(0, viewportWidth - (horizontalInset * 2))
             let searchBarTopInset = proxy.safeAreaInsets.top
 
@@ -25,18 +25,22 @@ struct ExploreScreen: View {
             .ignoresSafeArea()
             .overlay(alignment: .bottom) {
                 ZStack(alignment: .bottomLeading) {
-                    GlassCircleButton(size: 44, action: {
+                    GlassCircleButton(size: 48, action: {
                         recenterRequestID = UUID()
                         isSearchFocused = false
                     }) {
-                        GaiaIcon(kind: .target, size: 24)
+                        ExploreTargetIcon()
+                            .frame(width: 26, height: 26)
                     }
+                    .opacity(locateButtonOpacity)
+                    .scaleEffect(0.96 + (locateButtonOpacity * 0.04))
+                    .allowsHitTesting(locateButtonOpacity > 0.08)
                     .padding(.leading, GaiaSpacing.md)
                     .padding(.bottom, locateButtonBottomInset)
 
                     ExploreDraggableSheet(
                         species: contentStore.species,
-                        projectCount: min(3, max(1, contentStore.observations.count)),
+                        nearbyFindCount: max(12, contentStore.observations.count),
                         topInset: searchBarTopInset,
                         onSelectFind: { species in
                             appState.openFindDetails(speciesID: species.id, tab: .learn)
@@ -63,7 +67,7 @@ struct ExploreScreen: View {
             .overlay(alignment: .top) {
                 ExploreSearchBar(text: $searchQuery, isFocused: $isSearchFocused)
                     .frame(width: searchBarWidth)
-                    .padding(.top, searchBarTopInset + 8)
+                    .padding(.top, searchBarTopInset)
                     .frame(width: viewportWidth, alignment: .center)
             }
             .frame(width: viewportWidth, height: proxy.size.height)
@@ -73,15 +77,14 @@ struct ExploreScreen: View {
 
     private var locateButtonBottomInset: CGFloat {
         guard sheetSnapshot.fullHeight > 0 else { return 164 }
+        return max(88, (sheetSnapshot.fullHeight - sheetSnapshot.liveOffset) + 18)
+    }
 
-        if sheetSnapshot.liveOffset <= sheetSnapshot.midOffset {
-            let aboveNav: CGFloat = 76
-            let aboveSheet = (sheetSnapshot.fullHeight - sheetSnapshot.midOffset) + 14
-            let t = max(0, min(1, sheetSnapshot.liveOffset / max(sheetSnapshot.midOffset, 1)))
-            return aboveNav + (aboveSheet - aboveNav) * t
-        }
-
-        return (sheetSnapshot.fullHeight - sheetSnapshot.liveOffset) + 14
+    private var locateButtonOpacity: CGFloat {
+        guard sheetSnapshot.fullHeight > 0 else { return 1 }
+        let fullRange = max(1, sheetSnapshot.midOffset - 12)
+        let progress = max(0, min(1, (sheetSnapshot.midOffset - sheetSnapshot.liveOffset) / fullRange))
+        return 1 - progress
     }
 }
 
@@ -158,7 +161,7 @@ private struct ExploreSheetSnapshot {
 
 private struct ExploreDraggableSheet: View {
     let species: [Species]
-    let projectCount: Int
+    let nearbyFindCount: Int
     let topInset: CGFloat
     let onSelectFind: (Species) -> Void
     let onProgressChange: (CGFloat) -> Void
@@ -169,14 +172,14 @@ private struct ExploreDraggableSheet: View {
 
     init(
         species: [Species],
-        projectCount: Int,
+        nearbyFindCount: Int,
         topInset: CGFloat,
         onSelectFind: @escaping (Species) -> Void,
         onProgressChange: @escaping (CGFloat) -> Void,
         onPositionChange: @escaping (ExploreSheetSnapshot) -> Void
     ) {
         self.species = species
-        self.projectCount = projectCount
+        self.nearbyFindCount = nearbyFindCount
         self.topInset = topInset
         self.onSelectFind = onSelectFind
         self.onProgressChange = onProgressChange
@@ -231,7 +234,7 @@ private struct ExploreDraggableSheet: View {
                 }
 
                 ExploreCollapsedPanel(
-                    projectCount: projectCount,
+                    nearbyFindCount: nearbyFindCount,
                     width: shellWidth
                 )
                 .opacity(peekOpacity)
@@ -375,11 +378,11 @@ private struct ExploreDraggableSheet: View {
 }
 
 private struct ExploreCollapsedPanel: View {
-    let projectCount: Int
+    let nearbyFindCount: Int
     let width: CGFloat
 
     var body: some View {
-        ExploreSheetPeekCard(projectCount: projectCount, width: width)
+        ExploreSheetPeekCard(nearbyFindCount: nearbyFindCount, width: width)
             .padding(.top, 4)
             .padding(.bottom, 12)
             .frame(width: width, height: 150, alignment: .top)
@@ -387,7 +390,7 @@ private struct ExploreCollapsedPanel: View {
 }
 
 private struct ExploreSheetPeekCard: View {
-    let projectCount: Int
+    let nearbyFindCount: Int
     let width: CGFloat
 
     var body: some View {
@@ -397,7 +400,7 @@ private struct ExploreSheetPeekCard: View {
                 .frame(width: 48, height: 4)
                 .padding(.top, 9)
 
-            Text("\(projectCount) nearby \(projectCount == 1 ? "project" : "projects")")
+            Text("\(nearbyFindCount) nearby \(nearbyFindCount == 1 ? "find" : "finds")")
                 .font(GaiaTypography.subheadSerif)
                 .foregroundStyle(GaiaColor.olive)
                 .lineLimit(1)
@@ -448,7 +451,7 @@ private struct ExploreSearchBar: View {
 
     var body: some View {
         HStack(spacing: 4) {
-            GaiaIcon(kind: .search, size: 32)
+            ExploreSearchIcon()
                 .frame(width: 32, height: 32)
 
             TextField(
@@ -466,14 +469,14 @@ private struct ExploreSearchBar: View {
             .focused(isFocused)
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            GaiaIcon(kind: .microphone, size: 32, tint: GaiaColor.inkBlack900)
+            GaiaIcon(kind: .microphone, size: 32, tint: GaiaColor.olive)
                 .frame(width: 32, height: 32)
         }
         .padding(.leading, 11)
         .padding(.trailing, 10)
         .frame(maxWidth: .infinity)
         .frame(height: 48)
-        .background(ExploreSearchBarBackground())
+        .background(GaiaMaterialBackground(cornerRadius: 296))
         .clipShape(Capsule())
         .contentShape(Capsule())
         .onTapGesture {
@@ -483,35 +486,40 @@ private struct ExploreSearchBar: View {
     }
 }
 
-private struct ExploreSearchBarBackground: View {
+private struct ExploreSearchIcon: View {
     var body: some View {
-        let shape = RoundedRectangle(cornerRadius: 296, style: .continuous)
-        let burnWhite = Color(red: 221 / 255, green: 221 / 255, blue: 221 / 255)
-        let darkenWhite = Color(red: 247 / 255, green: 247 / 255, blue: 247 / 255)
+        Group {
+            if let uiImage = AssetCatalog.uiImage(named: "Icons/System/search-20.png") {
+                Image(uiImage: uiImage)
+                    .renderingMode(.template)
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundStyle(GaiaColor.olive)
+            }
+        }
+        .frame(width: 20, height: 20)
+    }
+}
 
-        return ZStack {
-            if #available(iOS 26.0, *) {
-                Color.clear
-                    .glassEffect(.regular, in: shape)
-            } else {
-                shape
-                    .fill(.white.opacity(0.65))
-                    .background(.ultraThinMaterial, in: shape)
+private struct ExploreTargetIcon: View {
+    var body: some View {
+        ZStack {
+            if let ring = AssetCatalog.uiImage(named: "Icons/System/target-24-ring.png") {
+                Image(uiImage: ring)
+                    .renderingMode(.template)
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundStyle(GaiaColor.olive)
             }
 
-            shape
-                .fill(.white)
-                .blendMode(.multiply)
-
-            shape
-                .fill(burnWhite)
-                .blendMode(.colorBurn)
-
-            shape
-                .fill(darkenWhite)
-                .blendMode(.darken)
+            if let dot = AssetCatalog.uiImage(named: "Icons/System/target-24-dot.png") {
+                Image(uiImage: dot)
+                    .renderingMode(.template)
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundStyle(GaiaColor.olive)
+                    .padding(8)
+            }
         }
-        .compositingGroup()
-        .shadow(color: GaiaColor.broccoliBrown500.opacity(0.24), radius: 40, x: 0, y: 8)
     }
 }

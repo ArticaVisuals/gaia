@@ -1,28 +1,310 @@
 import SwiftUI
 
 struct ActivityTabView: View {
-    let events: [ActivityEvent]
+    let species: Species
+
+    private let comments: [FindDetailComment] = [
+        .init(id: "comment-1", author: "Maya Chen", timestamp: "4h ago", body: "Great find. Leaf margins and acorn shape strongly match Coast Live Oak."),
+        .init(id: "comment-2", author: "Maya Chen", timestamp: "6h ago", body: "Great find. Leaf margins and acorn shape strongly match Coast Live Oak.")
+    ]
+
+    private let leaderboardRows: [FindLeaderboardEntry] = [
+        .init(rank: "1", name: "Oliver King", count: "12", isHighlighted: false),
+        .init(rank: "2", name: "Maya Chen", count: "6", isHighlighted: false),
+        .init(rank: "3", name: "Jules Kim", count: "3", isHighlighted: false),
+        .init(rank: "12", name: "Alice Edwards", count: "1", isHighlighted: true)
+    ]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: GaiaSpacing.lg) {
-            GaiaActionCard(accent: GaiaColor.indigoBlue500) {
-                VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
-                    Text("Bay Area Raptor Watch 2026")
-                        .font(GaiaTypography.calloutMedium)
-                        .foregroundStyle(GaiaColor.textPrimary)
-                    Text("This species is being tracked as part of an active monitoring project. Your observation can contribute.")
-                        .font(GaiaTypography.subheadline)
-                        .foregroundStyle(GaiaColor.textSecondary)
-                    GaiaPill(title: "Contribute My Sighting", fill: GaiaColor.indigoBlue500, foreground: GaiaColor.paperStrong)
-                }
+        VStack(alignment: .leading, spacing: GaiaSpacing.md) {
+            HStack(spacing: 12) {
+                ActivityFilterPill(title: "Suggest ID")
+                ActivityFilterPill(title: "Comment")
             }
 
-            GaiaSectionHeader(title: "Recent Activity")
+            ActivitySuggestionCard(scientificName: species.scientificName)
 
-            ForEach(events) { event in
-                ActivityCard(event: event)
+            ForEach(comments) { comment in
+                ActivityCommentCard(comment: comment)
+            }
+
+            HStack {
+                Spacer()
+                Text("Read more")
+                    .font(.custom("Neue Haas Unica W1G", size: 15))
+                    .foregroundStyle(GaiaColor.olive)
+            }
+            .padding(.horizontal, 4)
+
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Leaderboard")
+                    .font(GaiaTypography.titleRegular)
+                    .foregroundStyle(GaiaColor.inkBlack300)
+
+                ActivityLeaderboardCard(rows: leaderboardRows)
             }
         }
         .padding(.horizontal, GaiaSpacing.md)
+    }
+}
+
+private struct FindDetailComment: Identifiable {
+    let id: String
+    let author: String
+    let timestamp: String
+    let body: String
+}
+
+private struct FindLeaderboardEntry: Identifiable {
+    let rank: String
+    let name: String
+    let count: String
+    let isHighlighted: Bool
+
+    var id: String { rank + name }
+}
+
+private struct ActivityFilterPill: View {
+    let title: String
+
+    var body: some View {
+        Button(action: {}) {
+            Text(title)
+                .font(.custom("Neue Haas Unica W1G", size: 17))
+                .foregroundStyle(GaiaColor.paperWhite50)
+                .frame(maxWidth: .infinity)
+                .frame(height: 48)
+                .background(GaiaColor.olive, in: Capsule())
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct ActivitySuggestionCard: View {
+    let scientificName: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            ActivityCardHeader(author: "Alice Edwards", actionText: "suggested an ID", timestamp: "2h ago")
+
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(spacing: 16) {
+                    GaiaAssetImage(name: "activity-suggestion-thumb", contentMode: .fill)
+                        .frame(width: 104, height: 64)
+                        .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.sm, style: .continuous))
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(scientificName)
+                            .font(GaiaTypography.titleRegular)
+                            .foregroundStyle(GaiaColor.olive)
+                        Text("Original suggested ID")
+                            .font(.custom("Neue Haas Unica W1G", size: 12))
+                            .foregroundStyle(GaiaColor.inkBlack300)
+                    }
+                    Spacer(minLength: 0)
+                }
+
+                HStack(spacing: 10) {
+                    Spacer(minLength: 0)
+                    ActivityOutlinedPill(title: "Agree")
+                    ActivityOutlinedPill(title: "Comment")
+                }
+            }
+            .padding(12)
+        }
+        .background(cardBackground)
+    }
+
+    private var cardBackground: some View {
+        RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+            .fill(GaiaColor.paperWhite50)
+            .overlay(
+                RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                    .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
+            )
+            .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
+    }
+}
+
+private struct ActivityCommentCard: View {
+    let comment: FindDetailComment
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            ActivityCardHeader(author: comment.author, actionText: "commented", timestamp: comment.timestamp)
+
+            Text(comment.body)
+                .font(.custom("Neue Haas Unica W1G", size: 15))
+                .foregroundStyle(GaiaColor.blackishGrey300)
+                .padding(12)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .background(
+            RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                .fill(GaiaColor.paperWhite50)
+                .overlay(
+                    RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                        .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
+                )
+                .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
+        )
+    }
+}
+
+private struct ActivityCardHeader: View {
+    let author: String
+    let actionText: String
+    let timestamp: String
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 8) {
+            GaiaAssetImage(name: "find-avatar-alice")
+                .frame(width: 48, height: 48)
+                .clipShape(Circle())
+                .overlay(Circle().stroke(Color.black.opacity(0.1), lineWidth: 0.5))
+
+            HStack(alignment: .top, spacing: 8) {
+                HStack(alignment: .lastTextBaseline, spacing: 4) {
+                    Text(author)
+                        .font(GaiaTypography.subheadSerif)
+                        .foregroundStyle(GaiaColor.olive)
+                        .lineLimit(1)
+                    Text(actionText)
+                        .font(.custom("Neue Haas Unica W1G", size: 12))
+                        .foregroundStyle(GaiaColor.broccoliBrown500)
+                        .lineLimit(1)
+                }
+                Spacer(minLength: 0)
+                Text(timestamp)
+                    .font(.custom("Neue Haas Unica W1G", size: 11))
+                    .foregroundStyle(GaiaColor.inkBlack200)
+                    .tracking(0.25)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding(12)
+        .overlay(alignment: .bottom) {
+            Divider()
+                .background(GaiaColor.broccoliBrown200)
+        }
+    }
+}
+
+private struct ActivityOutlinedPill: View {
+    let title: String
+
+    var body: some View {
+        Button(action: {}) {
+            Text(title)
+                .font(.custom("Neue Haas Unica W1G", size: 15))
+                .foregroundStyle(GaiaColor.olive)
+                .padding(.horizontal, 14)
+                .frame(height: 34)
+                .overlay(
+                    Capsule()
+                        .stroke(GaiaColor.olive, lineWidth: 1)
+                )
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct ActivityLeaderboardCard: View {
+    let rows: [FindLeaderboardEntry]
+
+    var body: some View {
+        VStack(spacing: 0) {
+            ForEach(rows) { row in
+                ActivityLeaderboardRow(entry: row)
+            }
+
+            HStack(spacing: 0) {
+                Text("Show more")
+                    .font(.custom("Neue Haas Unica W1G", size: 16))
+                    .foregroundStyle(GaiaColor.olive)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.vertical, 12)
+            }
+            .frame(maxWidth: .infinity)
+        }
+        .background(
+            RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                .fill(GaiaColor.paperWhite50)
+                .overlay(
+                    RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                        .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
+                )
+                .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
+    }
+}
+
+private struct ActivityLeaderboardRow: View {
+    let entry: FindLeaderboardEntry
+
+    var body: some View {
+        HStack(spacing: 0) {
+            HStack(spacing: 16) {
+                Text(entry.rank)
+                    .font(.custom("Neue Haas Unica W1G", size: 16))
+                    .foregroundStyle(rankColor)
+                    .frame(width: 18, alignment: .leading)
+
+                HStack(spacing: 8) {
+                    GaiaAssetImage(name: "find-avatar-alice")
+                        .frame(width: 32, height: 32)
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(Color.black.opacity(0.08), lineWidth: 0.33))
+                    Text(entry.name)
+                        .font(.custom("NewSpirit-Regular", size: 16))
+                        .foregroundStyle(rankColor)
+                        .lineLimit(1)
+                }
+            }
+
+            Spacer(minLength: 0)
+
+            HStack(spacing: 4) {
+                Text(entry.count)
+                    .font(.custom("NewSpirit-Regular", size: 16))
+                    .foregroundStyle(rankColor)
+                ActivityBinocularsIcon(tint: entry.isHighlighted ? GaiaColor.paperWhite50 : GaiaColor.olive)
+            }
+        }
+        .padding(.horizontal, 16)
+        .frame(height: 56)
+        .background(entry.isHighlighted ? GaiaColor.olive : GaiaColor.paperWhite50)
+        .overlay(alignment: .top) {
+            if !entry.isHighlighted {
+                Rectangle()
+                    .fill(GaiaColor.oliveGreen50)
+                    .frame(height: 1)
+            }
+        }
+    }
+
+    private var rankColor: Color {
+        entry.isHighlighted ? GaiaColor.paperWhite50 : GaiaColor.olive
+    }
+}
+
+private struct ActivityBinocularsIcon: View {
+    let tint: Color
+
+    var body: some View {
+        Group {
+            if let image = AssetCatalog.uiImage(named: "Icons/System/binoculars-20.png") {
+                Image(uiImage: image)
+                    .renderingMode(.template)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .foregroundStyle(tint)
+            } else {
+                GaiaIcon(kind: .observe(selected: false), size: 14)
+                    .foregroundStyle(tint)
+            }
+        }
+        .frame(width: 14, height: 10)
     }
 }

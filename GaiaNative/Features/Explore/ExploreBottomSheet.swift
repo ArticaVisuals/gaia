@@ -33,7 +33,7 @@ struct ExploreBottomSheet: View {
                     .frame(width: 88, height: 4)
                     .frame(maxWidth: .infinity)
                     .padding(.top, 7)
-                    .padding(.bottom, 12)
+                    .padding(.bottom, 8)
 
                 VStack(alignment: .leading, spacing: 0) {
                     Text("Nearby")
@@ -41,8 +41,8 @@ struct ExploreBottomSheet: View {
                         .foregroundStyle(GaiaColor.olive)
                         .tracking(-0.5)
                         .padding(.horizontal, sectionInset)
-                        .padding(.top, 8)
-                        .padding(.bottom, 10)
+                        .padding(.top, 4)
+                        .padding(.bottom, 8)
 
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 8) {
@@ -66,14 +66,14 @@ struct ExploreBottomSheet: View {
                         .padding(.horizontal, sectionInset)
                     }
                     .scrollClipDisabled()
-                    .padding(.bottom, 14)
+                    .padding(.bottom, 12)
                 }
 
                 VStack(alignment: .leading, spacing: 0) {
                     ExploreSheetSectionHeader(title: "Projects", trailingText: "See all")
                         .padding(.horizontal, sectionInset)
-                        .padding(.top, 4)
-                        .padding(.bottom, 14)
+                        .padding(.top, 2)
+                        .padding(.bottom, 10)
 
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 8) {
@@ -82,7 +82,7 @@ struct ExploreBottomSheet: View {
                             }
                         }
                         .padding(.horizontal, sectionInset)
-                        .padding(.bottom, 12)
+                        .padding(.bottom, 8)
                     }
                     .scrollClipDisabled()
                 }
@@ -113,7 +113,7 @@ struct ExploreBottomSheet: View {
                     }
                     .padding(.horizontal, sectionInset)
                     .padding(.top, 0)
-                    .padding(.bottom, 10)
+                    .padding(.bottom, 8)
 
                     if viewMode == .grid {
                         ExploreSheetFindGrid(finds: finds) { _ in
@@ -134,7 +134,7 @@ struct ExploreBottomSheet: View {
                     }
                 }
             }
-            .padding(.bottom, 96)
+            .padding(.bottom, 148)
             .frame(maxWidth: .infinity, alignment: .topLeading)
         }
         .scrollDisabled(!allowsScroll)
@@ -311,6 +311,8 @@ private struct ExploreSheetFindGrid: View {
             let spacing: CGFloat = 8
             let columnCount = 3
             let cardWidth = floor((proxy.size.width - (spacing * CGFloat(columnCount - 1))) / CGFloat(columnCount))
+            let rows = CGFloat((finds.count + 2) / 3)
+            let gridHeight = (rows * cardWidth) + (max(0, rows - 1) * spacing)
             let columns = Array(
                 repeating: GridItem(.fixed(cardWidth), spacing: spacing, alignment: .top),
                 count: columnCount
@@ -324,16 +326,9 @@ private struct ExploreSheetFindGrid: View {
                 }
             }
             .frame(width: proxy.size.width, alignment: .leading)
+            .frame(height: gridHeight, alignment: .top)
         }
-        .frame(height: gridHeight(for: finds.count))
-    }
-
-    private func gridHeight(for count: Int) -> CGFloat {
-        guard count > 0 else { return 0 }
-        let spacing: CGFloat = 8
-        let cardWidth: CGFloat = 118
-        let rows = CGFloat((count + 2) / 3)
-        return (rows * cardWidth) + (max(0, rows - 1) * spacing)
+        .frame(height: 328)
     }
 }
 
@@ -346,11 +341,11 @@ private struct ExploreSheetFindGridCard: View {
         Button(action: action) {
             ZStack(alignment: .bottomLeading) {
                 GaiaAssetImage(name: find.imageName)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .frame(width: sideLength, height: sideLength)
                     .clipped()
 
                 GaiaAssetImage(name: find.imageName)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .frame(width: sideLength, height: sideLength)
                     .clipped()
                     .blur(radius: 3.7)
                     .mask(
@@ -368,13 +363,14 @@ private struct ExploreSheetFindGridCard: View {
                 )
 
                 Text(find.title)
-                    .font(.custom("NewSpirit-Regular", size: 14, relativeTo: .body))
+                    .font(.custom("NewSpirit-Regular", size: 16, relativeTo: .body))
                     .foregroundStyle(.white)
                     .multilineTextAlignment(.leading)
                     .lineLimit(2)
-                    .frame(width: max(0, sideLength - 17), alignment: .bottomLeading)
-                    .padding(.leading, 8.5)
+                    .lineSpacing(2)
+                    .padding(.horizontal, 8.5)
                     .padding(.bottom, 7.5)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
             }
             .frame(width: sideLength, height: sideLength)
             .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))

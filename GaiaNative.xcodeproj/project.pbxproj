@@ -12,6 +12,7 @@
 		0DD56CDC3A47A4DDFADB6854 /* ObserveCameraScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10B9C6679E3F4845C332D40C /* ObserveCameraScreen.swift */; };
 		13190C5C2DEFF28FEABD3C9A /* MapDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24DAC259706382EB914DA2F7 /* MapDataService.swift */; };
 		1419364474A33BBCF20E3844 /* GaiaMaterialBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1C156F7C96E4F7187CC851 /* GaiaMaterialBackground.swift */; };
+		A11C0A7F1F6A4A1100AA1001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A11C0A7E1F6A4A1100AA1001 /* Assets.xcassets */; };
 		17A5475D099DA85B3041440E /* DraggableTabSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6F21E03D471FF7175973D56 /* DraggableTabSwitch.swift */; };
 		196E021F4C71A2FAC5305C07 /* GaiaSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FF048D6B1CEA72892070E25 /* GaiaSectionHeader.swift */; };
 		19A974BF227F8195F04DCAA0 /* CommunityPost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F70620C276DF78392C5D11E /* CommunityPost.swift */; };
@@ -20,7 +21,6 @@
 		23C580EA85555D9107E5D127 /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3F324A2848976A4AD155662 /* Profile.swift */; };
 		25DB2E0C8AA50A2FB9F4D45B /* GaiaBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28074E03C039B184F5071499 /* GaiaBadge.swift */; };
 		2690928805DC4860E70CD806 /* ProfileImpactTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44940F559F9B5CA70C3CA42B /* ProfileImpactTab.swift */; };
-		28317C1E6A80AC7FDCF3496E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EC919F4D5C11CEED3715ED65 /* Assets.xcassets */; };
 		2A71395633CE89E8E0747B06 /* FindCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F20CB050256AA9670C4A3E9 /* FindCard.swift */; };
 		2BFFDF418B96C3C878FA39D2 /* GaiaDivider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4908DF30B56F9D2888EDA36C /* GaiaDivider.swift */; };
 		37DBEF790BACD986F2F554A9 /* GaiaAssetImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3771245A136A07017697132A /* GaiaAssetImage.swift */; };
@@ -50,7 +50,6 @@
 		7322E4E568115E040CF8B5B6 /* GlassCardBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FDE1C4DD3009EBE75D338FC /* GlassCardBackground.swift */; };
 		732E6DF293D90357C0F0C3D1 /* StoryDeckScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D8CA1369BB83BC58B17FCB /* StoryDeckScreen.swift */; };
 		7683DFFD02AE08F612707BFD /* CameraPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 908766B172FE8957820D6F1B /* CameraPreviewView.swift */; };
-		7B8A22BDC74F48789C694800 /* Resources in Resources */ = {isa = PBXBuildFile; fileRef = EFF94C63923359F98E349562 /* Resources */; };
 		7C1F0CB8BA3C2C5BBDBC41B3 /* GaiaSpacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20B9ECC43DD462DCED4B2B6A /* GaiaSpacing.swift */; };
 		7D4BAEEC87BF5AD7DB0A9BF1 /* AppRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BD446C59D0C73730E439C6E /* AppRootView.swift */; };
 		7E3BCB247FC3F3A7F013173D /* AppCopy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9077E84A708E36557C59B298 /* AppCopy.swift */; };
@@ -89,6 +88,7 @@
 		D49F9CDC13BB447F37C2FE4E /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 167BD8EF94545C73E66F2D76 /* LoadingView.swift */; };
 		DB613813E21B4B1BB15C5D38 /* Species.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07C1014FFD074B9B7F391996 /* Species.swift */; };
 		DC7B6F78DD75023FF1589DF0 /* ToolbarGlassButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2435EF09C2AD4967C594E35E /* ToolbarGlassButton.swift */; };
+		DCAD28D255178E69588C7783 /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = 3C34F8728394E168626A4717 /* Fonts */; };
 		DD88F07C2C8A20D90901B075 /* HapticsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41BC95568CDC1A443634978C /* HapticsService.swift */; };
 		E24ECB7510EEECE0320A77CC /* DeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 146524C2AC943E73407C2CA8 /* DeepLink.swift */; };
 		E27346C60B375A3C422C5052 /* GalleryRail.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCFFDBD4F3C52CE19C95A739 /* GalleryRail.swift */; };
@@ -97,6 +97,7 @@
 		E5090830A81B3ABDD643EF81 /* GaiaCardSurfaces.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45C5FEAF025A451CD8A13BA9 /* GaiaCardSurfaces.swift */; };
 		E57C25155E8BDD7447BE70EB /* PreviewSpecies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B01A4BAEC8D3CA71468D630 /* PreviewSpecies.swift */; };
 		E7C43A9FDA3CD1DD60DE46EE /* ActivityTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51F60AA112B2EC6350829FD9 /* ActivityTabView.swift */; };
+		EFAF0B2F7CC86C344DCEA65C /* Icons in Resources */ = {isa = PBXBuildFile; fileRef = F6A30B246BD2BE96AB2E2FE8 /* Icons */; };
 		F074827F9FDD5AB0A17FED84 /* ProfileHeaderCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B41E620045247F57247304A /* ProfileHeaderCard.swift */; };
 		FA3FA3D3910D79D14171FBF0 /* ExploreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5018B910E6E734C56BBEE330 /* ExploreViewModel.swift */; };
 		FAEC4B81AA52000116BBDF66 /* ContentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD806563A8E2128D0813D870 /* ContentStore.swift */; };
@@ -115,6 +116,7 @@
 		146524C2AC943E73407C2CA8 /* DeepLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLink.swift; sourceTree = "<group>"; };
 		167BD8EF94545C73E66F2D76 /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
 		17FA345CB2A063B72EBB9BE6 /* ComingSoonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComingSoonView.swift; sourceTree = "<group>"; };
+		A11C0A7E1F6A4A1100AA1001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = GaiaNative/Resources/Assets.xcassets; sourceTree = SOURCE_ROOT; };
 		1B01A4BAEC8D3CA71468D630 /* PreviewSpecies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewSpecies.swift; sourceTree = "<group>"; };
 		1D175DDFBFA7EC45D31883E0 /* StatsCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsCard.swift; sourceTree = "<group>"; };
 		20B9ECC43DD462DCED4B2B6A /* GaiaSpacing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaiaSpacing.swift; sourceTree = "<group>"; };
@@ -127,6 +129,7 @@
 		31438D127669C89572CEE389 /* ImpactSummaryCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImpactSummaryCard.swift; sourceTree = "<group>"; };
 		3771245A136A07017697132A /* GaiaAssetImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaiaAssetImage.swift; sourceTree = "<group>"; };
 		385D8878F5D62218D412C462 /* ActivityCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityCard.swift; sourceTree = "<group>"; };
+		3C34F8728394E168626A4717 /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Fonts; path = GaiaNative/Resources/Fonts; sourceTree = SOURCE_ROOT; };
 		41BC95568CDC1A443634978C /* HapticsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticsService.swift; sourceTree = "<group>"; };
 		44940F559F9B5CA70C3CA42B /* ProfileImpactTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileImpactTab.swift; sourceTree = "<group>"; };
 		45C5FEAF025A451CD8A13BA9 /* GaiaCardSurfaces.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaiaCardSurfaces.swift; sourceTree = "<group>"; };
@@ -182,7 +185,7 @@
 		AD6F75AE68AC4A07C71DA3EA /* PreviewStories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewStories.swift; sourceTree = "<group>"; };
 		ADEB50C2332F1361EBEAEB09 /* StoryDeckViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryDeckViewModel.swift; sourceTree = "<group>"; };
 		B8653282960E7D3E444C5F93 /* MapAnnotationPhotoPin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapAnnotationPhotoPin.swift; sourceTree = "<group>"; };
-		BCFD1B63C5FDC307F82BCACA /* GaiaNative.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GaiaNative.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BCFD1B63C5FDC307F82BCACA /* GaiaNative.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = GaiaNative.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BD806563A8E2128D0813D870 /* ContentStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentStore.swift; sourceTree = "<group>"; };
 		C6390DF88F5752C4A742B0C3 /* MapOverlayProfileCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapOverlayProfileCard.swift; sourceTree = "<group>"; };
 		C6F358B40558E1CCF4EDCBF8 /* LearnSpeciesCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnSpeciesCard.swift; sourceTree = "<group>"; };
@@ -193,8 +196,7 @@
 		E472B208F31A695300257E2C /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = assets; sourceTree = SOURCE_ROOT; };
 		E5D88BD85DEE8DF475A343C3 /* GaiaMotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaiaMotion.swift; sourceTree = "<group>"; };
 		E81E4B46008A4392C85C6C0E /* CameraService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraService.swift; sourceTree = "<group>"; };
-		EC919F4D5C11CEED3715ED65 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		EFF94C63923359F98E349562 /* Resources */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Resources; path = GaiaNative/Resources; sourceTree = SOURCE_ROOT; };
+		F6A30B246BD2BE96AB2E2FE8 /* Icons */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Icons; path = GaiaNative/Resources/Icons; sourceTree = SOURCE_ROOT; };
 		F745800DE0CB2C42E869EEE8 /* PreviewProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewProfile.swift; sourceTree = "<group>"; };
 		FCFFDBD4F3C52CE19C95A739 /* GalleryRail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryRail.swift; sourceTree = "<group>"; };
 		FE44E4B2B4055BA89D58E91A /* ActivityViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityViewModel.swift; sourceTree = "<group>"; };
@@ -366,10 +368,11 @@
 			isa = PBXGroup;
 			children = (
 				E472B208F31A695300257E2C /* assets */,
+				A11C0A7E1F6A4A1100AA1001 /* Assets.xcassets */,
 				A2BE948F394DEC9AE7215D99 /* Content */,
-				EFF94C63923359F98E349562 /* Resources */,
+				3C34F8728394E168626A4717 /* Fonts */,
+				F6A30B246BD2BE96AB2E2FE8 /* Icons */,
 				4BCC03A440EB22BED89FCE25 /* GaiaNative */,
-				A5CA9AB75BB7BF699BACDD16 /* Resources */,
 				3CC3E51BBCD39C46E3BD052C /* Products */,
 			);
 			sourceTree = "<group>";
@@ -443,15 +446,6 @@
 			path = Features;
 			sourceTree = "<group>";
 		};
-		A5CA9AB75BB7BF699BACDD16 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				EC919F4D5C11CEED3715ED65 /* Assets.xcassets */,
-			);
-			name = Resources;
-			path = GaiaNative/Resources;
-			sourceTree = "<group>";
-		};
 		BF54255AC48BFBAB4CDAF8E4 /* Media */ = {
 			isa = PBXGroup;
 			children = (
@@ -519,7 +513,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 2640;
+				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					A0F5AA237A60C220305ED721 = {
 						DevelopmentTeam = "";
@@ -553,10 +547,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				28317C1E6A80AC7FDCF3496E /* Assets.xcassets in Resources */,
 				8A69F98BC3EF3490559AC1B4 /* Content in Resources */,
-				7B8A22BDC74F48789C694800 /* Resources in Resources */,
+				DCAD28D255178E69588C7783 /* Fonts in Resources */,
+				EFAF0B2F7CC86C344DCEA65C /* Icons in Resources */,
 				5B2B4845C15480D913931B44 /* assets in Resources */,
+				A11C0A7F1F6A4A1100AA1001 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -666,7 +661,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -696,15 +690,15 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGNING_ALLOWED[sdk=iphonesimulator*]" = NO;
-				"CODE_SIGNING_REQUIRED[sdk=iphonesimulator*]" = NO;
+				"CODE_SIGNING_ALLOWED[sdk=iphonesimulator*]" = YES;
+				"CODE_SIGNING_REQUIRED[sdk=iphonesimulator*]" = YES;
 				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -728,13 +722,13 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.gaia.prototype.native;
 				PRODUCT_NAME = GaiaNative;
 				SDKROOT = iphoneos;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -746,7 +740,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -776,15 +769,15 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGNING_ALLOWED[sdk=iphonesimulator*]" = NO;
-				"CODE_SIGNING_REQUIRED[sdk=iphonesimulator*]" = NO;
+				"CODE_SIGNING_ALLOWED[sdk=iphonesimulator*]" = YES;
+				"CODE_SIGNING_REQUIRED[sdk=iphonesimulator*]" = YES;
 				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_PREVIEWS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -802,12 +795,12 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.gaia.prototype.native;
 				PRODUCT_NAME = GaiaNative;
 				SDKROOT = iphoneos;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;

@@ -16,9 +16,9 @@ enum AssetCatalog {
         "figma-share-arrow-tight": "Icons/System/share-24-arrow-tight.png",
         "figma-expand-a-tight": "Icons/System/expand-24-a-tight.png",
         "figma-expand-b-tight": "Icons/System/expand-24-b-tight.png",
-        "learn-category-badge": "Icons/System/category-badge-plant.png",
-        "learn-story-arrow-circle": "Icons/System/story-arrow-circle.png",
-        "learn-story-arrow": "Icons/System/story-arrow.png",
+        "learn-category-badge": "Icons/System/category-badge-plant-figma.png",
+        "learn-story-arrow-circle": "Icons/System/story-arrow-circle-figma.png",
+        "learn-story-arrow": "Icons/System/story-arrow-figma.png",
         "observe-camera-background": "assets/observe/camera-bg.png",
         "observe-camera-thumb": "assets/observe/camera-thumb.png",
         "observe-loading-front": "assets/observe/loading-card-front.png",
@@ -34,10 +34,11 @@ enum AssetCatalog {
         "observe-share-impact": "assets/observe/share-impact.png",
         "observe-share-why-matters": "assets/observe/share-why-matters.png",
         "find-avatar-alice": "assets/find-details/find-tab/avatar-alice.png",
-        "find-biome-riparian": "assets/find-details/find-tab/biome-riparian.png",
-        "find-weather-bg": "assets/find-details/find-tab/weather-bg.png",
-        "find-project-creek": "assets/find-details/find-tab/project-creek-recovery.png",
-        "find-project-pollinator": "assets/find-details/find-tab/project-pollinator-corridor.png"
+        "find-biome-riparian": "assets/find-details/find-tab-final/biome-riparian.png",
+        "find-weather-bg": "assets/find-details/find-tab-final/weather-bg.png",
+        "find-project-creek": "assets/find-details/find-tab-final/project-creek-recovery.png",
+        "find-project-pollinator": "assets/find-details/find-tab-final/project-pollinator-corridor.png",
+        "activity-suggestion-thumb": "assets/find-details/activity-tab-final/suggestion-thumb.png"
     ]
 
     static func resolvedPath(for key: String) -> String {

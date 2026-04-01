@@ -7,12 +7,13 @@ struct BottomNavBar: View {
     @State private var dragIndicatorX: CGFloat?
     @State private var isDragging = false
 
-    private let pillWidth: CGFloat = 76
-    private let barHeight: CGFloat = 56
+    private let pillWidth: CGFloat = 81
+    private let pillHeight: CGFloat = 54
+    private let barHeight: CGFloat = 64
     private let buttonHeight: CGFloat = 48
-    private let leadingInset: CGFloat = 5
-    private let trailingInset: CGFloat = 9
-    private let verticalInset: CGFloat = 4
+    private let leadingInset: CGFloat = 3
+    private let trailingInset: CGFloat = 3
+    private let verticalInset: CGFloat = 5
 
     var body: some View {
         GeometryReader { proxy in
@@ -26,10 +27,10 @@ struct BottomNavBar: View {
             )
 
             ZStack(alignment: .topLeading) {
-                navBackground
+                GaiaMaterialBackground(cornerRadius: 296)
 
                 activePill
-                    .frame(width: pillWidth, height: buttonHeight)
+                    .frame(width: pillWidth, height: pillHeight)
                     .offset(
                         x: dragIndicatorX ?? indicatorX,
                         y: verticalInset
@@ -49,10 +50,8 @@ struct BottomNavBar: View {
                                 .frame(width: 44)
                                 .lineLimit(1)
                         }
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .padding(.top, 2)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                         .padding(.horizontal, 4)
-                        .padding(.bottom, 4)
                         .contentShape(Rectangle())
                         .accessibilityElement(children: .ignore)
                         .accessibilityLabel(section.title)
@@ -75,31 +74,6 @@ struct BottomNavBar: View {
         .frame(height: barHeight)
     }
 
-    private var navBackground: some View {
-        let shape = RoundedRectangle(cornerRadius: 296, style: .continuous)
-
-        return ZStack {
-            if #available(iOS 26.0, *) {
-                Color.clear
-                    .glassEffect(.regular, in: shape)
-            } else {
-                shape
-                    .fill(.white.opacity(0.65))
-                    .background(.ultraThinMaterial, in: shape)
-            }
-
-            shape
-                .fill(GaiaColor.paperStrong)
-                .blendMode(.colorBurn)
-
-            shape
-                .fill(GaiaColor.paperStrong)
-                .blendMode(.darken)
-        }
-        .compositingGroup()
-        .shadow(color: GaiaShadow.navColor, radius: GaiaShadow.navRadius, x: 0, y: GaiaShadow.navYOffset)
-    }
-
     private var activePill: some View {
         RoundedRectangle(cornerRadius: GaiaRadius.full, style: .continuous)
             .fill(GaiaColor.fillVibrantTertiary)
@@ -113,10 +87,7 @@ struct BottomNavBar: View {
 
     private func indicatorOffset(for section: AppSection, contentWidth: CGFloat, slotWidth: CGFloat) -> CGFloat {
         let index = CGFloat(AppSection.allCases.firstIndex(of: section) ?? 0)
-        let centered = leadingInset + (index * slotWidth) + ((slotWidth - pillWidth) / 2)
-        let minX = leadingInset
-        let maxX = max(minX, leadingInset + contentWidth - pillWidth)
-        return min(max(centered, minX), maxX)
+        return leadingInset + (index * slotWidth) + ((slotWidth - pillWidth) / 2)
     }
 
     private func interactionGesture(contentWidth: CGFloat, slotWidth: CGFloat) -> some Gesture {
@@ -162,18 +133,17 @@ struct BottomNavBar: View {
     }
 
     private func iconKind(for section: AppSection, currentSelection: AppSection) -> GaiaIconKind {
-        let isSelected = (currentSelection == section)
         switch section {
         case .explore:
-            return .explore(selected: isSelected)
+            return .explore(selected: true)
         case .log:
-            return .log(selected: isSelected)
+            return .log(selected: true)
         case .observe:
-            return .observe(selected: isSelected)
+            return .observe(selected: true)
         case .activity:
-            return .activity(selected: isSelected)
+            return .activity(selected: true)
         case .profile:
-            return .profile(selected: isSelected)
+            return .profile(selected: true)
         }
     }
 

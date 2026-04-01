@@ -56,7 +56,7 @@ struct FindDetailsScreen: View {
             viewModel.selectedTab = appState.selectedFindTab
         }
         .fullScreenCover(isPresented: $viewModel.showsExpandedMap) {
-            LearnMapExpandedScreen(observations: contentStore.observations) {
+            LearnMapExpandedScreen(observations: speciesObservations) {
                 viewModel.showsExpandedMap = false
             }
         }
@@ -74,9 +74,13 @@ struct FindDetailsScreen: View {
     private var tabContent: some View {
         switch viewModel.selectedTab {
         case .find:
-            FindTabView(species: species)
+            FindTabView(
+                species: species,
+                observations: speciesObservations,
+                onExpandMap: { viewModel.showsExpandedMap = true }
+            )
         case .activity:
-            ActivityTabView(events: contentStore.activityEvents)
+            ActivityTabView(species: species)
         case .learn:
             LearnTabView(species: species, stories: contentStore.stories, onExpandMap: {
                 viewModel.showsExpandedMap = true
@@ -84,5 +88,20 @@ struct FindDetailsScreen: View {
                 appState.openStoryDeck(story.id)
             })
         }
+    }
+
+    private var speciesObservations: [Observation] {
+        let filtered = contentStore.observations.filter { $0.speciesID == species.id }
+        guard filtered.isEmpty else { return filtered }
+
+        return [
+            Observation(
+                id: "\(species.id)-detail-preview",
+                speciesID: species.id,
+                latitude: species.mapCoordinate.latitude,
+                longitude: species.mapCoordinate.longitude,
+                thumbnailAssetName: species.galleryAssetNames.first
+            )
+        ]
     }
 }

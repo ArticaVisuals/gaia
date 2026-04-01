@@ -16,25 +16,25 @@ struct ProgressiveBlurImage: View {
                     LinearGradient(
                         stops: [
                             .init(color: .clear, location: 0.0),
-                            .init(color: .clear, location: 0.16),
-                            .init(color: .black.opacity(0.62), location: 0.78),
+                            .init(color: .clear, location: 0.22),
+                            .init(color: .black.opacity(0.58), location: 0.72),
                             .init(color: .black, location: 1.0)
                         ],
                         startPoint: .top,
                         endPoint: .bottom
                     )
                 )
-                .frame(height: 128)
+                .frame(height: 146)
 
             LinearGradient(
                 stops: [
                     .init(color: .clear, location: 0),
-                    .init(color: Color.black.opacity(0.5), location: 1)
+                    .init(color: Color.black.opacity(0.56), location: 1)
                 ],
                 startPoint: .top,
                 endPoint: .bottom
             )
-            .frame(height: 128)
+            .frame(height: 146)
         }
         .clipped()
     }

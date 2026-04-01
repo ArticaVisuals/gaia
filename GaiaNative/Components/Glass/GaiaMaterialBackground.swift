@@ -5,30 +5,33 @@ struct GaiaMaterialBackground: View {
 
     var body: some View {
         let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-        let burnWhite = Color(red: 221 / 255, green: 221 / 255, blue: 221 / 255)
-        let darkenWhite = Color(red: 247 / 255, green: 247 / 255, blue: 247 / 255)
 
-        Group {
+        ZStack {
             if #available(iOS 26.0, *) {
                 Color.clear
                     .glassEffect(.regular, in: shape)
             } else {
                 shape
-                    .fill(.white.opacity(0.12))
+                    .fill(.white.opacity(0.18))
                     .background(GaiaMaterial.toolbar, in: shape)
             }
 
             shape
-                .fill(.white)
-                .blendMode(.multiply)
+                .fill(.white.opacity(0.09))
+
+            LinearGradient(
+                colors: [
+                    .white.opacity(0.24),
+                    .white.opacity(0.06),
+                    .clear
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .clipShape(shape)
 
             shape
-                .fill(burnWhite)
-                .blendMode(.colorBurn)
-
-            shape
-                .fill(darkenWhite)
-                .blendMode(.darken)
+                .stroke(.white.opacity(0.22), lineWidth: 0.5)
         }
         .compositingGroup()
         .shadow(color: GaiaShadow.navColor, radius: GaiaShadow.navRadius, x: 0, y: 8)

@@ -50,6 +50,7 @@ struct LearnTabView: View {
                                 .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
                         )
                         .clipped()
+                        .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
 
                     ExpandMapButton(action: onExpandMap)
                         .padding(.top, 16)
