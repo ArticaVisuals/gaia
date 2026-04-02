@@ -1,3 +1,4 @@
+// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=875-22224 (Grid), 875-23464 (Log List), 875-23090 (Log Top Bar)
 import SwiftUI
 
 private enum ProfileLogViewMode: String, CaseIterable, Identifiable {
@@ -15,13 +16,32 @@ enum ProfileLogPresentation {
 
 struct LogScreen: View {
     @EnvironmentObject private var contentStore: ContentStore
+    @State private var searchText = ""
+    @State private var viewMode: ProfileLogViewMode = profileLogLaunchViewMode() ?? .list
 
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            ProfileLogTab(content: contentStore.profileLog, presentation: .standalone)
+        VStack(spacing: 0) {
+            ProfileLogHeader(
+                presentation: .standalone,
+                searchText: $searchText,
+                viewMode: $viewMode
+            )
+            .padding(.horizontal, GaiaSpacing.md)
+            .padding(.top, 12)
+            .padding(.bottom, 12)
+            .background(GaiaColor.surfacePrimary)
+            .zIndex(1)
+
+            ScrollView(showsIndicators: false) {
+                ProfileLogBody(
+                    content: contentStore.profileLog,
+                    observations: contentStore.observations,
+                    searchText: searchText,
+                    viewMode: viewMode
+                )
                 .padding(.horizontal, GaiaSpacing.md)
-                .padding(.top, 12)
                 .padding(.bottom, 156)
+            }
         }
         .background(GaiaColor.surfacePrimary)
     }
@@ -39,8 +59,31 @@ struct ProfileLogTab: View {
     init(content: ProfileLogContent, presentation: ProfileLogPresentation = .standalone) {
         self.content = content
         self.presentation = presentation
-        _viewMode = State(initialValue: Self.launchViewMode ?? .list)
+        _viewMode = State(initialValue: profileLogLaunchViewMode() ?? .list)
     }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: GaiaSpacing.md) {
+            ProfileLogHeader(
+                presentation: presentation,
+                searchText: $searchText,
+                viewMode: $viewMode
+            )
+
+            ProfileLogBody(
+                content: content,
+                observations: contentStore.observations,
+                searchText: searchText,
+                viewMode: viewMode
+            )
+        }
+    }
+}
+
+private struct ProfileLogHeader: View {
+    let presentation: ProfileLogPresentation
+    @Binding var searchText: String
+    @Binding var viewMode: ProfileLogViewMode
 
     var body: some View {
         VStack(alignment: .leading, spacing: GaiaSpacing.md) {
@@ -59,65 +102,84 @@ struct ProfileLogTab: View {
                 Spacer(minLength: 0)
                 ProfileLogFilterButton()
             }
-
-            Group {
-                switch viewMode {
-                case .list:
-                    ProfileLogList(sections: filteredSections)
-                case .grid:
-                    ProfileLogGrid(items: filteredGridItems)
-                case .map:
-                    ProfileLogMap(content: content, observations: contentStore.observations)
-                }
-            }
-            .padding(.top, GaiaSpacing.xs)
         }
+    }
+}
+
+private struct ProfileLogBody: View {
+    let content: ProfileLogContent
+    let observations: [Observation]
+    let searchText: String
+    let viewMode: ProfileLogViewMode
+
+    var body: some View {
+        Group {
+            switch viewMode {
+            case .list:
+                ProfileLogList(sections: filteredSections)
+            case .grid:
+                ProfileLogGrid(items: filteredGridItems)
+            case .map:
+                ProfileLogMap(content: content, observations: observations)
+            }
+        }
+        .padding(.top, GaiaSpacing.xs)
     }
 
     private var filteredSections: [ProfileLogSection] {
-        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !query.isEmpty else { return content.listSections }
-
-        let needle = query.lowercased()
-        return content.listSections.compactMap { section in
-            let entries = section.entries.filter { entry in
-                [
-                    entry.commonName,
-                    entry.scientificName,
-                    entry.metaLabel,
-                    entry.statusLabel
-                ]
-                .joined(separator: " ")
-                .lowercased()
-                .contains(needle)
-            }
-
-            guard !entries.isEmpty else { return nil }
-            return ProfileLogSection(
-                id: section.id,
-                title: section.title,
-                countLabel: entries.count == 1 ? "1 find" : "\(entries.count) finds",
-                entries: entries
-            )
-        }
+        profileLogFilteredSections(content: content, query: searchText)
     }
 
     private var filteredGridItems: [ProfileLogGridItem] {
-        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !query.isEmpty else { return content.gridItems }
+        profileLogFilteredGridItems(content: content, query: searchText)
+    }
+}
 
-        let needle = query.lowercased()
-        return content.gridItems.filter { $0.title.replacingOccurrences(of: "\n", with: " ").lowercased().contains(needle) }
+private func profileLogLaunchViewMode() -> ProfileLogViewMode? {
+    let arguments = ProcessInfo.processInfo.arguments
+    guard let flagIndex = arguments.firstIndex(of: "-gaiaLogView"),
+          arguments.indices.contains(flagIndex + 1) else {
+        return nil
     }
 
-    private static var launchViewMode: ProfileLogViewMode? {
-        let arguments = ProcessInfo.processInfo.arguments
-        guard let flagIndex = arguments.firstIndex(of: "-gaiaLogView"),
-              arguments.indices.contains(flagIndex + 1) else {
-            return nil
+    return ProfileLogViewMode(rawValue: arguments[flagIndex + 1].lowercased())
+}
+
+private func profileLogFilteredSections(content: ProfileLogContent, query: String) -> [ProfileLogSection] {
+    let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard !trimmed.isEmpty else { return content.listSections }
+
+    let needle = trimmed.lowercased()
+    return content.listSections.compactMap { section in
+        let entries = section.entries.filter { entry in
+            [
+                entry.commonName,
+                entry.scientificName,
+                entry.metaLabel,
+                entry.statusLabel
+            ]
+            .joined(separator: " ")
+            .lowercased()
+            .contains(needle)
         }
 
-        return ProfileLogViewMode(rawValue: arguments[flagIndex + 1].lowercased())
+        guard !entries.isEmpty else { return nil }
+        return ProfileLogSection(
+            id: section.id,
+            title: section.title,
+            countLabel: entries.count == 1 ? "1 find" : "\(entries.count) finds",
+            entries: entries
+        )
+    }
+}
+
+private func profileLogFilteredGridItems(content: ProfileLogContent, query: String) -> [ProfileLogGridItem] {
+    let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard !trimmed.isEmpty else { return content.gridItems }
+
+    let needle = trimmed.lowercased()
+    return content.gridItems.filter {
+        $0.title.replacingOccurrences(of: "\n", with: " ").lowercased().contains(needle)
     }
 }
 

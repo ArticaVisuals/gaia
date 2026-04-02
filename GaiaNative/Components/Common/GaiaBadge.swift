@@ -1,3 +1,4 @@
+// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=2-123
 import SwiftUI
 
 struct GaiaBadge: View {

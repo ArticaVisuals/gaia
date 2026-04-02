@@ -1,3 +1,4 @@
+// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=451-3049 (3-tab), 758-9254 (2-tab)
 import SwiftUI
 
 struct DraggableTabSwitch<T: Identifiable & Hashable>: View {

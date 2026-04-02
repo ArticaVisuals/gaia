@@ -1,3 +1,4 @@
+// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=870-15225
 import SwiftUI
 
 struct ActivityTabView: View {
@@ -16,7 +17,7 @@ struct ActivityTabView: View {
     ]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: GaiaSpacing.md) {
+        VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 12) {
                 ActivityFilterPill(title: "Suggest ID")
                 ActivityFilterPill(title: "Comment")
@@ -39,7 +40,7 @@ struct ActivityTabView: View {
             VStack(alignment: .leading, spacing: 12) {
                 Text("Leaderboard")
                     .font(GaiaTypography.titleRegular)
-                    .foregroundStyle(GaiaColor.inkBlack300)
+                    .foregroundStyle(GaiaColor.olive)
 
                 ActivityLeaderboardCard(rows: leaderboardRows)
             }
@@ -77,7 +78,7 @@ private struct ActivityFilterPill: View {
                 .background(GaiaColor.olive, in: Capsule())
         }
         .buttonStyle(.plain)
-        .shadow(color: GaiaShadow.navColor.opacity(0.16), radius: 14, x: 0, y: 4)
+        .shadow(color: GaiaShadow.mdColor.opacity(0.65), radius: 14, x: 0, y: 4)
     }
 }
 
@@ -135,7 +136,7 @@ private struct ActivityCommentCard: View {
             ActivityCardHeader(author: comment.author, actionText: "commented", timestamp: comment.timestamp)
 
             Text(comment.body)
-                .font(.custom("Neue Haas Unica W1G", size: 14))
+                .font(.custom("Neue Haas Unica W1G", size: 12))
                 .foregroundStyle(GaiaColor.blackishGrey300)
                 .padding(12)
                 .frame(maxWidth: .infinity, alignment: .leading)

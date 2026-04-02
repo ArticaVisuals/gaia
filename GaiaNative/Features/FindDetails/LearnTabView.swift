@@ -12,7 +12,7 @@ struct LearnTabView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: 24) {
             LearnSpeciesCard(species: species)
 
             section(title: "Gallery") {
@@ -28,7 +28,7 @@ struct LearnTabView: View {
 
                 ZStack(alignment: .topTrailing) {
                     GaiaAssetImage(name: "learn-map-fallback")
-                        .frame(height: 252)
+                        .frame(height: 270)
                         .overlay {
                             ExploreMapView(
                                 observations: [
@@ -58,7 +58,6 @@ struct LearnTabView: View {
                 }
                 .frame(maxWidth: .infinity)
             }
-            .padding(.top, 4)
 
             VStack(alignment: .leading, spacing: 10) {
                 sectionTitle("Stories")

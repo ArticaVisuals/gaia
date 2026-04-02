@@ -1,3 +1,4 @@
+// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=815-17733
 import SwiftUI
 
 struct StoryPreviewCard: View {
@@ -10,19 +11,22 @@ struct StoryPreviewCard: View {
                 ZStack {
                     LinearGradient(
                         stops: [
-                            .init(color: GaiaColor.siskin500.opacity(0.5), location: 0),
-                            .init(color: GaiaColor.paperWhite500, location: 0.48)
+                            .init(color: GaiaColor.siskin500.opacity(0.22), location: 0),
+                            .init(color: GaiaColor.paperWhite500.opacity(0.06), location: 0.52),
+                            .init(color: GaiaColor.paperWhite500.opacity(0), location: 1)
                         ],
                         startPoint: .top,
                         endPoint: .bottom
                     )
 
-                    GaiaAssetImage(name: story.imageAssetName, contentMode: .fill)
+                    GaiaAssetImage(name: story.imageAssetName, contentMode: .fit)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .scaleEffect(1.12)
-                        .offset(y: -12)
+                        .padding(.horizontal, 10)
+                        .padding(.top, 10)
+                        .padding(.bottom, 2)
+                        .frame(maxHeight: .infinity, alignment: .bottom)
                 }
-                .frame(height: 196)
+                .aspectRatio(2912.0 / 1632.0, contentMode: .fit)
                 .clipped()
 
                 VStack(alignment: .leading, spacing: 12) {
@@ -38,11 +42,13 @@ struct StoryPreviewCard: View {
                                 .font(GaiaTypography.displayMedium)
                                 .foregroundStyle(GaiaColor.paperWhite50)
                                 .frame(maxWidth: .infinity, alignment: .leading)
+                                .multilineTextAlignment(.leading)
 
                             Text(story.summary)
                                 .font(.custom("Neue Haas Unica W1G", size: 12))
                                 .foregroundStyle(GaiaColor.paperWhite500)
                                 .lineSpacing(2.4)
+                                .frame(maxWidth: 252, alignment: .leading)
                                 .fixedSize(horizontal: false, vertical: true)
                         }
 
@@ -54,10 +60,10 @@ struct StoryPreviewCard: View {
                                 .rotationEffect(.degrees(90))
                         }
                         .frame(width: 40, height: 40)
-                        .padding(.top, 2)
+                        .padding(.top, -4)
                     }
                 }
-                .padding(14)
+                .padding(16)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(GaiaColor.broccoliBrown500)
             }

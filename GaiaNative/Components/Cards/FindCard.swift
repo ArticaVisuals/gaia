@@ -1,3 +1,4 @@
+// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=466-2648 (Organism Card), 465-2606 (Project Card)
 import SwiftUI
 
 struct FindCard: View {

@@ -1,3 +1,4 @@
+// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=599-18507
 import SwiftUI
 
 struct ObserveDetailsScreen: View {

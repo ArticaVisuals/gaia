@@ -1,3 +1,4 @@
+// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=601-19045
 import SwiftUI
 
 struct GaiaPill: View {

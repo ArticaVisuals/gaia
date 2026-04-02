@@ -10,8 +10,8 @@ struct FindTabView: View {
         static let longitude = -120.7361
     }
 
-    private var pairedCardWidth: CGFloat {
-        ((UIScreen.main.bounds.width) - (GaiaSpacing.md * 2) - GaiaSpacing.sm) / 2
+    private var biomeCardWidth: CGFloat {
+        169
     }
 
     private var mapObservation: Observation {
@@ -25,10 +25,10 @@ struct FindTabView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 16) {
             FindMapPreviewCard(observation: mapObservation, onExpandMap: onExpandMap)
 
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 8) {
                 sectionTitle("Condition")
 
                 HStack(alignment: .top, spacing: GaiaSpacing.sm) {
@@ -51,7 +51,7 @@ struct FindTabView: View {
                                 .frame(width: 107, height: 102)
                         }
                     }
-                    .frame(width: pairedCardWidth)
+                    .frame(width: biomeCardWidth)
 
                     FindConditionCard(
                         label: "Weather",
@@ -73,16 +73,15 @@ struct FindTabView: View {
                                 .padding(.top, 6)
                         }
                     }
-                    .frame(width: pairedCardWidth)
                 }
             }
 
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 8) {
                 sectionTitle("Data Quality")
                 FindDataQualityCard()
             }
 
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 8) {
                 HStack(alignment: .center) {
                     sectionTitle("Projects")
                     Spacer()
@@ -98,7 +97,6 @@ struct FindTabView: View {
                         count: "12",
                         imageName: "find-project-creek"
                     )
-                    .frame(width: pairedCardWidth)
 
                     FindProjectCard(
                         tag: "Garden",
@@ -106,7 +104,6 @@ struct FindTabView: View {
                         count: "9",
                         imageName: "find-project-pollinator"
                     )
-                    .frame(width: pairedCardWidth)
                 }
             }
         }
@@ -116,7 +113,7 @@ struct FindTabView: View {
     private func sectionTitle(_ title: String) -> some View {
         Text(title)
             .font(GaiaTypography.titleRegular)
-            .foregroundStyle(GaiaColor.inkBlack300)
+            .foregroundStyle(GaiaColor.olive)
     }
 }
 
@@ -184,8 +181,8 @@ private struct FindMapProfileCard: View {
             }
         }
         .fixedSize(horizontal: true, vertical: false)
-        .padding(.horizontal, 10)
-        .padding(.vertical, 10)
+        .padding(8)
+        .frame(height: 64)
         .background(
             RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
                 .fill(GaiaColor.paperWhite50.opacity(0.985))
@@ -203,13 +200,13 @@ private struct FindLocationCard: View {
         VStack(alignment: .leading, spacing: 2) {
             HStack(alignment: .center, spacing: 6) {
                 GaiaAssetImage(name: "Icons/System/pin-20.png", contentMode: .fit)
-                    .frame(width: 10, height: 20)
+                    .frame(width: 10, height: 21)
                     .opacity(0.48)
                 Text("Avila Beach, CA, United States of America")
-                    .font(.custom("Neue Haas Unica W1G", size: 11))
+                    .font(.custom("Neue Haas Unica W1G", size: 15))
                     .foregroundStyle(GaiaColor.blackishGrey400)
                     .lineLimit(1)
-                    .minimumScaleFactor(0.88)
+                    .minimumScaleFactor(0.82)
             }
 
             Text("July 10, 2025, 10:19 AM")
@@ -271,7 +268,7 @@ private struct FindConditionCard<ImageContent: View>: View {
                 }
 
                 Spacer(minLength: 4)
-                FindCircleArrowIcon()
+                GaiaIcon(kind: .circleArrowRight, size: 16)
                     .padding(.top, 2)
             }
         }
@@ -291,10 +288,22 @@ private struct FindConditionCard<ImageContent: View>: View {
 
 private struct FindDataQualityCard: View {
     var body: some View {
-        HStack(spacing: 18) {
-            FindQualityItem(title: "Ungraded", state: .active)
-            FindQualityItem(title: "Casual Grade", state: .active)
-            FindQualityItem(title: "Research Grade", state: .inactive)
+        HStack(spacing: 24) {
+            FindQualityItem(
+                title: "Casual Grade",
+                imageName: "find-dq-casual",
+                isActive: true
+            )
+            FindQualityItem(
+                title: "Needs ID",
+                imageName: "find-dq-needs-id",
+                isActive: true
+            )
+            FindQualityItem(
+                title: "Research Grade",
+                imageName: "find-dq-research",
+                isActive: false
+            )
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 14)
@@ -311,51 +320,23 @@ private struct FindDataQualityCard: View {
     }
 }
 
-private enum FindQualityState {
-    case active
-    case inactive
-}
-
 private struct FindQualityItem: View {
     let title: String
-    let state: FindQualityState
+    let imageName: String
+    let isActive: Bool
 
     var body: some View {
-        VStack(spacing: 6) {
-            FindQualityBadge(state: state)
+        VStack(spacing: 4) {
+            GaiaAssetImage(name: imageName, contentMode: .fit)
+                .frame(width: 40, height: 40)
             Text(title)
-                .font(.custom("Neue Haas Unica W1G", size: 11))
-                .foregroundStyle(state == .active ? GaiaColor.olive : GaiaColor.blackishGrey200)
+                .font(.custom("Neue Haas Unica W1G", size: 10))
+                .foregroundStyle(isActive ? GaiaColor.olive : GaiaColor.blackishGrey200)
                 .tracking(0.25)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity)
         }
         .frame(maxWidth: .infinity)
-    }
-}
-
-private struct FindQualityBadge: View {
-    let state: FindQualityState
-
-    var body: some View {
-        ZStack {
-            Circle()
-                .fill(state == .active ? GaiaColor.olive : .clear)
-                .overlay(
-                    Circle()
-                        .stroke(state == .active ? GaiaColor.olive : GaiaColor.blackishGrey200, lineWidth: 1.4)
-                )
-
-            if state == .active {
-                Path { path in
-                    path.move(to: CGPoint(x: 10.5, y: 20.2))
-                    path.addLine(to: CGPoint(x: 17.1, y: 26.3))
-                    path.addLine(to: CGPoint(x: 29.3, y: 13.7))
-                }
-                .stroke(GaiaColor.paperWhite50, style: StrokeStyle(lineWidth: 2.1, lineCap: .round, lineJoin: .round))
-            }
-        }
-        .frame(width: 36, height: 36)
     }
 }
 
@@ -369,11 +350,10 @@ private struct FindProjectCard: View {
         ZStack(alignment: .topLeading) {
             GaiaAssetImage(name: imageName, contentMode: .fill)
                 .frame(maxWidth: .infinity)
-                .frame(height: 133)
-                .blur(radius: 1.4)
+                .frame(height: 129)
                 .overlay(
                     LinearGradient(
-                        colors: [Color.clear, Color.black.opacity(0.72)],
+                        colors: [Color.clear, Color.black.opacity(0.5)],
                         startPoint: .top,
                         endPoint: .bottom
                     )
@@ -398,48 +378,31 @@ private struct FindProjectCard: View {
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title)
-                        .font(.custom("NewSpirit-Regular", size: 16))
+                        .font(.custom("NewSpirit-Regular", size: 15))
                         .foregroundStyle(GaiaColor.paperWhite50)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .lineLimit(1)
+                        .lineLimit(2)
                         .minimumScaleFactor(0.92)
 
                     HStack(spacing: 2) {
                         FindBinocularsIcon(tint: GaiaColor.paperWhite50)
                         Text(count)
-                            .font(.custom("Neue Haas Unica W1G", size: 10))
+                            .font(.custom("Neue Haas Unica W1G", size: 9.34))
                             .foregroundStyle(GaiaColor.paperWhite50)
-                            .tracking(0.25)
+                            .tracking(0.23)
                     }
                 }
                 .padding(12)
             }
         }
         .frame(maxWidth: .infinity)
-        .frame(height: 133)
+        .frame(height: 129)
         .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
                 .stroke(GaiaColor.blackishGrey200, lineWidth: 0.5)
         )
         .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
-    }
-}
-
-private struct FindCircleArrowIcon: View {
-    var body: some View {
-        ZStack {
-            Circle()
-                .stroke(GaiaColor.blackishGrey200, lineWidth: 0.7)
-
-            Path { path in
-                path.move(to: CGPoint(x: 6.2, y: 4.5))
-                path.addLine(to: CGPoint(x: 10.2, y: 8))
-                path.addLine(to: CGPoint(x: 6.2, y: 11.5))
-            }
-            .stroke(GaiaColor.broccoliBrown500, style: StrokeStyle(lineWidth: 1.1, lineCap: .round, lineJoin: .round))
-        }
-        .frame(width: 16, height: 16)
     }
 }
 
