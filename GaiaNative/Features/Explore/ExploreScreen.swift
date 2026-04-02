@@ -182,6 +182,7 @@ private struct ExploreDraggableSheet: View {
             let contentOpacity = max(0, min(1, (contentReveal - 0.12) / 0.88))
             let peekOpacity = max(0, 1 - contentReveal * 1.35)
             let collapsedLift = (1 - contentReveal) * 14
+            let collapsedBottomInset = (1 - contentReveal) * 12
             let peekInsets = EdgeInsets(
                 top: (1 - contentReveal) * 4,
                 leading: 0,
@@ -190,7 +191,7 @@ private struct ExploreDraggableSheet: View {
             )
             let shellHorizontalInset = (1 - contentReveal) * 12
             let shellWidth = max(0, viewportWidth - (shellHorizontalInset * 2))
-            let topPosition = metrics.topPosition(for: liveOffset) - collapsedLift
+            let topPosition = metrics.topPosition(for: liveOffset) - collapsedLift - collapsedBottomInset
             let visibleSheetHeight = max(metrics.peekHeight, metrics.fullHeight - liveOffset + collapsedLift)
             let activeDragHeight = detent == .full ? 112 : visibleSheetHeight
 
@@ -211,7 +212,10 @@ private struct ExploreDraggableSheet: View {
                     species: species,
                     onSelectFind: onSelectFind,
                     allowsScroll: detent == .full,
-                    showsSurface: false
+                    showsSurface: false,
+                    onPullDownCollapse: {
+                        requestContentCollapse()
+                    }
                 )
                 .frame(width: shellWidth, alignment: .top)
                 .frame(height: visibleSheetHeight, alignment: .top)
@@ -369,6 +373,24 @@ private struct ExploreDraggableSheet: View {
             .frame(height: height)
             .contentShape(Rectangle())
             .gesture(sheetInteractionGesture(metrics: metrics))
+    }
+
+    private func requestContentCollapse() {
+        let nextDetent: ExploreSheetDetent
+
+        switch detent {
+        case .full:
+            nextDetent = .mid
+        case .mid:
+            nextDetent = .collapsed
+        case .collapsed:
+            return
+        }
+
+        dragTranslation = 0
+        withAnimation(GaiaMotion.softSpring) {
+            detent = nextDetent
+        }
     }
 
     private func accessibilityLabel(for offset: CGFloat, metrics: ExploreSheetMetrics) -> String {

@@ -13,6 +13,7 @@ struct ObserveCameraScreen: View {
     var body: some View {
         GeometryReader { proxy in
             let viewportWidth = min(proxy.size.width, UIScreen.main.bounds.width)
+            let viewportHeight = max(proxy.size.height, UIScreen.main.bounds.height)
             let sideInset = max(36, (viewportWidth - 330) / 2)
             let controlsWidth = max(0, viewportWidth - (sideInset * 2))
 
@@ -27,7 +28,7 @@ struct ObserveCameraScreen: View {
                 .ignoresSafeArea()
 
                 ObserveViewfinderBrackets()
-                    .frame(width: viewportWidth, height: proxy.size.height)
+                    .frame(width: viewportWidth, height: viewportHeight)
                     .allowsHitTesting(false)
 
                 ObserveCameraTopBar(
@@ -58,7 +59,7 @@ struct ObserveCameraScreen: View {
                     )
                 }
             }
-            .frame(width: viewportWidth, height: proxy.size.height)
+            .frame(width: viewportWidth, height: viewportHeight)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .ignoresSafeArea()
         }

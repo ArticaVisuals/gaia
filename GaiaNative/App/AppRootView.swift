@@ -15,10 +15,9 @@ struct AppRootView: View {
                 AppRouter(section: section)
                     .tag(section)
                     .tabItem {
-                        AppTabItemLabel(
-                            section: section,
-                            isSelected: appState.selectedSection == section
-                        )
+                        Image(section.tabAssetName(isSelected: appState.selectedSection == section))
+                            .renderingMode(.original)
+                        Text(section.title)
                     }
             }
         }
@@ -43,28 +42,6 @@ struct AppRootView: View {
         }
 
         return species
-    }
-}
-
-private struct AppTabItemLabel: View {
-    let section: AppSection
-    let isSelected: Bool
-
-    private var titleColor: Color {
-        isSelected ? GaiaColor.olive : GaiaColor.oliveGreen200
-    }
-
-    var body: some View {
-        Label {
-            Text(section.title)
-                .foregroundStyle(titleColor)
-        } icon: {
-            Image(section.tabAssetName(isSelected: isSelected))
-                .renderingMode(.original)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 24, height: 24)
-        }
     }
 }
 

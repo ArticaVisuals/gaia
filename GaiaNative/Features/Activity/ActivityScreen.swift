@@ -6,27 +6,22 @@ struct ActivityScreen: View {
     @State private var selectedFilter: ActivityFilter = .all
 
     var body: some View {
-        GeometryReader { proxy in
-            let topInset = proxy.safeAreaInsets.top
+        VStack(spacing: 0) {
+            ActivityHeader(selectedFilter: $selectedFilter)
 
-            VStack(spacing: 0) {
-                ActivityHeader(topInset: topInset, selectedFilter: $selectedFilter)
-
-                ScrollView(showsIndicators: false) {
-                    LazyVStack(alignment: .leading, spacing: GaiaSpacing.lg) {
-                        ForEach(groupedEvents) { group in
-                            ActivityDaySection(group: group)
-                        }
+            ScrollView(showsIndicators: false) {
+                LazyVStack(alignment: .leading, spacing: GaiaSpacing.lg) {
+                    ForEach(groupedEvents) { group in
+                        ActivityDaySection(group: group)
                     }
-                    .padding(.top, GaiaSpacing.lg)
-                    .padding(.bottom, 140)
                 }
-                .background(GaiaColor.paperWhite50)
+                .padding(.top, GaiaSpacing.lg)
+                .padding(.bottom, 140)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            .background(GaiaColor.paperWhite50.ignoresSafeArea())
+            .background(GaiaColor.paperWhite50)
         }
-        .ignoresSafeArea(edges: .top)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .background(GaiaColor.paperWhite50.ignoresSafeArea())
     }
 
     private var filteredEvents: [ActivityEvent] {
@@ -86,7 +81,6 @@ private struct ActivityEventGroup: Identifiable {
 }
 
 private struct ActivityHeader: View {
-    let topInset: CGFloat
     @Binding var selectedFilter: ActivityFilter
 
     var body: some View {
@@ -96,7 +90,7 @@ private struct ActivityHeader: View {
                 .foregroundStyle(GaiaColor.oliveGreen500)
                 .frame(maxWidth: .infinity)
                 .frame(height: 48, alignment: .bottom)
-                .padding(.top, topInset + 19)
+                .padding(.top, 12)
                 .padding(.horizontal, GaiaSpacing.md)
 
             ScrollView(.horizontal, showsIndicators: false) {

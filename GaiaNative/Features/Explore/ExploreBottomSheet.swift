@@ -6,9 +6,11 @@ struct ExploreBottomSheet: View {
     let onSelectFind: (Species) -> Void
     var allowsScroll: Bool = false
     var showsSurface: Bool = true
+    var onPullDownCollapse: (() -> Void)? = nil
 
     @State private var activeFilter: ExploreSheetFilter = .trending
     @State private var viewMode: ExploreSheetViewMode = .grid
+    @State private var scrollTopOffset: CGFloat = 0
 
     private let projects = ExploreSheetProject.sample
     private let finds = ExploreSheetFind.sample
@@ -28,6 +30,15 @@ struct ExploreBottomSheet: View {
 
         let content = ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 0) {
+                GeometryReader { proxy in
+                    Color.clear
+                        .preference(
+                            key: ExploreSheetScrollTopPreferenceKey.self,
+                            value: proxy.frame(in: .named("ExploreBottomSheetScroll")).minY
+                        )
+                }
+                .frame(height: 0)
+
                 Capsule()
                     .fill(GaiaColor.greyMuted.opacity(0.25))
                     .frame(width: 88, height: 4)
@@ -137,7 +148,12 @@ struct ExploreBottomSheet: View {
             .padding(.bottom, 148)
             .frame(maxWidth: .infinity, alignment: .topLeading)
         }
+        .coordinateSpace(name: "ExploreBottomSheetScroll")
         .scrollDisabled(!allowsScroll)
+        .onPreferenceChange(ExploreSheetScrollTopPreferenceKey.self) { newValue in
+            scrollTopOffset = newValue
+        }
+        .simultaneousGesture(contentCollapseGesture)
 
         if showsSurface {
             content
@@ -158,6 +174,36 @@ struct ExploreBottomSheet: View {
 
     private func selectPrimarySpecies() {
         onSelectFind(species.first ?? PreviewSpecies.coastLiveOak)
+    }
+
+    private var contentCollapseGesture: some Gesture {
+        DragGesture(minimumDistance: 12, coordinateSpace: .local)
+            .onEnded { value in
+                guard allowsScroll, canCollapseFromContent(value) else { return }
+                onPullDownCollapse?()
+            }
+    }
+
+    private func canCollapseFromContent(_ value: DragGesture.Value) -> Bool {
+        guard scrollTopOffset >= -2 else { return false }
+
+        let verticalTravel = value.translation.height
+        let horizontalTravel = abs(value.translation.width)
+        let predictedVerticalTravel = value.predictedEndTranslation.height
+        let extraMomentum = predictedVerticalTravel - verticalTravel
+
+        guard verticalTravel > 22 else { return false }
+        guard verticalTravel > horizontalTravel * 1.15 else { return false }
+
+        return predictedVerticalTravel > 150 || extraMomentum > 70
+    }
+}
+
+private struct ExploreSheetScrollTopPreferenceKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
     }
 }
 
