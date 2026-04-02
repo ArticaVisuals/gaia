@@ -1,0 +1,16 @@
+{
+  "images": [
+    {
+      "filename": "explore-32-combined-gaia-tab-explore-selected-32.svg",
+      "idiom": "universal"
+    }
+  ],
+  "info": {
+    "author": "xcode",
+    "version": 1
+  },
+  "properties": {
+    "preserves-vector-representation": true,
+    "template-rendering-intent": "original"
+  }
+}

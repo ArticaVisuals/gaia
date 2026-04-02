@@ -12,6 +12,7 @@ struct ExploreScreen: View {
     var body: some View {
         GeometryReader { proxy in
             let viewportWidth = min(proxy.size.width, UIScreen.main.bounds.width)
+            let viewportHeight = max(proxy.size.height, UIScreen.main.bounds.height)
             let horizontalInset: CGFloat = 16
             let searchBarWidth = max(0, viewportWidth - (horizontalInset * 2))
             let searchBarTopInset = proxy.safeAreaInsets.top
@@ -25,35 +26,24 @@ struct ExploreScreen: View {
             )
             .ignoresSafeArea()
             .overlay(alignment: .bottom) {
-                ZStack(alignment: .bottomLeading) {
-                    GlassCircleButton(size: 48, action: {
+                ExploreDraggableSheet(
+                    species: contentStore.species,
+                    nearbyFindCount: max(12, contentStore.observations.count),
+                    topInset: searchBarTopInset,
+                    onSelectFind: { species in
+                        appState.openFindDetails(speciesID: species.id, tab: .learn)
+                    },
+                    onLocate: {
                         recenterRequestID = UUID()
                         isSearchFocused = false
-                    }) {
-                        ExploreTargetIcon()
-                            .frame(width: 26, height: 26)
+                    },
+                    onProgressChange: { _ in },
+                    onPositionChange: { snapshot in
+                        sheetSnapshot = snapshot
                     }
-                    .opacity(locateButtonOpacity)
-                    .scaleEffect(0.96 + (locateButtonOpacity * 0.04))
-                    .allowsHitTesting(locateButtonOpacity > 0.08)
-                    .padding(.leading, GaiaSpacing.md)
-                    .padding(.bottom, locateButtonBottomInset)
-
-                    ExploreDraggableSheet(
-                        species: contentStore.species,
-                        nearbyFindCount: max(12, contentStore.observations.count),
-                        topInset: searchBarTopInset,
-                        onSelectFind: { species in
-                            appState.openFindDetails(speciesID: species.id, tab: .learn)
-                        },
-                        onProgressChange: { _ in },
-                        onPositionChange: { snapshot in
-                            sheetSnapshot = snapshot
-                        }
-                    )
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                )
+                .frame(width: viewportWidth, height: viewportHeight, alignment: .bottom)
+                .ignoresSafeArea(edges: .bottom)
             }
             .overlay {
                 if isSearchFocused {
@@ -71,22 +61,12 @@ struct ExploreScreen: View {
                     .padding(.top, searchBarTopInset)
                     .frame(width: viewportWidth, alignment: .center)
             }
-            .frame(width: viewportWidth, height: proxy.size.height)
+            .frame(width: viewportWidth, height: viewportHeight)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .ignoresSafeArea(edges: .bottom)
         }
     }
 
-    private var locateButtonBottomInset: CGFloat {
-        guard sheetSnapshot.fullHeight > 0 else { return 164 }
-        return max(88, (sheetSnapshot.fullHeight - sheetSnapshot.liveOffset) + 18)
-    }
-
-    private var locateButtonOpacity: CGFloat {
-        guard sheetSnapshot.fullHeight > 0 else { return 1 }
-        let fullRange = max(1, sheetSnapshot.midOffset - 12)
-        let progress = max(0, min(1, (sheetSnapshot.midOffset - sheetSnapshot.liveOffset) / fullRange))
-        return 1 - progress
-    }
 }
 
 private enum ExploreSheetDetent: CaseIterable {
@@ -105,7 +85,7 @@ private struct ExploreSheetMetrics {
 
     init(containerHeight: CGFloat, topInset: CGFloat) {
         headerHeight = topInset + 48
-        peekHeight = 150
+        peekHeight = 196
         fullHeight = max(360, containerHeight - headerHeight)
         fullOffset = 12
         midOffset = max(fullOffset, round(fullHeight * 0.47))
@@ -165,6 +145,7 @@ private struct ExploreDraggableSheet: View {
     let nearbyFindCount: Int
     let topInset: CGFloat
     let onSelectFind: (Species) -> Void
+    let onLocate: () -> Void
     let onProgressChange: (CGFloat) -> Void
     let onPositionChange: (ExploreSheetSnapshot) -> Void
 
@@ -176,6 +157,7 @@ private struct ExploreDraggableSheet: View {
         nearbyFindCount: Int,
         topInset: CGFloat,
         onSelectFind: @escaping (Species) -> Void,
+        onLocate: @escaping () -> Void,
         onProgressChange: @escaping (CGFloat) -> Void,
         onPositionChange: @escaping (ExploreSheetSnapshot) -> Void
     ) {
@@ -183,6 +165,7 @@ private struct ExploreDraggableSheet: View {
         self.nearbyFindCount = nearbyFindCount
         self.topInset = topInset
         self.onSelectFind = onSelectFind
+        self.onLocate = onLocate
         self.onProgressChange = onProgressChange
         self.onPositionChange = onPositionChange
         _detent = State(initialValue: Self.launchDetent)
@@ -210,6 +193,14 @@ private struct ExploreDraggableSheet: View {
             let topPosition = metrics.topPosition(for: liveOffset) - collapsedLift
             let visibleSheetHeight = max(metrics.peekHeight, metrics.fullHeight - liveOffset + collapsedLift)
             let activeDragHeight = detent == .full ? 112 : visibleSheetHeight
+
+            locateButton(topPosition: topPosition, metrics: metrics)
+                .position(
+                    x: GaiaSpacing.md + 24,
+                    y: topPosition - 42
+                )
+                .animation(GaiaMotion.softSpring, value: detent)
+                .animation(.interactiveSpring(response: 0.28, dampingFraction: 0.88), value: dragTranslation)
 
             ZStack(alignment: .top) {
                 ExploreSheetSurface(contentReveal: contentReveal)
@@ -356,6 +347,21 @@ private struct ExploreDraggableSheet: View {
             }
     }
 
+    private func locateButton(topPosition: CGFloat, metrics: ExploreSheetMetrics) -> some View {
+        let fullRange = max(1, metrics.midOffset - 12)
+        let liveOffset = metrics.clampedOffset(metrics.offset(for: detent) + dragTranslation)
+        let progress = max(0, min(1, (metrics.midOffset - liveOffset) / fullRange))
+        let opacity = 1 - progress
+
+        return GlassCircleButton(size: 48, action: onLocate) {
+            ExploreTargetIcon()
+                .frame(width: 26, height: 26)
+        }
+        .opacity(opacity)
+        .scaleEffect(0.96 + (opacity * 0.04))
+        .allowsHitTesting(opacity > 0.08)
+    }
+
     private func dragSurface(height: CGFloat, metrics: ExploreSheetMetrics) -> some View {
         Rectangle()
             .fill(Color.black.opacity(0.001))
@@ -385,8 +391,8 @@ private struct ExploreCollapsedPanel: View {
     var body: some View {
         ExploreSheetPeekCard(nearbyFindCount: nearbyFindCount, width: width)
             .padding(.top, 4)
-            .padding(.bottom, 12)
-            .frame(width: width, height: 150, alignment: .top)
+            .padding(.bottom, 4)
+            .frame(width: width, height: 196, alignment: .top)
     }
 }
 
@@ -405,11 +411,11 @@ private struct ExploreSheetPeekCard: View {
                 .font(GaiaTypography.subheadSerif)
                 .foregroundStyle(GaiaColor.olive)
                 .lineLimit(1)
-                .padding(.top, 28)
+                .padding(.top, 22)
                 .padding(.horizontal, 16)
                 .frame(width: width, alignment: .center)
         }
-        .frame(width: width, height: 134, alignment: .top)
+        .frame(width: width, height: 174, alignment: .top)
     }
 }
 
