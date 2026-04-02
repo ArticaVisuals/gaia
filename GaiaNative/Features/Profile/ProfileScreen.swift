@@ -50,8 +50,6 @@ struct ProfileScreen: View {
         switch tab {
         case .impact:
             ProfileImpactTab(profile: contentStore.profile)
-        case .log:
-            ProfileLogTab(content: contentStore.profileLog, presentation: .embedded)
         case .community:
             ProfileCommunityTab(posts: contentStore.communityPosts)
         }

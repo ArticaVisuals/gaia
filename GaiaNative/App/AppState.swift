@@ -10,7 +10,6 @@ enum FindDetailsTab: String, CaseIterable, Identifiable, Codable {
 
 enum ProfileTab: String, CaseIterable, Identifiable, Codable {
     case impact = "Impact"
-    case log = "Log"
     case community = "Community"
 
     var id: String { rawValue }
@@ -48,9 +47,7 @@ final class AppState: ObservableObject {
     func select(section: AppSection) {
         selectedSection = section
         switch section {
-        case .log:
-            selectedProfileTab = .log
-        case .profile:
+        case .log, .profile:
             selectedProfileTab = .impact
         case .explore, .observe, .activity:
             break
