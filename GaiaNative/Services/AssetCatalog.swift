@@ -9,6 +9,7 @@ enum AssetCatalog {
         "coast-live-oak-gallery-3": "assets/find-details/learn-v2/gallery-3.png",
         "coast-live-oak-gallery-4": "assets/find-details/learn-v2/gallery-4.png",
         "story-keystone-tree": "assets/find-details/learn-v2/story-tree.png",
+        "story-keystone-page-image": "assets/find-details/hero-coast-live-oak.png",
         "learn-map-fallback": "assets/find-details/learn-v2/map-fallback.png",
         "figma-left-arrow-tight": "gaia-icon-back-32",
         "figma-plus-tight": "gaia-icon-plus-24",

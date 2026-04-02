@@ -37,6 +37,12 @@ final class AppState: ObservableObject {
             selectedSpeciesID = launchFindDetails.speciesID
             showsFindDetails = true
         }
+
+        if let launchStoryDeck = Self.launchStoryDeck {
+            selectedStoryID = launchStoryDeck.storyID
+            selectedSpeciesID = launchStoryDeck.speciesID ?? selectedSpeciesID
+            showsStoryDeck = true
+        }
     }
 
     func select(section: AppSection) {
@@ -108,5 +114,26 @@ final class AppState: ObservableObject {
         }
 
         return (speciesID: speciesID, tab: tab)
+    }
+
+    private static var launchStoryDeck: (storyID: String, speciesID: String?)? {
+        let arguments = ProcessInfo.processInfo.arguments
+
+        guard let storyIndex = arguments.firstIndex(of: "-gaiaStoryDeck"),
+              arguments.indices.contains(storyIndex + 1) else {
+            return nil
+        }
+
+        let storyID = arguments[storyIndex + 1]
+        let speciesID: String?
+
+        if let speciesIndex = arguments.firstIndex(of: "-gaiaStorySpecies"),
+           arguments.indices.contains(speciesIndex + 1) {
+            speciesID = arguments[speciesIndex + 1]
+        } else {
+            speciesID = nil
+        }
+
+        return (storyID: storyID, speciesID: speciesID)
     }
 }
