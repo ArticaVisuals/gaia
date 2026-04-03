@@ -28,6 +28,7 @@
 		3E485D3200C073439ECC9F75 /* FindDetailsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F8E223E3FFF9D8CE4CE78E /* FindDetailsScreen.swift */; };
 		3F57F46D353F47C028A3B80B /* ActivityViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE44E4B2B4055BA89D58E91A /* ActivityViewModel.swift */; };
 		41398D188AB1B3E91750C634 /* ExploreScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A83366EDC64D8617F1948136 /* ExploreScreen.swift */; };
+		4A2E2D5D7B4F40F0A8D1A9B2 /* ProjectDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F1E7C4B1E0D4F4A9B2C3D4E /* ProjectDetailScreen.swift */; };
 		41F12A019F2AA6FAD5F51EDE /* AssetCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7E24A836A41B1EBBFE1111F /* AssetCatalog.swift */; };
 		4368DA818879429FF437B94A /* ObserveShareScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89962408889C538DE020C9EC /* ObserveShareScreen.swift */; };
 		43C4C5F11FD5C7ADF288D67C /* GaiaColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A2A5FD14BE53F99202C384 /* GaiaColor.swift */; };
@@ -165,6 +166,7 @@
 		8BA52F8FCB51A37ACAC45681 /* GaiaShadow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaiaShadow.swift; sourceTree = "<group>"; };
 		8D9D76AB88DCDA2E4EAAE901 /* LearnTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnTabView.swift; sourceTree = "<group>"; };
 		8FA4E0BC8A4F2683BFE1A0B7 /* ProfileCommunityTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileCommunityTab.swift; sourceTree = "<group>"; };
+		8F1E7C4B1E0D4F4A9B2C3D4E /* ProjectDetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectDetailScreen.swift; sourceTree = "<group>"; };
 		9077E84A708E36557C59B298 /* AppCopy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCopy.swift; sourceTree = "<group>"; };
 		908766B172FE8957820D6F1B /* CameraPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreviewView.swift; sourceTree = "<group>"; };
 		92AC85B3C084308B7FBBD040 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
@@ -439,11 +441,20 @@
 				435DCE3B3FAAE8D01C9BC3FA /* Activity */,
 				3C0E5C505AB53E00AE1ECDF3 /* Explore */,
 				5BDE9E5A900D073A13F23CC5 /* FindDetails */,
+				C1D2E3F40516273849A5B6C7 /* Projects */,
 				6A5E16CB91E292308B655F67 /* Observe */,
 				1340B06DE374AFC23098D330 /* Profile */,
 				47C6CAC4F36184461E5DDF10 /* Stories */,
 			);
 			path = Features;
+			sourceTree = "<group>";
+		};
+		C1D2E3F40516273849A5B6C7 /* Projects */ = {
+			isa = PBXGroup;
+			children = (
+				8F1E7C4B1E0D4F4A9B2C3D4E /* ProjectDetailScreen.swift */,
+			);
+			path = Projects;
 			sourceTree = "<group>";
 		};
 		A5CA9AB75BB7BF699BACDD16 /* Resources */ = {
@@ -643,6 +654,7 @@
 				F074827F9FDD5AB0A17FED84 /* ProfileHeaderCard.swift in Sources */,
 				2690928805DC4860E70CD806 /* ProfileImpactTab.swift in Sources */,
 				6929B0B156FEF56B9B6A573D /* ProfileLogTab.swift in Sources */,
+				4A2E2D5D7B4F40F0A8D1A9B2 /* ProjectDetailScreen.swift in Sources */,
 				C399176BFB12FF720B7B31A8 /* ProfileScreen.swift in Sources */,
 				597178B397FE7EE4ED0AB324 /* ProfileViewModel.swift in Sources */,
 				CE04B2CF3E6DD5B4D4A00E33 /* ProgressiveBlurImage.swift in Sources */,
@@ -721,6 +733,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = Gaia;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Gaia uses the camera to observe living things.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Gaia uses the microphone to capture voice notes with observations.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Gaia uses your location to center the map and show nearby finds.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -794,6 +807,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = Gaia;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Gaia uses the camera to observe living things.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Gaia uses the microphone to capture voice notes with observations.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Gaia uses your location to center the map and show nearby finds.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

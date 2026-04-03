@@ -172,7 +172,7 @@ private struct ActivityFeedRow: View {
                                 .frame(maxWidth: .infinity, alignment: .leading)
 
                             Text(event.timestampLabel)
-                                .font(.custom("Neue Haas Unica W1G", size: 12))
+                                .font(GaiaTypography.caption2)
                                 .foregroundStyle(GaiaColor.textSecondary)
                                 .fixedSize()
                         }

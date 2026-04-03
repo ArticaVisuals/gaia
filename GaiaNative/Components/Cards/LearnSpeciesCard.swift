@@ -15,25 +15,24 @@ struct LearnSpeciesCard: View {
                     .fixedSize(horizontal: false, vertical: true)
 
                 Text(species.summary)
-                    .font(.custom("Neue Haas Unica W1G", size: 12))
-                    .foregroundStyle(GaiaColor.paperWhite50)
-                    .lineSpacing(2.4)
-                    .frame(maxWidth: 274, alignment: .leading)
+                    .font(GaiaTypography.subheadline)
+                    .foregroundStyle(GaiaColor.textInverseSecondary)
+                    .frame(maxWidth: 305, alignment: .leading)
                     .fixedSize(horizontal: false, vertical: true)
             }
 
             Button(action: {}) {
                 Text("Read More")
-                .font(.custom("Neue Haas Unica W1G", size: 13))
+                    .font(GaiaTypography.subheadline)
                     .foregroundStyle(GaiaColor.olive)
-                    .padding(.horizontal, 10)
-                    .frame(height: 28)
+                    .padding(.horizontal, 14)
+                    .frame(height: 34)
                     .background(GaiaColor.paperWhite50, in: Capsule())
             }
             .buttonStyle(.plain)
         }
-        .padding(.horizontal, 24)
-        .padding(.vertical, 20)
+        .padding(.horizontal, 20)
+        .padding(.vertical, 24)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)

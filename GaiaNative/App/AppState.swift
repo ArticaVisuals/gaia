@@ -11,18 +11,29 @@ enum FindDetailsTab: String, CaseIterable, Identifiable, Codable {
 enum ProfileTab: String, CaseIterable, Identifiable, Codable {
     case impact = "Impact"
     case community = "Community"
+    case preview = "Preview"
 
     var id: String { rawValue }
+}
+
+struct ProjectSelection: Identifiable, Hashable {
+    let id: String
+    let title: String
+    let tag: String
+    let countLabel: String
+    let imageName: String
 }
 
 final class AppState: ObservableObject {
     @Published var selectedSection: AppSection
     @Published var showsFindDetails = false
     @Published var showsStoryDeck = false
+    @Published var showsProjectDetail = false
     @Published var selectedFindTab: FindDetailsTab = .learn
     @Published var selectedSpeciesID: String?
     @Published var selectedProfileTab: ProfileTab = .impact
     @Published var selectedStoryID: String?
+    @Published var selectedProject: ProjectSelection?
 
     init() {
         if let section = Self.launchSection {
@@ -78,6 +89,16 @@ final class AppState: ObservableObject {
     func closeStoryDeck() {
         showsStoryDeck = false
         selectedStoryID = nil
+    }
+
+    func openProjectDetail(_ project: ProjectSelection) {
+        selectedProject = project
+        showsProjectDetail = true
+    }
+
+    func closeProjectDetail() {
+        showsProjectDetail = false
+        selectedProject = nil
     }
 
     private static var launchSection: AppSection? {

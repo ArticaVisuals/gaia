@@ -42,7 +42,7 @@ struct BottomNavBar: View {
                 HStack(spacing: 0) {
                     ForEach(sections, id: \.id) { section in
                         VStack(spacing: 0) {
-                            GaiaIcon(kind: iconKind(for: section, currentSelection: visualSelection), size: 32)
+                            GaiaIcon(kind: iconKind(for: section, currentSelection: visualSelection), size: 32, tint: GaiaColor.olive)
 
                             Text(section.title)
                                 .font(GaiaTypography.nav)

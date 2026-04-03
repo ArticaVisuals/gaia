@@ -39,7 +39,6 @@ struct LogScreen: View {
                     searchText: searchText,
                     viewMode: viewMode
                 )
-                .padding(.horizontal, GaiaSpacing.md)
                 .padding(.bottom, 156)
             }
         }
@@ -119,8 +118,10 @@ private struct ProfileLogBody: View {
                 ProfileLogList(sections: filteredSections)
             case .grid:
                 ProfileLogGrid(items: filteredGridItems)
+                    .padding(.horizontal, GaiaSpacing.md)
             case .map:
                 ProfileLogMap(content: content, observations: observations)
+                    .padding(.horizontal, GaiaSpacing.md)
             }
         }
         .padding(.top, GaiaSpacing.xs)
@@ -219,37 +220,77 @@ private struct ProfileLogSearchBar: View {
 
 private struct ProfileLogViewToggle: View {
     @Binding var selection: ProfileLogViewMode
+    @State private var dragOffset: CGFloat?
+
+    private let buttonSize: CGFloat = 32
+    private let gap: CGFloat = 4
+    private let pad: CGFloat = 4
+    private let buttonRadius: CGFloat = GaiaRadius.sm
+    private var containerRadius: CGFloat { GaiaRadius.md }
+    private var step: CGFloat { buttonSize + gap }
+    private var modes: [ProfileLogViewMode] { ProfileLogViewMode.allCases }
 
     var body: some View {
-        HStack(spacing: 6) {
-            ForEach(ProfileLogViewMode.allCases) { mode in
-                Button {
-                    selection = mode
-                } label: {
-                    ZStack {
-                        if selection == mode {
-                            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                .fill(GaiaColor.brandPrimary)
-                        }
+        let selectedIdx = modes.firstIndex(of: selection) ?? 0
+        let indicatorX = dragOffset ?? (CGFloat(selectedIdx) * step)
 
+        ZStack(alignment: .leading) {
+            RoundedRectangle(cornerRadius: buttonRadius, style: .continuous)
+                .fill(GaiaColor.brandPrimary)
+                .frame(width: buttonSize, height: buttonSize)
+                .offset(x: indicatorX)
+
+            HStack(spacing: gap) {
+                ForEach(modes) { mode in
+                    Button { select(mode) } label: {
                         icon(for: mode, selected: selection == mode)
-                            .frame(width: 18, height: 18)
+                            .frame(width: 16, height: 16)
+                            .frame(width: buttonSize, height: buttonSize)
+                            .contentShape(Rectangle())
                     }
-                    .frame(width: 40, height: 40)
+                    .buttonStyle(GlassReactiveButtonStyle())
                 }
-                .buttonStyle(GlassReactiveButtonStyle())
             }
         }
-        .padding(4)
+        .padding(pad)
         .background(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(GaiaColor.oliveGreen100.opacity(0.55))
+            RoundedRectangle(cornerRadius: containerRadius, style: .continuous)
+                .fill(GaiaColor.oliveGreen100)
         )
-        .overlay(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .stroke(GaiaColor.oliveGreen100, lineWidth: 0.5)
+        .contentShape(Rectangle())
+        .highPriorityGesture(modeDragGesture)
+        .animation(
+            dragOffset == nil
+                ? GaiaMotion.spring
+                : .interactiveSpring(response: 0.18, dampingFraction: 0.86),
+            value: indicatorX
         )
-        .shadow(color: GaiaShadow.navColor.opacity(0.16), radius: 12, x: 0, y: 4)
+    }
+
+    private func select(_ mode: ProfileLogViewMode) {
+        guard selection != mode else { return }
+        HapticsService.selectionChanged()
+        withAnimation(GaiaMotion.spring) {
+            selection = mode
+        }
+    }
+
+    private var modeDragGesture: some Gesture {
+        DragGesture(minimumDistance: 4, coordinateSpace: .local)
+            .onChanged { value in
+                let x = value.location.x - pad
+                dragOffset = max(0, min(x - buttonSize / 2, step * CGFloat(modes.count - 1)))
+
+                let idx = min(max(Int(x / step), 0), modes.count - 1)
+                let mode = modes[idx]
+                if selection != mode {
+                    HapticsService.selectionChanged()
+                    selection = mode
+                }
+            }
+            .onEnded { _ in
+                dragOffset = nil
+            }
     }
 
     @ViewBuilder
@@ -261,8 +302,7 @@ private struct ProfileLogViewToggle: View {
         case .list:
             ProfileLogGlyphImage(path: "Icons/System/list-32.png", tint: tint)
         case .map:
-            ProfileLogMapGlyph()
-                .stroke(tint, lineWidth: 1.5)
+            ProfileLogGlyphImage(path: "Icons/System/map-32.png", tint: tint)
         }
     }
 }
@@ -270,9 +310,9 @@ private struct ProfileLogViewToggle: View {
 private struct ProfileLogFilterButton: View {
     var body: some View {
         Button(action: {}) {
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
+            RoundedRectangle(cornerRadius: 5, style: .continuous)
                 .fill(GaiaColor.brandPrimary)
-                .frame(width: 48, height: 48)
+                .frame(width: 40, height: 40)
                 .overlay {
                     ProfileLogGlyphImage(path: "Icons/System/gear-20.png", tint: GaiaColor.paperWhite50)
                         .frame(width: 20, height: 20)
@@ -287,36 +327,46 @@ private struct ProfileLogList: View {
     let sections: [ProfileLogSection]
 
     var body: some View {
-        LazyVStack(alignment: .leading, spacing: 14) {
+        LazyVStack(alignment: .leading, spacing: 0) {
             ForEach(sections) { section in
-                VStack(spacing: 0) {
-                    HStack {
-                        Text(section.title)
-                            .font(GaiaTypography.captionMedium)
-                            .foregroundStyle(GaiaColor.textPrimary)
-                        Spacer()
-                        Text(section.countLabel)
-                            .font(GaiaTypography.caption)
-                            .foregroundStyle(GaiaColor.blackishGrey200)
-                    }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 11)
-                    .frame(maxWidth: .infinity)
-                    .background(GaiaColor.blackishGrey50)
+                ProfileLogDayBar(title: section.title, countLabel: section.countLabel)
 
-                    ForEach(Array(section.entries.enumerated()), id: \.element.id) { index, entry in
-                        VStack(spacing: 0) {
-                            ProfileLogRow(entry: entry)
+                ForEach(Array(section.entries.enumerated()), id: \.element.id) { _, entry in
+                    ProfileLogRow(entry: entry)
 
-                            if index < section.entries.count - 1 {
-                                Rectangle()
-                                    .fill(GaiaColor.oliveGreen100)
-                                    .frame(height: 1)
-                            }
-                        }
-                    }
+                    Rectangle()
+                        .fill(GaiaColor.border)
+                        .frame(height: 1)
                 }
             }
+        }
+    }
+}
+
+private struct ProfileLogDayBar: View {
+    let title: String
+    let countLabel: String
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Text(title)
+                .font(GaiaTypography.footnoteMedium)
+                .foregroundStyle(GaiaColor.textPrimary)
+
+            Text(countLabel)
+                .font(GaiaTypography.caption)
+                .foregroundStyle(GaiaColor.blackishGrey200)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 8)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(height: 33)
+        .background(GaiaColor.paperWhite500)
+        .overlay(alignment: .top) {
+            Rectangle().fill(GaiaColor.border).frame(height: 1)
+        }
+        .overlay(alignment: .bottom) {
+            Rectangle().fill(GaiaColor.border).frame(height: 1)
         }
     }
 }
@@ -325,39 +375,46 @@ private struct ProfileLogRow: View {
     let entry: ProfileLogEntry
 
     var body: some View {
-        HStack(alignment: .center, spacing: 14) {
-            ProfileLogMedia(source: entry.imageSource)
-                .frame(width: 56, height: 56)
-                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .stroke(Color.white.opacity(0.32), lineWidth: 0.5)
-                )
-                .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
+        HStack(alignment: .top, spacing: 14) {
+            HStack(alignment: .center, spacing: 14) {
+                ProfileLogMedia(source: entry.imageSource)
+                    .frame(width: 76, height: 76)
+                    .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text(entry.commonName)
-                    .font(GaiaTypography.subheadSerif)
-                    .foregroundStyle(GaiaColor.textPrimary)
-                    .lineLimit(1)
+                VStack(alignment: .leading, spacing: GaiaSpacing.md) {
+                    VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
+                        Text(entry.commonName)
+                            .font(GaiaTypography.titleRegular)
+                            .foregroundStyle(GaiaColor.textPrimary)
+                            .lineLimit(1)
+                            .truncationMode(.tail)
 
-                Text(entry.scientificName)
-                    .font(GaiaTypography.footnote)
-                    .italic()
-                    .foregroundStyle(GaiaColor.textSecondary)
-                    .lineLimit(1)
+                        Text(entry.scientificName)
+                            .font(GaiaTypography.footnote)
+                            .italic()
+                            .foregroundStyle(GaiaColor.broccoliBrown500)
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                    }
 
-                Text(entry.metaLabel)
-                    .font(GaiaTypography.caption)
-                    .foregroundStyle(GaiaColor.textSecondary)
-                    .lineLimit(1)
+                    Text(entry.metaLabel)
+                        .font(GaiaTypography.caption)
+                        .foregroundStyle(GaiaColor.blackishGrey300)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .layoutPriority(1)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
             ProfileLogStatusPill(title: entry.statusLabel, kind: entry.statusKind)
+                .padding(.top, 1)
         }
+        .padding(.horizontal, GaiaSpacing.md)
         .padding(.vertical, 14)
-        .frame(maxWidth: .infinity, minHeight: 84, alignment: .leading)
+        .frame(maxWidth: .infinity, minHeight: 104, alignment: .leading)
+        .background(GaiaColor.paperWhite50)
     }
 }
 
@@ -367,16 +424,17 @@ private struct ProfileLogStatusPill: View {
 
     var body: some View {
         Text(title)
-            .font(GaiaTypography.caption)
+            .font(GaiaTypography.footnote)
             .foregroundStyle(foreground)
             .padding(.horizontal, 10)
+            .padding(.vertical, 4)
             .frame(height: 28)
             .background(
                 Capsule()
                     .fill(fill)
                     .overlay(
                         Capsule()
-                            .stroke(stroke, lineWidth: 1)
+                            .stroke(stroke, lineWidth: 0.5)
                     )
             )
             .fixedSize()
@@ -385,9 +443,9 @@ private struct ProfileLogStatusPill: View {
     private var fill: Color {
         switch kind {
         case .researchGrade:
-            return GaiaColor.oliveGreen50
+            return GaiaColor.oliveGreen100
         case .needsID:
-            return GaiaColor.broccoliBrown50
+            return GaiaColor.broccoliBrown100
         case .draft:
             return GaiaColor.blackishGrey50
         }
@@ -396,11 +454,11 @@ private struct ProfileLogStatusPill: View {
     private var stroke: Color {
         switch kind {
         case .researchGrade:
-            return GaiaColor.oliveGreen200
+            return GaiaColor.brandPrimary
         case .needsID:
-            return GaiaColor.broccoliBrown200
+            return GaiaColor.broccoliBrown500
         case .draft:
-            return GaiaColor.blackishGrey100
+            return GaiaColor.blackishGrey200
         }
     }
 
@@ -409,7 +467,7 @@ private struct ProfileLogStatusPill: View {
         case .researchGrade:
             return GaiaColor.brandPrimary
         case .needsID:
-            return GaiaColor.brandSecondary
+            return GaiaColor.broccoliBrown500
         case .draft:
             return GaiaColor.textSecondary
         }
@@ -433,41 +491,62 @@ private struct ProfileLogGrid: View {
 private struct ProfileLogGridCard: View {
     let item: ProfileLogGridItem
 
+    private let cardRadius: CGFloat = GaiaRadius.md
+
     var body: some View {
         GeometryReader { proxy in
             ZStack(alignment: .bottomLeading) {
                 ProfileLogMedia(source: item.imageSource)
                     .frame(width: proxy.size.width, height: proxy.size.height)
                     .clipped()
-                    .overlay(
+
+                ProfileLogMedia(source: item.imageSource)
+                    .frame(width: proxy.size.width, height: proxy.size.height)
+                    .clipped()
+                    .blur(radius: 3.7)
+                    .mask(
                         LinearGradient(
-                            colors: [
-                                Color.black.opacity(0.02),
-                                Color.black.opacity(0.10),
-                                Color.black.opacity(0.55)
+                            stops: [
+                                .init(color: .clear, location: 0),
+                                .init(color: .clear, location: 0.22),
+                                .init(color: .black.opacity(0.58), location: 0.72),
+                                .init(color: .black, location: 1)
                             ],
                             startPoint: .top,
                             endPoint: .bottom
                         )
                     )
 
+                LinearGradient(
+                    colors: [
+                        Color.black.opacity(0),
+                        Color.black.opacity(0.56)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+
                 Text(item.title)
-                    .font(.custom("NewSpirit-Regular", size: 14))
-                    .foregroundStyle(GaiaColor.paperWhite50)
+                    .font(GaiaTypography.bodySerif)
+                    .lineSpacing(14 * 0.2)
+                    .foregroundStyle(.white)
                     .multilineTextAlignment(.leading)
                     .lineLimit(2)
-                    .padding(9)
+                    .truncationMode(.tail)
+                    .padding(.horizontal, 9)
+                    .padding(.bottom, 8)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
             }
         }
         .aspectRatio(1, contentMode: .fit)
         .background(GaiaColor.surfaceCard)
-        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: cardRadius, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(GaiaColor.borderStrong, lineWidth: 0.5)
+            RoundedRectangle(cornerRadius: cardRadius, style: .continuous)
+                .stroke(GaiaColor.border, lineWidth: 0.5)
         )
-        .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
-        .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .shadow(color: Color(red: 128 / 255, green: 105 / 255, blue: 38 / 255).opacity(0.09), radius: 10, x: 0, y: 4)
+        .contentShape(RoundedRectangle(cornerRadius: cardRadius, style: .continuous))
     }
 }
 
@@ -541,37 +620,5 @@ private struct ProfileLogGlyphImage: View {
                     .foregroundStyle(tint)
             }
         }
-    }
-}
-
-private struct ProfileLogMapGlyph: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-
-        path.move(to: CGPoint(x: rect.minX + rect.width * 0.30, y: rect.minY + rect.height * 0.16))
-        path.addLine(to: CGPoint(x: rect.minX + rect.width * 0.08, y: rect.minY + rect.height * 0.30))
-        path.addLine(to: CGPoint(x: rect.minX + rect.width * 0.08, y: rect.minY + rect.height * 0.90))
-        path.addLine(to: CGPoint(x: rect.minX + rect.width * 0.30, y: rect.minY + rect.height * 0.76))
-
-        path.move(to: CGPoint(x: rect.minX + rect.width * 0.30, y: rect.minY + rect.height * 0.16))
-        path.addLine(to: CGPoint(x: rect.minX + rect.width * 0.58, y: rect.minY + rect.height * 0.30))
-
-        path.move(to: CGPoint(x: rect.minX + rect.width * 0.30, y: rect.minY + rect.height * 0.16))
-        path.addLine(to: CGPoint(x: rect.minX + rect.width * 0.30, y: rect.minY + rect.height * 0.76))
-
-        path.move(to: CGPoint(x: rect.minX + rect.width * 0.58, y: rect.minY + rect.height * 0.30))
-        path.addLine(to: CGPoint(x: rect.minX + rect.width * 0.92, y: rect.minY + rect.height * 0.16))
-
-        path.move(to: CGPoint(x: rect.minX + rect.width * 0.58, y: rect.minY + rect.height * 0.30))
-        path.addLine(to: CGPoint(x: rect.minX + rect.width * 0.58, y: rect.minY + rect.height * 0.90))
-
-        path.move(to: CGPoint(x: rect.minX + rect.width * 0.92, y: rect.minY + rect.height * 0.16))
-        path.addLine(to: CGPoint(x: rect.minX + rect.width * 0.92, y: rect.minY + rect.height * 0.76))
-        path.addLine(to: CGPoint(x: rect.minX + rect.width * 0.58, y: rect.minY + rect.height * 0.90))
-
-        path.move(to: CGPoint(x: rect.minX + rect.width * 0.30, y: rect.minY + rect.height * 0.76))
-        path.addLine(to: CGPoint(x: rect.minX + rect.width * 0.58, y: rect.minY + rect.height * 0.90))
-
-        return path
     }
 }

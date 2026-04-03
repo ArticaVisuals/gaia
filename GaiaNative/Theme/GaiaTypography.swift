@@ -11,6 +11,8 @@ enum GaiaTypography {
     static let title = serif(size: 20, weight: .medium, fallbackStyle: .title3)
     static let titleRegular = serif(size: 20, weight: .regular, fallbackStyle: .title3)
     static let subheadSerif = serif(size: 16, weight: .regular, fallbackStyle: .body)
+    static let bodySerif = serif(size: 14, weight: .regular, fallbackStyle: .body)
+    static let bodySerifMedium = serif(size: 14, weight: .medium, fallbackStyle: .body)
 
     static let body = sans(size: 17, weight: .regular, fallbackStyle: .body)
     static let bodyMedium = sans(size: 17, weight: .medium, fallbackStyle: .body)
@@ -19,13 +21,14 @@ enum GaiaTypography {
     static let calloutMedium = sans(size: 16, weight: .medium, fallbackStyle: .callout)
     static let subheadline = sans(size: 15, weight: .regular, fallbackStyle: .subheadline)
     static let subheadlineMedium = sans(size: 15, weight: .medium, fallbackStyle: .subheadline)
+    static let subheadlineBold = sans(size: 15, weight: .heavy, fallbackStyle: .subheadline)
     static let footnote = sans(size: 13, weight: .regular, fallbackStyle: .footnote)
     static let footnoteMedium = sans(size: 13, weight: .medium, fallbackStyle: .footnote)
-    static let caption = sans(size: 12, weight: .regular, fallbackStyle: .caption)
-    static let captionMedium = sans(size: 12, weight: .medium, fallbackStyle: .caption)
-    static let caption2 = sans(size: 10, weight: .regular, fallbackStyle: .caption2)
-    static let caption2Medium = sans(size: 10, weight: .medium, fallbackStyle: .caption2)
-    static let nav = sans(size: 10, weight: .regular, fallbackStyle: .caption2)
+    static let caption = sans(size: 11, weight: .regular, fallbackStyle: .caption)
+    static let captionMedium = sans(size: 11, weight: .medium, fallbackStyle: .caption)
+    static let caption2 = sans(size: 12, weight: .regular, fallbackStyle: .caption2)
+    static let caption2Medium = sans(size: 12, weight: .medium, fallbackStyle: .caption2)
+    static let nav = caption
 
     private static func serif(size: CGFloat, weight: Font.Weight, fallbackStyle: Font.TextStyle) -> Font {
         customFont(
@@ -46,7 +49,8 @@ enum GaiaTypography {
                 "NeueHaasUnica",
                 "NeueHaasUnica-Regular",
                 "NeueHaasUnica-Medium",
-                "NeueHaasUnica-Bold"
+                "NeueHaasUnica-Bold",
+                "NeueHaasUnica-ExtraBold"
             ],
             size: size,
             fallback: .system(fallbackStyle, design: .default, weight: weight)
@@ -108,6 +112,8 @@ enum GaiaTypography {
 
     private static func postScriptName(base: String, weight: Font.Weight) -> String {
         switch weight {
+        case .heavy, .black:
+            return "\(base)-ExtraBold"
         case .bold:
             return "\(base)-Bold"
         case .medium:

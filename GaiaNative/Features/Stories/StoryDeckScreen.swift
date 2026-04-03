@@ -29,7 +29,7 @@ struct StoryDeckScreen: View {
                     VStack(spacing: 32) {
                         VStack(spacing: 16) {
                             Text(speciesLabel)
-                                .font(.custom("Neue Haas Unica W1G", size: 10))
+                                .font(GaiaTypography.caption)
                                 .tracking(0.25)
                                 .foregroundStyle(GaiaColor.paperWhite500)
                                 .padding(.horizontal, 12)
@@ -55,7 +55,7 @@ struct StoryDeckScreen: View {
                             .frame(maxWidth: 333)
 
                             Text(story.summary)
-                                .font(.custom("Neue Haas Unica W1G", size: 15))
+                                .font(GaiaTypography.subheadline)
                                 .tracking(0.5)
                                 .foregroundStyle(GaiaColor.blackishGrey500)
                                 .multilineTextAlignment(.center)

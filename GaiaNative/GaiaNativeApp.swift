@@ -1,5 +1,4 @@
 import CoreText
-import MapboxMaps
 import SwiftUI
 import UIKit
 
@@ -10,7 +9,6 @@ struct GaiaNativeApp: App {
 
     init() {
         FontRegistrar.registerBundledFontsIfNeeded()
-        GaiaMapbox.configure()
         TabBarAppearanceConfigurator.configure()
     }
 
@@ -19,6 +17,9 @@ struct GaiaNativeApp: App {
             AppRootView()
                 .environmentObject(appState)
                 .environmentObject(contentStore)
+                .task {
+                    contentStore.loadBundledContentIfAvailable()
+                }
         }
     }
 }
@@ -30,35 +31,99 @@ enum TabBarAppearanceConfigurator {
         guard !hasConfigured else { return }
         hasConfigured = true
 
-        let selectedColor = UIColor(red: 103 / 255, green: 118 / 255, blue: 91 / 255, alpha: 1)
-        let deselectedColor = UIColor(red: 200 / 255, green: 207 / 255, blue: 191 / 255, alpha: 1)
+        let olive500 = UIColor(red: 103 / 255, green: 118 / 255, blue: 91 / 255, alpha: 1)
+        let paperBase = UIColor(red: 252 / 255, green: 250 / 255, blue: 241 / 255, alpha: 0.96)
+        let borderColor = UIColor(red: 216 / 255, green: 201 / 255, blue: 184 / 255, alpha: 0.72)
+        let selectedColor = olive500
+        let deselectedColor = olive500
+        let titleFont = tabTitleFont()
         let tabBar = UITabBar.appearance()
-        let appearance = tabBar.standardAppearance
+        let tabBarItem = UITabBarItem.appearance()
+        let appearance = UITabBarAppearance()
 
-        appearance.configureWithTransparentBackground()
-        appearance.backgroundEffect = UIBlurEffect(style: .systemUltraThinMaterialLight)
-        appearance.backgroundColor = UIColor.white.withAlphaComponent(0.46)
-        appearance.shadowColor = .clear
-        configure(itemAppearance: appearance.stackedLayoutAppearance, selectedColor: selectedColor, deselectedColor: deselectedColor)
-        configure(itemAppearance: appearance.inlineLayoutAppearance, selectedColor: selectedColor, deselectedColor: deselectedColor)
-        configure(itemAppearance: appearance.compactInlineLayoutAppearance, selectedColor: selectedColor, deselectedColor: deselectedColor)
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundEffect = nil
+        appearance.backgroundColor = paperBase
+        appearance.shadowColor = borderColor
+        configure(
+            itemAppearance: appearance.stackedLayoutAppearance,
+            selectedColor: selectedColor,
+            deselectedColor: deselectedColor,
+            titleFont: titleFont
+        )
+        configure(
+            itemAppearance: appearance.inlineLayoutAppearance,
+            selectedColor: selectedColor,
+            deselectedColor: deselectedColor,
+            titleFont: titleFont
+        )
+        configure(
+            itemAppearance: appearance.compactInlineLayoutAppearance,
+            selectedColor: selectedColor,
+            deselectedColor: deselectedColor,
+            titleFont: titleFont
+        )
 
         tabBar.standardAppearance = appearance
         tabBar.scrollEdgeAppearance = appearance
         tabBar.tintColor = selectedColor
         tabBar.unselectedItemTintColor = deselectedColor
-        tabBar.isTranslucent = true
+        tabBar.isTranslucent = false
+
+        // Keep the tab label color consistent across selection states.
+        let titleAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: olive500,
+            .font: titleFont
+        ]
+        tabBarItem.setTitleTextAttributes(titleAttributes, for: .normal)
+        tabBarItem.setTitleTextAttributes(titleAttributes, for: .selected)
+        tabBarItem.setTitleTextAttributes(titleAttributes, for: .disabled)
+        tabBarItem.setTitleTextAttributes(titleAttributes, for: .focused)
     }
 
     private static func configure(
         itemAppearance: UITabBarItemAppearance,
         selectedColor: UIColor,
-        deselectedColor: UIColor
+        deselectedColor: UIColor,
+        titleFont: UIFont
     ) {
-        itemAppearance.normal.iconColor = deselectedColor
-        itemAppearance.normal.titleTextAttributes = [.foregroundColor: deselectedColor]
-        itemAppearance.selected.iconColor = selectedColor
-        itemAppearance.selected.titleTextAttributes = [.foregroundColor: selectedColor]
+        let normalAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: deselectedColor,
+            .font: titleFont
+        ]
+        let selectedAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: selectedColor,
+            .font: titleFont
+        ]
+
+        apply(color: deselectedColor, attributes: normalAttributes, to: itemAppearance.normal)
+        apply(color: selectedColor, attributes: selectedAttributes, to: itemAppearance.selected)
+        apply(color: deselectedColor, attributes: normalAttributes, to: itemAppearance.disabled)
+        apply(color: deselectedColor, attributes: normalAttributes, to: itemAppearance.focused)
+    }
+
+    private static func apply(
+        color: UIColor,
+        attributes: [NSAttributedString.Key: Any],
+        to stateAppearance: UITabBarItemStateAppearance
+    ) {
+        stateAppearance.iconColor = color
+        stateAppearance.titleTextAttributes = attributes
+    }
+
+    private static func tabTitleFont() -> UIFont {
+        let candidates = [
+            "Neue Haas Unica W1G",
+            "NeueHaasUnica-Regular",
+            "Neue Haas Unica",
+            "NeueHaasUnica"
+        ]
+
+        if let font = candidates.lazy.compactMap({ UIFont(name: $0, size: 10) }).first {
+            return font
+        }
+
+        return .systemFont(ofSize: 10, weight: .regular)
     }
 }
 

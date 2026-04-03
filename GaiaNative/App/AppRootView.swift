@@ -15,8 +15,8 @@ struct AppRootView: View {
                 AppRouter(section: section)
                     .tag(section)
                     .tabItem {
-                        Image(section.tabAssetName(isSelected: appState.selectedSection == section))
-                            .renderingMode(.original)
+                        Image(section.tabAssetName)
+                            .renderingMode(.template)
                         Text(section.title)
                     }
             }
@@ -33,6 +33,10 @@ struct AppRootView: View {
                 .environmentObject(appState)
                 .environmentObject(contentStore)
         }
+        .fullScreenCover(isPresented: $appState.showsProjectDetail) {
+            ProjectDetailScreen(project: appState.selectedProject)
+                .environmentObject(appState)
+        }
     }
 
     private var selectedSpecies: Species {
@@ -46,18 +50,18 @@ struct AppRootView: View {
 }
 
 private extension AppSection {
-    func tabAssetName(isSelected: Bool) -> String {
+    var tabAssetName: String {
         switch self {
         case .explore:
-            return isSelected ? "gaia-tab-explore-selected-32" : "gaia-tab-explore-deselected-32"
+            return "gaia-tab-explore-selected-32"
         case .log:
-            return isSelected ? "gaia-tab-log-selected-32" : "gaia-tab-log-deselected-32"
+            return "gaia-tab-log-selected-32"
         case .observe:
-            return isSelected ? "gaia-tab-observe-selected-32" : "gaia-tab-observe-deselected-32"
+            return "gaia-tab-observe-selected-32"
         case .activity:
-            return isSelected ? "gaia-tab-activity-selected-32" : "gaia-tab-activity-deselected-32"
+            return "gaia-tab-activity-selected-32"
         case .profile:
-            return isSelected ? "gaia-tab-profile-selected-32" : "gaia-tab-profile-deselected-32"
+            return "gaia-tab-profile-selected-32"
         }
     }
 }

@@ -8,7 +8,7 @@ struct GaiaPill: View {
 
     var body: some View {
         Text(title)
-            .font(.custom("Neue Haas Unica W1G", size: 13))
+            .font(GaiaTypography.footnote)
             .foregroundStyle(foreground)
             .padding(.horizontal, 16)
             .frame(height: 29)

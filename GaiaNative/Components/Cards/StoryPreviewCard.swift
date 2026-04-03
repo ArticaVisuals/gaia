@@ -19,19 +19,16 @@ struct StoryPreviewCard: View {
                         endPoint: .bottom
                     )
 
-                    GaiaAssetImage(name: story.imageAssetName, contentMode: .fit)
+                    GaiaAssetImage(name: story.imageAssetName, contentMode: .fill)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .padding(.horizontal, 10)
-                        .padding(.top, 10)
-                        .padding(.bottom, 2)
-                        .frame(maxHeight: .infinity, alignment: .bottom)
+                        .clipped()
                 }
                 .aspectRatio(2912.0 / 1632.0, contentMode: .fit)
                 .clipped()
 
                 VStack(alignment: .leading, spacing: 12) {
                     Text(story.eyebrow)
-                        .font(.custom("Neue Haas Unica W1G", size: 11))
+                        .font(GaiaTypography.caption)
                         .foregroundStyle(GaiaColor.paperWhite50)
                         .tracking(0.25)
                         .textCase(.uppercase)
@@ -41,13 +38,16 @@ struct StoryPreviewCard: View {
                             Text(story.title)
                                 .font(GaiaTypography.displayMedium)
                                 .foregroundStyle(GaiaColor.paperWhite50)
-                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .tracking(-0.5)
+                                .lineSpacing(0)
+                                .frame(maxWidth: 257, alignment: .leading)
                                 .multilineTextAlignment(.leading)
+                                .fixedSize(horizontal: false, vertical: true)
 
                             Text(story.summary)
-                                .font(.custom("Neue Haas Unica W1G", size: 12))
+                                .font(GaiaTypography.caption)
                                 .foregroundStyle(GaiaColor.paperWhite500)
-                                .lineSpacing(2.4)
+                                .lineSpacing(0)
                                 .frame(maxWidth: 252, alignment: .leading)
                                 .fixedSize(horizontal: false, vertical: true)
                         }

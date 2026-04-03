@@ -1,21 +1,19 @@
 import CoreLocation
-@_spi(Restricted) import MapboxMaps
+import MapKit
 import SwiftUI
+import UIKit
 
 private enum GaiaPinMapConfig {
-    static let sourceID = "gaia-observation-source"
-    static let queryLayerID = "gaia-observation-query-layer"
-    static let clusterMaxZoom = 14.0
-    static let clusterRadius = 50.0
-    static let photoZoom = 14.2
-    static let zoomHysteresis = 0.35
-}
-
-private struct ClusterMarkerState: Identifiable {
-    let id: String
-    let coordinate: CLLocationCoordinate2D
-    let count: Int
-    let clusterID: Int64?
+    static let clusterReuseID = "gaia.cluster"
+    static let observationReuseID = "gaia.observation"
+    static let clusteringIdentifier = "gaia.cluster.members"
+    static let singleBlankMaxZoom = 6.8
+    static let markerVisualSize: CGFloat = 62
+    static let markerTouchPadding: CGFloat = 18
+    static let markerMinScale: CGFloat = 0.34
+    static let markerScaleStartZoom = 3.0
+    static let markerScaleEndZoom = 14.0
+    static let recenterZoom = 14.4
 }
 
 struct ExploreMapView: View {
@@ -26,311 +24,368 @@ struct ExploreMapView: View {
     var initialZoomOverride: CGFloat? = nil
 
     @StateObject private var locationController = GaiaMapLocationController()
-    @State private var viewport: Viewport
-    @State private var hasAppliedInitialViewport = false
-    @State private var isPhotoMode = false
-    @State private var clusterMarkers: [ClusterMarkerState] = []
-
-    init(
-        observations: [Observation],
-        recenterRequestID: UUID?,
-        onSelectObservation: ((Observation) -> Void)? = nil,
-        showsMarkers: Bool = true,
-        initialZoomOverride: CGFloat? = nil
-    ) {
-        self.observations = observations
-        self.recenterRequestID = recenterRequestID
-        self.onSelectObservation = onSelectObservation
-        self.showsMarkers = showsMarkers
-        self.initialZoomOverride = initialZoomOverride
-        _viewport = State(initialValue: Self.initialViewport(for: observations, zoomOverride: initialZoomOverride))
-    }
 
     var body: some View {
-        MapReader { proxy in
-            Map(viewport: $viewport) {
-                if locationController.isAuthorized {
-                    Puck2D()
-                }
-
-                clusteredObservationSource
-
-                if showsMarkers {
-                    if isPhotoMode {
-                        ForEvery(observations) { observation in
-                            MapViewAnnotation(
-                                coordinate: CLLocationCoordinate2D(
-                                    latitude: observation.latitude,
-                                    longitude: observation.longitude
-                                )
-                            ) {
-                                pinContainer {
-                                    MapAnnotationPhotoPin(imageName: observation.thumbnailAssetName)
-                                        .contentShape(Circle())
-                                        .onTapGesture {
-                                            onSelectObservation?(observation)
-                                        }
-                                }
-                            }
-                            .allowOverlap(true)
-                        }
-                    } else {
-                        ForEvery(clusterMarkers) { marker in
-                            MapViewAnnotation(coordinate: marker.coordinate) {
-                                pinContainer {
-                                    MapAnnotationClusterPin(count: marker.count)
-                                        .contentShape(Circle())
-                                        .onTapGesture {
-                                            handleClusterTap(marker, proxy: proxy)
-                                        }
-                                }
-                            }
-                            .allowOverlap(true)
-                        }
-                    }
-                }
-            }
-            .mapStyle(MapStyle(uri: GaiaMapbox.styleURI))
-            .ornamentOptions(mapOrnamentOptions)
-            .onStyleLoaded { _ in
-                guard showsMarkers else { return }
-                syncPhotoMode(for: currentZoom(in: proxy), proxy: proxy, forceClusterSync: true)
-            }
-            .onMapIdle { _ in
-                guard showsMarkers else { return }
-                syncClusterMarkers(using: proxy)
-            }
-            .onCameraChanged { event in
-                guard showsMarkers else { return }
-                syncPhotoMode(for: event.cameraState.zoom, proxy: proxy, forceClusterSync: false)
-            }
-            .onAppear {
-                guard !hasAppliedInitialViewport else { return }
-                hasAppliedInitialViewport = true
-                viewport = Self.initialViewport(for: observations, zoomOverride: initialZoomOverride)
-            }
-            .onChange(of: observations) { _, newObservations in
-                guard !locationController.isFollowingUser else { return }
-                viewport = Self.initialViewport(for: newObservations, zoomOverride: initialZoomOverride)
-                guard showsMarkers else { return }
-                syncClusterMarkers(using: proxy)
-            }
-            .onChange(of: recenterRequestID) { _, newRequestID in
-                guard newRequestID != nil else { return }
-                locationController.requestRecenter()
-            }
-            .onChange(of: locationController.centerCoordinate) { _, coordinate in
-                guard let coordinate else { return }
-                withViewportAnimation(.default(maxDuration: 1.0)) {
-                    viewport = .camera(center: coordinate, zoom: 14.4, bearing: 0, pitch: 0)
-                }
-            }
-            .onChange(of: locationController.followViewportRequestID) { _, requestID in
-                guard requestID != nil else { return }
-                withViewportAnimation(.default(maxDuration: 1.0)) {
-                    viewport = .followPuck(zoom: 14.4, pitch: 0)
-                }
-            }
-        }
-    }
-
-    private var mapOrnamentOptions: OrnamentOptions {
-        var options = OrnamentOptions(
-            scaleBar: .init(visibility: .hidden),
-            compass: .init(visibility: .hidden)
+        ExploreMapRepresentable(
+            observations: observations,
+            showsMarkers: showsMarkers,
+            initialZoomOverride: initialZoomOverride,
+            onSelectObservation: onSelectObservation,
+            locationController: locationController
         )
-        options.logo.visibility = .hidden
-        options.attributionButton.visibility = .hidden
-        return options
-    }
-
-    @MapContentBuilder
-    private var clusteredObservationSource: some MapContent {
-        sourceContent
-        queryLayerContent
-    }
-
-    private var sourceContent: GeoJSONSource {
-        var source = GeoJSONSource(id: GaiaPinMapConfig.sourceID)
-        source.data = .featureCollection(featureCollection)
-        source.cluster = true
-        source.clusterMaxZoom = GaiaPinMapConfig.clusterMaxZoom
-        source.clusterRadius = GaiaPinMapConfig.clusterRadius
-        return source
-    }
-
-    private var queryLayerContent: CircleLayer {
-        var layer = CircleLayer(id: GaiaPinMapConfig.queryLayerID, source: GaiaPinMapConfig.sourceID)
-        layer.circleRadius = .constant(1)
-        layer.circleOpacity = .constant(0)
-        layer.circleStrokeOpacity = .constant(0)
-        return layer
-    }
-
-    private var featureCollection: FeatureCollection {
-        FeatureCollection(features: observations.map(Self.feature(for:)))
-    }
-
-    private func syncPhotoMode(for zoom: Double, proxy: MapProxy, forceClusterSync: Bool) {
-        let threshold = isPhotoMode
-            ? GaiaPinMapConfig.photoZoom - GaiaPinMapConfig.zoomHysteresis
-            : GaiaPinMapConfig.photoZoom
-        let shouldBePhotoMode = zoom >= threshold
-
-        guard shouldBePhotoMode != isPhotoMode || forceClusterSync else { return }
-
-        isPhotoMode = shouldBePhotoMode
-        if shouldBePhotoMode {
-            clusterMarkers = []
-        } else {
-            syncClusterMarkers(using: proxy)
+        .onChange(of: recenterRequestID) { _, newRequestID in
+            guard newRequestID != nil else { return }
+            locationController.requestRecenter()
         }
     }
+}
 
-    private func syncClusterMarkers(using proxy: MapProxy) {
-        guard !isPhotoMode, let mapboxMap = proxy.map else { return }
+private struct ExploreMapRepresentable: UIViewRepresentable {
+    let observations: [Observation]
+    let showsMarkers: Bool
+    let initialZoomOverride: CGFloat?
+    let onSelectObservation: ((Observation) -> Void)?
+    @ObservedObject var locationController: GaiaMapLocationController
 
-        let options = SourceQueryOptions(
-            sourceLayerIds: nil,
-            filter: ["literal", true]
+    func makeCoordinator() -> Coordinator {
+        Coordinator(parent: self)
+    }
+
+    func makeUIView(context: Context) -> MKMapView {
+        let mapView = MKMapView(frame: .zero)
+        mapView.delegate = context.coordinator
+        mapView.mapType = .standard
+        mapView.showsCompass = false
+        mapView.showsScale = false
+        mapView.isRotateEnabled = false
+        mapView.register(
+            GaiaHostedMarkerAnnotationView.self,
+            forAnnotationViewWithReuseIdentifier: GaiaPinMapConfig.observationReuseID
         )
-        mapboxMap.querySourceFeatures(for: GaiaPinMapConfig.sourceID, options: options) { result in
-            guard case let .success(features) = result else { return }
-            let markers = Self.makeClusterMarkers(from: features)
-            DispatchQueue.main.async {
-                if !self.isPhotoMode {
-                    self.clusterMarkers = markers
-                }
-            }
-        }
-    }
-
-    private func handleClusterTap(_ marker: ClusterMarkerState, proxy: MapProxy) {
-        guard let mapboxMap = proxy.map else { return }
-
-        if marker.clusterID != nil {
-            guard let feature = clusterFeature(for: marker) else { return }
-            mapboxMap.getGeoJsonClusterExpansionZoom(
-                forSourceId: GaiaPinMapConfig.sourceID,
-                feature: feature
-            ) { result in
-                let zoom: CGFloat
-                switch result {
-                case let .success(value):
-                    zoom = CGFloat((value.value as? NSNumber)?.doubleValue ?? GaiaPinMapConfig.photoZoom) + 0.5
-                case .failure:
-                    zoom = max(CGFloat(self.currentZoom(in: proxy) + 1.2), CGFloat(GaiaPinMapConfig.photoZoom + 0.1))
-                }
-
-                DispatchQueue.main.async {
-                    withViewportAnimation(.default(maxDuration: 0.8)) {
-                        viewport = .camera(center: marker.coordinate, zoom: zoom, bearing: 0, pitch: 0)
-                    }
-                }
-            }
-            return
-        }
-
-        let nextZoom = max(
-            CGFloat(currentZoom(in: proxy) + 1.2),
-            CGFloat(GaiaPinMapConfig.photoZoom + 0.1)
+        mapView.register(
+            GaiaHostedMarkerAnnotationView.self,
+            forAnnotationViewWithReuseIdentifier: GaiaPinMapConfig.clusterReuseID
         )
-
-        withViewportAnimation(.default(maxDuration: 0.8)) {
-            viewport = .camera(center: marker.coordinate, zoom: nextZoom, bearing: 0, pitch: 0)
-        }
+        mapView.showsUserLocation = locationController.isAuthorized
+        return mapView
     }
 
-    private func clusterFeature(for marker: ClusterMarkerState) -> Feature? {
-        guard let clusterID = marker.clusterID else {
+    func updateUIView(_ mapView: MKMapView, context: Context) {
+        context.coordinator.parent = self
+        context.coordinator.update(mapView)
+    }
+
+    final class Coordinator: NSObject, MKMapViewDelegate {
+        var parent: ExploreMapRepresentable
+
+        private var hasAppliedInitialRegion = false
+        private var lastObservationSignature: Int?
+        private var lastFollowViewportRequestID: UUID?
+        private var observationAnnotationsByID: [String: GaiaObservationAnnotation] = [:]
+
+        init(parent: ExploreMapRepresentable) {
+            self.parent = parent
+        }
+
+        func update(_ mapView: MKMapView) {
+            mapView.showsUserLocation = parent.locationController.isAuthorized
+            syncObservationAnnotations(in: mapView)
+
+            let signature = Self.observationsSignature(parent.observations)
+            if !hasAppliedInitialRegion {
+                let initialRegion = ExploreMapView.initialRegion(
+                    for: parent.observations,
+                    zoomOverride: parent.initialZoomOverride
+                )
+                mapView.setRegion(initialRegion, animated: false)
+                hasAppliedInitialRegion = true
+            } else if signature != lastObservationSignature, !parent.locationController.isFollowingUser {
+                let updatedRegion = ExploreMapView.initialRegion(
+                    for: parent.observations,
+                    zoomOverride: parent.initialZoomOverride
+                )
+                mapView.setRegion(updatedRegion, animated: true)
+            }
+            lastObservationSignature = signature
+
+            if let requestID = parent.locationController.followViewportRequestID,
+               requestID != lastFollowViewportRequestID,
+               let centerCoordinate = parent.locationController.centerCoordinate {
+                lastFollowViewportRequestID = requestID
+                let region = MKCoordinateRegion(
+                    center: centerCoordinate,
+                    span: ExploreMapView.span(for: GaiaPinMapConfig.recenterZoom)
+                )
+                mapView.setRegion(region, animated: true)
+            }
+
+            refreshVisibleAnnotationViews(in: mapView)
+        }
+
+        func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+            if annotation is MKUserLocation {
+                return nil
+            }
+
+            if annotation is MKClusterAnnotation {
+                let view = mapView.dequeueReusableAnnotationView(
+                    withIdentifier: GaiaPinMapConfig.clusterReuseID,
+                    for: annotation
+                ) as! GaiaHostedMarkerAnnotationView
+                view.annotation = annotation
+                view.clusteringIdentifier = nil
+                view.displayPriority = .required
+                view.collisionMode = .circle
+                configure(view, for: annotation, zoom: ExploreMapView.zoomLevel(for: mapView.region))
+                return view
+            }
+
+            if annotation is GaiaObservationAnnotation {
+                let view = mapView.dequeueReusableAnnotationView(
+                    withIdentifier: GaiaPinMapConfig.observationReuseID,
+                    for: annotation
+                ) as! GaiaHostedMarkerAnnotationView
+                view.annotation = annotation
+                view.clusteringIdentifier = GaiaPinMapConfig.clusteringIdentifier
+                view.displayPriority = .required
+                view.collisionMode = .circle
+                configure(view, for: annotation, zoom: ExploreMapView.zoomLevel(for: mapView.region))
+                return view
+            }
+
             return nil
         }
 
-        var feature = Feature(geometry: .point(Point(marker.coordinate)))
-        feature.properties = [
-            "cluster_id": .number(Double(clusterID)),
-            "point_count": .number(Double(marker.count)),
-            "cluster": .boolean(true)
-        ]
-        return feature
-    }
-
-    private func currentZoom(in proxy: MapProxy) -> Double {
-        Double(proxy.map?.cameraState.zoom ?? Self.initialViewportZoom(for: observations))
-    }
-
-    private func pinContainer<Content: View>(@ViewBuilder content: () -> Content) -> some View {
-        content()
-            .padding(18)
-    }
-
-    private static func makeClusterMarkers(from queriedFeatures: [QueriedSourceFeature]) -> [ClusterMarkerState] {
-        var buckets: [String: ClusterMarkerState] = [:]
-
-        for queried in queriedFeatures {
-            let feature = queried.queriedFeature.feature
-            guard let coordinate = feature.coordinate else { continue }
-            let properties = feature.properties ?? [:]
-            let clusterValue = properties["cluster"] ?? nil
-            let pointCountValue = properties["point_count"] ?? nil
-            let clusterIDValue = properties["cluster_id"] ?? nil
-
-            let isCluster = clusterValue?.boolValue == true
-            let count = max(1, Int(pointCountValue?.doubleValue ?? 1))
-            let key: String
-            let clusterID: Int64?
-
-            if isCluster {
-                clusterID = Int64(clusterIDValue?.doubleValue ?? 0)
-                key = "cluster-\(clusterID ?? 0)"
-            } else if let featureID = feature.identifier?.string {
-                clusterID = nil
-                key = "single-\(featureID)"
-            } else {
-                clusterID = nil
-                key = "single-\(coordinate.latitude)-\(coordinate.longitude)"
-            }
-
-            guard buckets[key] == nil else { continue }
-
-            buckets[key] = ClusterMarkerState(
-                id: key,
-                coordinate: coordinate,
-                count: isCluster ? count : 1,
-                clusterID: clusterID
-            )
+        func mapViewDidChangeVisibleRegion(_ mapView: MKMapView) {
+            refreshVisibleAnnotationViews(in: mapView)
         }
 
-        return buckets.values.sorted { lhs, rhs in
-            if lhs.count == rhs.count {
-                return lhs.id < rhs.id
+        func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+            if let cluster = view.annotation as? MKClusterAnnotation {
+                mapView.deselectAnnotation(cluster, animated: false)
+                mapView.showAnnotations(cluster.memberAnnotations, animated: true)
+                return
             }
-            return lhs.count > rhs.count
-        }
-    }
 
-    private static func feature(for observation: Observation) -> Feature {
-        var feature = Feature(
-            geometry: .point(
-                Point(
-                    CLLocationCoordinate2D(
-                        latitude: observation.latitude,
-                        longitude: observation.longitude
+            if let observationAnnotation = view.annotation as? GaiaObservationAnnotation {
+                mapView.deselectAnnotation(observationAnnotation, animated: false)
+                parent.onSelectObservation?(observationAnnotation.observation)
+            }
+        }
+
+        private func syncObservationAnnotations(in mapView: MKMapView) {
+            guard parent.showsMarkers else {
+                if !observationAnnotationsByID.isEmpty {
+                    mapView.removeAnnotations(Array(observationAnnotationsByID.values))
+                    observationAnnotationsByID.removeAll()
+                }
+                return
+            }
+
+            let desiredObservations = Dictionary(uniqueKeysWithValues: parent.observations.map { ($0.id, $0) })
+            let staleIDs = Set(observationAnnotationsByID.keys).subtracting(desiredObservations.keys)
+            if !staleIDs.isEmpty {
+                let staleAnnotations = staleIDs.compactMap { observationAnnotationsByID.removeValue(forKey: $0) }
+                mapView.removeAnnotations(staleAnnotations)
+            }
+
+            var newAnnotations: [GaiaObservationAnnotation] = []
+            for observation in parent.observations {
+                if let existing = observationAnnotationsByID[observation.id] {
+                    existing.update(with: observation)
+                } else {
+                    let annotation = GaiaObservationAnnotation(observation: observation)
+                    observationAnnotationsByID[observation.id] = annotation
+                    newAnnotations.append(annotation)
+                }
+            }
+
+            if !newAnnotations.isEmpty {
+                mapView.addAnnotations(newAnnotations)
+            }
+        }
+
+        private func refreshVisibleAnnotationViews(in mapView: MKMapView) {
+            let zoom = ExploreMapView.zoomLevel(for: mapView.region)
+            for annotation in mapView.annotations {
+                guard let view = mapView.view(for: annotation) as? GaiaHostedMarkerAnnotationView else { continue }
+                configure(view, for: annotation, zoom: zoom)
+            }
+        }
+
+        private func configure(_ view: GaiaHostedMarkerAnnotationView, for annotation: MKAnnotation, zoom: Double) {
+            let farOut = zoom <= GaiaPinMapConfig.singleBlankMaxZoom
+            let markerScale = ExploreMapView.markerScale(for: zoom)
+
+            if let observationAnnotation = annotation as? GaiaObservationAnnotation {
+                if farOut {
+                    view.apply(
+                        content: AnyView(MarkerRenderContainer { MapAnnotationBlankPin() }),
+                        renderKey: "single.blank"
                     )
-                )
-            )
-        )
-        feature.identifier = .string(observation.id)
-        feature.properties = [
-            "id": .string(observation.id),
-            "species_id": .string(observation.speciesID)
-        ]
-        return feature
+                } else {
+                    let imageName = observationAnnotation.observation.thumbnailAssetName ?? "none"
+                    view.apply(
+                        content: AnyView(
+                            MarkerRenderContainer {
+                                MapAnnotationPhotoPin(imageName: observationAnnotation.observation.thumbnailAssetName)
+                            }
+                        ),
+                        renderKey: "single.photo.\(imageName)"
+                    )
+                }
+            } else if let clusterAnnotation = annotation as? MKClusterAnnotation {
+                if farOut {
+                    view.apply(
+                        content: AnyView(MarkerRenderContainer { MapAnnotationBlankPin() }),
+                        renderKey: "cluster.blank"
+                    )
+                } else {
+                    let count = observationCount(in: clusterAnnotation)
+                    view.apply(
+                        content: AnyView(MarkerRenderContainer { MapAnnotationClusterPin(count: count) }),
+                        renderKey: "cluster.count.\(count)"
+                    )
+                }
+            }
+
+            view.setScale(markerScale)
+        }
+
+        private func observationCount(in cluster: MKClusterAnnotation) -> Int {
+            cluster.memberAnnotations.reduce(0) { total, member in
+                total + observationCount(for: member)
+            }
+        }
+
+        private func observationCount(for annotation: MKAnnotation) -> Int {
+            if annotation is GaiaObservationAnnotation {
+                return 1
+            }
+
+            if let nestedCluster = annotation as? MKClusterAnnotation {
+                return observationCount(in: nestedCluster)
+            }
+
+            return 0
+        }
+
+        private static func observationsSignature(_ observations: [Observation]) -> Int {
+            var hasher = Hasher()
+            hasher.combine(observations.count)
+            for observation in observations {
+                hasher.combine(observation.id)
+                hasher.combine(observation.latitude.bitPattern)
+                hasher.combine(observation.longitude.bitPattern)
+                hasher.combine(observation.thumbnailAssetName)
+            }
+            return hasher.finalize()
+        }
+    }
+}
+
+private struct MarkerRenderContainer<Content: View>: View {
+    @ViewBuilder let content: () -> Content
+
+    var body: some View {
+        content()
+            .frame(width: GaiaPinMapConfig.markerVisualSize, height: GaiaPinMapConfig.markerVisualSize)
+            .padding(GaiaPinMapConfig.markerTouchPadding)
+            .contentShape(Circle())
+    }
+}
+
+private final class GaiaHostedMarkerAnnotationView: MKAnnotationView {
+    private var hostingController: UIHostingController<AnyView>?
+    private var currentRenderKey: String?
+
+    private var contentSize: CGSize {
+        let width = GaiaPinMapConfig.markerVisualSize + (GaiaPinMapConfig.markerTouchPadding * 2)
+        let height = GaiaPinMapConfig.markerVisualSize + (GaiaPinMapConfig.markerTouchPadding * 2)
+        return CGSize(width: width, height: height)
     }
 
-    private static func initialViewport(for observations: [Observation], zoomOverride: CGFloat? = nil) -> Viewport {
+    override init(annotation: MKAnnotation?, reuseIdentifier: String?) {
+        super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
+        backgroundColor = .clear
+        isOpaque = false
+        canShowCallout = false
+        frame = CGRect(origin: .zero, size: contentSize)
+        bounds = CGRect(origin: .zero, size: contentSize)
+        centerOffset = .zero
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        currentRenderKey = nil
+        transform = .identity
+    }
+
+    func apply(content: AnyView, renderKey: String) {
+        let size = contentSize
+        if bounds.size != size {
+            bounds = CGRect(origin: .zero, size: size)
+        }
+
+        if let hostingController {
+            guard currentRenderKey != renderKey else { return }
+            currentRenderKey = renderKey
+            hostingController.rootView = content
+            return
+        }
+
+        let hostingController = UIHostingController(rootView: content)
+        hostingController.view.backgroundColor = .clear
+        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(hostingController.view)
+        NSLayoutConstraint.activate([
+            hostingController.view.leadingAnchor.constraint(equalTo: leadingAnchor),
+            hostingController.view.trailingAnchor.constraint(equalTo: trailingAnchor),
+            hostingController.view.topAnchor.constraint(equalTo: topAnchor),
+            hostingController.view.bottomAnchor.constraint(equalTo: bottomAnchor)
+        ])
+        self.hostingController = hostingController
+        currentRenderKey = renderKey
+    }
+
+    func setScale(_ scale: CGFloat) {
+        let currentScaleX = transform.a
+        let currentScaleY = transform.d
+        guard abs(currentScaleX - scale) > 0.0001 || abs(currentScaleY - scale) > 0.0001 else { return }
+        transform = CGAffineTransform(scaleX: scale, y: scale)
+    }
+}
+
+private final class GaiaObservationAnnotation: NSObject, MKAnnotation {
+    var observation: Observation
+    @objc dynamic var coordinate: CLLocationCoordinate2D
+
+    init(observation: Observation) {
+        self.observation = observation
+        self.coordinate = CLLocationCoordinate2D(latitude: observation.latitude, longitude: observation.longitude)
+    }
+
+    func update(with observation: Observation) {
+        self.observation = observation
+        let nextCoordinate = CLLocationCoordinate2D(latitude: observation.latitude, longitude: observation.longitude)
+        if abs(nextCoordinate.latitude - coordinate.latitude) > 0.000_000_1 ||
+            abs(nextCoordinate.longitude - coordinate.longitude) > 0.000_000_1 {
+            coordinate = nextCoordinate
+        }
+    }
+}
+
+private extension ExploreMapView {
+    static func initialRegion(for observations: [Observation], zoomOverride: CGFloat? = nil) -> MKCoordinateRegion {
         guard let first = observations.first else {
-            return .camera(center: GaiaMapbox.fallbackCenter, zoom: zoomOverride ?? 11.8, bearing: 0, pitch: 0)
+            return MKCoordinateRegion(
+                center: GaiaMapbox.fallbackCenter,
+                span: span(for: Double(zoomOverride ?? 11.8))
+            )
         }
 
         let latitudes = observations.map(\.latitude)
@@ -345,10 +400,32 @@ struct ExploreMapView: View {
             longitude: (minLongitude + maxLongitude) / 2
         )
 
-        return .camera(center: center, zoom: zoomOverride ?? initialViewportZoom(for: observations), bearing: 0, pitch: 0)
+        let zoom = Double(zoomOverride ?? initialViewportZoom(for: observations))
+        return MKCoordinateRegion(center: center, span: span(for: zoom))
     }
 
-    private static func initialViewportZoom(for observations: [Observation]) -> CGFloat {
+    static func span(for zoom: Double) -> MKCoordinateSpan {
+        let clampedZoom = max(2, min(18, zoom))
+        let delta = max(0.0012, 360 / pow(2, clampedZoom))
+        return MKCoordinateSpan(latitudeDelta: delta, longitudeDelta: delta)
+    }
+
+    static func zoomLevel(for region: MKCoordinateRegion) -> Double {
+        let maxDelta = max(region.span.latitudeDelta, region.span.longitudeDelta)
+        let safeDelta = max(maxDelta, 0.000_001)
+        return log2(360 / safeDelta)
+    }
+
+    static func markerScale(for zoom: Double) -> CGFloat {
+        let minZoom = GaiaPinMapConfig.markerScaleStartZoom
+        let maxZoom = GaiaPinMapConfig.markerScaleEndZoom
+        let clamped = min(max(zoom, minZoom), maxZoom)
+        let progress = (clamped - minZoom) / max(0.0001, maxZoom - minZoom)
+        let range = 1.0 - GaiaPinMapConfig.markerMinScale
+        return GaiaPinMapConfig.markerMinScale + (CGFloat(progress) * range)
+    }
+
+    static func initialViewportZoom(for observations: [Observation]) -> CGFloat {
         guard let first = observations.first else { return 11.8 }
 
         let latitudes = observations.map(\.latitude)
@@ -371,30 +448,6 @@ struct ExploreMapView: View {
         default:
             return 10.0
         }
-    }
-}
-
-private extension Feature {
-    var coordinate: CLLocationCoordinate2D? {
-        guard case let .point(point)? = geometry else { return nil }
-        return point.coordinates
-    }
-}
-
-private extension JSONValue {
-    var boolValue: Bool? {
-        if case let .boolean(value) = self { return value }
-        return nil
-    }
-
-    var doubleValue: Double? {
-        if case let .number(value) = self { return value }
-        return nil
-    }
-
-    var stringValue: String? {
-        if case let .string(value) = self { return value }
-        return nil
     }
 }
 

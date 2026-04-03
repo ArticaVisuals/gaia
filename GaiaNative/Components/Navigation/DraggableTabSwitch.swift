@@ -87,3 +87,142 @@ struct DraggableTabSwitch<T: Identifiable & Hashable>: View {
         }
     }
 }
+
+struct HorizontalTabSwipeModifier<T: Hashable>: ViewModifier {
+    let tabs: [T]
+    @Binding var selection: T
+    var onHorizontalDragStateChange: ((Bool) -> Void)? = nil
+
+    @State private var dragOffset: CGFloat = 0
+    @State private var axisLock: DragAxisLock = .undecided
+    @State private var dragStartIndex: Int?
+    @State private var isHorizontalDragActive = false
+
+    private let gestureMinimumDistance: CGFloat = 10
+    private let axisDecisionThreshold: CGFloat = 12
+    private let minimumSwipeDistance: CGFloat = 46
+    private let horizontalDominanceRatio: CGFloat = 1.25
+    private let edgeResistanceFactor: CGFloat = 0.33
+    private let velocitySwipeThreshold: CGFloat = 180
+
+    private enum DragAxisLock {
+        case undecided
+        case horizontal
+        case vertical
+    }
+
+    func body(content: Content) -> some View {
+        content
+            .contentShape(Rectangle())
+            .offset(x: dragOffset)
+            .simultaneousGesture(
+                DragGesture(minimumDistance: gestureMinimumDistance, coordinateSpace: .local)
+                    .onChanged { value in
+                        handleSwipeChanged(value)
+                    }
+                    .onEnded { value in
+                        handleSwipeEnded(value)
+                    },
+                including: .gesture
+            )
+    }
+
+    private func handleSwipeChanged(_ value: DragGesture.Value) {
+        guard tabs.count > 1 else { return }
+
+        if dragStartIndex == nil {
+            dragStartIndex = tabs.firstIndex(of: selection) ?? 0
+        }
+
+        if axisLock == .undecided {
+            let horizontalTravel = abs(value.translation.width)
+            let verticalTravel = abs(value.translation.height)
+            guard max(horizontalTravel, verticalTravel) >= axisDecisionThreshold else { return }
+
+            if horizontalTravel > (verticalTravel * horizontalDominanceRatio) {
+                axisLock = .horizontal
+                setHorizontalDragActive(true)
+            } else if verticalTravel > (horizontalTravel * horizontalDominanceRatio) {
+                axisLock = .vertical
+            } else {
+                return
+            }
+        }
+
+        guard axisLock == .horizontal else { return }
+
+        let startIndex = dragStartIndex ?? (tabs.firstIndex(of: selection) ?? 0)
+        let translationX = value.translation.width
+        let isAtFirstTab = startIndex == 0 && translationX > 0
+        let isAtLastTab = startIndex == tabs.count - 1 && translationX < 0
+        let resistance = (isAtFirstTab || isAtLastTab) ? edgeResistanceFactor : 1
+
+        dragOffset = translationX * resistance
+    }
+
+    private func handleSwipeEnded(_ value: DragGesture.Value) {
+        defer {
+            axisLock = .undecided
+            dragStartIndex = nil
+            setHorizontalDragActive(false)
+        }
+
+        guard tabs.count > 1 else {
+            dragOffset = 0
+            return
+        }
+
+        guard axisLock == .horizontal else {
+            dragOffset = 0
+            return
+        }
+
+        let startIndex = dragStartIndex ?? (tabs.firstIndex(of: selection) ?? 0)
+        let projectedHorizontalTravel = abs(value.predictedEndTranslation.width) > abs(value.translation.width)
+            ? value.predictedEndTranslation.width
+            : value.translation.width
+        let projectedVelocity = value.predictedEndTranslation.width - value.translation.width
+        let isVelocitySwipe = abs(projectedVelocity) >= velocitySwipeThreshold
+
+        var targetIndex = startIndex
+        if abs(projectedHorizontalTravel) >= minimumSwipeDistance || isVelocitySwipe {
+            targetIndex = projectedHorizontalTravel < 0 ? startIndex + 1 : startIndex - 1
+        }
+        targetIndex = min(max(targetIndex, 0), tabs.count - 1)
+
+        let targetTab = tabs[targetIndex]
+        let willChangeTab = targetTab != selection
+        if willChangeTab {
+            HapticsService.selectionChanged()
+        }
+
+        withAnimation(GaiaMotion.spring) {
+            if willChangeTab {
+                selection = targetTab
+            }
+            dragOffset = 0
+        }
+    }
+
+    private func setHorizontalDragActive(_ isActive: Bool) {
+        guard isHorizontalDragActive != isActive else { return }
+        isHorizontalDragActive = isActive
+        onHorizontalDragStateChange?(isActive)
+    }
+}
+
+extension View {
+    func horizontalTabSwipe<T: Hashable>(
+        tabs: [T],
+        selection: Binding<T>,
+        onHorizontalDragStateChange: ((Bool) -> Void)? = nil
+    ) -> some View {
+        modifier(
+            HorizontalTabSwipeModifier(
+                tabs: tabs,
+                selection: selection,
+                onHorizontalDragStateChange: onHorizontalDragStateChange
+            )
+        )
+    }
+}

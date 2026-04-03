@@ -1,88 +1,1454 @@
+// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=793-16557
 import SwiftUI
+
+private struct ImpactGoal: Identifiable {
+    let id: String
+    let title: String
+    let progressLabel: String
+    let progress: CGFloat
+    let accent: Color
+    let titleColor: Color
+    let pillStroke: Color
+}
+
+private struct ImpactMonthBar: Identifiable {
+    let id: String
+    let month: String
+    let value: Int
+    let fillRatio: CGFloat
+}
+
+private struct ImpactMedal: Identifiable {
+    let id: String
+    let title: String
+    let count: Int
+    let icon: String
+    let tint: Color
+    let badgeImageName: String
+}
+
+private struct ImpactTreeSlice: Identifiable {
+    let id: String
+    let title: String
+    let value: Double
+    let color: Color
+}
 
 struct ProfileImpactTab: View {
     let profile: ProfileSummary
+
     @EnvironmentObject private var contentStore: ContentStore
     @State private var showsExpandedMap = false
+    @State private var showsMedalsDetail = false
+    @State private var showsBioCalendarDetail = false
+
+    private let goals: [ImpactGoal] = [
+        .init(
+            id: "urban-fungi",
+            title: "Urban Fungi\nChallenge",
+            progressLabel: "2 of 5 finds",
+            progress: 155 / 338,
+            accent: GaiaColor.oliveGreen500,
+            titleColor: GaiaColor.oliveGreen500,
+            pillStroke: GaiaColor.oliveGreen500
+        ),
+        .init(
+            id: "id-support",
+            title: "ID Support Goal",
+            progressLabel: "3 of 5 contributions",
+            progress: 220 / 338,
+            accent: GaiaColor.broccoliBrown500,
+            titleColor: GaiaColor.broccoliBrown500,
+            pillStroke: GaiaColor.broccoliBrown500
+        )
+    ]
+
+    private let monthBars: [ImpactMonthBar] = [
+        .init(id: "mar", month: "Mar", value: 23, fillRatio: 200 / 273),
+        .init(id: "feb", month: "Feb", value: 19, fillRatio: 166 / 273),
+        .init(id: "jan", month: "Jan", value: 15, fillRatio: 130 / 273),
+        .init(id: "dec", month: "Dec", value: 22, fillRatio: 200 / 273),
+        .init(id: "nov", month: "Nov", value: 28, fillRatio: 200 / 273),
+        .init(id: "oct", month: "Oct", value: 20, fillRatio: 174 / 273)
+    ]
+
+    private let medals: [ImpactMedal] = [
+        .init(
+            id: "plant",
+            title: "Plant",
+            count: 12,
+            icon: "leaf.fill",
+            tint: GaiaColor.broccoliBrown400,
+            badgeImageName: "gaia-profile-impact-medal-plant"
+        ),
+        .init(
+            id: "mammal",
+            title: "Mammal",
+            count: 10,
+            icon: "pawprint.fill",
+            tint: GaiaColor.broccoliBrown400,
+            badgeImageName: "gaia-profile-impact-medal-mammal"
+        ),
+        .init(
+            id: "fungus",
+            title: "Fungus",
+            count: 4,
+            icon: "tree.fill",
+            tint: GaiaColor.broccoliBrown400,
+            badgeImageName: "gaia-profile-impact-medal-fungus"
+        ),
+        .init(
+            id: "insect",
+            title: "Insect",
+            count: 3,
+            icon: "ladybug.fill",
+            tint: GaiaColor.broccoliBrown400,
+            badgeImageName: "gaia-profile-impact-medal-insect"
+        ),
+        .init(
+            id: "reptile",
+            title: "Reptile",
+            count: 2,
+            icon: "tortoise.fill",
+            tint: GaiaColor.broccoliBrown400,
+            badgeImageName: "gaia-profile-impact-medal-reptile"
+        )
+    ]
+
+    private let calendarLevels: [Int] = [
+        0, 2, 0, 0, 0, 4, 4, 0, 3, 0,
+        0, 0, 4, 2, 4, 4, 0, 0, 0, 4,
+        2, 0, 2, 0, 1, 1, 1, 3, 3, 0,
+        2, 4, 2, 0, 1, 4, 1, 4, 3, 0,
+        2, 3, 2, 0, 0, 4, 3, 0, 0, 0,
+        2, 4, 0, 0, 0, 4, 4, 4, 0, 4
+    ]
+
+    private let treeSlices: [ImpactTreeSlice] = [
+        .init(id: "mammal", title: "Mammal", value: 22, color: GaiaColor.vermillion500),
+        .init(id: "insect", title: "Insect", value: 16, color: GaiaColor.indigoBlue500),
+        .init(id: "reptile", title: "Reptile", value: 5, color: GaiaColor.siskin500),
+        .init(id: "plant", title: "Plant", value: 20, color: GaiaColor.grassGreen500)
+    ]
 
     var body: some View {
         VStack(alignment: .leading, spacing: GaiaSpacing.lg) {
-            ImpactSummaryCard(profile: profile)
-
-            GaiaDataCard {
-                VStack(alignment: .leading, spacing: GaiaSpacing.md) {
-                    Text("Stats")
-                        .font(GaiaTypography.titleRegular)
-                        .foregroundStyle(GaiaColor.textPrimary)
-                    HStack {
-                        stat(value: "63", label: "Species")
-                        Spacer()
-                        stat(value: "23", label: "IDs")
-                        Spacer()
-                        stat(value: "4", label: "Projects")
-                    }
-                }
+            VStack(alignment: .leading, spacing: GaiaSpacing.md) {
+                levelCard
+                monthlySummaryCard
             }
 
-            GaiaActionCard(accent: GaiaColor.olive) {
-                VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
-                    Text("Keep your streak going")
-                        .font(GaiaTypography.calloutMedium)
-                        .foregroundStyle(GaiaColor.textPrimary)
-                    Text("You’ve logged 5 days in a row. Head outside today to make it 6 and earn the Week Warrior badge.")
-                        .font(GaiaTypography.subheadline)
-                        .foregroundStyle(GaiaColor.textSecondary)
-                    GaiaPill(title: "Log an Observation", fill: GaiaColor.olive, foreground: GaiaColor.paperStrong)
-                }
-            }
-
-            GaiaSectionHeader(title: "Your Impact")
-            ZStack(alignment: .topTrailing) {
-                ExploreMapView(observations: contentStore.observations, recenterRequestID: nil)
-                    .frame(height: 220)
-                    .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
-                            .stroke(GaiaColor.oliveGreen100, lineWidth: 1)
-                    )
-                ExpandMapButton {
-                    showsExpandedMap = true
-                }
-                .padding(GaiaSpacing.sm)
-            }
-
-            GaiaDataCard {
-                VStack(alignment: .leading, spacing: GaiaSpacing.md) {
-                    Text("Medals")
-                        .font(GaiaTypography.titleRegular)
-                        .foregroundStyle(GaiaColor.textPrimary)
-                    HStack(spacing: GaiaSpacing.sm) {
-                        medal("Week Warrior")
-                        medal("Tree Spotter")
-                        medal("ID Helper")
-                    }
-                }
+            VStack(alignment: .leading, spacing: GaiaSpacing.md) {
+                statsCard
+                goalsSection
+                bioCalendarCard
+                treeOfLifeCard
+                findMapSection
+                medalsSection
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .fullScreenCover(isPresented: $showsExpandedMap) {
             ImpactMapExpandedScreen(observations: contentStore.observations) {
                 showsExpandedMap = false
             }
         }
-    }
-
-    private func stat(value: String, label: String) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(value)
-                .font(GaiaTypography.title2Medium)
-                .foregroundStyle(GaiaColor.textPrimary)
-            Text(label)
-                .font(GaiaTypography.footnote)
-                .foregroundStyle(GaiaColor.textSecondary)
+        .fullScreenCover(isPresented: $showsMedalsDetail) {
+            ProfileMedalsDetailScreen {
+                showsMedalsDetail = false
+            }
+        }
+        .fullScreenCover(isPresented: $showsBioCalendarDetail) {
+            ProfileBioCalendarScreen {
+                showsBioCalendarDetail = false
+            }
         }
     }
 
-    private func medal(_ title: String) -> some View {
-        GaiaPill(title: title, fill: GaiaColor.oliveGreen50, foreground: GaiaColor.olive)
+    private var levelCard: some View {
+        VStack(alignment: .leading, spacing: GaiaSpacing.md) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("CURRENT LEVEL")
+                        .font(GaiaTypography.caption)
+                        .foregroundStyle(GaiaColor.oliveGreen200)
+                        .tracking(0.25)
+                    Text("3")
+                        .font(.custom("NewSpirit-Regular", size: 48))
+                        .foregroundStyle(GaiaColor.paperWhite50)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.9)
+                }
+                Spacer(minLength: 0)
+                VStack(alignment: .trailing, spacing: 4) {
+                    Text("NEXT")
+                        .font(GaiaTypography.caption)
+                        .foregroundStyle(GaiaColor.oliveGreen200)
+                        .tracking(0.25)
+                    Text("4")
+                        .font(.custom("NewSpirit-Light", size: 24))
+                        .foregroundStyle(GaiaColor.oliveGreen200)
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 12) {
+                GeometryReader { proxy in
+                    ZStack(alignment: .leading) {
+                        Capsule(style: .continuous)
+                            .fill(GaiaColor.oliveGreen400)
+                        Capsule(style: .continuous)
+                            .fill(GaiaColor.paperWhite50)
+                            .frame(width: proxy.size.width * (206 / 338))
+                    }
+                }
+                .frame(height: 8)
+
+                HStack(spacing: GaiaSpacing.sm) {
+                    Text("12 finds to level 4")
+                        .font(GaiaTypography.caption2)
+                        .foregroundStyle(GaiaColor.oliveGreen200)
+
+                    Spacer(minLength: 0)
+
+                    Text("55% there")
+                        .font(GaiaTypography.caption)
+                        .foregroundStyle(GaiaColor.oliveGreen200)
+                        .padding(.horizontal, 12)
+                        .frame(height: 22)
+                        .background(GaiaColor.oliveGreen400, in: Capsule())
+                }
+            }
+        }
+        .padding(GaiaSpacing.md)
+        .background(
+            RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                .fill(GaiaColor.oliveGreen500)
+        )
+        .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
     }
+
+    private var monthlySummaryCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("MARCH 2026")
+                .font(GaiaTypography.caption)
+                .foregroundStyle(GaiaColor.broccoliBrown500)
+                .tracking(0.25)
+
+            (
+                Text("You discovered ")
+                + Text("3 new species").foregroundStyle(GaiaColor.oliveGreen500)
+                + Text(" and made ")
+                + Text("4 contributions").foregroundStyle(GaiaColor.broccoliBrown500)
+                + Text(" this month.")
+            )
+            .font(GaiaTypography.title2)
+            .foregroundStyle(GaiaColor.inkBlack300)
+            .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(.horizontal, GaiaSpacing.md)
+        .padding(.top, GaiaSpacing.lg)
+        .padding(.bottom, GaiaSpacing.xl)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
+                .fill(GaiaColor.paperWhite50)
+                .overlay(
+                    RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
+                        .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
+                )
+                .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
+        )
+    }
+
+    private var statsCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Stats")
+                .font(GaiaTypography.subheadSerif)
+                .foregroundStyle(GaiaColor.inkBlack300)
+
+            HStack(spacing: GaiaSpacing.md) {
+                statColumn(title: "Species", value: "63")
+                verticalDivider
+                statColumn(title: "IDs Labeled", value: "23")
+                verticalDivider
+                statColumn(title: "Projects", value: "4")
+            }
+            .padding(.horizontal, GaiaSpacing.md)
+            .padding(.vertical, 12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(
+                RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
+                    .fill(GaiaColor.paperWhite50)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
+                            .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
+                    )
+                    .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
+            )
+        }
+    }
+
+    private var goalsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Goals")
+                    .font(GaiaTypography.subheadSerif)
+                    .foregroundStyle(GaiaColor.inkBlack300)
+                Spacer(minLength: 0)
+                Text("2 active")
+                    .font(GaiaTypography.caption2)
+                    .foregroundStyle(GaiaColor.inkBlack300)
+            }
+
+            VStack(spacing: 12) {
+                ForEach(goals) { goal in
+                    goalCard(goal)
+                }
+            }
+        }
+    }
+
+    private func goalCard(_ goal: ImpactGoal) -> some View {
+        GaiaDataCard {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(alignment: .top, spacing: GaiaSpacing.sm) {
+                    Text(goal.title)
+                        .font(GaiaTypography.titleRegular)
+                        .foregroundStyle(goal.titleColor)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.9)
+
+                    Spacer(minLength: 0)
+
+                    Text(goal.progressLabel)
+                        .font(GaiaTypography.caption)
+                        .foregroundStyle(goal.pillStroke)
+                        .padding(.horizontal, 10)
+                        .frame(height: 24)
+                        .overlay(
+                            Capsule(style: .continuous)
+                                .stroke(goal.pillStroke, lineWidth: 0.5)
+                        )
+                }
+
+                GeometryReader { proxy in
+                    ZStack(alignment: .leading) {
+                        Capsule(style: .continuous)
+                            .fill(GaiaColor.blackishGrey50)
+                        Capsule(style: .continuous)
+                            .fill(goal.accent)
+                            .frame(width: proxy.size.width * goal.progress)
+                    }
+                }
+                .frame(height: 6)
+            }
+        }
+    }
+
+    private var bioCalendarCard: some View {
+        Button {
+            showsBioCalendarDetail = true
+        } label: {
+            GaiaDataCard {
+                VStack(alignment: .leading, spacing: 20) {
+                    HStack(alignment: .bottom) {
+                        Text("Bio Calendar")
+                            .font(GaiaTypography.titleRegular)
+                            .foregroundStyle(GaiaColor.inkBlack300)
+                        Spacer(minLength: 0)
+                        Text("Last 60 days")
+                            .font(GaiaTypography.caption2)
+                            .foregroundStyle(GaiaColor.inkBlack300)
+                    }
+
+                    GeometryReader { proxy in
+                        let spacing: CGFloat = 4
+                        let side = (proxy.size.width - (spacing * 9)) / 10
+
+                        LazyVGrid(
+                            columns: Array(repeating: GridItem(.fixed(side), spacing: spacing), count: 10),
+                            alignment: .leading,
+                            spacing: spacing
+                        ) {
+                            ForEach(Array(calendarLevels.enumerated()), id: \.offset) { _, level in
+                                RoundedRectangle(cornerRadius: 3.8, style: .continuous)
+                                    .fill(calendarColor(for: level))
+                                    .frame(width: side, height: side)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 3.8, style: .continuous)
+                                            .stroke(GaiaColor.paperWhite600, lineWidth: 0.5)
+                                    )
+                            }
+                        }
+                    }
+                    .frame(height: 206)
+
+                    HStack {
+                        Text("41 active days")
+                            .font(GaiaTypography.caption2)
+                            .foregroundStyle(GaiaColor.oliveGreen500)
+
+                        Spacer(minLength: 0)
+
+                        HStack(spacing: GaiaSpacing.sm) {
+                            Text("1")
+                                .font(GaiaTypography.caption)
+                                .foregroundStyle(GaiaColor.inkBlack300)
+                            HStack(spacing: 4) {
+                                legendSwatch(level: 0)
+                                legendSwatch(level: 1)
+                                legendSwatch(level: 2)
+                                legendSwatch(level: 4)
+                            }
+                            Text("4+")
+                                .font(GaiaTypography.caption)
+                                .foregroundStyle(GaiaColor.inkBlack300)
+                        }
+                    }
+                }
+            }
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var treeOfLifeCard: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            HStack(alignment: .bottom) {
+                Text("Tree of Life")
+                    .font(GaiaTypography.titleRegular)
+                    .foregroundStyle(GaiaColor.inkBlack300)
+                Spacer(minLength: 0)
+                Text("4 kingdoms")
+                    .font(GaiaTypography.caption2)
+                    .foregroundStyle(GaiaColor.inkBlack300)
+            }
+
+            HStack(spacing: 31) {
+                treeOfLifeChart
+                VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
+                    ForEach(treeSlices) { slice in
+                        HStack(spacing: 6) {
+                            RoundedRectangle(cornerRadius: 2, style: .continuous)
+                                .fill(slice.color)
+                                .frame(width: 14, height: 14)
+                            Text(slice.title)
+                                .font(GaiaTypography.caption2)
+                                .foregroundStyle(GaiaColor.inkBlack300)
+                        }
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .center)
+            .padding(.horizontal, GaiaSpacing.xs)
+        }
+        .padding(.horizontal, GaiaSpacing.md)
+        .padding(.top, GaiaSpacing.md)
+        .padding(.bottom, GaiaSpacing.lg)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
+                .fill(GaiaColor.paperWhite50)
+                .overlay(
+                    RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
+                        .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
+                )
+                .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
+        )
+    }
+
+    private var treeOfLifeChart: some View {
+        return ZStack {
+            Image("gaia-profile-impact-tree-insect")
+                .resizable()
+                .renderingMode(.original)
+                .scaledToFit()
+                .frame(width: 108.11, height: 56.27)
+                .rotationEffect(.degrees(-157.04))
+                .position(x: 82.54, y: 46.99)
+
+            Image("gaia-profile-impact-tree-mammal")
+                .resizable()
+                .renderingMode(.original)
+                .scaledToFit()
+                .frame(width: 59.23, height: 56.27)
+                .position(x: 100.26, y: 101.91)
+
+            Image("gaia-profile-impact-tree-reptile")
+                .resizable()
+                .renderingMode(.original)
+                .scaledToFit()
+                .frame(width: 76.01, height: 16.48)
+                .rotationEffect(.degrees(72.95))
+                .position(x: 28.21, y: 89.56)
+
+            Image("gaia-profile-impact-tree-plant")
+                .resizable()
+                .renderingMode(.original)
+                .scaledToFit()
+                .frame(width: 20.49, height: 13.07)
+                .rotationEffect(.degrees(47.98))
+                .position(x: 58.97, y: 126.73)
+
+            Circle()
+                .fill(GaiaColor.surfaceCard)
+                .frame(width: 74, height: 74)
+
+            VStack(spacing: 0) {
+                Text("63")
+                    .font(.custom("NewSpirit-Medium", size: 50 * 0.72))
+                    .foregroundStyle(Color.black)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+                Text("species")
+                    .font(GaiaTypography.caption)
+                    .foregroundStyle(GaiaColor.inkBlack300)
+                    .offset(y: -2)
+            }
+        }
+        .frame(width: 147, height: 147)
+        .clipped()
+    }
+
+    private var findMapSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Find Map")
+                    .font(GaiaTypography.subheadSerif)
+                    .foregroundStyle(GaiaColor.inkBlack300)
+                Spacer(minLength: 0)
+                Text("5 finds")
+                    .font(GaiaTypography.caption2)
+                    .foregroundStyle(GaiaColor.inkBlack300)
+            }
+
+            VStack(spacing: 0) {
+                ZStack(alignment: .topTrailing) {
+                    GaiaAssetImage(name: "gaia-profile-impact-map-preview", contentMode: .fill)
+                        .frame(height: 214)
+                        .frame(maxWidth: .infinity)
+                        .clipped()
+
+                    GlassCircleButton(size: 44, action: {
+                        showsExpandedMap = true
+                    }) {
+                        ProfileImpactExpandIcon()
+                    }
+                    .padding(GaiaSpacing.md)
+                }
+
+                HStack {
+                    Text(profileFindsLabel)
+                        .font(GaiaTypography.caption2Medium)
+                        .foregroundStyle(GaiaColor.broccoliBrown500)
+                    Spacer(minLength: 0)
+                }
+                .padding(.horizontal, GaiaSpacing.md)
+                .frame(height: 41)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(GaiaColor.surfaceCard)
+            }
+            .frame(maxWidth: .infinity)
+            .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                    .stroke(GaiaColor.border, lineWidth: 0.5)
+            )
+            .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
+        }
+    }
+
+    private var medalsSection: some View {
+        VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
+            HStack {
+                Text("Medals")
+                    .font(GaiaTypography.subheadSerif)
+                    .foregroundStyle(GaiaColor.inkBlack300)
+
+                Spacer(minLength: 0)
+
+                Button {
+                    showsMedalsDetail = true
+                } label: {
+                    Text("View all")
+                        .font(GaiaTypography.caption2)
+                        .foregroundStyle(GaiaColor.inkBlack200)
+                }
+                .buttonStyle(.plain)
+            }
+
+            HStack(spacing: 0) {
+                ForEach(Array(medals.enumerated()), id: \.element.id) { index, medal in
+                    if index > 0 {
+                        Spacer(minLength: 0)
+                    }
+                    medalBadge(medal)
+                }
+            }
+            .frame(maxWidth: .infinity)
+        }
+    }
+
+    private func medalBadge(_ medal: ImpactMedal) -> some View {
+        VStack(spacing: 3.3) {
+            ZStack(alignment: .bottomTrailing) {
+                GaiaAssetImage(name: medal.badgeImageName, contentMode: .fit)
+                    .frame(width: 59.81, height: 58.96)
+
+                Text("\(medal.count)")
+                    .font(.custom("NewSpirit-Regular", size: 10.53))
+                    .foregroundStyle(Color.white)
+                    .frame(width: 16.45, height: 16.45)
+                    .background(Circle().fill(GaiaColor.oliveGreen500))
+                    .overlay(
+                        Circle()
+                            .stroke(GaiaColor.paperWhite200, lineWidth: 2)
+                    )
+                    .offset(x: 2, y: 2)
+            }
+            .frame(width: 59.81, height: 58.96)
+
+            Text(medal.title)
+                .font(.custom("Neue Haas Unica W1G", size: 8.56))
+                .foregroundStyle(
+                    medal.id == "plant"
+                        ? GaiaColor.broccoliBrown500
+                        : GaiaColor.broccoliBrown200
+                )
+                .tracking(0.33)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+        }
+        .frame(width: 59.81)
+    }
+
+    private var monthToMonthCard: some View {
+        profileSoftCard {
+            VStack(alignment: .leading, spacing: GaiaSpacing.md) {
+                Text("Month-to-Month")
+                    .font(GaiaTypography.subheadSerif)
+                    .foregroundStyle(GaiaColor.inkBlack300)
+
+                VStack(spacing: 6) {
+                    ForEach(monthBars) { bar in
+                        HStack(spacing: 12) {
+                            Text(bar.month)
+                                .font(GaiaTypography.subheadSerif)
+                                .foregroundStyle(GaiaColor.inkBlack500)
+                                .frame(width: 34, alignment: .leading)
+
+                            GeometryReader { proxy in
+                                ZStack(alignment: .leading) {
+                                    Capsule(style: .continuous)
+                                        .fill(GaiaColor.oliveGreen100)
+                                    Capsule(style: .continuous)
+                                        .fill(GaiaColor.oliveGreen400)
+                                        .frame(width: proxy.size.width * bar.fillRatio)
+                                }
+                            }
+                            .frame(height: 14)
+
+                            Text("\(bar.value)")
+                                .font(GaiaTypography.footnote)
+                                .foregroundStyle(GaiaColor.inkBlack300)
+                                .frame(width: 22, alignment: .trailing)
+                        }
+                        .frame(height: 20)
+                    }
+                }
+            }
+        }
+    }
+
+    private var streakCard: some View {
+        profileSoftCard {
+            VStack(alignment: .leading, spacing: GaiaSpacing.md) {
+                VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
+                    HStack(alignment: .firstTextBaseline) {
+                        Text("Current Streak")
+                            .font(GaiaTypography.subheadline)
+                            .foregroundStyle(GaiaColor.inkBlack300)
+                        Spacer(minLength: 0)
+                        Text("4 days")
+                            .font(.custom("NewSpirit-Medium", size: 24))
+                            .foregroundStyle(GaiaColor.oliveGreen500)
+                    }
+
+                    HStack(alignment: .firstTextBaseline) {
+                        Text("Longest Streak")
+                            .font(GaiaTypography.subheadline)
+                            .foregroundStyle(GaiaColor.inkBlack300)
+                        Spacer(minLength: 0)
+                        Text("12 days")
+                            .font(GaiaTypography.subheadSerif)
+                            .foregroundStyle(GaiaColor.blackishGrey300)
+                    }
+                }
+
+                Text("▲ 18% more active than last month")
+                    .font(GaiaTypography.footnoteMedium)
+                    .foregroundStyle(GaiaColor.oliveGreen500)
+            }
+        }
+    }
+
+    private var patternInsightCard: some View {
+        profileSoftCard {
+            VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
+                Text("PATTERN INSIGHT")
+                    .font(GaiaTypography.captionMedium)
+                    .foregroundStyle(GaiaColor.oliveGreen500)
+                    .tracking(0.25)
+
+                Text("You observe most on Saturdays and Sundays, usually between 8–11am. Your most productive month was November with 28 finds.")
+                    .font(GaiaTypography.footnote)
+                    .foregroundStyle(GaiaColor.inkBlack500)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+    }
+
+    private var profileFindsLabel: String {
+        let parts = profile.impactSummary.split(separator: " ")
+        if parts.count >= 2, Int(parts[0]) != nil {
+            return "\(parts[0]) \(parts[1])"
+        }
+        return "127 finds"
+    }
+
+    private var verticalDivider: some View {
+        Rectangle()
+            .fill(GaiaColor.paperWhite600)
+            .frame(width: 1, height: 56)
+    }
+
+    private func statColumn(title: String, value: String) -> some View {
+        VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
+            Text(title)
+                .font(GaiaTypography.caption)
+                .foregroundStyle(GaiaColor.blackishGrey200)
+                .tracking(0.25)
+            Text(value)
+                .font(.custom("NewSpirit-Regular", size: 48 * (2 / 3)))
+                .foregroundStyle(GaiaColor.oliveGreen500)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func legendSwatch(level: Int) -> some View {
+        RoundedRectangle(cornerRadius: 1.9, style: .continuous)
+            .fill(calendarColor(for: level))
+            .frame(width: 15, height: 15)
+            .overlay(
+                RoundedRectangle(cornerRadius: 1.9, style: .continuous)
+                    .stroke(GaiaColor.paperWhite600, lineWidth: 0.25)
+            )
+    }
+
+    private func calendarColor(for level: Int) -> Color {
+        switch level {
+        case 4:
+            return GaiaColor.oliveGreen500
+        case 3:
+            return GaiaColor.oliveGreen300
+        case 2:
+            return GaiaColor.oliveGreen200
+        case 1:
+            return GaiaColor.oliveGreen100
+        default:
+            return GaiaColor.oliveGreen50
+        }
+    }
+
+    @ViewBuilder
+    private func profileSoftCard<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+        content()
+            .padding(.horizontal, GaiaSpacing.md)
+            .padding(.vertical, 14)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(
+                RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                    .fill(GaiaColor.broccoliBrown50)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                            .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
+                    )
+            )
+    }
+}
+
+private struct ProfileImpactExpandIcon: View {
+    var body: some View {
+        GeometryReader { proxy in
+            let canvas = min(proxy.size.width, proxy.size.height)
+            let slot = canvas * (1 - 0.3674)
+            let arrowWidth = canvas * (20.359 / 24)
+            let arrowHeight = canvas * (21.148 / 24)
+
+            ZStack {
+                Image("gaia-profile-impact-expand-a-24")
+                    .resizable()
+                    .renderingMode(.original)
+                    .scaledToFit()
+                    .frame(width: arrowWidth, height: arrowHeight)
+                    .rotationEffect(.degrees(-135))
+                    .frame(width: slot, height: slot)
+                    .position(x: slot * 0.5, y: slot * 0.5)
+
+                Image("gaia-profile-impact-expand-b-24")
+                    .resizable()
+                    .renderingMode(.original)
+                    .scaledToFit()
+                    .frame(width: arrowWidth, height: arrowHeight)
+                    .rotationEffect(.degrees(45))
+                    .frame(width: slot, height: slot)
+                    .position(x: canvas - (slot * 0.5), y: canvas - (slot * 0.5))
+            }
+            .frame(width: canvas, height: canvas)
+        }
+        .frame(width: 24, height: 24)
+        .accessibilityHidden(true)
+    }
+}
+
+private struct ProfileMedalsDetailScreen: View {
+    let onClose: () -> Void
+
+    private let categoryBadges: [CategoryMedalBadge] = [
+        .init(id: "fungus", title: "Fungus", findsText: "10 finds", imageName: "gaia-profile-medal-category-fungus"),
+        .init(id: "fish", title: "Fish", findsText: "10 finds", imageName: "gaia-profile-medal-category-fish"),
+        .init(id: "insect", title: "Insect", findsText: "10 finds", imageName: "gaia-profile-medal-category-insect"),
+        .init(id: "mammal", title: "Mammal", findsText: "10 finds", imageName: "gaia-profile-medal-category-mammal"),
+        .init(id: "mollusk", title: "Mollusk", findsText: "10 finds", imageName: "gaia-profile-medal-category-mollusk"),
+        .init(id: "plant", title: "Plant", findsText: "10 finds", imageName: "gaia-profile-medal-category-plant"),
+        .init(id: "bird", title: "Bird", findsText: "10 finds", imageName: "gaia-profile-medal-category-bird"),
+        .init(id: "reptile", title: "Reptile", findsText: "10 finds", imageName: "gaia-profile-medal-category-reptile"),
+        .init(id: "amphibian", title: "Amphibian", findsText: "10 finds", imageName: "gaia-profile-medal-category-amphibian")
+    ]
+
+    private let regionalBadges: [RegionalMedalBadge] = [
+        .init(id: "alpine-observer", title: "Alpine\nObserver", isEarned: true),
+        .init(id: "night-watcher", title: "Night\nWatcher", isEarned: true),
+        .init(id: "coastal-sentinel-earned", title: "Coastal\nSentinel", isEarned: true),
+        .init(id: "coastal-sentinel-locked-a", title: "Coastal\nSentinel", isEarned: false),
+        .init(id: "coastal-sentinel-locked-b", title: "Coastal\nSentinel", isEarned: false),
+        .init(id: "coastal-sentinel-locked-c", title: "Coastal\nSentinel", isEarned: false)
+    ]
+
+    private let badgeColumns: [GridItem] = Array(
+        repeating: GridItem(.fixed(118), spacing: GaiaSpacing.sm),
+        count: 3
+    )
+
+    var body: some View {
+        ScrollView(showsIndicators: false) {
+            VStack(alignment: .leading, spacing: GaiaSpacing.lg) {
+                recentlyEarnedCard
+                medalSection(title: "Category") {
+                    LazyVGrid(columns: badgeColumns, alignment: .leading, spacing: GaiaSpacing.sm) {
+                        ForEach(categoryBadges) { badge in
+                            categoryBadgeCard(badge)
+                        }
+                    }
+                }
+                medalSection(title: "Regional") {
+                    LazyVGrid(columns: badgeColumns, alignment: .leading, spacing: GaiaSpacing.sm) {
+                        ForEach(regionalBadges) { badge in
+                            regionalBadgeCard(badge)
+                        }
+                    }
+                }
+            }
+            .padding(.horizontal, GaiaSpacing.md)
+            .padding(.top, GaiaSpacing.lg)
+            .padding(.bottom, 48)
+        }
+        .background(GaiaColor.paperWhite50.ignoresSafeArea())
+        .safeAreaInset(edge: .top, spacing: 0) {
+            VStack(spacing: 0) {
+                HStack(alignment: .center) {
+                    ToolbarGlassButton(icon: .back, accessibilityLabel: "Back") {
+                        onClose()
+                    }
+
+                    Spacer(minLength: 0)
+
+                    Text("Medals")
+                        .font(GaiaTypography.title1Medium)
+                        .tracking(-0.3)
+                        .foregroundStyle(GaiaColor.oliveGreen500)
+
+                    Spacer(minLength: 0)
+
+                    Color.clear
+                        .frame(width: 48, height: 48)
+                }
+                .padding(.horizontal, GaiaSpacing.md)
+                .padding(.top, 8)
+                .padding(.bottom, GaiaSpacing.md)
+
+                Text("8 earned")
+                    .font(GaiaTypography.subheadSerif)
+                    .foregroundStyle(GaiaColor.blackishGrey500)
+                    .padding(.bottom, GaiaSpacing.md)
+            }
+            .frame(maxWidth: .infinity)
+            .background(GaiaColor.paperWhite50)
+            .overlay(alignment: .bottom) {
+                Rectangle()
+                    .fill(GaiaColor.broccoliBrown200)
+                    .frame(height: 0.5)
+            }
+            .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
+        }
+    }
+
+    private var recentlyEarnedCard: some View {
+        HStack(spacing: GaiaSpacing.md) {
+            Image("gaia-profile-medal-featured-circle")
+                .resizable()
+                .renderingMode(.original)
+                .scaledToFit()
+                .frame(width: 64, height: 64)
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
+                Text("RECENTLY EARNED")
+                    .font(GaiaTypography.caption)
+                    .tracking(0.25)
+                    .foregroundStyle(GaiaColor.oliveGreen200)
+
+                VStack(alignment: .leading, spacing: GaiaSpacing.xs) {
+                    Text("Mammal Scout")
+                        .font(GaiaTypography.title1Medium)
+                        .tracking(-0.3)
+                        .foregroundStyle(GaiaColor.paperWhite50)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+
+                    VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
+                        Text("Earned March 22, 2026")
+                            .font(GaiaTypography.caption)
+                            .tracking(0.25)
+                            .foregroundStyle(GaiaColor.textInverseSecondary)
+
+                        Text("Logged 10+ mammal species in your region")
+                            .font(GaiaTypography.caption)
+                            .tracking(0.25)
+                            .foregroundStyle(GaiaColor.textInverseSecondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+            }
+        }
+        .padding(GaiaSpacing.md)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                .fill(GaiaColor.oliveGreen500)
+                .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
+        )
+    }
+
+    @ViewBuilder
+    private func medalSection<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: GaiaSpacing.md) {
+            Text(title)
+                .font(GaiaTypography.title2)
+                .tracking(-0.2)
+                .foregroundStyle(GaiaColor.inkBlack300)
+
+            content()
+        }
+    }
+
+    private func categoryBadgeCard(_ badge: CategoryMedalBadge) -> some View {
+        badgeCardContainer {
+            VStack(spacing: GaiaSpacing.xs) {
+                Image(badge.imageName)
+                    .resizable()
+                    .renderingMode(.original)
+                    .scaledToFit()
+                    .frame(width: 82.98, height: 82.98)
+                    .accessibilityHidden(true)
+
+                Text(badge.title)
+                    .font(GaiaTypography.bodySerif)
+                    .foregroundStyle(GaiaColor.broccoliBrown500)
+                    .multilineTextAlignment(.center)
+
+                Text(badge.findsText)
+                    .font(GaiaTypography.caption)
+                    .tracking(0.25)
+                    .foregroundStyle(GaiaColor.blackishGrey200)
+                    .multilineTextAlignment(.center)
+            }
+            .frame(maxWidth: .infinity)
+        }
+    }
+
+    private func regionalBadgeCard(_ badge: RegionalMedalBadge) -> some View {
+        badgeCardContainer {
+            VStack(spacing: GaiaSpacing.xs) {
+                if badge.isEarned {
+                    Circle()
+                        .stroke(GaiaColor.broccoliBrown500, lineWidth: 5)
+                        .frame(width: 83, height: 83)
+                } else {
+                    Circle()
+                        .fill(GaiaColor.blackishGrey200)
+                        .frame(width: 83, height: 83)
+                }
+
+                Text(badge.title)
+                    .font(GaiaTypography.bodySerif)
+                    .foregroundStyle(
+                        badge.isEarned
+                            ? GaiaColor.broccoliBrown500
+                            : GaiaColor.blackishGrey200
+                    )
+                    .multilineTextAlignment(.center)
+            }
+            .frame(maxWidth: .infinity)
+        }
+    }
+
+    private func badgeCardContainer<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+        content()
+            .padding(.horizontal, 18)
+            .padding(.vertical, GaiaSpacing.md)
+            .frame(width: 118, alignment: .center)
+            .background(
+                RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                    .fill(GaiaColor.paperWhite50)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                            .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
+                    )
+                    .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
+            )
+    }
+}
+
+struct ProfileBioCalendarScreen: View {
+    let onClose: () -> Void
+
+    @State private var selectedRange: BioCalendarRange = .thirtyDays
+
+    private let monthBars: [ImpactMonthBar] = [
+        .init(id: "mar", month: "Mar", value: 23, fillRatio: 200 / 273),
+        .init(id: "feb", month: "Feb", value: 19, fillRatio: 166 / 273),
+        .init(id: "jan", month: "Jan", value: 15, fillRatio: 130 / 273),
+        .init(id: "dec", month: "Dec", value: 22, fillRatio: 200 / 273),
+        .init(id: "nov", month: "Nov", value: 28, fillRatio: 200 / 273),
+        .init(id: "oct", month: "Oct", value: 20, fillRatio: 174 / 273)
+    ]
+
+    private let calendarWeeks: [[BioCalendarDay?]] = [
+        [nil, nil, nil, nil, nil, nil, .init(day: 1, dots: 2)],
+        [
+            .init(day: 2, dots: 2),
+            .init(day: 3, dots: 1),
+            .init(day: 4, dots: 0),
+            .init(day: 5, dots: 0),
+            .init(day: 6, dots: 1),
+            .init(day: 7, dots: 2),
+            .init(day: 8, dots: 2)
+        ],
+        [
+            .init(day: 9, dots: 0),
+            .init(day: 10, dots: 0),
+            .init(day: 11, dots: 0),
+            .init(day: 12, dots: 2),
+            .init(day: 13, dots: 0),
+            .init(day: 14, dots: 1),
+            .init(day: 15, dots: 2)
+        ],
+        [
+            .init(day: 16, dots: 0),
+            .init(day: 17, dots: 0),
+            .init(day: 18, dots: 0),
+            .init(day: 19, dots: 0),
+            .init(day: 20, dots: 0),
+            .init(day: 21, dots: 2),
+            .init(day: 22, dots: 2)
+        ],
+        [
+            .init(day: 23, dots: 0),
+            .init(day: 24, dots: 0),
+            .init(day: 25, dots: 0),
+            .init(day: 26, dots: 0),
+            .init(day: 27, dots: 0),
+            .init(day: 28, dots: 1),
+            .init(day: 29, dots: 2)
+        ],
+        [
+            .init(day: 30, dots: 0),
+            .init(day: 31, dots: 0),
+            nil, nil, nil, nil, nil
+        ]
+    ]
+
+    private let weekDayLabels: [String] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    private let cellSize: CGFloat = 44.22
+    private let cellSpacing: CGFloat = 6.08
+
+    var body: some View {
+        ScrollView(showsIndicators: false) {
+            VStack(alignment: .leading, spacing: GaiaSpacing.md) {
+                statsDetailsCard
+                calendarCard
+                monthToMonthCard
+                streakCard
+                patternInsightCard
+            }
+            .padding(.horizontal, GaiaSpacing.md)
+            .padding(.top, GaiaSpacing.lg)
+            .padding(.bottom, 56)
+        }
+        .background(GaiaColor.paperWhite50.ignoresSafeArea())
+        .safeAreaInset(edge: .top, spacing: 0) {
+            VStack(spacing: GaiaSpacing.md) {
+                HStack(alignment: .center) {
+                    ToolbarGlassButton(icon: .back, accessibilityLabel: "Back", action: onClose)
+
+                    Spacer(minLength: 0)
+
+                    Text("Bio Calendar")
+                        .font(GaiaTypography.title1Medium)
+                        .tracking(-0.3)
+                        .foregroundStyle(GaiaColor.oliveGreen500)
+
+                    Spacer(minLength: 0)
+
+                    Color.clear
+                        .frame(width: 48, height: 48)
+                }
+
+                HStack(spacing: GaiaSpacing.sm) {
+                    ForEach(BioCalendarRange.allCases) { range in
+                        Button {
+                            selectedRange = range
+                        } label: {
+                            Text(range.rawValue)
+                                .font(GaiaTypography.footnote)
+                                .foregroundStyle(
+                                    selectedRange == range
+                                        ? GaiaColor.paperWhite50
+                                        : GaiaColor.inkBlack300
+                                )
+                                .padding(.horizontal, 10)
+                                .frame(height: 28)
+                                .background(
+                                    Capsule(style: .continuous)
+                                        .fill(
+                                            selectedRange == range
+                                                ? GaiaColor.oliveGreen500
+                                                : GaiaColor.oliveGreen500.opacity(0.20)
+                                        )
+                                )
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding(.horizontal, GaiaSpacing.md)
+            .padding(.top, 8)
+            .padding(.bottom, GaiaSpacing.lg)
+            .frame(maxWidth: .infinity)
+            .background(GaiaColor.paperWhite50)
+            .overlay(alignment: .bottom) {
+                Rectangle()
+                    .fill(GaiaColor.broccoliBrown200)
+                    .frame(height: 0.5)
+            }
+            .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
+        }
+    }
+
+    private var statsDetailsCard: some View {
+        HStack(alignment: .center) {
+            detailMetric(title: "Finds", value: "159")
+
+            verticalDivider
+
+            detailMetric(title: "Active days", value: "41")
+
+            verticalDivider
+
+            detailMetric(title: "Projects", value: "4")
+        }
+        .padding(.horizontal, GaiaSpacing.md)
+        .padding(.vertical, 12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                .fill(GaiaColor.paperWhite50)
+                .overlay(
+                    RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                        .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
+                )
+                .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
+        )
+    }
+
+    private var calendarCard: some View {
+        VStack(alignment: .leading, spacing: GaiaSpacing.lg) {
+            HStack {
+                Text("May 2026")
+                    .font(GaiaTypography.display)
+                    .tracking(-0.5)
+                    .foregroundStyle(GaiaColor.oliveGreen500)
+
+                Spacer(minLength: 0)
+
+                HStack(spacing: GaiaSpacing.sm) {
+                    monthArrowButton(rotation: .degrees(180))
+                    monthArrowButton(rotation: .degrees(0))
+                }
+            }
+
+            VStack(alignment: .leading, spacing: GaiaSpacing.md) {
+                HStack(spacing: cellSpacing) {
+                    ForEach(weekDayLabels, id: \.self) { label in
+                        Text(label)
+                            .font(GaiaTypography.footnoteMedium)
+                            .foregroundStyle(GaiaColor.inkBlack500)
+                            .textCase(.uppercase)
+                            .frame(width: cellSize, height: 18)
+                    }
+                }
+
+                VStack(spacing: 4) {
+                    ForEach(Array(calendarWeeks.enumerated()), id: \.offset) { _, week in
+                        HStack(spacing: cellSpacing) {
+                            ForEach(Array(week.enumerated()), id: \.offset) { _, day in
+                                calendarDayCell(day)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, GaiaSpacing.md)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                .fill(GaiaColor.paperWhite50)
+                .overlay(
+                    RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                        .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
+                )
+                .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
+        )
+    }
+
+    private var monthToMonthCard: some View {
+        softAnalyticsCard {
+            VStack(alignment: .leading, spacing: GaiaSpacing.md) {
+                Text("Month-to-Month")
+                    .font(GaiaTypography.subheadSerif)
+                    .foregroundStyle(GaiaColor.inkBlack300)
+
+                VStack(spacing: 6) {
+                    ForEach(monthBars) { bar in
+                        HStack(spacing: 12) {
+                            Text(bar.month)
+                                .font(GaiaTypography.subheadSerif)
+                                .foregroundStyle(GaiaColor.inkBlack500)
+                                .frame(width: 34, alignment: .leading)
+
+                            GeometryReader { proxy in
+                                ZStack(alignment: .leading) {
+                                    Capsule(style: .continuous)
+                                        .fill(GaiaColor.oliveGreen100)
+                                    Capsule(style: .continuous)
+                                        .fill(GaiaColor.oliveGreen400)
+                                        .frame(width: proxy.size.width * bar.fillRatio)
+                                }
+                            }
+                            .frame(height: 14)
+
+                            Text("\(bar.value)")
+                                .font(GaiaTypography.footnote)
+                                .foregroundStyle(GaiaColor.inkBlack300)
+                                .frame(width: 22, alignment: .trailing)
+                        }
+                        .frame(height: 20)
+                    }
+                }
+            }
+        }
+    }
+
+    private var streakCard: some View {
+        softAnalyticsCard {
+            VStack(alignment: .leading, spacing: GaiaSpacing.md) {
+                VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
+                    HStack(alignment: .firstTextBaseline) {
+                        Text("Current Streak")
+                            .font(GaiaTypography.subheadline)
+                            .foregroundStyle(GaiaColor.inkBlack300)
+
+                        Spacer(minLength: 0)
+
+                        Text("4 days")
+                            .font(GaiaTypography.title2Medium)
+                            .foregroundStyle(GaiaColor.oliveGreen500)
+                            .tracking(-0.2)
+                    }
+
+                    HStack(alignment: .firstTextBaseline) {
+                        Text("Longest Streak")
+                            .font(GaiaTypography.subheadline)
+                            .foregroundStyle(GaiaColor.inkBlack300)
+
+                        Spacer(minLength: 0)
+
+                        Text("12 days")
+                            .font(GaiaTypography.subheadSerif)
+                            .foregroundStyle(GaiaColor.blackishGrey300)
+                    }
+                }
+
+                Text("▲ 18% more active than last month")
+                    .font(GaiaTypography.footnoteMedium)
+                    .foregroundStyle(GaiaColor.oliveGreen500)
+            }
+        }
+    }
+
+    private var patternInsightCard: some View {
+        softAnalyticsCard {
+            VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
+                Text("PATTERN INSIGHT")
+                    .font(GaiaTypography.captionMedium)
+                    .foregroundStyle(GaiaColor.oliveGreen500)
+                    .tracking(0.25)
+
+                Text("You observe most on Saturdays and Sundays, usually between 8–11am. Your most productive month was November with 28 finds.")
+                    .font(GaiaTypography.footnote)
+                    .foregroundStyle(GaiaColor.inkBlack500)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+    }
+
+    private func detailMetric(title: String, value: String) -> some View {
+        VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
+            Text(title)
+                .font(GaiaTypography.caption)
+                .foregroundStyle(GaiaColor.blackishGrey200)
+                .tracking(0.25)
+
+            Text(value)
+                .font(GaiaTypography.display)
+                .tracking(-0.5)
+                .foregroundStyle(GaiaColor.oliveGreen500)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private var verticalDivider: some View {
+        Rectangle()
+            .fill(GaiaColor.paperWhite600)
+            .frame(width: 1, height: 56)
+    }
+
+    private func monthArrowButton(rotation: Angle) -> some View {
+        Button(action: {}) {
+            Image("gaia-icon-chevron-20")
+                .resizable()
+                .renderingMode(.template)
+                .scaledToFit()
+                .foregroundStyle(GaiaColor.inkBlack500)
+                .frame(width: 20, height: 20)
+                .rotationEffect(rotation)
+                .padding(6)
+                .background(
+                    Circle()
+                        .fill(GaiaColor.paperWhite200)
+                )
+                .overlay(
+                    Circle()
+                        .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
+                )
+        }
+        .buttonStyle(.plain)
+    }
+
+    @ViewBuilder
+    private func calendarDayCell(_ day: BioCalendarDay?) -> some View {
+        if let day {
+            VStack(spacing: 2) {
+                Text("\(day.day)")
+                    .font(.custom("Neue Haas Unica W1G", size: 20))
+                    .tracking(-0.45)
+                    .foregroundStyle(day.dots > 0 ? GaiaColor.oliveGreen500 : GaiaColor.oliveGreen600)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+
+                HStack(spacing: 2) {
+                    ForEach(0..<day.dots, id: \.self) { _ in
+                        Circle()
+                            .fill(GaiaColor.oliveGreen500)
+                            .frame(width: 4, height: 4)
+                    }
+                }
+                .frame(height: 4)
+            }
+            .frame(width: cellSize, height: cellSize)
+        } else {
+            Color.clear
+                .frame(width: cellSize, height: cellSize)
+        }
+    }
+
+    @ViewBuilder
+    private func softAnalyticsCard<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+        content()
+            .padding(.horizontal, GaiaSpacing.md)
+            .padding(.vertical, 14)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(
+                RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                    .fill(GaiaColor.broccoliBrown50)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                            .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
+                    )
+            )
+    }
+}
+
+private enum BioCalendarRange: String, CaseIterable, Identifiable {
+    case thisYear = "This year"
+    case sixtyDays = "60 days"
+    case thirtyDays = "30 days"
+    case lastWeek = "Last week"
+
+    var id: String { rawValue }
+}
+
+private struct BioCalendarDay {
+    let day: Int
+    let dots: Int
+}
+
+private struct CategoryMedalBadge: Identifiable {
+    let id: String
+    let title: String
+    let findsText: String
+    let imageName: String
+}
+
+private struct RegionalMedalBadge: Identifiable {
+    let id: String
+    let title: String
+    let isEarned: Bool
 }

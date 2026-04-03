@@ -5,12 +5,25 @@ struct ObserveFlowScreen: View {
     @StateObject private var viewModel = ObserveViewModel()
 
     var body: some View {
+        if #available(iOS 18.0, *) {
+            flowContent
+                .toolbarVisibility(.hidden, for: .tabBar)
+        } else {
+            flowContent
+        }
+    }
+
+    private var flowContent: some View {
         Group {
             switch viewModel.step {
             case .camera:
                 ObserveCameraScreen(
                     onClose: { appState.select(section: .explore) },
-                    onShutter: { viewModel.step = .loading }
+                    onShutter: { viewModel.step = .loading },
+                    onPhotoImport: { viewModel.step = .loading },
+                    onAudioSend: { clipURL in
+                        viewModel.submitAudioObservation(url: clipURL)
+                    }
                 )
             case .loading:
                 ObserveLoadingScreen {

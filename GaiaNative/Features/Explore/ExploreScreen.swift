@@ -33,6 +33,9 @@ struct ExploreScreen: View {
                     onSelectFind: { species in
                         appState.openFindDetails(speciesID: species.id, tab: .learn)
                     },
+                    onSelectProject: { project in
+                        appState.openProjectDetail(project)
+                    },
                     onLocate: {
                         recenterRequestID = UUID()
                         isSearchFocused = false
@@ -85,10 +88,11 @@ private struct ExploreSheetMetrics {
 
     init(containerHeight: CGFloat, topInset: CGFloat) {
         headerHeight = topInset + 48
-        peekHeight = 196
         fullHeight = max(360, containerHeight - headerHeight)
         fullOffset = 12
-        midOffset = max(fullOffset, round(fullHeight * 0.47))
+        // Figma ratios — sheet top at ~50% for mid, ~73% for collapsed
+        peekHeight = round(containerHeight * 0.243)
+        midOffset = max(fullOffset, round(fullHeight * 0.43))
         collapsedOffset = max(midOffset, fullHeight - peekHeight)
     }
 
@@ -145,6 +149,7 @@ private struct ExploreDraggableSheet: View {
     let nearbyFindCount: Int
     let topInset: CGFloat
     let onSelectFind: (Species) -> Void
+    let onSelectProject: (ProjectSelection) -> Void
     let onLocate: () -> Void
     let onProgressChange: (CGFloat) -> Void
     let onPositionChange: (ExploreSheetSnapshot) -> Void
@@ -157,6 +162,7 @@ private struct ExploreDraggableSheet: View {
         nearbyFindCount: Int,
         topInset: CGFloat,
         onSelectFind: @escaping (Species) -> Void,
+        onSelectProject: @escaping (ProjectSelection) -> Void,
         onLocate: @escaping () -> Void,
         onProgressChange: @escaping (CGFloat) -> Void,
         onPositionChange: @escaping (ExploreSheetSnapshot) -> Void
@@ -165,6 +171,7 @@ private struct ExploreDraggableSheet: View {
         self.nearbyFindCount = nearbyFindCount
         self.topInset = topInset
         self.onSelectFind = onSelectFind
+        self.onSelectProject = onSelectProject
         self.onLocate = onLocate
         self.onProgressChange = onProgressChange
         self.onPositionChange = onPositionChange
@@ -182,17 +189,22 @@ private struct ExploreDraggableSheet: View {
             let contentOpacity = max(0, min(1, (contentReveal - 0.12) / 0.88))
             let peekOpacity = max(0, 1 - contentReveal * 1.35)
             let collapsedLift = (1 - contentReveal) * 14
-            let collapsedBottomInset = (1 - contentReveal) * 12
+            let shellHorizontalInset = (1 - contentReveal) * 12
+            let shellBottomInset = shellHorizontalInset
+            let collapsedBottomLift = (1 - contentReveal) * 12
             let peekInsets = EdgeInsets(
                 top: (1 - contentReveal) * 4,
                 leading: 0,
-                bottom: (1 - contentReveal) * 12,
+                bottom: shellBottomInset,
                 trailing: 0
             )
-            let shellHorizontalInset = (1 - contentReveal) * 12
             let shellWidth = max(0, viewportWidth - (shellHorizontalInset * 2))
-            let topPosition = metrics.topPosition(for: liveOffset) - collapsedLift - collapsedBottomInset
-            let visibleSheetHeight = max(metrics.peekHeight, metrics.fullHeight - liveOffset + collapsedLift)
+            let topPosition = metrics.topPosition(for: liveOffset) - collapsedLift - shellBottomInset - collapsedBottomLift
+            // In collapsed state, the sheet is a floating 190pt card (166pt Figma card + top/bottom padding).
+            // In mid/full, it extends to the container bottom.
+            let expandedSheetHeight = metrics.fullHeight - liveOffset + collapsedLift
+            let collapsedCardHeight: CGFloat = 190
+            let visibleSheetHeight = collapsedCardHeight + (expandedSheetHeight - collapsedCardHeight) * contentReveal
             let activeDragHeight = detent == .full ? 112 : visibleSheetHeight
 
             locateButton(topPosition: topPosition, metrics: metrics)
@@ -211,6 +223,7 @@ private struct ExploreDraggableSheet: View {
                 ExploreBottomSheet(
                     species: species,
                     onSelectFind: onSelectFind,
+                    onSelectProject: onSelectProject,
                     allowsScroll: detent == .full,
                     showsSurface: false,
                     onPullDownCollapse: {
@@ -414,7 +427,7 @@ private struct ExploreCollapsedPanel: View {
         ExploreSheetPeekCard(nearbyFindCount: nearbyFindCount, width: width)
             .padding(.top, 4)
             .padding(.bottom, 4)
-            .frame(width: width, height: 196, alignment: .top)
+            .frame(width: width, height: 166, alignment: .top)
     }
 }
 
@@ -437,7 +450,7 @@ private struct ExploreSheetPeekCard: View {
                 .padding(.horizontal, 16)
                 .frame(width: width, alignment: .center)
         }
-        .frame(width: width, height: 174, alignment: .top)
+        .frame(width: width, height: 166, alignment: .top)
     }
 }
 
@@ -445,8 +458,10 @@ private struct ExploreSheetSurface: View {
     let contentReveal: CGFloat
 
     var body: some View {
-        let topCorner = 35 + (48 - 35) * contentReveal
-        let bottomCorner = 35 * (1 - contentReveal)
+        // Collapsed (contentReveal=0): floating card → 50px all corners
+        // Mid/Full (contentReveal=1): extends to bottom → 48px top, 0 bottom
+        let topCorner = 50 + (48 - 50) * contentReveal
+        let bottomCorner = 50 * (1 - contentReveal)
 
         UnevenRoundedRectangle(
             cornerRadii: .init(

@@ -25,17 +25,16 @@ struct ActivityTabView: View {
 
             ActivitySuggestionCard(scientificName: species.scientificName)
 
-            ForEach(comments) { comment in
-                ActivityCommentCard(comment: comment)
-            }
+            ActivityCommentThread(comments: comments)
 
             HStack {
                 Spacer()
                 Text("Read more")
-                    .font(.custom("Neue Haas Unica W1G", size: 15))
+                    .font(GaiaTypography.subheadline)
                     .foregroundStyle(GaiaColor.olive)
             }
-            .padding(.horizontal, 4)
+            .padding(.horizontal, GaiaSpacing.xs)
+            .padding(.leading, GaiaSpacing.md + 1)
 
             VStack(alignment: .leading, spacing: 12) {
                 Text("Leaderboard")
@@ -46,6 +45,7 @@ struct ActivityTabView: View {
             }
         }
         .padding(.horizontal, GaiaSpacing.md)
+        .padding(.top, GaiaSpacing.xs)
     }
 }
 
@@ -71,7 +71,7 @@ private struct ActivityFilterPill: View {
     var body: some View {
         Button(action: {}) {
             Text(title)
-                .font(.custom("Neue Haas Unica W1G", size: 17))
+                .font(GaiaTypography.body)
                 .foregroundStyle(GaiaColor.paperWhite50)
                 .frame(maxWidth: .infinity)
                 .frame(height: 48)
@@ -100,7 +100,7 @@ private struct ActivitySuggestionCard: View {
                             .font(GaiaTypography.titleRegular)
                             .foregroundStyle(GaiaColor.olive)
                         Text("Original suggested ID")
-                            .font(.custom("Neue Haas Unica W1G", size: 11))
+                            .font(GaiaTypography.caption)
                             .foregroundStyle(GaiaColor.inkBlack300)
                     }
                     Spacer(minLength: 0)
@@ -136,7 +136,7 @@ private struct ActivityCommentCard: View {
             ActivityCardHeader(author: comment.author, actionText: "commented", timestamp: comment.timestamp)
 
             Text(comment.body)
-                .font(.custom("Neue Haas Unica W1G", size: 12))
+                .font(GaiaTypography.caption2)
                 .foregroundStyle(GaiaColor.blackishGrey300)
                 .padding(12)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -150,6 +150,25 @@ private struct ActivityCommentCard: View {
                 )
                 .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
         )
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+private struct ActivityCommentThread: View {
+    let comments: [FindDetailComment]
+
+    var body: some View {
+        HStack(alignment: .top, spacing: GaiaSpacing.md) {
+            Rectangle()
+                .fill(Color.black.opacity(0.1))
+                .frame(width: 1)
+
+            VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
+                ForEach(comments) { comment in
+                    ActivityCommentCard(comment: comment)
+                }
+            }
+        }
     }
 }
 
@@ -160,10 +179,7 @@ private struct ActivityCardHeader: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
-            GaiaAssetImage(name: "find-avatar-alice")
-                .frame(width: 48, height: 48)
-                .clipShape(Circle())
-                .overlay(Circle().stroke(Color.black.opacity(0.1), lineWidth: 0.5))
+            FindProfilePicture(size: .large)
 
             HStack(alignment: .top, spacing: 8) {
                 HStack(alignment: .lastTextBaseline, spacing: 4) {
@@ -172,13 +188,13 @@ private struct ActivityCardHeader: View {
                         .foregroundStyle(GaiaColor.olive)
                         .lineLimit(1)
                     Text(actionText)
-                        .font(.custom("Neue Haas Unica W1G", size: 12))
+                        .font(GaiaTypography.caption2)
                         .foregroundStyle(GaiaColor.broccoliBrown500)
                         .lineLimit(1)
                 }
                 Spacer(minLength: 0)
                 Text(timestamp)
-                    .font(.custom("Neue Haas Unica W1G", size: 11))
+                    .font(GaiaTypography.caption)
                     .foregroundStyle(GaiaColor.inkBlack200)
                     .tracking(0.25)
             }
@@ -198,7 +214,7 @@ private struct ActivityOutlinedPill: View {
     var body: some View {
         Button(action: {}) {
             Text(title)
-                .font(.custom("Neue Haas Unica W1G", size: 15))
+                .font(GaiaTypography.subheadline)
                 .foregroundStyle(GaiaColor.olive)
                 .padding(.horizontal, 14)
                 .frame(height: 34)
@@ -222,10 +238,11 @@ private struct ActivityLeaderboardCard: View {
 
             HStack(spacing: 0) {
                 Text("Show more")
-                    .font(.custom("Neue Haas Unica W1G", size: 16))
+                    .font(GaiaTypography.callout)
                     .foregroundStyle(GaiaColor.olive)
-                    .frame(maxWidth: .infinity, alignment: .center)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
                     .padding(.vertical, 12)
+                    .padding(.horizontal, 16)
             }
             .frame(maxWidth: .infinity)
         }
@@ -249,17 +266,17 @@ private struct ActivityLeaderboardRow: View {
         HStack(spacing: 0) {
             HStack(spacing: 16) {
                 Text(entry.rank)
-                    .font(.custom("Neue Haas Unica W1G", size: 16))
+                    .font(GaiaTypography.callout)
                     .foregroundStyle(rankColor)
-                    .frame(width: 18, alignment: .leading)
+                    .monospacedDigit()
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
+                    .frame(width: 24, alignment: .leading)
 
                 HStack(spacing: 8) {
-                    GaiaAssetImage(name: "find-avatar-alice")
-                        .frame(width: 32, height: 32)
-                        .clipShape(Circle())
-                        .overlay(Circle().stroke(Color.black.opacity(0.08), lineWidth: 0.33))
+                    FindProfilePicture(size: .small)
                     Text(entry.name)
-                        .font(.custom("NewSpirit-Regular", size: 16))
+                        .font(GaiaTypography.subheadSerif)
                         .foregroundStyle(rankColor)
                         .lineLimit(1)
                 }
@@ -269,8 +286,11 @@ private struct ActivityLeaderboardRow: View {
 
             HStack(spacing: 4) {
                 Text(entry.count)
-                    .font(.custom("NewSpirit-Regular", size: 16))
+                    .font(GaiaTypography.subheadSerif)
                     .foregroundStyle(rankColor)
+                    .monospacedDigit()
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
                 ActivityBinocularsIcon(tint: entry.isHighlighted ? GaiaColor.paperWhite50 : GaiaColor.olive)
             }
         }
@@ -288,6 +308,51 @@ private struct ActivityLeaderboardRow: View {
 
     private var rankColor: Color {
         entry.isHighlighted ? GaiaColor.paperWhite50 : GaiaColor.olive
+    }
+}
+
+// figma component: Profile Pictures (32/48) — node 870:13598 and 870:13596
+private struct FindProfilePicture: View {
+    enum Size {
+        case small
+        case large
+
+        var dimension: CGFloat {
+            switch self {
+            case .small:
+                return 32
+            case .large:
+                return 48
+            }
+        }
+
+        var borderWidth: CGFloat {
+            switch self {
+            case .small:
+                return 0.33
+            case .large:
+                return 0.5
+            }
+        }
+    }
+
+    let size: Size
+    var imageName: String = "find-avatar-alice"
+
+    var body: some View {
+        let dimension = size.dimension
+
+        ZStack {
+            Circle()
+                .fill(GaiaColor.blackishGrey100)
+
+            GaiaAssetImage(name: imageName, contentMode: .fill)
+                .frame(width: dimension * 3.1506, height: dimension * 2.0982)
+                .offset(x: -dimension * 1.6501, y: -dimension * 0.2343)
+        }
+        .frame(width: dimension, height: dimension)
+        .clipShape(Circle())
+        .overlay(Circle().stroke(Color.black.opacity(0.1), lineWidth: size.borderWidth))
     }
 }
 

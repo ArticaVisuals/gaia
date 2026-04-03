@@ -31,6 +31,7 @@ enum GaiaIconKind {
     case target
     case search
     case microphone
+    case pin
     case back
     case close
     case plus
@@ -66,6 +67,13 @@ enum GaiaIconKind {
                 layers: [
                     .direct(assetPath: "Icons/System/microphone-20-head-olive.png", insets: .css(16.1, 35.64, 37.89, 36.04)),
                     .direct(assetPath: "Icons/System/microphone-20-base-olive.png", insets: .css(45.55, 24.79, 16.1, 25.19))
+                ]
+            )
+        case .pin:
+            return GaiaIconLayout(
+                baseCanvas: 20,
+                layers: [
+                    .direct(assetPath: "Icons/System/pin-20.png", insets: .css(15.81, 25.62, 15.44, 25.62))
                 ]
             )
         case .back:
@@ -172,9 +180,15 @@ enum GaiaIconKind {
                 baseCanvas: 16,
                 layers: [
                     .slotted(
-                        assetPath: "Icons/System/chevron-16.png",
-                        slotInsets: .css(16.3, 35.16, 16.51, 30.2),
-                        intrinsicSize: CGSize(width: 21.5, height: 11.086),
+                        assetPath: "Icons/System/circle-arrow-right-16-ring.png",
+                        slotInsets: .css(0.32, 0.06, 0.06, 0.32),
+                        intrinsicSize: CGSize(width: 31.879, height: 31.877),
+                        rotation: .degrees(90)
+                    ),
+                    .slotted(
+                        assetPath: "Icons/System/circle-arrow-right-16-chevron.png",
+                        slotInsets: .css(25.58, 20.19, 25.7, 16.99),
+                        intrinsicSize: CGSize(width: 15.59, height: 20.103),
                         rotation: .degrees(90)
                     )
                 ]
@@ -198,7 +212,7 @@ struct GaiaIcon: View {
             } else {
                 ZStack {
                     ForEach(Array(layout.layers.enumerated()), id: \.offset) { _, layer in
-                        GaiaIconLayerView(layer: layer, canvasSize: canvasSize, baseCanvas: layout.baseCanvas)
+                        GaiaIconLayerView(layer: layer, canvasSize: canvasSize, baseCanvas: layout.baseCanvas, tint: tint)
                     }
                 }
             }
@@ -402,6 +416,7 @@ private struct GaiaIconLayerView: View {
     let layer: GaiaIconLayer
     let canvasSize: CGFloat
     let baseCanvas: CGFloat
+    var tint: Color? = nil
 
     var body: some View {
         GeometryReader { proxy in
@@ -429,12 +444,22 @@ private struct GaiaIconLayerView: View {
     private var iconImage: some View {
         Group {
             if let image = AssetCatalog.image(named: layer.assetPath) {
-                image
-                    .resizable()
-                    .renderingMode(.original)
-                    .interpolation(.high)
-                    .antialiased(true)
-                    .scaledToFit()
+                if let tint {
+                    image
+                        .resizable()
+                        .renderingMode(.template)
+                        .interpolation(.high)
+                        .antialiased(true)
+                        .scaledToFit()
+                        .foregroundStyle(tint)
+                } else {
+                    image
+                        .resizable()
+                        .renderingMode(.original)
+                        .interpolation(.high)
+                        .antialiased(true)
+                        .scaledToFit()
+                }
             }
         }
     }

@@ -14,6 +14,7 @@ settings:
     INFOPLIST_KEY_CFBundleDisplayName: Gaia
     INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.education
     INFOPLIST_KEY_NSCameraUsageDescription: Gaia uses the camera to observe living things.
+    INFOPLIST_KEY_NSMicrophoneUsageDescription: Gaia uses the microphone to capture voice notes with observations.
     INFOPLIST_KEY_NSLocationWhenInUseUsageDescription: Gaia uses your location to center the map and show nearby finds.
     INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
     INFOPLIST_KEY_UILaunchScreen_Generation: YES

@@ -8,6 +8,7 @@ struct FindDetailsScreen: View {
     @EnvironmentObject private var appState: AppState
     @EnvironmentObject private var contentStore: ContentStore
     @StateObject private var viewModel = FindDetailsViewModel()
+    @State private var isHorizontalTabSwipeActive = false
 
     var body: some View {
         GeometryReader { proxy in
@@ -17,25 +18,36 @@ struct FindDetailsScreen: View {
                 GaiaColor.surfacePrimary.ignoresSafeArea()
 
                 ScrollView(showsIndicators: false) {
-                    VStack(spacing: GaiaSpacing.md) {
+                    VStack(alignment: .leading, spacing: GaiaSpacing.md) {
                         HeroCarousel(
                             imageNames: species.galleryAssetNames,
                             title: species.commonName,
                             subtitle: species.scientificName
                         )
                         .padding(.top, -topInset)
+                        .frame(maxWidth: .infinity)
 
                         DraggableTabSwitch(
                             tabs: FindDetailsTab.allCases,
                             selection: $viewModel.selectedTab,
                             title: { $0.rawValue }
                         )
-                        .padding(.horizontal, GaiaSpacing.md)
+                        .frame(maxWidth: .infinity)
 
                         tabContent
                             .padding(.bottom, 120)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .horizontalTabSwipe(
+                                tabs: FindDetailsTab.allCases,
+                                selection: $viewModel.selectedTab,
+                                onHorizontalDragStateChange: { isActive in
+                                    isHorizontalTabSwipeActive = isActive
+                                }
+                            )
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
+                .scrollDisabled(isHorizontalTabSwipeActive)
 
                 VStack {
                     HStack {
@@ -45,11 +57,13 @@ struct FindDetailsScreen: View {
                         Spacer()
                         ToolbarGlassPill(primaryAction: {}, secondaryAction: {})
                     }
+                    .frame(maxWidth: .infinity)
                     .padding(.horizontal, GaiaSpacing.md)
                     .padding(.top, max(topInset + 8, 54))
 
                     Spacer()
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
         }
         .ignoresSafeArea(edges: .top)
@@ -78,7 +92,10 @@ struct FindDetailsScreen: View {
             FindTabView(
                 species: species,
                 observations: speciesObservations,
-                onExpandMap: { viewModel.showsExpandedMap = true }
+                onExpandMap: { viewModel.showsExpandedMap = true },
+                onOpenProject: { project in
+                    appState.openProjectDetail(project)
+                }
             )
         case .activity:
             ActivityTabView(species: species)

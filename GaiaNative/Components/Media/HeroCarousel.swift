@@ -31,7 +31,7 @@ struct HeroCarousel: View {
                         .lineLimit(1)
 
                     Text(subtitle)
-                        .font(.custom("Neue Haas Unica W1G", size: 11))
+                        .font(GaiaTypography.caption)
                         .foregroundStyle(GaiaColor.paperWhite50.opacity(0.95))
                         .tracking(0.25)
                         .textCase(.none)

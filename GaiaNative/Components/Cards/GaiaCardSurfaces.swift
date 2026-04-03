@@ -23,11 +23,12 @@ struct GaiaDataCard<Content: View>: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
-                    .fill(Color.white)
+                    .fill(GaiaColor.paperWhite50)
                     .overlay(
                         RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
-                            .stroke(GaiaColor.oliveGreen100, lineWidth: 1)
+                            .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
                     )
+                    .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
             )
     }
 }

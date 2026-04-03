@@ -4,6 +4,7 @@ import UIKit
 struct ExploreBottomSheet: View {
     let species: [Species]
     let onSelectFind: (Species) -> Void
+    let onSelectProject: (ProjectSelection) -> Void
     var allowsScroll: Bool = false
     var showsSurface: Bool = true
     var onPullDownCollapse: (() -> Void)? = nil
@@ -89,7 +90,9 @@ struct ExploreBottomSheet: View {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 8) {
                             ForEach(projects) { project in
-                                ExploreSheetProjectCard(project: project)
+                                ExploreSheetProjectCard(project: project) {
+                                    onSelectProject(project.detailSelection)
+                                }
                             }
                         }
                         .padding(.horizontal, sectionInset)
@@ -270,9 +273,10 @@ private struct ExploreSheetViewToggleButton: View {
 
 private struct ExploreSheetProjectCard: View {
     let project: ExploreSheetProject
+    let action: () -> Void
 
     var body: some View {
-        Button(action: {}) {
+        Button(action: action) {
             ZStack(alignment: .topLeading) {
                 GaiaAssetImage(name: project.imageName)
                     .frame(width: 181, height: 133)
@@ -343,8 +347,11 @@ private struct ExploreSheetProjectCard: View {
                     .stroke(Color.black.opacity(0.1), lineWidth: 0.5)
             )
             .shadow(color: GaiaColor.broccoliBrown500.opacity(0.16), radius: 20, x: 0, y: 4)
+            .contentShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
         }
         .buttonStyle(.plain)
+        .accessibilityLabel("\(project.title), \(project.tag) project, \(project.countLabel) finds")
+        .accessibilityHint("Opens the project details page")
     }
 }
 
@@ -409,7 +416,7 @@ private struct ExploreSheetFindGridCard: View {
                 )
 
                 Text(find.title)
-                    .font(.custom("NewSpirit-Regular", size: 16, relativeTo: .body))
+                    .font(GaiaTypography.subheadSerif)
                     .foregroundStyle(.white)
                     .multilineTextAlignment(.leading)
                     .lineLimit(2)
@@ -493,6 +500,16 @@ private struct ExploreSheetProject: Identifiable {
     let tag: String
     let imageName: String
     let countLabel: String
+
+    var detailSelection: ProjectSelection {
+        ProjectSelection(
+            id: id,
+            title: title,
+            tag: tag,
+            countLabel: countLabel,
+            imageName: imageName
+        )
+    }
 
     static let sample: [ExploreSheetProject] = [
         .init(id: "project-creek", title: "Creek Recovery", tag: "Wetland", imageName: "find-project-creek", countLabel: "12"),
