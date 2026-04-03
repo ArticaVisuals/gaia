@@ -271,7 +271,7 @@ body.nav-page-exit {
   font-family: var(--font-serif);
   font-size: 16px; font-weight: 400;
   color: var(--olive);
-  line-height: 18px;         /* Figma: leading-[18px] */
+  line-height: 1.3;          /* Figma: serif/subhead-1 */
   text-align: center;
 }
 
@@ -394,10 +394,10 @@ body.nav-page-exit {
   padding: 12px;
   z-index: 2;
 }
-/* serif/subhead-1: New Spirit Regular 16px, 18px lineHeight, paper-white/50 */
+/* serif/subhead-1: New Spirit Regular 16px, paper-white/50 */
 .card-title {
   font-family: var(--font-serif);
-  font-size: 16px; font-weight: 400; line-height: 18px;
+  font-size: 16px; font-weight: 400; line-height: 1.3;
   color: var(--paper-50);
 }
 /* sans/nav-label: 10px Regular, paper-white/50, 2px gap */
@@ -466,9 +466,9 @@ body.nav-page-exit {
   width: 100px; height: 33px;
   display: flex; flex-direction: column; justify-content: flex-end;
   z-index: 1;
-  /* Figma: serif/subhead-1 — New Spirit Regular 16px, lineHeight 18px, white */
+  /* Figma: serif/subhead-1 — New Spirit Regular 16px, white */
   font-family: var(--font-serif);
-  font-size: 16px; font-weight: 400; line-height: 18px;
+  font-size: 16px; font-weight: 400; line-height: 1.3;
   color: #fff;
 }
 
@@ -1149,7 +1149,7 @@ body.nav-page-exit {
 
 /* Find Conditions heading */
 .fd-section-title {
-  font-family: var(--font-serif); font-size: 16px; line-height: 18px;
+  font-family: var(--font-serif); font-size: 16px; line-height: 1.3;
   color: var(--ink-300); padding: 0 16px;
 }
 
@@ -1268,7 +1268,7 @@ body.nav-page-exit {
   box-shadow: 0px 4px 20px rgba(128,105,38,0.09);
 }
 .fd-project-name {
-  font-family: var(--font-sans); font-size: 16px; line-height: 20px;
+  font-family: var(--font-sans); font-size: 16px; line-height: 21px;
   color: #9b856b;
 }
 .fd-project-observers {
@@ -1420,7 +1420,7 @@ body.nav-page-exit {
 }
 .fd-contrib-count {
   font-family: var(--font-serif); font-size: 16px; color: var(--olive);
-  line-height: 18px;
+  line-height: 1.3;
 }
 .fd-contrib-icon {
   width: 22px;
@@ -1472,7 +1472,7 @@ body.nav-page-exit {
 .fd-activity-info { flex: 1; display: flex; align-items: baseline; gap: 4px; flex-wrap: wrap; }
 .fd-activity-name {
   font-family: var(--font-serif); font-size: 16px; color: var(--olive);
-  line-height: 18px; white-space: nowrap;
+  line-height: 1.3; white-space: nowrap;
 }
 .fd-activity-action {
   font-family: var(--font-sans); font-size: 10px; color: var(--brown-500);
@@ -1921,17 +1921,17 @@ body.nav-page-exit {
 /* ── TYPOGRAPHY SYSTEM ───────────────────────────────────── */
 /* Serif scale (New Spirit) */
 .t-serif-display     { font-family: var(--font-serif); font-size: 32px; line-height: 1.1; letter-spacing: -0.5px; }
-.t-serif-title-1     { font-family: var(--font-serif); font-size: 28px; line-height: 1.15; letter-spacing: -0.3px; }
+.t-serif-title-1     { font-family: var(--font-serif); font-size: 28px; line-height: 1.1; letter-spacing: -0.3px; }
 .t-serif-title-2     { font-family: var(--font-serif); font-size: 24px; line-height: 1.2; letter-spacing: -0.2px; }
 .t-serif-title-3     { font-family: var(--font-serif); font-size: 20px; line-height: 1.3; }
-.t-serif-subhead-1   { font-family: var(--font-serif); font-size: 16px; line-height: 18px; }
-.t-serif-body        { font-family: var(--font-serif); font-size: 14px; line-height: 1.4; }
+.t-serif-subhead-1   { font-family: var(--font-serif); font-size: 16px; line-height: 1.3; }
+.t-serif-body        { font-family: var(--font-serif); font-size: 14px; line-height: 1.2; }
 
 /* Sans scale (Neue Haas Unica) */
 .t-sans-headline     { font-family: var(--font-sans); font-size: 17px; line-height: 1.3; }
-.t-sans-body         { font-family: var(--font-sans); font-size: 15px; line-height: 1.35; }
+.t-sans-body         { font-family: var(--font-sans); font-size: 15px; line-height: 1.3; }
 .t-sans-button-sm    { font-family: var(--font-sans); font-size: 13px; line-height: 1.2; }
-.t-sans-link-sm      { font-family: var(--font-sans); font-size: 12px; line-height: 20px; }
+.t-sans-link-sm      { font-family: var(--font-sans); font-size: 12px; line-height: 1.2; }
 .t-sans-nav-label    { font-family: var(--font-sans); font-size: 10px; line-height: 1.3; letter-spacing: 0.25px; }
 .t-sans-caption      { font-family: var(--font-sans); font-size: 10px; line-height: 1.3; letter-spacing: 0.25px; }
 
@@ -1988,9 +1988,11 @@ body.nav-page-exit {
   position: fixed; inset: 0;
   z-index: 45; /* above sheet (40), below nav (50) */
   background: var(--paper-50);
-  overflow-y: auto;
+  overflow-y: scroll;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  overscroll-behavior: contain;
   display: flex;
   flex-direction: column;
   opacity: 0;
@@ -2104,6 +2106,8 @@ body.nav-page-exit {
   margin-left: -16px;
 }
 .profile-tab {
+  flex: 0 0 125px;
+  width: 125px;
   margin-bottom: -1px;
 }
 
@@ -2195,7 +2199,7 @@ body.nav-page-exit {
 }
 .profile-section-title {
   font-family: var(--font-serif); font-size: 16px; font-weight: 400;
-  line-height: 18px; color: var(--ink-300);
+  line-height: 1.3; color: var(--ink-300);
 }
 .profile-section-action {
   font-family: var(--font-sans); font-size: 12px; font-weight: 400;
@@ -2619,7 +2623,25 @@ body.nav-page-exit {
   width: 26px; height: 26px; flex-shrink: 0; object-fit: contain;
 }
 .profile-log-search-mic {
-  width: 32px; height: 32px; flex-shrink: 0; object-fit: contain;
+  position: relative;
+  width: 32px;
+  height: 32px;
+  display: block;
+  flex-shrink: 0;
+}
+.profile-log-search-mic img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: contain;
+  display: block;
+}
+.profile-log-search-mic-head {
+  inset: 16.1% 35.64% 37.89% 36.04%;
+}
+.profile-log-search-mic-base {
+  inset: 45.55% 24.79% 16.1% 25.19%;
 }
 .profile-log-search input {
   flex: 1; border: none; outline: none; background: transparent;
@@ -2679,16 +2701,19 @@ body.nav-page-exit {
   align-items: center;
   gap: 4px;
   flex-shrink: 0;
+  padding: 4px;
+  border-radius: 8px;
+  background: var(--olive-100);
 }
 .profile-view-btn {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border: none;
   border-radius: 4px;
-  background: var(--olive-200);
+  background: transparent;
   cursor: pointer;
   overflow: hidden;
 }
@@ -2696,22 +2721,27 @@ body.nav-page-exit {
   background: var(--olive);
 }
 .profile-view-btn img {
-  width: 18px;
-  height: 18px;
+  width: 22px;
+  height: 22px;
   object-fit: contain;
 }
-.profile-view-btn svg {
-  width: 18px; height: 18px;
-  color: var(--ink);
+.profile-log-filter-btn {
+  width: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 4px;
+  background: var(--olive);
+  cursor: pointer;
+  box-shadow: 0px 4px 12px rgba(155, 133, 107, 0.18);
 }
-.profile-view-btn.active svg {
-  color: var(--paper-50);
-}
-.profile-log-finds-count {
-  font-family: var(--font-sans);
-  font-size: 12px;
-  color: #b0adb3;
-  white-space: nowrap;
+.profile-log-filter-btn img {
+  width: 33px;
+  height: 35px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
 }
 /* Separator after view row */
 .profile-log-view-row::after {
@@ -2788,7 +2818,7 @@ body.nav-page-exit {
   display: inline-flex; align-items: center; justify-content: center;
   padding: 4px 10px; border-radius: 1000px;
   font-family: var(--font-sans); font-size: 15px; font-weight: 400;
-  line-height: 1.2;
+  line-height: 1.3;
   background: transparent; cursor: default;
 }
 .log-status-pill--verified {
@@ -2890,7 +2920,7 @@ body.nav-page-exit {
   font-family: var(--font-sans);
   font-size: 15px;
   font-weight: 400;
-  line-height: 1.2;
+  line-height: 1.3;
   color: var(--ink-300);
 }
 .community-summary-count {
@@ -3045,7 +3075,7 @@ body.nav-page-exit {
   font-family: var(--font-serif);
   font-size: 16px;
   font-weight: 400;
-  line-height: 18px;
+  line-height: 1.3;
   color: var(--paper-50);
 }
 .community-project-card-count {
@@ -3946,7 +3976,6 @@ body.nav-page-exit {
       <div class="profile-tabs gaia-tab-switch">
         <div class="gaia-tab-switch__indicator" aria-hidden="true"></div>
         <button class="profile-tab gaia-tab-switch__tab active" type="button" data-profile-tab="impact">Impact</button>
-        <button class="profile-tab gaia-tab-switch__tab" type="button" data-profile-tab="log">Log</button>
         <button class="profile-tab gaia-tab-switch__tab" type="button" data-profile-tab="community">Community</button>
       </div>
     </div>
@@ -4164,7 +4193,10 @@ body.nav-page-exit {
           <div class="profile-log-search">
             <img class="profile-log-search-icon" src="assets/icons/system/search-20.svg" alt="">
             <input type="text" placeholder="Search species, location, notes...">
-            <img class="profile-log-search-mic" src="assets/icons/system/microphone-20-base.svg" alt="">
+            <span class="profile-log-search-mic" aria-hidden="true">
+              <img class="profile-log-search-mic-head" src="assets/icons/system/microphone-20-head.svg" alt="">
+              <img class="profile-log-search-mic-base" src="assets/icons/system/microphone-20-base.svg" alt="">
+            </span>
           </div>
         </div>
 
@@ -4187,12 +4219,12 @@ body.nav-page-exit {
               <img src="assets/icons/system/list-32.svg" alt="">
             </button>
             <button class="profile-view-btn" type="button" data-log-view="map" aria-label="Map view">
-              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 6L6 9V26L12 23M12 6L20 9M12 6V23M20 9L26 6V23L20 26M20 9V26M12 23L20 26" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-              </svg>
+              <img src="assets/icons/system/map-32.svg" alt="">
             </button>
           </div>
-          <span class="profile-log-finds-count">127 finds</span>
+          <button class="profile-log-filter-btn" type="button" aria-label="Filter log results">
+            <img src="assets/icons/system/filter-32.svg" alt="">
+          </button>
         </div>
 
         <div class="profile-organism-grid active">
@@ -4732,21 +4764,36 @@ function initDraggableTabSwitch({ container, buttonSelector, getValue, onChange 
     drag = {
       pointerId: event.pointerId,
       startX: event.clientX,
+      startY: event.clientY,
       startLeft: activeButton.offsetLeft,
       currentLeft: activeButton.offsetLeft,
       width: activeButton.offsetWidth,
       targetButton: event.target.closest(buttonSelector),
-      dragging: false
+      dragging: false,
+      directionLocked: false   // true once we decide horizontal vs vertical
     };
     container.classList.add('is-dragging');
-    container.setPointerCapture?.(event.pointerId);
+    // Don't capture pointer yet — wait until we confirm horizontal drag
   });
 
   container.addEventListener('pointermove', event => {
     if (!drag || event.pointerId !== drag.pointerId) return;
 
-    const delta = event.clientX - drag.startX;
-    if (!drag.dragging && Math.abs(delta) > 4) drag.dragging = true;
+    const deltaX = event.clientX - drag.startX;
+    const deltaY = event.clientY - drag.startY;
+
+    // Decide direction once past a small threshold
+    if (!drag.directionLocked && (Math.abs(deltaX) > 4 || Math.abs(deltaY) > 4)) {
+      if (Math.abs(deltaY) > Math.abs(deltaX)) {
+        // Vertical gesture — cancel drag entirely, let browser scroll
+        container.classList.remove('is-dragging');
+        drag = null;
+        return;
+      }
+      drag.directionLocked = true;
+      drag.dragging = true;
+      container.setPointerCapture?.(event.pointerId);
+    }
     if (!drag.dragging) return;
 
     event.preventDefault();
@@ -5070,6 +5117,8 @@ function dragStart(e) {
 
 function dragMove(e) {
   if (!drag.active) return;
+  // Don't block scrolling when profile page is visible
+  if (document.getElementById('profile-page')?.classList.contains('visible')) { drag.active = false; return; }
 
   const t       = e.touches ? e.touches[0] : e;
   const now     = performance.now();
@@ -5525,13 +5574,51 @@ function setupEvents() {
     });
   }
 
+  // Profile tabs: simple click only (no horizontal drag/swipe) so vertical scroll works
   if (!profileTabSwitch && profileTabs) {
-    profileTabSwitch = initDraggableTabSwitch({
-      container: profileTabs,
-      buttonSelector: '.profile-tab',
-      getValue: button => button.dataset.profileTab,
-      onChange: (value, meta) => applyProfileTabState(value, meta)
+    profileTabs.querySelectorAll('.profile-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        applyProfileTabState(tab.dataset.profileTab, { resetScroll: true, source: 'tap' });
+        // Update active class on tabs
+        profileTabs.querySelectorAll('.profile-tab').forEach(t => t.classList.toggle('active', t === tab));
+        // Move indicator
+        const indicator = profileTabs.querySelector('.gaia-tab-switch__indicator');
+        if (indicator) {
+          indicator.style.transform = `translateX(${tab.offsetLeft}px)`;
+          indicator.style.width = `${tab.offsetWidth}px`;
+        }
+      });
     });
+    // Initialize indicator position
+    const activeTab = profileTabs.querySelector('.profile-tab.active');
+    const indicator = profileTabs.querySelector('.gaia-tab-switch__indicator');
+    if (activeTab && indicator) {
+      indicator.style.transform = `translateX(${activeTab.offsetLeft}px)`;
+      indicator.style.width = `${activeTab.offsetWidth}px`;
+    }
+    // Create a minimal profileTabSwitch object for compatibility
+    profileTabSwitch = {
+      getActive: () => profileTabs.querySelector('.profile-tab.active')?.dataset.profileTab || 'impact',
+      hasValue: value => !!profileTabs.querySelector(`.profile-tab[data-profile-tab="${value}"]`),
+      refresh: () => {
+        const active = profileTabs.querySelector('.profile-tab.active');
+        if (active && indicator) {
+          indicator.style.transform = `translateX(${active.offsetLeft}px)`;
+          indicator.style.width = `${active.offsetWidth}px`;
+        }
+      },
+      setActive: (value, options = {}) => {
+        const tab = profileTabs.querySelector(`.profile-tab[data-profile-tab="${value}"]`);
+        if (!tab) return;
+        profileTabs.querySelectorAll('.profile-tab').forEach(t => t.classList.toggle('active', t === tab));
+        const ind = profileTabs.querySelector('.gaia-tab-switch__indicator');
+        if (ind) {
+          ind.style.transform = `translateX(${tab.offsetLeft}px)`;
+          ind.style.width = `${tab.offsetWidth}px`;
+        }
+        applyProfileTabState(value, options);
+      }
+    };
   }
 
   fdLearnReadMore?.addEventListener('click', () => {
