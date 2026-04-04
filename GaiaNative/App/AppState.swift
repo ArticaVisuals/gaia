@@ -11,7 +11,6 @@ enum FindDetailsTab: String, CaseIterable, Identifiable, Codable {
 enum ProfileTab: String, CaseIterable, Identifiable, Codable {
     case impact = "Impact"
     case community = "Community"
-    case preview = "Preview"
 
     var id: String { rawValue }
 }

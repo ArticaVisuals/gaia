@@ -6,7 +6,7 @@ struct GaiaBadge: View {
 
     var body: some View {
         Text(title)
-            .font(GaiaTypography.caption)
+            .gaiaFont(.caption)
             .foregroundStyle(GaiaColor.olive)
             .padding(.horizontal, 12)
             .padding(.vertical, 6)

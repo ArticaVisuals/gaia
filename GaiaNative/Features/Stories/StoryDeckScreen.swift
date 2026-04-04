@@ -29,8 +29,7 @@ struct StoryDeckScreen: View {
                     VStack(spacing: 32) {
                         VStack(spacing: 16) {
                             Text(speciesLabel)
-                                .font(GaiaTypography.caption)
-                                .tracking(0.25)
+                                .gaiaFont(.caption)
                                 .foregroundStyle(GaiaColor.paperWhite500)
                                 .padding(.horizontal, 12)
                                 .frame(height: 20)
@@ -55,8 +54,7 @@ struct StoryDeckScreen: View {
                             .frame(maxWidth: 333)
 
                             Text(story.summary)
-                                .font(GaiaTypography.subheadline)
-                                .tracking(0.5)
+                                .gaiaFont(.subheadline)
                                 .foregroundStyle(GaiaColor.blackishGrey500)
                                 .multilineTextAlignment(.center)
                                 .fixedSize(horizontal: false, vertical: true)

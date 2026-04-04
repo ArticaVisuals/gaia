@@ -57,7 +57,7 @@ struct StatsCard: View {
     private func statColumn<Content: View>(label: String, @ViewBuilder content: () -> Content) -> some View {
         VStack(spacing: 12) {
             Text(label)
-                .font(GaiaTypography.caption2)
+                .gaiaFont(.caption2)
                 .foregroundStyle(GaiaColor.olive)
 
             content()

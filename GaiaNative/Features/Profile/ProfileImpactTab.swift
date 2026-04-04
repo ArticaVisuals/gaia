@@ -147,7 +147,7 @@ struct ProfileImpactTab: View {
                 medalsSection
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, GaiaSpacing.md)
         .fullScreenCover(isPresented: $showsExpandedMap) {
             ImpactMapExpandedScreen(observations: contentStore.observations) {
                 showsExpandedMap = false
@@ -170,9 +170,8 @@ struct ProfileImpactTab: View {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("CURRENT LEVEL")
-                        .font(GaiaTypography.caption)
+                        .gaiaFont(.caption)
                         .foregroundStyle(GaiaColor.oliveGreen200)
-                        .tracking(0.25)
                     Text("3")
                         .font(.custom("NewSpirit-Regular", size: 48))
                         .foregroundStyle(GaiaColor.paperWhite50)
@@ -182,9 +181,8 @@ struct ProfileImpactTab: View {
                 Spacer(minLength: 0)
                 VStack(alignment: .trailing, spacing: 4) {
                     Text("NEXT")
-                        .font(GaiaTypography.caption)
+                        .gaiaFont(.caption)
                         .foregroundStyle(GaiaColor.oliveGreen200)
-                        .tracking(0.25)
                     Text("4")
                         .font(.custom("NewSpirit-Light", size: 24))
                         .foregroundStyle(GaiaColor.oliveGreen200)
@@ -205,13 +203,13 @@ struct ProfileImpactTab: View {
 
                 HStack(spacing: GaiaSpacing.sm) {
                     Text("12 finds to level 4")
-                        .font(GaiaTypography.caption2)
+                        .gaiaFont(.caption2)
                         .foregroundStyle(GaiaColor.oliveGreen200)
 
                     Spacer(minLength: 0)
 
                     Text("55% there")
-                        .font(GaiaTypography.caption)
+                        .gaiaFont(.caption)
                         .foregroundStyle(GaiaColor.oliveGreen200)
                         .padding(.horizontal, 12)
                         .frame(height: 22)
@@ -220,6 +218,7 @@ struct ProfileImpactTab: View {
             }
         }
         .padding(GaiaSpacing.md)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
                 .fill(GaiaColor.oliveGreen500)
@@ -230,9 +229,8 @@ struct ProfileImpactTab: View {
     private var monthlySummaryCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("MARCH 2026")
-                .font(GaiaTypography.caption)
+                .gaiaFont(.caption)
                 .foregroundStyle(GaiaColor.broccoliBrown500)
-                .tracking(0.25)
 
             (
                 Text("You discovered ")
@@ -241,7 +239,7 @@ struct ProfileImpactTab: View {
                 + Text("4 contributions").foregroundStyle(GaiaColor.broccoliBrown500)
                 + Text(" this month.")
             )
-            .font(GaiaTypography.title2)
+            .gaiaFont(.title2)
             .foregroundStyle(GaiaColor.inkBlack300)
             .fixedSize(horizontal: false, vertical: true)
         }
@@ -263,7 +261,7 @@ struct ProfileImpactTab: View {
     private var statsCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Stats")
-                .font(GaiaTypography.subheadSerif)
+                .gaiaFont(.subheadSerif)
                 .foregroundStyle(GaiaColor.inkBlack300)
 
             HStack(spacing: GaiaSpacing.md) {
@@ -292,11 +290,11 @@ struct ProfileImpactTab: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text("Goals")
-                    .font(GaiaTypography.subheadSerif)
+                    .gaiaFont(.subheadSerif)
                     .foregroundStyle(GaiaColor.inkBlack300)
                 Spacer(minLength: 0)
                 Text("2 active")
-                    .font(GaiaTypography.caption2)
+                    .gaiaFont(.caption2)
                     .foregroundStyle(GaiaColor.inkBlack300)
             }
 
@@ -313,7 +311,7 @@ struct ProfileImpactTab: View {
             VStack(alignment: .leading, spacing: 12) {
                 HStack(alignment: .top, spacing: GaiaSpacing.sm) {
                     Text(goal.title)
-                        .font(GaiaTypography.titleRegular)
+                        .gaiaFont(.title3)
                         .foregroundStyle(goal.titleColor)
                         .lineLimit(2)
                         .minimumScaleFactor(0.9)
@@ -321,7 +319,7 @@ struct ProfileImpactTab: View {
                     Spacer(minLength: 0)
 
                     Text(goal.progressLabel)
-                        .font(GaiaTypography.caption)
+                        .gaiaFont(.caption)
                         .foregroundStyle(goal.pillStroke)
                         .padding(.horizontal, 10)
                         .frame(height: 24)
@@ -353,11 +351,11 @@ struct ProfileImpactTab: View {
                 VStack(alignment: .leading, spacing: 20) {
                     HStack(alignment: .bottom) {
                         Text("Bio Calendar")
-                            .font(GaiaTypography.titleRegular)
+                            .gaiaFont(.title3)
                             .foregroundStyle(GaiaColor.inkBlack300)
                         Spacer(minLength: 0)
                         Text("Last 60 days")
-                            .font(GaiaTypography.caption2)
+                            .gaiaFont(.caption2)
                             .foregroundStyle(GaiaColor.inkBlack300)
                     }
 
@@ -385,14 +383,14 @@ struct ProfileImpactTab: View {
 
                     HStack {
                         Text("41 active days")
-                            .font(GaiaTypography.caption2)
+                            .gaiaFont(.caption2)
                             .foregroundStyle(GaiaColor.oliveGreen500)
 
                         Spacer(minLength: 0)
 
                         HStack(spacing: GaiaSpacing.sm) {
                             Text("1")
-                                .font(GaiaTypography.caption)
+                                .gaiaFont(.caption)
                                 .foregroundStyle(GaiaColor.inkBlack300)
                             HStack(spacing: 4) {
                                 legendSwatch(level: 0)
@@ -401,7 +399,7 @@ struct ProfileImpactTab: View {
                                 legendSwatch(level: 4)
                             }
                             Text("4+")
-                                .font(GaiaTypography.caption)
+                                .gaiaFont(.caption)
                                 .foregroundStyle(GaiaColor.inkBlack300)
                         }
                     }
@@ -415,11 +413,11 @@ struct ProfileImpactTab: View {
         VStack(alignment: .leading, spacing: 20) {
             HStack(alignment: .bottom) {
                 Text("Tree of Life")
-                    .font(GaiaTypography.titleRegular)
+                    .gaiaFont(.title3)
                     .foregroundStyle(GaiaColor.inkBlack300)
                 Spacer(minLength: 0)
                 Text("4 kingdoms")
-                    .font(GaiaTypography.caption2)
+                    .gaiaFont(.caption2)
                     .foregroundStyle(GaiaColor.inkBlack300)
             }
 
@@ -432,7 +430,7 @@ struct ProfileImpactTab: View {
                                 .fill(slice.color)
                                 .frame(width: 14, height: 14)
                             Text(slice.title)
-                                .font(GaiaTypography.caption2)
+                                .gaiaFont(.caption2)
                                 .foregroundStyle(GaiaColor.inkBlack300)
                         }
                     }
@@ -500,7 +498,7 @@ struct ProfileImpactTab: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
                 Text("species")
-                    .font(GaiaTypography.caption)
+                    .gaiaFont(.caption)
                     .foregroundStyle(GaiaColor.inkBlack300)
                     .offset(y: -2)
             }
@@ -513,11 +511,11 @@ struct ProfileImpactTab: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text("Find Map")
-                    .font(GaiaTypography.subheadSerif)
+                    .gaiaFont(.subheadSerif)
                     .foregroundStyle(GaiaColor.inkBlack300)
                 Spacer(minLength: 0)
                 Text("5 finds")
-                    .font(GaiaTypography.caption2)
+                    .gaiaFont(.caption2)
                     .foregroundStyle(GaiaColor.inkBlack300)
             }
 
@@ -538,7 +536,7 @@ struct ProfileImpactTab: View {
 
                 HStack {
                     Text(profileFindsLabel)
-                        .font(GaiaTypography.caption2Medium)
+                        .gaiaFont(.caption2Medium)
                         .foregroundStyle(GaiaColor.broccoliBrown500)
                     Spacer(minLength: 0)
                 }
@@ -561,7 +559,7 @@ struct ProfileImpactTab: View {
         VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
             HStack {
                 Text("Medals")
-                    .font(GaiaTypography.subheadSerif)
+                    .gaiaFont(.subheadSerif)
                     .foregroundStyle(GaiaColor.inkBlack300)
 
                 Spacer(minLength: 0)
@@ -570,7 +568,7 @@ struct ProfileImpactTab: View {
                     showsMedalsDetail = true
                 } label: {
                     Text("View all")
-                        .font(GaiaTypography.caption2)
+                        .gaiaFont(.caption2)
                         .foregroundStyle(GaiaColor.inkBlack200)
                 }
                 .buttonStyle(.plain)
@@ -614,7 +612,6 @@ struct ProfileImpactTab: View {
                         ? GaiaColor.broccoliBrown500
                         : GaiaColor.broccoliBrown200
                 )
-                .tracking(0.33)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
         }
@@ -625,14 +622,14 @@ struct ProfileImpactTab: View {
         profileSoftCard {
             VStack(alignment: .leading, spacing: GaiaSpacing.md) {
                 Text("Month-to-Month")
-                    .font(GaiaTypography.subheadSerif)
+                    .gaiaFont(.subheadSerif)
                     .foregroundStyle(GaiaColor.inkBlack300)
 
                 VStack(spacing: 6) {
                     ForEach(monthBars) { bar in
                         HStack(spacing: 12) {
                             Text(bar.month)
-                                .font(GaiaTypography.subheadSerif)
+                                .gaiaFont(.subheadSerif)
                                 .foregroundStyle(GaiaColor.inkBlack500)
                                 .frame(width: 34, alignment: .leading)
 
@@ -648,7 +645,7 @@ struct ProfileImpactTab: View {
                             .frame(height: 14)
 
                             Text("\(bar.value)")
-                                .font(GaiaTypography.footnote)
+                                .gaiaFont(.footnote)
                                 .foregroundStyle(GaiaColor.inkBlack300)
                                 .frame(width: 22, alignment: .trailing)
                         }
@@ -665,27 +662,27 @@ struct ProfileImpactTab: View {
                 VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
                     HStack(alignment: .firstTextBaseline) {
                         Text("Current Streak")
-                            .font(GaiaTypography.subheadline)
+                            .gaiaFont(.subheadline)
                             .foregroundStyle(GaiaColor.inkBlack300)
                         Spacer(minLength: 0)
                         Text("4 days")
-                            .font(.custom("NewSpirit-Medium", size: 24))
+                            .gaiaFont(.title2Medium)
                             .foregroundStyle(GaiaColor.oliveGreen500)
                     }
 
                     HStack(alignment: .firstTextBaseline) {
                         Text("Longest Streak")
-                            .font(GaiaTypography.subheadline)
+                            .gaiaFont(.subheadline)
                             .foregroundStyle(GaiaColor.inkBlack300)
                         Spacer(minLength: 0)
                         Text("12 days")
-                            .font(GaiaTypography.subheadSerif)
+                            .gaiaFont(.subheadSerif)
                             .foregroundStyle(GaiaColor.blackishGrey300)
                     }
                 }
 
                 Text("▲ 18% more active than last month")
-                    .font(GaiaTypography.footnoteMedium)
+                    .gaiaFont(.footnoteMedium)
                     .foregroundStyle(GaiaColor.oliveGreen500)
             }
         }
@@ -695,12 +692,11 @@ struct ProfileImpactTab: View {
         profileSoftCard {
             VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
                 Text("PATTERN INSIGHT")
-                    .font(GaiaTypography.captionMedium)
+                    .gaiaFont(.captionMedium)
                     .foregroundStyle(GaiaColor.oliveGreen500)
-                    .tracking(0.25)
 
                 Text("You observe most on Saturdays and Sundays, usually between 8–11am. Your most productive month was November with 28 finds.")
-                    .font(GaiaTypography.footnote)
+                    .gaiaFont(.footnote)
                     .foregroundStyle(GaiaColor.inkBlack500)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -724,9 +720,8 @@ struct ProfileImpactTab: View {
     private func statColumn(title: String, value: String) -> some View {
         VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
             Text(title)
-                .font(GaiaTypography.caption)
+                .gaiaFont(.caption)
                 .foregroundStyle(GaiaColor.blackishGrey200)
-                .tracking(0.25)
             Text(value)
                 .font(.custom("NewSpirit-Regular", size: 48 * (2 / 3)))
                 .foregroundStyle(GaiaColor.oliveGreen500)
@@ -794,7 +789,7 @@ private struct ProfileImpactExpandIcon: View {
                     .frame(width: arrowWidth, height: arrowHeight)
                     .rotationEffect(.degrees(-135))
                     .frame(width: slot, height: slot)
-                    .position(x: slot * 0.5, y: slot * 0.5)
+                    .position(x: slot * 0.5, y: canvas - (slot * 0.5))
 
                 Image("gaia-profile-impact-expand-b-24")
                     .resizable()
@@ -803,7 +798,7 @@ private struct ProfileImpactExpandIcon: View {
                     .frame(width: arrowWidth, height: arrowHeight)
                     .rotationEffect(.degrees(45))
                     .frame(width: slot, height: slot)
-                    .position(x: canvas - (slot * 0.5), y: canvas - (slot * 0.5))
+                    .position(x: canvas - (slot * 0.5), y: slot * 0.5)
             }
             .frame(width: canvas, height: canvas)
         }
@@ -875,8 +870,7 @@ private struct ProfileMedalsDetailScreen: View {
                     Spacer(minLength: 0)
 
                     Text("Medals")
-                        .font(GaiaTypography.title1Medium)
-                        .tracking(-0.3)
+                        .gaiaFont(.title1Medium)
                         .foregroundStyle(GaiaColor.oliveGreen500)
 
                     Spacer(minLength: 0)
@@ -889,7 +883,7 @@ private struct ProfileMedalsDetailScreen: View {
                 .padding(.bottom, GaiaSpacing.md)
 
                 Text("8 earned")
-                    .font(GaiaTypography.subheadSerif)
+                    .gaiaFont(.subheadSerif)
                     .foregroundStyle(GaiaColor.blackishGrey500)
                     .padding(.bottom, GaiaSpacing.md)
             }
@@ -915,27 +909,23 @@ private struct ProfileMedalsDetailScreen: View {
 
             VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
                 Text("RECENTLY EARNED")
-                    .font(GaiaTypography.caption)
-                    .tracking(0.25)
+                    .gaiaFont(.caption)
                     .foregroundStyle(GaiaColor.oliveGreen200)
 
                 VStack(alignment: .leading, spacing: GaiaSpacing.xs) {
                     Text("Mammal Scout")
-                        .font(GaiaTypography.title1Medium)
-                        .tracking(-0.3)
+                        .gaiaFont(.title1Medium)
                         .foregroundStyle(GaiaColor.paperWhite50)
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
 
                     VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
                         Text("Earned March 22, 2026")
-                            .font(GaiaTypography.caption)
-                            .tracking(0.25)
+                            .gaiaFont(.caption)
                             .foregroundStyle(GaiaColor.textInverseSecondary)
 
                         Text("Logged 10+ mammal species in your region")
-                            .font(GaiaTypography.caption)
-                            .tracking(0.25)
+                            .gaiaFont(.caption)
                             .foregroundStyle(GaiaColor.textInverseSecondary)
                             .fixedSize(horizontal: false, vertical: true)
                     }
@@ -955,8 +945,7 @@ private struct ProfileMedalsDetailScreen: View {
     private func medalSection<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: GaiaSpacing.md) {
             Text(title)
-                .font(GaiaTypography.title2)
-                .tracking(-0.2)
+                .gaiaFont(.title2)
                 .foregroundStyle(GaiaColor.inkBlack300)
 
             content()
@@ -974,13 +963,12 @@ private struct ProfileMedalsDetailScreen: View {
                     .accessibilityHidden(true)
 
                 Text(badge.title)
-                    .font(GaiaTypography.bodySerif)
+                    .gaiaFont(.bodySerif)
                     .foregroundStyle(GaiaColor.broccoliBrown500)
                     .multilineTextAlignment(.center)
 
                 Text(badge.findsText)
-                    .font(GaiaTypography.caption)
-                    .tracking(0.25)
+                    .gaiaFont(.caption)
                     .foregroundStyle(GaiaColor.blackishGrey200)
                     .multilineTextAlignment(.center)
             }
@@ -1002,7 +990,7 @@ private struct ProfileMedalsDetailScreen: View {
                 }
 
                 Text(badge.title)
-                    .font(GaiaTypography.bodySerif)
+                    .gaiaFont(.bodySerif)
                     .foregroundStyle(
                         badge.isEarned
                             ? GaiaColor.broccoliBrown500
@@ -1116,8 +1104,7 @@ struct ProfileBioCalendarScreen: View {
                     Spacer(minLength: 0)
 
                     Text("Bio Calendar")
-                        .font(GaiaTypography.title1Medium)
-                        .tracking(-0.3)
+                        .gaiaFont(.title1Medium)
                         .foregroundStyle(GaiaColor.oliveGreen500)
 
                     Spacer(minLength: 0)
@@ -1132,7 +1119,7 @@ struct ProfileBioCalendarScreen: View {
                             selectedRange = range
                         } label: {
                             Text(range.rawValue)
-                                .font(GaiaTypography.footnote)
+                                .gaiaFont(.footnote)
                                 .foregroundStyle(
                                     selectedRange == range
                                         ? GaiaColor.paperWhite50
@@ -1198,8 +1185,7 @@ struct ProfileBioCalendarScreen: View {
         VStack(alignment: .leading, spacing: GaiaSpacing.lg) {
             HStack {
                 Text("May 2026")
-                    .font(GaiaTypography.display)
-                    .tracking(-0.5)
+                    .gaiaFont(.display)
                     .foregroundStyle(GaiaColor.oliveGreen500)
 
                 Spacer(minLength: 0)
@@ -1214,7 +1200,7 @@ struct ProfileBioCalendarScreen: View {
                 HStack(spacing: cellSpacing) {
                     ForEach(weekDayLabels, id: \.self) { label in
                         Text(label)
-                            .font(GaiaTypography.footnoteMedium)
+                            .gaiaFont(.footnoteMedium)
                             .foregroundStyle(GaiaColor.inkBlack500)
                             .textCase(.uppercase)
                             .frame(width: cellSize, height: 18)
@@ -1250,14 +1236,14 @@ struct ProfileBioCalendarScreen: View {
         softAnalyticsCard {
             VStack(alignment: .leading, spacing: GaiaSpacing.md) {
                 Text("Month-to-Month")
-                    .font(GaiaTypography.subheadSerif)
+                    .gaiaFont(.subheadSerif)
                     .foregroundStyle(GaiaColor.inkBlack300)
 
                 VStack(spacing: 6) {
                     ForEach(monthBars) { bar in
                         HStack(spacing: 12) {
                             Text(bar.month)
-                                .font(GaiaTypography.subheadSerif)
+                                .gaiaFont(.subheadSerif)
                                 .foregroundStyle(GaiaColor.inkBlack500)
                                 .frame(width: 34, alignment: .leading)
 
@@ -1273,7 +1259,7 @@ struct ProfileBioCalendarScreen: View {
                             .frame(height: 14)
 
                             Text("\(bar.value)")
-                                .font(GaiaTypography.footnote)
+                                .gaiaFont(.footnote)
                                 .foregroundStyle(GaiaColor.inkBlack300)
                                 .frame(width: 22, alignment: .trailing)
                         }
@@ -1290,32 +1276,31 @@ struct ProfileBioCalendarScreen: View {
                 VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
                     HStack(alignment: .firstTextBaseline) {
                         Text("Current Streak")
-                            .font(GaiaTypography.subheadline)
+                            .gaiaFont(.subheadline)
                             .foregroundStyle(GaiaColor.inkBlack300)
 
                         Spacer(minLength: 0)
 
                         Text("4 days")
-                            .font(GaiaTypography.title2Medium)
+                            .gaiaFont(.title2Medium)
                             .foregroundStyle(GaiaColor.oliveGreen500)
-                            .tracking(-0.2)
                     }
 
                     HStack(alignment: .firstTextBaseline) {
                         Text("Longest Streak")
-                            .font(GaiaTypography.subheadline)
+                            .gaiaFont(.subheadline)
                             .foregroundStyle(GaiaColor.inkBlack300)
 
                         Spacer(minLength: 0)
 
                         Text("12 days")
-                            .font(GaiaTypography.subheadSerif)
+                            .gaiaFont(.subheadSerif)
                             .foregroundStyle(GaiaColor.blackishGrey300)
                     }
                 }
 
                 Text("▲ 18% more active than last month")
-                    .font(GaiaTypography.footnoteMedium)
+                    .gaiaFont(.footnoteMedium)
                     .foregroundStyle(GaiaColor.oliveGreen500)
             }
         }
@@ -1325,12 +1310,11 @@ struct ProfileBioCalendarScreen: View {
         softAnalyticsCard {
             VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
                 Text("PATTERN INSIGHT")
-                    .font(GaiaTypography.captionMedium)
+                    .gaiaFont(.captionMedium)
                     .foregroundStyle(GaiaColor.oliveGreen500)
-                    .tracking(0.25)
 
                 Text("You observe most on Saturdays and Sundays, usually between 8–11am. Your most productive month was November with 28 finds.")
-                    .font(GaiaTypography.footnote)
+                    .gaiaFont(.footnote)
                     .foregroundStyle(GaiaColor.inkBlack500)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -1340,13 +1324,11 @@ struct ProfileBioCalendarScreen: View {
     private func detailMetric(title: String, value: String) -> some View {
         VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
             Text(title)
-                .font(GaiaTypography.caption)
+                .gaiaFont(.caption)
                 .foregroundStyle(GaiaColor.blackishGrey200)
-                .tracking(0.25)
 
             Text(value)
-                .font(GaiaTypography.display)
-                .tracking(-0.5)
+                .gaiaFont(.display)
                 .foregroundStyle(GaiaColor.oliveGreen500)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)

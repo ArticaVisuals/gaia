@@ -4,12 +4,28 @@ import SwiftUI
 struct DraggableTabSwitch<T: Identifiable & Hashable>: View {
     let tabs: [T]
     @Binding var selection: T
+    let tabWidth: CGFloat?
     let title: (T) -> String
     @State private var dragX: CGFloat?
 
+    init(
+        tabs: [T],
+        selection: Binding<T>,
+        tabWidth: CGFloat? = nil,
+        title: @escaping (T) -> String
+    ) {
+        self.tabs = tabs
+        self._selection = selection
+        self.tabWidth = tabWidth
+        self.title = title
+    }
+
     var body: some View {
         GeometryReader { proxy in
-            let width = proxy.size.width / CGFloat(max(tabs.count, 1))
+            let tabCount = CGFloat(max(tabs.count, 1))
+            let width = tabWidth ?? (proxy.size.width / tabCount)
+            let trackWidth = width * tabCount
+            let leadingInset = tabWidth == nil ? 0 : max((proxy.size.width - trackWidth) / 2, 0)
             ZStack(alignment: .bottomLeading) {
                 Rectangle()
                     .fill(GaiaColor.blackishGrey200)
@@ -19,16 +35,19 @@ struct DraggableTabSwitch<T: Identifiable & Hashable>: View {
                 Rectangle()
                     .fill(GaiaColor.olive)
                     .frame(width: width, height: 3)
-                    .offset(x: indicatorOffset(width: width), y: 0)
-                    .animation(GaiaMotion.spring, value: indicatorOffset(width: width))
+                    .offset(x: indicatorOffset(width: width, leadingInset: leadingInset, trackWidth: trackWidth), y: 0)
+                    .animation(
+                        GaiaMotion.spring,
+                        value: indicatorOffset(width: width, leadingInset: leadingInset, trackWidth: trackWidth)
+                    )
 
                 HStack(spacing: 0) {
-                    ForEach(Array(tabs.enumerated()), id: \.element.id) { index, tab in
+                    ForEach(tabs) { tab in
                         Button {
                             updateSelection(tab)
                         } label: {
                             Text(title(tab))
-                                .font(GaiaTypography.body)
+                                .gaiaFont(.body)
                                 .foregroundStyle(selection == tab ? GaiaColor.olive : GaiaColor.blackishGrey200)
                                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                                 .contentShape(Rectangle())
@@ -37,9 +56,18 @@ struct DraggableTabSwitch<T: Identifiable & Hashable>: View {
                         .frame(width: width)
                     }
                 }
+                .frame(width: trackWidth)
+                .frame(maxWidth: .infinity, alignment: tabWidth == nil ? .leading : .center)
             }
             .contentShape(Rectangle())
-            .highPriorityGesture(tabDragGesture(proxy: proxy), including: .gesture)
+            .highPriorityGesture(
+                tabDragGesture(
+                    width: width,
+                    leadingInset: leadingInset,
+                    trackWidth: trackWidth
+                ),
+                including: .gesture
+            )
         }
         .frame(height: 52)
     }
@@ -48,26 +76,27 @@ struct DraggableTabSwitch<T: Identifiable & Hashable>: View {
         tabs.firstIndex(of: selection) ?? 0
     }
 
-    private func indicatorOffset(width: CGFloat) -> CGFloat {
+    private func indicatorOffset(width: CGFloat, leadingInset: CGFloat, trackWidth: CGFloat) -> CGFloat {
+        let maxOffset = max(0, trackWidth - width)
         if let dragX {
-            return max(0, min(dragX - (width / 2), width * CGFloat(max(tabs.count - 1, 0))))
+            return leadingInset + max(0, min(dragX - (width / 2), maxOffset))
         }
-        return CGFloat(selectedIndex) * width
+        return leadingInset + (CGFloat(selectedIndex) * width)
     }
 
-    private func tabDragGesture(proxy: GeometryProxy) -> some Gesture {
+    private func tabDragGesture(width: CGFloat, leadingInset: CGFloat, trackWidth: CGFloat) -> some Gesture {
         DragGesture(minimumDistance: 4, coordinateSpace: .local)
             .onChanged { value in
-                let location = max(0, min(proxy.size.width - 1, value.location.x))
+                let location = max(0, min(trackWidth - 1, value.location.x - leadingInset))
                 dragX = location
-                let index = Int((location / proxy.size.width) * CGFloat(tabs.count))
+                let index = Int(location / width)
                 guard tabs.indices.contains(index) else { return }
                 updateSelection(tabs[index], animated: false, triggersHaptics: false)
             }
             .onEnded { value in
-                let location = max(0, min(proxy.size.width - 1, value.location.x))
+                let location = max(0, min(trackWidth - 1, value.location.x - leadingInset))
                 dragX = nil
-                let index = Int((location / proxy.size.width) * CGFloat(tabs.count))
+                let index = Int(location / width)
                 guard tabs.indices.contains(index) else { return }
                 updateSelection(tabs[index], animated: true, triggersHaptics: false)
             }

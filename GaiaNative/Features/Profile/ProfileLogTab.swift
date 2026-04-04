@@ -88,7 +88,7 @@ private struct ProfileLogHeader: View {
         VStack(alignment: .leading, spacing: GaiaSpacing.md) {
             if presentation == .standalone {
                 Text("Log")
-                    .font(GaiaTypography.title1Medium)
+                    .gaiaFont(.title1Medium)
                     .foregroundStyle(GaiaColor.brandPrimary)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.top, GaiaSpacing.sm)
@@ -189,9 +189,9 @@ private struct ProfileLogSearchBar: View {
     @FocusState private var isFocused: Bool
 
     var body: some View {
-        HStack(spacing: 10) {
-            GaiaIcon(kind: .search, size: 20, tint: GaiaColor.brandPrimary)
-                .frame(width: 24, height: 24)
+        HStack(spacing: 4) {
+            GaiaIcon(kind: .search, size: 20, tint: GaiaColor.textSecondary.opacity(0.55))
+                .frame(width: 26, height: 26)
 
             TextField(
                 "",
@@ -200,14 +200,17 @@ private struct ProfileLogSearchBar: View {
                     .font(GaiaTypography.subheadline)
                     .foregroundStyle(GaiaColor.textSecondary.opacity(0.55))
             )
-            .font(GaiaTypography.subheadline)
+            .gaiaFont(.subheadline)
             .foregroundStyle(GaiaColor.textPrimary)
             .textInputAutocapitalization(.never)
             .autocorrectionDisabled()
             .focused($isFocused)
+
+            GaiaIcon(kind: .microphone, size: 20, tint: GaiaColor.textSecondary.opacity(0.55))
+                .frame(width: 32, height: 32)
         }
-        .padding(.horizontal, 16)
-        .frame(height: 48)
+        .padding(.horizontal, 8)
+        .frame(height: 40)
         .background(GaiaMaterialBackground(cornerRadius: GaiaRadius.full))
         .clipShape(Capsule())
         .contentShape(Capsule())
@@ -222,7 +225,7 @@ private struct ProfileLogViewToggle: View {
     @Binding var selection: ProfileLogViewMode
     @State private var dragOffset: CGFloat?
 
-    private let buttonSize: CGFloat = 32
+    private let buttonSize: CGFloat = 40
     private let gap: CGFloat = 4
     private let pad: CGFloat = 4
     private let buttonRadius: CGFloat = GaiaRadius.sm
@@ -244,7 +247,7 @@ private struct ProfileLogViewToggle: View {
                 ForEach(modes) { mode in
                     Button { select(mode) } label: {
                         icon(for: mode, selected: selection == mode)
-                            .frame(width: 16, height: 16)
+                            .frame(width: 22, height: 22)
                             .frame(width: buttonSize, height: buttonSize)
                             .contentShape(Rectangle())
                     }
@@ -310,12 +313,12 @@ private struct ProfileLogViewToggle: View {
 private struct ProfileLogFilterButton: View {
     var body: some View {
         Button(action: {}) {
-            RoundedRectangle(cornerRadius: 5, style: .continuous)
+            RoundedRectangle(cornerRadius: GaiaRadius.sm, style: .continuous)
                 .fill(GaiaColor.brandPrimary)
-                .frame(width: 40, height: 40)
+                .frame(width: 48, height: 48)
                 .overlay {
-                    ProfileLogGlyphImage(path: "Icons/System/gear-20.png", tint: GaiaColor.paperWhite50)
-                        .frame(width: 20, height: 20)
+                    ProfileLogGlyphImage(path: "Icons/System/filter-32.png", tint: GaiaColor.paperWhite50)
+                        .frame(width: 33, height: 35)
                 }
         }
         .buttonStyle(GlassReactiveButtonStyle())
@@ -350,11 +353,11 @@ private struct ProfileLogDayBar: View {
     var body: some View {
         HStack(spacing: 10) {
             Text(title)
-                .font(GaiaTypography.footnoteMedium)
+                .gaiaFont(.footnoteMedium)
                 .foregroundStyle(GaiaColor.textPrimary)
 
             Text(countLabel)
-                .font(GaiaTypography.caption)
+                .gaiaFont(.caption)
                 .foregroundStyle(GaiaColor.blackishGrey200)
         }
         .padding(.horizontal, 10)
@@ -384,13 +387,13 @@ private struct ProfileLogRow: View {
                 VStack(alignment: .leading, spacing: GaiaSpacing.md) {
                     VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
                         Text(entry.commonName)
-                            .font(GaiaTypography.titleRegular)
+                            .gaiaFont(.title3)
                             .foregroundStyle(GaiaColor.textPrimary)
                             .lineLimit(1)
                             .truncationMode(.tail)
 
                         Text(entry.scientificName)
-                            .font(GaiaTypography.footnote)
+                            .gaiaFont(.footnote)
                             .italic()
                             .foregroundStyle(GaiaColor.broccoliBrown500)
                             .lineLimit(1)
@@ -398,7 +401,7 @@ private struct ProfileLogRow: View {
                     }
 
                     Text(entry.metaLabel)
-                        .font(GaiaTypography.caption)
+                        .gaiaFont(.caption)
                         .foregroundStyle(GaiaColor.blackishGrey300)
                         .lineLimit(1)
                         .truncationMode(.tail)
@@ -424,7 +427,7 @@ private struct ProfileLogStatusPill: View {
 
     var body: some View {
         Text(title)
-            .font(GaiaTypography.footnote)
+            .gaiaFont(.footnote)
             .foregroundStyle(foreground)
             .padding(.horizontal, 10)
             .padding(.vertical, 4)
@@ -527,8 +530,7 @@ private struct ProfileLogGridCard: View {
                 )
 
                 Text(item.title)
-                    .font(GaiaTypography.bodySerif)
-                    .lineSpacing(14 * 0.2)
+                    .gaiaFont(.bodySerif)
                     .foregroundStyle(.white)
                     .multilineTextAlignment(.leading)
                     .lineLimit(2)
@@ -557,7 +559,7 @@ private struct ProfileLogMap: View {
     var body: some View {
         VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
             Text(content.totalFindsLabel)
-                .font(GaiaTypography.subheadSerif)
+                .gaiaFont(.subheadSerif)
                 .foregroundStyle(GaiaColor.textPrimary)
 
             ExploreMapView(

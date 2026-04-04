@@ -8,7 +8,7 @@ struct LoadingView: View {
             ProgressView()
                 .tint(GaiaColor.olive)
             Text(title)
-                .font(GaiaTypography.footnote)
+                .gaiaFont(.footnote)
                 .foregroundStyle(GaiaColor.grey)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

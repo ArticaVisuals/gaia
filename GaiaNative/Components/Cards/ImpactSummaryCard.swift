@@ -10,14 +10,14 @@ struct ImpactSummaryCard: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("CURRENT LEVEL")
-                            .font(GaiaTypography.caption2)
+                            .gaiaFont(.caption2)
                             .foregroundStyle(GaiaColor.greyMuted)
                         HStack(alignment: .firstTextBaseline, spacing: 10) {
                             Text("3")
-                                .font(GaiaTypography.displayMedium)
+                                .gaiaFont(.displayMedium)
                                 .foregroundStyle(GaiaColor.textPrimary)
                             Text("4")
-                                .font(GaiaTypography.title2Medium)
+                                .gaiaFont(.title2Medium)
                                 .foregroundStyle(GaiaColor.greyMuted)
                         }
                     }
@@ -35,12 +35,12 @@ struct ImpactSummaryCard: View {
                                 .frame(width: 132, height: 6)
                         }
                     Text("12 finds to level 4")
-                        .font(GaiaTypography.footnote)
+                        .gaiaFont(.footnote)
                         .foregroundStyle(GaiaColor.textSecondary)
                 }
 
                 Text(profile.impactSummary)
-                    .font(GaiaTypography.subheadline)
+                    .gaiaFont(.subheadline)
                     .foregroundStyle(GaiaColor.textSecondary)
             }
         }

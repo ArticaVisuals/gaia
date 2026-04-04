@@ -8,14 +8,13 @@ struct LearnSpeciesCard: View {
         VStack(alignment: .leading, spacing: 16) {
             VStack(alignment: .leading, spacing: 12) {
                 Text(species.scientificName)
-                    .font(GaiaTypography.displayMedium)
+                    .gaiaFont(.displayMedium)
                     .foregroundStyle(GaiaColor.paperWhite50)
-                    .tracking(-0.5)
                     .multilineTextAlignment(.leading)
                     .fixedSize(horizontal: false, vertical: true)
 
                 Text(species.summary)
-                    .font(GaiaTypography.subheadline)
+                    .gaiaFont(.subheadline)
                     .foregroundStyle(GaiaColor.textInverseSecondary)
                     .frame(maxWidth: 305, alignment: .leading)
                     .fixedSize(horizontal: false, vertical: true)
@@ -23,7 +22,7 @@ struct LearnSpeciesCard: View {
 
             Button(action: {}) {
                 Text("Read More")
-                    .font(GaiaTypography.subheadline)
+                    .gaiaFont(.subheadline)
                     .foregroundStyle(GaiaColor.olive)
                     .padding(.horizontal, 14)
                     .frame(height: 34)

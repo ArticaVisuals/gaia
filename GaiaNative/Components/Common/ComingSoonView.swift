@@ -7,11 +7,11 @@ struct ComingSoonView: View {
     var body: some View {
         VStack(spacing: GaiaSpacing.md) {
             Text(title)
-                .font(GaiaTypography.display)
+                .gaiaFont(.display)
                 .foregroundStyle(GaiaColor.olive)
                 .multilineTextAlignment(.center)
             Text(subtitle)
-                .font(GaiaTypography.body)
+                .gaiaFont(.body)
                 .foregroundStyle(GaiaColor.grey)
                 .multilineTextAlignment(.center)
         }

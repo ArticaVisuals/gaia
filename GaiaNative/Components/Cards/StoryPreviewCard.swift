@@ -28,26 +28,22 @@ struct StoryPreviewCard: View {
 
                 VStack(alignment: .leading, spacing: 12) {
                     Text(story.eyebrow)
-                        .font(GaiaTypography.caption)
+                        .gaiaFont(.caption)
                         .foregroundStyle(GaiaColor.paperWhite50)
-                        .tracking(0.25)
                         .textCase(.uppercase)
 
                     HStack(alignment: .top, spacing: 12) {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(story.title)
-                                .font(GaiaTypography.displayMedium)
+                                .gaiaFont(.displayMedium)
                                 .foregroundStyle(GaiaColor.paperWhite50)
-                                .tracking(-0.5)
-                                .lineSpacing(0)
                                 .frame(maxWidth: 257, alignment: .leading)
                                 .multilineTextAlignment(.leading)
                                 .fixedSize(horizontal: false, vertical: true)
 
                             Text(story.summary)
-                                .font(GaiaTypography.caption)
+                                .gaiaFont(.caption)
                                 .foregroundStyle(GaiaColor.paperWhite500)
-                                .lineSpacing(0)
                                 .frame(maxWidth: 252, alignment: .leading)
                                 .fixedSize(horizontal: false, vertical: true)
                         }

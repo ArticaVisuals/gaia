@@ -3,49 +3,53 @@ import SwiftUI
 
 struct ProfileHeaderCard: View {
     let profile: ProfileSummary
+    private let avatarSize: CGFloat = 72
 
     var body: some View {
         HStack(alignment: .center, spacing: 12) {
-            Circle()
-                .fill(
-                    LinearGradient(
-                        colors: [GaiaColor.oliveGreen200, GaiaColor.oliveGreen500],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                .frame(width: 72, height: 72)
-                .overlay(
-                    Text(initials)
-                        .font(GaiaTypography.title2Medium)
-                        .foregroundStyle(GaiaColor.paperStrong)
-                )
+            ZStack(alignment: .topLeading) {
+                Circle()
+                    .fill(GaiaColor.blackishGrey100)
+
+                avatarImage
+                    .frame(width: avatarSize, height: avatarSize)
+            }
+            .frame(width: avatarSize, height: avatarSize)
+            .clipShape(Circle())
+            .overlay(
+                Circle()
+                    .stroke(GaiaColor.oliveGreen100, lineWidth: 0.5)
+            )
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(profile.displayName)
-                    .font(GaiaTypography.title1Medium)
+                    .gaiaFont(.title1Medium)
                     .foregroundStyle(GaiaColor.oliveGreen500)
                     .lineLimit(1)
                     .minimumScaleFactor(0.85)
 
                 Text(findsLabel)
-                    .font(GaiaTypography.subheadline)
+                    .gaiaFont(.subheadline)
                     .foregroundStyle(GaiaColor.blackishGrey200)
                     .lineLimit(1)
             }
 
             Spacer(minLength: 0)
         }
+        .padding(.horizontal, GaiaSpacing.md)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private var initials: String {
-        profile.displayName
-            .split(separator: " ")
-            .prefix(2)
-            .compactMap { $0.first }
-            .map(String.init)
-            .joined()
+    @ViewBuilder
+    private var avatarImage: some View {
+        if let image = AssetCatalog.image(named: "find-avatar-alice") {
+            image
+                .resizable()
+                .interpolation(.high)
+                .scaledToFill()
+        } else {
+            Color.clear
+        }
     }
 
     private var findsLabel: String {

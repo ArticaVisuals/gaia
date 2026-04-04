@@ -27,7 +27,8 @@ struct ObserveCameraScreen: View {
             let viewportWidth = min(proxy.size.width, UIScreen.main.bounds.width)
             let viewportHeight = max(proxy.size.height, UIScreen.main.bounds.height)
             let sideInset = max(36, (viewportWidth - 330) / 2)
-            let controlsWidth = max(0, viewportWidth - (sideInset * 2))
+            // Slightly widen the control rail so side buttons visually align with the viewfinder brackets in Figma.
+            let controlsWidth = max(0, (viewportWidth - (sideInset * 2)) + 3)
 
             ZStack {
                 cameraLayer
@@ -150,11 +151,10 @@ struct ObserveCameraScreen: View {
 
     private func setZoom(_ value: CGFloat) {
         guard selectedZoom != value else { return }
-        withAnimation(GaiaMotion.softSpring) {
+        withAnimation(.interactiveSpring(response: 0.2, dampingFraction: 0.86)) {
             selectedZoom = value
         }
-        let effectiveZoom = value < 1 ? 1 : value
-        cameraService.setZoomFactor(effectiveZoom)
+        cameraService.setZoomFactor(value)
         HapticsService.selectionChanged()
     }
 
@@ -302,7 +302,7 @@ private struct ObserveCameraZoomSelector: View {
     let zoomOptions: [CGFloat]
     let onSelectZoom: (CGFloat) -> Void
 
-    @State private var dragReferenceOffset: CGFloat?
+    @State private var dragStartIndex: Int?
 
     private let pillSize: CGFloat = 38
     private let pillSpacing: CGFloat = 8
@@ -319,10 +319,6 @@ private struct ObserveCameraZoomSelector: View {
         rowOffset(for: selectedIndex)
     }
 
-    private var hStackWidth: CGFloat {
-        (CGFloat(zoomOptions.count) * pillSize) + (CGFloat(max(zoomOptions.count - 1, 0)) * pillSpacing)
-    }
-
     private func rowOffset(for index: Int) -> CGFloat {
         let centeredIndex = CGFloat(zoomOptions.count - 1) / 2
         return (centeredIndex - CGFloat(index)) * step
@@ -337,7 +333,7 @@ private struct ObserveCameraZoomSelector: View {
             ForEach(Array(zoomOptions.enumerated()), id: \.offset) { _, option in
                 Button(action: { onSelectZoom(option) }) {
                     Text(zoomLabel(for: option))
-                        .font(GaiaTypography.callout)
+                        .gaiaFont(.callout)
                         .foregroundStyle(zoomTextColor(for: option))
                         .frame(width: pillSize, height: pillSize)
                         .background(
@@ -352,7 +348,7 @@ private struct ObserveCameraZoomSelector: View {
         .frame(width: frameWidth, height: pillSize, alignment: .center)
         .contentShape(Rectangle())
         .simultaneousGesture(zoomDragGesture, including: .gesture)
-        .animation(GaiaMotion.softSpring, value: selectedZoom)
+        .animation(.interactiveSpring(response: 0.2, dampingFraction: 0.86), value: selectedZoom)
     }
 
     private func zoomLabel(for option: CGFloat) -> String {
@@ -378,34 +374,20 @@ private struct ObserveCameraZoomSelector: View {
         DragGesture(minimumDistance: 0, coordinateSpace: .local)
             .onChanged { value in
                 guard !zoomOptions.isEmpty else { return }
-                if dragReferenceOffset == nil {
-                    dragReferenceOffset = rowOffset
+                if dragStartIndex == nil {
+                    dragStartIndex = selectedIndex
                 }
-                guard let dragReferenceOffset else { return }
+                guard let startIndex = dragStartIndex else { return }
 
-                let selected = nearestOption(
-                    for: value.location.x,
-                    referenceOffset: dragReferenceOffset
-                )
+                let indexDelta = Int((value.translation.width / step).rounded(.toNearestOrAwayFromZero))
+                let clampedIndex = min(max(startIndex - indexDelta, 0), zoomOptions.count - 1)
+                let selected = zoomOptions[clampedIndex]
                 guard selectedZoom != selected else { return }
                 onSelectZoom(selected)
             }
             .onEnded { _ in
-                dragReferenceOffset = nil
+                dragStartIndex = nil
             }
-    }
-
-    private func nearestOption(for locationX: CGFloat, referenceOffset: CGFloat) -> CGFloat {
-        let clampedX = min(max(0, locationX), frameWidth)
-        let startX = ((frameWidth - hStackWidth) / 2) + referenceOffset + (pillSize / 2)
-
-        let nearestIndex = zoomOptions.indices.min { lhs, rhs in
-            let leftDistance = abs((startX + (CGFloat(lhs) * step)) - clampedX)
-            let rightDistance = abs((startX + (CGFloat(rhs) * step)) - clampedX)
-            return leftDistance < rightDistance
-        } ?? selectedIndex
-
-        return zoomOptions[nearestIndex]
     }
 }
 
@@ -476,7 +458,7 @@ private struct ObserveShutterButton: View {
 private struct ObserveViewfinderBrackets: View {
     var body: some View {
         GeometryReader { proxy in
-            let bracketSize: CGFloat = 44
+            let bracketSize: CGFloat = 43
             let sideInset = max(36, (proxy.size.width - 330) / 2)
             let topY = proxy.size.height * 0.22
             let bottomY = proxy.size.height * 0.73
@@ -515,11 +497,17 @@ private struct ObserveBracketCorner: View {
     var body: some View {
         let strokeWidth: CGFloat = 2.5
         let armLength: CGFloat = 28
+        let cornerRadius: CGFloat = 3
 
         Path { path in
             let inset = strokeWidth / 2
             path.move(to: CGPoint(x: armLength, y: inset))
-            path.addLine(to: CGPoint(x: inset, y: inset))
+            path.addLine(to: CGPoint(x: inset + cornerRadius, y: inset))
+            path.addArc(
+                tangent1End: CGPoint(x: inset, y: inset),
+                tangent2End: CGPoint(x: inset, y: inset + cornerRadius),
+                radius: cornerRadius
+            )
             path.addLine(to: CGPoint(x: inset, y: armLength))
         }
         .stroke(
@@ -561,11 +549,11 @@ private struct ObserveAudioRecorderSheet: View {
             HStack(alignment: .top, spacing: GaiaSpacing.sm) {
                 VStack(alignment: .leading, spacing: GaiaSpacing.xs) {
                     Text("Add an audio note")
-                        .font(GaiaTypography.title)
+                        .gaiaFont(.title3Medium)
                         .foregroundStyle(GaiaColor.textPrimary)
 
                     Text(subtitle)
-                        .font(GaiaTypography.subheadline)
+                        .gaiaFont(.subheadline)
                         .foregroundStyle(GaiaColor.textSecondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -609,12 +597,12 @@ private struct ObserveAudioRecorderSheet: View {
         if service.permissionState == .denied {
             VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
                 Text("Microphone access is currently disabled for Gaia.")
-                    .font(GaiaTypography.callout)
+                    .gaiaFont(.callout)
                     .foregroundStyle(GaiaColor.textPrimary)
 
                 Button(action: openSettings) {
                     Text("Open Settings")
-                        .font(GaiaTypography.calloutMedium)
+                        .gaiaFont(.calloutMedium)
                         .foregroundStyle(GaiaColor.paperStrong)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
@@ -641,13 +629,13 @@ private struct ObserveAudioRecorderSheet: View {
                 .padding(.top, GaiaSpacing.sm)
 
                 Text(formatDuration(service.elapsedTime))
-                    .font(GaiaTypography.title1)
+                    .gaiaFont(.title1)
                     .foregroundStyle(GaiaColor.textPrimary)
                     .monospacedDigit()
 
                 if let errorMessage = service.errorMessage {
                     Text(errorMessage)
-                        .font(GaiaTypography.footnote)
+                        .gaiaFont(.footnote)
                         .foregroundStyle(GaiaColor.vermillion500)
                         .multilineTextAlignment(.center)
                 }
@@ -684,7 +672,7 @@ private struct ObserveAudioRecorderSheet: View {
                 }
 
                 Text("Clip ready to upload")
-                    .font(GaiaTypography.footnote)
+                    .gaiaFont(.footnote)
                     .foregroundStyle(GaiaColor.textSecondary)
             }
         } else {
@@ -730,7 +718,7 @@ private struct ObserveRecorderPrimaryButton: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(GaiaTypography.calloutMedium)
+                .gaiaFont(.calloutMedium)
                 .foregroundStyle(GaiaColor.paperStrong)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)
@@ -747,7 +735,7 @@ private struct ObserveRecorderSecondaryButton: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(GaiaTypography.calloutMedium)
+                .gaiaFont(.calloutMedium)
                 .foregroundStyle(GaiaColor.oliveGreen700)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)
@@ -767,11 +755,11 @@ private struct ObserveCameraStatusOverlay: View {
     var body: some View {
         VStack(spacing: GaiaSpacing.sm) {
             Text(title)
-                .font(GaiaTypography.title)
+                .gaiaFont(.title3Medium)
                 .foregroundStyle(GaiaColor.paperStrong)
 
             Text(message)
-                .font(GaiaTypography.subheadline)
+                .gaiaFont(.subheadline)
                 .foregroundStyle(GaiaColor.paperWhite100)
                 .multilineTextAlignment(.center)
         }

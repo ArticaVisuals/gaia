@@ -61,7 +61,7 @@ struct FindTabView: View {
                     sectionTitle("Projects")
                     Spacer()
                     Text("See all")
-                        .font(.custom("Neue Haas Unica W1G", size: 15))
+                        .gaiaFont(.subheadline)
                         .foregroundStyle(GaiaColor.olive)
                 }
 
@@ -113,7 +113,7 @@ struct FindTabView: View {
 
     private func sectionTitle(_ title: String) -> some View {
         Text(title)
-            .font(GaiaTypography.titleRegular)
+            .gaiaFont(.title3)
             .foregroundStyle(GaiaColor.inkBlack300)
     }
 }
@@ -191,12 +191,12 @@ private struct FindMapProfileRow: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("Alice Edwards")
-                    .font(GaiaTypography.subheadSerif)
+                    .gaiaFont(.subheadSerif)
                     .foregroundStyle(GaiaColor.olive)
                     .lineLimit(1)
 
                 Text("127 finds")
-                    .font(.custom("Neue Haas Unica W1G", size: 11))
+                    .gaiaFont(.caption)
                     .foregroundStyle(GaiaColor.broccoliBrown500)
                     .lineLimit(1)
             }
@@ -213,16 +213,15 @@ private struct FindLocationDetails: View {
                     .opacity(0.48)
 
                 Text("Avila Beach, CA, United States of America")
-                    .font(.custom("Neue Haas Unica W1G", size: 15))
+                    .gaiaFont(.subheadline)
                     .foregroundStyle(GaiaColor.blackishGrey400)
                     .lineLimit(1)
                     .minimumScaleFactor(0.82)
             }
 
             Text("July 10, 2025, 10:19 AM")
-                .font(.custom("Neue Haas Unica W1G", size: 11))
+                .gaiaFont(.caption)
                 .foregroundStyle(GaiaColor.inkBlack200)
-                .tracking(0.25)
                 .lineLimit(1)
         }
     }
@@ -247,21 +246,19 @@ private struct FindConditionCard<ImageContent: View>: View {
                 .clipped()
 
             Text(label)
-                .font(.custom("Neue Haas Unica W1G", size: 11))
+                .gaiaFont(.caption)
                 .foregroundStyle(GaiaColor.broccoliBrown500)
-                .tracking(0.25)
 
             HStack(alignment: .top, spacing: 8) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title)
-                        .font(GaiaTypography.body)
+                        .gaiaFont(.body)
                         .foregroundStyle(GaiaColor.textPrimary)
                         .lineLimit(1)
 
                     Text(subtitle)
-                        .font(.custom("Neue Haas Unica W1G", size: 11))
+                        .gaiaFont(.caption)
                         .foregroundStyle(GaiaColor.inkBlack200)
-                        .tracking(0.25)
                         .lineLimit(1)
                         .minimumScaleFactor(0.9)
                 }
@@ -349,9 +346,8 @@ private struct FindQualityItem: View {
                 .frame(width: 40, height: 40)
 
             Text(title)
-                .font(.custom("Neue Haas Unica W1G", size: 11))
+                .gaiaFont(.caption)
                 .foregroundStyle(isActive ? GaiaColor.olive : GaiaColor.blackishGrey200)
-                .tracking(0.25)
                 .lineLimit(1)
                 .minimumScaleFactor(0.9)
                 .multilineTextAlignment(.center)
@@ -380,13 +376,35 @@ private struct FindProjectCard: View {
             ZStack(alignment: .topLeading) {
                 GeometryReader { proxy in
                     ZStack(alignment: .topLeading) {
+                        let imageWidth = proxy.size.width * crop.scaleX
+                        let imageHeight = proxy.size.height * crop.scaleY
+                        let imageOffsetX = -(proxy.size.width * crop.left)
+                        let imageOffsetY = -(proxy.size.height * crop.top)
+
                         GaiaAssetImage(name: imageName, contentMode: .fill)
-                            .frame(width: proxy.size.width * crop.scaleX, height: proxy.size.height * crop.scaleY)
-                            .offset(x: -(proxy.size.width * crop.left), y: -(proxy.size.height * crop.top))
-                            .blur(radius: 0.7)
+                            .frame(width: imageWidth, height: imageHeight)
+                            .offset(x: imageOffsetX, y: imageOffsetY)
+
+                        GaiaAssetImage(name: imageName, contentMode: .fill)
+                            .frame(width: imageWidth, height: imageHeight)
+                            .offset(x: imageOffsetX, y: imageOffsetY)
+                            .blur(radius: 1.4)
+                            .mask(
+                                LinearGradient(
+                                    stops: [
+                                        .init(color: .clear, location: 0.417),
+                                        .init(color: .black, location: 1)
+                                    ],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            )
 
                         LinearGradient(
-                            colors: [Color.clear, Color.black.opacity(0.68)],
+                            stops: [
+                                .init(color: Color(red: 70 / 255, green: 76 / 255, blue: 19 / 255, opacity: 0), location: 0.417),
+                                .init(color: Color(red: 41 / 255, green: 76 / 255, blue: 19 / 255, opacity: 0.85), location: 1)
+                            ],
                             startPoint: .top,
                             endPoint: .bottom
                         )
@@ -396,9 +414,8 @@ private struct FindProjectCard: View {
 
                 VStack(alignment: .leading, spacing: 0) {
                     Text(tag)
-                        .font(.custom("Neue Haas Unica W1G", size: 11))
+                        .gaiaFont(.caption)
                         .foregroundStyle(GaiaColor.paperWhite50)
-                        .tracking(0.25)
                         .padding(.horizontal, 10)
                         .frame(height: 20)
                         .background(Color.black.opacity(0.5), in: Capsule())
@@ -412,7 +429,7 @@ private struct FindProjectCard: View {
 
                     VStack(alignment: .leading, spacing: 4) {
                         Text(title)
-                            .font(.custom("NewSpirit-Regular", size: 16))
+                            .gaiaFont(.subheadSerif)
                             .foregroundStyle(GaiaColor.paperWhite50)
                             .lineLimit(1)
                             .minimumScaleFactor(0.9)

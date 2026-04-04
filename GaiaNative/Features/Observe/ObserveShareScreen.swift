@@ -11,10 +11,10 @@ struct ObserveShareScreen: View {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: GaiaSpacing.lg) {
                     Text("Share the moment")
-                        .font(GaiaTypography.displayMedium)
+                        .gaiaFont(.displayMedium)
                         .foregroundStyle(GaiaColor.textPrimary)
                     Text("Your observation is ready as a pair of story cards for sharing or saving.")
-                        .font(GaiaTypography.subheadline)
+                        .gaiaFont(.subheadline)
                         .foregroundStyle(GaiaColor.textSecondary)
 
                     GaiaStoryCardSurface {
@@ -23,10 +23,10 @@ struct ObserveShareScreen: View {
                                 .frame(height: 220)
                                 .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
                             Text("My Impact")
-                                .font(GaiaTypography.title1)
+                                .gaiaFont(.title1)
                                 .foregroundStyle(GaiaColor.textPrimary)
                             Text("Each observation helps build a richer picture of urban ecology over time.")
-                                .font(GaiaTypography.subheadline)
+                                .gaiaFont(.subheadline)
                                 .foregroundStyle(GaiaColor.textSecondary)
                         }
                     }
@@ -37,17 +37,17 @@ struct ObserveShareScreen: View {
                                 .frame(height: 220)
                                 .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
                             Text("Why It Matters")
-                                .font(GaiaTypography.title1)
+                                .gaiaFont(.title1)
                                 .foregroundStyle(GaiaColor.textPrimary)
                             Text("Coast Live Oak anchors habitat, shade, and food webs across Southern California.")
-                                .font(GaiaTypography.subheadline)
+                                .gaiaFont(.subheadline)
                                 .foregroundStyle(GaiaColor.textSecondary)
                         }
                     }
 
                     Button(action: onDone) {
                         Text("Back to Explore")
-                            .font(GaiaTypography.calloutMedium)
+                            .gaiaFont(.calloutMedium)
                             .foregroundStyle(GaiaColor.paperStrong)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 16)

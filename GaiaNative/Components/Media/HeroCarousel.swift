@@ -26,14 +26,13 @@ struct HeroCarousel: View {
             .overlay(alignment: .bottomLeading) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title)
-                        .font(GaiaTypography.displayMedium)
+                        .gaiaFont(.displayMedium)
                         .foregroundStyle(GaiaColor.paperStrong)
                         .lineLimit(1)
 
                     Text(subtitle)
-                        .font(GaiaTypography.caption)
+                        .gaiaFont(.caption)
                         .foregroundStyle(GaiaColor.paperWhite50.opacity(0.95))
-                        .tracking(0.25)
                         .textCase(.none)
                 }
                 .padding(.leading, 15)

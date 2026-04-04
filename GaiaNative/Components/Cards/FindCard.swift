@@ -20,13 +20,13 @@ struct FindCard: View {
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(species.commonName)
-                        .font(GaiaTypography.title)
+                        .gaiaFont(.title3Medium)
                         .foregroundStyle(GaiaColor.paperStrong)
                     Text(species.scientificName.uppercased())
-                        .font(GaiaTypography.caption2)
+                        .gaiaFont(.caption2)
                         .foregroundStyle(GaiaColor.paperWhite100.opacity(0.92))
                     Text(species.summary)
-                        .font(GaiaTypography.footnote)
+                        .gaiaFont(.footnote)
                         .foregroundStyle(GaiaColor.paperWhite100.opacity(0.9))
                         .lineLimit(2)
                 }

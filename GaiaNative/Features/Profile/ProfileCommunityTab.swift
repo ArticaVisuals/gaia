@@ -134,6 +134,11 @@ struct ProfileCommunityTab: View {
         )
     ]
 
+    private let projectColumns: [GridItem] = [
+        GridItem(.flexible(minimum: 0), spacing: GaiaSpacing.sm),
+        GridItem(.flexible(minimum: 0), spacing: GaiaSpacing.sm)
+    ]
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             summarySection
@@ -141,6 +146,7 @@ struct ProfileCommunityTab: View {
             peopleSection
             highlightsSection
         }
+        .padding(.horizontal, GaiaSpacing.md)
         .fullScreenCover(isPresented: $showsPeopleScreen) {
             ProfilePeopleScreen {
                 showsPeopleScreen = false
@@ -152,7 +158,6 @@ struct ProfileCommunityTab: View {
         VStack(alignment: .leading, spacing: 0) {
             summaryCard
         }
-        .padding(.horizontal, GaiaSpacing.md)
         .padding(.top, 20)
     }
 
@@ -160,7 +165,7 @@ struct ProfileCommunityTab: View {
         VStack(alignment: .leading, spacing: GaiaSpacing.lg) {
             VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
                 Text("IDs confirmed")
-                    .font(GaiaTypography.subheadline)
+                    .gaiaFont(.subheadline)
                     .foregroundStyle(GaiaColor.inkBlack300)
 
                 Text("41")
@@ -192,15 +197,13 @@ struct ProfileCommunityTab: View {
     private func metricColumn(_ metric: CommunityMetric) -> some View {
         VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
             Text(metric.label)
-                .font(GaiaTypography.footnote)
+                .gaiaFont(.footnote)
                 .foregroundStyle(GaiaColor.textSecondary)
-                .tracking(-0.08)
                 .fixedSize(horizontal: true, vertical: false)
 
             Text(metric.value)
-                .font(GaiaTypography.title1Medium)
+                .gaiaFont(.title1Medium)
                 .foregroundStyle(GaiaColor.broccoliBrown500)
-                .tracking(-0.3)
                 .lineLimit(1)
         }
     }
@@ -209,7 +212,7 @@ struct ProfileCommunityTab: View {
         VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
             sectionHeader(title: "Projects", actionTitle: "See all")
 
-            HStack(spacing: GaiaSpacing.sm) {
+            LazyVGrid(columns: projectColumns, spacing: GaiaSpacing.sm) {
                 ForEach(projects, id: \.id) { project in
                     Button {
                         appState.openProjectDetail(project)
@@ -220,31 +223,43 @@ struct ProfileCommunityTab: View {
                 }
             }
         }
-        .padding(.horizontal, GaiaSpacing.md)
         .padding(.top, GaiaSpacing.lg)
     }
 
     private func projectCard(_ project: ProjectSelection) -> some View {
         ZStack(alignment: .topLeading) {
             GaiaAssetImage(name: project.imageName, contentMode: .fill)
-                .frame(width: 181, height: 133)
+                .frame(maxWidth: .infinity)
+                .frame(height: 133)
+
+            GaiaAssetImage(name: project.imageName, contentMode: .fill)
+                .frame(maxWidth: .infinity)
+                .frame(height: 133)
                 .blur(radius: 1.4)
-                .overlay {
+                .mask(
                     LinearGradient(
                         stops: [
-                            .init(color: Color(red: 70 / 255, green: 76 / 255, blue: 19 / 255, opacity: 0), location: 0.417),
-                            .init(color: Color(red: 41 / 255, green: 76 / 255, blue: 19 / 255, opacity: 0.85), location: 1)
+                            .init(color: .clear, location: 0.417),
+                            .init(color: .black, location: 1)
                         ],
                         startPoint: .top,
                         endPoint: .bottom
                     )
-                }
+                )
+
+            LinearGradient(
+                stops: [
+                    .init(color: Color(red: 70 / 255, green: 76 / 255, blue: 19 / 255, opacity: 0), location: 0.417),
+                    .init(color: Color(red: 41 / 255, green: 76 / 255, blue: 19 / 255, opacity: 0.85), location: 1)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
 
             VStack(alignment: .leading, spacing: 0) {
                 Text(project.tag)
-                    .font(GaiaTypography.caption)
+                    .gaiaFont(.caption)
                     .foregroundStyle(GaiaColor.paperWhite50)
-                    .tracking(0.25)
                     .padding(.horizontal, 10)
                     .frame(height: 20)
                     .background(Color.black.opacity(0.5), in: Capsule())
@@ -258,7 +273,7 @@ struct ProfileCommunityTab: View {
 
                 VStack(alignment: .leading, spacing: GaiaSpacing.xs) {
                     Text(project.title)
-                        .font(GaiaTypography.subheadSerif)
+                        .gaiaFont(.subheadSerif)
                         .foregroundStyle(GaiaColor.paperWhite50)
                         .lineLimit(1)
 
@@ -269,19 +284,19 @@ struct ProfileCommunityTab: View {
                         Text(project.countLabel)
                             .font(.custom("Neue Haas Unica W1G", size: 10))
                             .foregroundStyle(GaiaColor.paperWhite50)
-                            .tracking(0.25)
                     }
                 }
                 .padding(12)
             }
         }
-        .frame(width: 181, height: 133)
+        .frame(maxWidth: .infinity)
+        .frame(height: 133)
         .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
                 .stroke(GaiaColor.blackishGrey200, lineWidth: 0.5)
         )
-        .shadow(color: GaiaShadow.darkColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
+        .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
         .contentShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
     }
 
@@ -297,7 +312,6 @@ struct ProfileCommunityTab: View {
                 }
             }
         }
-        .padding(.horizontal, GaiaSpacing.md)
         .padding(.top, GaiaSpacing.lg)
     }
 
@@ -311,7 +325,6 @@ struct ProfileCommunityTab: View {
                 }
             }
         }
-        .padding(.horizontal, GaiaSpacing.md)
         .padding(.top, GaiaSpacing.lg)
     }
 
@@ -324,14 +337,13 @@ struct ProfileCommunityTab: View {
 
             VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
                 Text(highlight.title)
-                    .font(GaiaTypography.subheadlineMedium)
+                    .gaiaFont(.subheadlineMedium)
                     .foregroundStyle(GaiaColor.inkBlack500)
                     .fixedSize(horizontal: false, vertical: true)
 
                 Text(highlight.subtitle)
-                    .font(GaiaTypography.footnote)
+                    .gaiaFont(.footnote)
                     .foregroundStyle(GaiaColor.inkBlack300)
-                    .tracking(-0.08)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
@@ -346,7 +358,7 @@ struct ProfileCommunityTab: View {
     private func sectionHeader(title: String, actionTitle: String? = nil, action: (() -> Void)? = nil) -> some View {
         HStack(alignment: .bottom, spacing: GaiaSpacing.sm) {
             Text(title)
-                .font(GaiaTypography.title2)
+                .gaiaFont(.title2)
                 .foregroundStyle(GaiaColor.inkBlack300)
 
             Spacer(minLength: 0)
@@ -355,13 +367,13 @@ struct ProfileCommunityTab: View {
                 if let action {
                     Button(action: action) {
                         Text(actionTitle)
-                            .font(GaiaTypography.caption2)
+                            .gaiaFont(.caption2)
                             .foregroundStyle(GaiaColor.inkBlack300)
                     }
                     .buttonStyle(.plain)
                 } else {
                     Text(actionTitle)
-                        .font(GaiaTypography.caption2)
+                        .gaiaFont(.caption2)
                         .foregroundStyle(GaiaColor.inkBlack300)
                 }
             }
@@ -379,13 +391,14 @@ private struct ProfileCommunityPersonRow: View {
 
             VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
                 Text(person.name)
-                    .font(GaiaTypography.subheadSerif)
+                    .gaiaFont(.subheadSerif)
                     .foregroundStyle(GaiaColor.inkBlack500)
+                    .lineLimit(1)
 
                 Text(person.subtitle)
-                    .font(GaiaTypography.footnote)
+                    .gaiaFont(.footnote)
                     .foregroundStyle(GaiaColor.oliveGreen500)
-                    .tracking(-0.08)
+                    .lineLimit(1)
             }
 
             Spacer(minLength: 0)
@@ -439,7 +452,7 @@ private struct ProfileCommunityPersonRow: View {
         switch person.followState {
         case .following:
             Text("Following")
-                .font(GaiaTypography.subheadline)
+                .gaiaFont(.subheadline)
                 .foregroundStyle(GaiaColor.oliveGreen500)
                 .padding(.horizontal, 10)
                 .frame(height: 28)
@@ -449,14 +462,14 @@ private struct ProfileCommunityPersonRow: View {
                 )
         case .follow:
             Text("Follow")
-                .font(GaiaTypography.footnote)
+                .gaiaFont(.footnote)
                 .foregroundStyle(GaiaColor.paperWhite50)
                 .padding(.horizontal, 10)
                 .frame(height: 28)
                 .background(GaiaColor.oliveGreen500, in: Capsule())
         case .mutual:
             Text("Mutual")
-                .font(GaiaTypography.footnote)
+                .gaiaFont(.footnote)
                 .foregroundStyle(GaiaColor.paperWhite50)
                 .padding(.horizontal, 10)
                 .frame(height: 28)
@@ -470,25 +483,39 @@ private struct ProfilePeopleScreen: View {
     @State private var people = Self.initialPeople
     @State private var selectedFilter: ProfilePeopleFilter = .all
     @State private var searchText = ""
+    @State private var showsMayaProfile = false
     @FocusState private var isSearchFieldFocused: Bool
 
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading, spacing: GaiaSpacing.lg) {
-                ForEach(visibleGroups) { group in
-                    let matchingPeople = peopleForGroup(group)
-                    if !matchingPeople.isEmpty {
-                        groupSection(group: group, people: matchingPeople)
+        GeometryReader { proxy in
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: GaiaSpacing.lg) {
+                    ForEach(visibleGroups) { group in
+                        let matchingPeople = peopleForGroup(group)
+                        if !matchingPeople.isEmpty {
+                            groupSection(group: group, people: matchingPeople)
+                        }
                     }
                 }
+                .padding(.horizontal, GaiaSpacing.md)
+                .padding(.top, GaiaSpacing.lg)
+                .padding(.bottom, GaiaSpacing.xxxl)
             }
-            .padding(.horizontal, GaiaSpacing.md)
-            .padding(.top, GaiaSpacing.lg)
-            .padding(.bottom, GaiaSpacing.xxxl)
-        }
-        .background(GaiaColor.surfacePrimary.ignoresSafeArea())
-        .safeAreaInset(edge: .top, spacing: 0) {
-            topChrome
+            .background(GaiaColor.paperWhite50)
+            .overlay(alignment: .top) {
+                GaiaColor.paperWhite50
+                    .frame(height: proxy.safeAreaInsets.top)
+                    .ignoresSafeArea(edges: .top)
+                    .allowsHitTesting(false)
+            }
+            .safeAreaInset(edge: .top, spacing: 0) {
+                topChrome
+            }
+            .fullScreenCover(isPresented: $showsMayaProfile) {
+                MayaProfileDetailScreen {
+                    showsMayaProfile = false
+                }
+            }
         }
     }
 
@@ -502,7 +529,7 @@ private struct ProfilePeopleScreen: View {
                 Spacer(minLength: 0)
 
                 Text("People")
-                    .font(GaiaTypography.title1Medium)
+                    .gaiaFont(.title1Medium)
                     .foregroundStyle(GaiaColor.oliveGreen500)
 
                 Spacer(minLength: 0)
@@ -523,6 +550,7 @@ private struct ProfilePeopleScreen: View {
         .frame(maxWidth: .infinity)
         .background(
             GaiaColor.paperWhite50
+                .ignoresSafeArea(edges: .top)
                 .overlay(alignment: .bottom) {
                     Rectangle()
                         .fill(GaiaColor.broccoliBrown200)
@@ -544,7 +572,7 @@ private struct ProfilePeopleScreen: View {
                     .font(GaiaTypography.subheadline)
                     .foregroundStyle(GaiaColor.blackishGrey500.opacity(0.5))
             )
-            .font(GaiaTypography.subheadline)
+            .gaiaFont(.subheadline)
             .foregroundStyle(GaiaColor.inkBlack500)
             .textInputAutocapitalization(.never)
             .autocorrectionDisabled()
@@ -577,7 +605,7 @@ private struct ProfilePeopleScreen: View {
                         selectedFilter = filter
                     } label: {
                         Text(filter.title)
-                            .font(GaiaTypography.footnote)
+                            .gaiaFont(.footnote)
                             .foregroundStyle(selectedFilter == filter ? GaiaColor.paperWhite50 : GaiaColor.inkBlack300)
                             .padding(.horizontal, 10)
                             .frame(height: 28)
@@ -601,14 +629,25 @@ private struct ProfilePeopleScreen: View {
     private func groupSection(group: ProfilePeopleGroup, people: [ProfileCommunityPerson]) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("\(group.title.uppercased()) · \(displayCount(for: group, matchingCount: people.count))")
-                .font(GaiaTypography.caption2)
+                .gaiaFont(.caption2)
                 .foregroundStyle(GaiaColor.textSecondary)
                 .padding(.top, GaiaSpacing.md)
                 .padding(.bottom, GaiaSpacing.xs)
 
             ForEach(people) { person in
-                ProfileCommunityPersonRow(person: person) {
-                    toggleFollow(for: person.id)
+                if person.id == "maya-chen" {
+                    Button {
+                        showsMayaProfile = true
+                    } label: {
+                        ProfileCommunityPersonRow(person: person) {
+                            toggleFollow(for: person.id)
+                        }
+                    }
+                    .buttonStyle(.plain)
+                } else {
+                    ProfileCommunityPersonRow(person: person) {
+                        toggleFollow(for: person.id)
+                    }
                 }
             }
 
@@ -770,4 +809,442 @@ private enum ProfilePeopleFilter: CaseIterable, Identifiable {
             return .suggested
         }
     }
+}
+
+private struct MayaProfileDetailScreen: View {
+    let onClose: () -> Void
+
+    @EnvironmentObject private var contentStore: ContentStore
+    @State private var showsExpandedMap = false
+
+    private let projects: [MayaProfileProject] = [
+        .init(id: "maya-project-1", title: "Creek Recovery", tag: "Wetland", countLabel: "12", imageName: "find-project-creek"),
+        .init(id: "maya-project-2", title: "Creek Recovery", tag: "Wetland", countLabel: "12", imageName: "find-project-creek")
+    ]
+
+    private let recentFinds: [MayaRecentFind] = [
+        .init(id: "cacti", title: "Cacti", imageName: "project-detail-recent-cacti"),
+        .init(id: "indian-cormorant", title: "Indian\nCormorant", imageName: "project-detail-recent-indian-cormorant"),
+        .init(id: "european-roller", title: "European\nRoller", imageName: "project-detail-recent-european-roller"),
+        .init(id: "bindweed-tribe", title: "Bindweed\nTribe", imageName: "project-detail-recent-bindweed-tribe"),
+        .init(id: "emperor-gum-moth", title: "Emperor Gum\nMoth", imageName: "project-detail-recent-emperor-gum-moth"),
+        .init(id: "garden-orbweaver", title: "Garden\nOrbweaver", imageName: "project-detail-recent-garden-orbweaver")
+    ]
+
+    var body: some View {
+        GeometryReader { proxy in
+            let topInset = proxy.safeAreaInsets.top > 0 ? proxy.safeAreaInsets.top : windowSafeTopInset
+            let horizontalContentPadding = GaiaSpacing.md * 2
+            let usableContentWidth = max(proxy.size.width - horizontalContentPadding, 0)
+            let projectCardWidth = min(max(floor((usableContentWidth - GaiaSpacing.sm) / 2), 0), 181)
+            let recentFindCardWidth = min(max(floor((usableContentWidth - (GaiaSpacing.sm * 2)) / 3), 0), 118)
+
+            ZStack(alignment: .top) {
+                GaiaColor.paperWhite50.ignoresSafeArea()
+
+                ScrollView(showsIndicators: false) {
+                    VStack(alignment: .leading, spacing: GaiaSpacing.lg) {
+                        profileHeader
+                        sharedContextCard
+                        projectsSection(cardWidth: projectCardWidth)
+                        recentFindsSection(cardWidth: recentFindCardWidth)
+                        findMapSection
+                    }
+                    .padding(.bottom, GaiaSpacing.xxxl)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+
+                topToolbar(topInset: topInset)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .ignoresSafeArea(edges: .top)
+        .fullScreenCover(isPresented: $showsExpandedMap) {
+            ImpactMapExpandedScreen(observations: contentStore.observations) {
+                showsExpandedMap = false
+            }
+        }
+    }
+
+    private var windowSafeTopInset: CGFloat {
+        UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap(\.windows)
+            .first(where: \.isKeyWindow)?
+            .safeAreaInsets.top ?? 0
+    }
+
+    private var profileHeader: some View {
+        VStack(alignment: .center, spacing: 0) {
+            // Hero image — negative bottom padding creates the avatar overlap
+            GaiaAssetImage(name: "project-detail-hero-pollinator", contentMode: .fill)
+                .frame(height: 161)
+                .frame(maxWidth: .infinity)
+                .clipped()
+                .clipShape(
+                    UnevenRoundedRectangle(
+                        cornerRadii: .init(
+                            topLeading: 0,
+                            bottomLeading: GaiaRadius.md,
+                            bottomTrailing: GaiaRadius.md,
+                            topTrailing: 0
+                        ),
+                        style: .continuous
+                    )
+                )
+                .padding(.bottom, -36)
+
+            // Badge container
+            VStack(spacing: GaiaSpacing.lg) {
+                // Profile badge
+                VStack(spacing: GaiaSpacing.md) {
+                    // Profile image container (Figma: 150px wide)
+                    VStack(spacing: GaiaSpacing.sm) {
+                        GaiaAssetImage(name: "profile-avatar-maya", contentMode: .fill)
+                            .frame(width: 72, height: 72)
+                            .clipShape(Circle())
+                            .overlay(
+                                Circle()
+                                    .stroke(GaiaColor.oliveGreen100, lineWidth: 1.125)
+                            )
+
+                        VStack(spacing: GaiaSpacing.xs) {
+                            Text("Maya Chen")
+                                .gaiaFont(.title1Medium)
+                                .foregroundStyle(GaiaColor.oliveGreen500)
+                                .multilineTextAlignment(.center)
+
+                            Text("Pasadena, CA")
+                                .gaiaFont(.subheadline)
+                                .foregroundStyle(GaiaColor.textSecondary)
+                                .multilineTextAlignment(.center)
+                        }
+                        .frame(width: 150)
+                    }
+
+                    Text("Following")
+                        .gaiaFont(.subheadline)
+                        .foregroundStyle(GaiaColor.oliveGreen500)
+                        .padding(.horizontal, 14)
+                        .frame(height: 34)
+                        .overlay(
+                            Capsule(style: .continuous)
+                                .stroke(GaiaColor.oliveGreen500, lineWidth: 1)
+                        )
+                }
+
+                // Stats row
+                HStack(spacing: 26) {
+                    statColumn(label: "Finds", value: "127")
+                    statColumn(label: "Level", value: "14")
+                    statColumn(label: "Suggests", value: "56")
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, GaiaSpacing.md)
+        }
+        .padding(.bottom, 36)
+        .frame(maxWidth: .infinity)
+    }
+
+    private var sharedContextCard: some View {
+        VStack(alignment: .leading, spacing: GaiaSpacing.md) {
+            Text("YOU AND MAYA")
+                .gaiaFont(.caption)
+                .foregroundStyle(GaiaColor.oliveGreen500)
+
+            HStack(spacing: GaiaSpacing.md) {
+                VStack(alignment: .leading, spacing: GaiaSpacing.xxs) {
+                    Text("2")
+                        .gaiaFont(.title2Medium)
+                        .foregroundStyle(GaiaColor.inkBlack500)
+                    Text("shared projects")
+                        .gaiaFont(.footnote)
+                        .foregroundStyle(GaiaColor.textSecondary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                VStack(alignment: .leading, spacing: GaiaSpacing.xxs) {
+                    Text("14")
+                        .gaiaFont(.title2Medium)
+                        .foregroundStyle(GaiaColor.inkBlack500)
+                    Text("species in common")
+                        .gaiaFont(.footnote)
+                        .foregroundStyle(GaiaColor.textSecondary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+
+            Text("Frequently identifies your finds")
+                .gaiaFont(.subheadline)
+                .foregroundStyle(GaiaColor.vermillion500)
+        }
+        .padding(GaiaSpacing.md)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                .fill(GaiaColor.oliveGreen50)
+                .overlay(
+                    RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                        .stroke(GaiaColor.oliveGreen500, lineWidth: 0.5)
+                )
+        )
+        .padding(.horizontal, GaiaSpacing.md)
+    }
+
+    private func projectsSection(cardWidth: CGFloat) -> some View {
+        VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
+            Text("Projects")
+                .gaiaFont(.title2)
+                .foregroundStyle(GaiaColor.inkBlack300)
+
+            HStack(spacing: GaiaSpacing.sm) {
+                ForEach(projects) { project in
+                    mayaProjectCard(project, cardWidth: cardWidth)
+                }
+            }
+
+            Button(action: {}) {
+                Text("View All")
+                    .gaiaFont(.bodySerif)
+                    .foregroundStyle(GaiaColor.oliveGreen500)
+                    .padding(.horizontal, 14)
+                    .frame(height: 34)
+                    .overlay(
+                        Capsule(style: .continuous)
+                            .stroke(GaiaColor.oliveGreen500, lineWidth: 1)
+                    )
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.horizontal, GaiaSpacing.md)
+    }
+
+    private func recentFindsSection(cardWidth: CGFloat) -> some View {
+        VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
+            HStack(alignment: .bottom, spacing: GaiaSpacing.sm) {
+                Text("Recent Finds")
+                    .gaiaFont(.title2)
+                    .foregroundStyle(GaiaColor.inkBlack300)
+
+                Spacer(minLength: 0)
+
+                Text("See all")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundStyle(GaiaColor.oliveGreen500)
+            }
+
+            let columns: [GridItem] = Array(repeating: GridItem(.fixed(cardWidth), spacing: GaiaSpacing.sm), count: 3)
+
+            LazyVGrid(columns: columns, alignment: .leading, spacing: GaiaSpacing.sm) {
+                ForEach(recentFinds) { find in
+                    mayaRecentFindCard(find, sideLength: cardWidth)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding(.horizontal, GaiaSpacing.md)
+    }
+
+    private var findMapSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Find Map")
+                    .gaiaFont(.subheadSerif)
+                    .foregroundStyle(GaiaColor.inkBlack300)
+
+                Spacer(minLength: 0)
+
+                Text("5 finds")
+                    .gaiaFont(.caption2)
+                    .foregroundStyle(GaiaColor.inkBlack300)
+            }
+
+            VStack(spacing: 0) {
+                ZStack(alignment: .topTrailing) {
+                    GaiaAssetImage(name: "gaia-profile-impact-map-preview", contentMode: .fill)
+                        .frame(height: 214)
+                        .frame(maxWidth: .infinity)
+                        .clipped()
+
+                    GlassCircleButton(size: 44) {
+                        showsExpandedMap = true
+                    } label: {
+                        GaiaIcon(kind: .expand, size: 24, tint: GaiaColor.inkBlack900)
+                    }
+                    .padding(GaiaSpacing.md)
+                    .accessibilityLabel("Expand map")
+                }
+
+                HStack {
+                    Text("127 finds")
+                        .gaiaFont(.caption2Medium)
+                        .foregroundStyle(GaiaColor.broccoliBrown500)
+                    Spacer(minLength: 0)
+                }
+                .padding(.horizontal, GaiaSpacing.md)
+                .frame(height: 41)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(GaiaColor.surfaceCard)
+            }
+            .frame(maxWidth: .infinity)
+            .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                    .stroke(GaiaColor.border, lineWidth: 0.5)
+            )
+            .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
+        }
+        .padding(.horizontal, GaiaSpacing.md)
+    }
+
+    private func topToolbar(topInset: CGFloat) -> some View {
+        VStack(spacing: 0) {
+            HStack {
+                ToolbarGlassButton(icon: .back, accessibilityLabel: "Back", action: onClose)
+
+                Spacer(minLength: 0)
+
+                GlassCircleButton(size: 48, action: {}) {
+                    GaiaIcon(kind: .share, size: 32, tint: GaiaColor.inkBlack900)
+                }
+                .accessibilityLabel("Share")
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, GaiaSpacing.md)
+            .padding(.top, max(topInset + 8, 54))
+
+            Spacer(minLength: 0)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+    }
+
+    private func statColumn(label: String, value: String) -> some View {
+        VStack(spacing: GaiaSpacing.sm) {
+            Text(label)
+                .gaiaFont(.footnote)
+                .foregroundStyle(GaiaColor.textSecondary)
+
+            Text(value)
+                .gaiaFont(.title1Medium)
+                .foregroundStyle(GaiaColor.inkBlack500)
+        }
+        .frame(width: 60)
+    }
+
+    private func mayaProjectCard(_ project: MayaProfileProject, cardWidth: CGFloat) -> some View {
+        let cardHeight = cardWidth * (133.0 / 181.0)
+
+        return ZStack(alignment: .topLeading) {
+            GaiaAssetImage(name: project.imageName, contentMode: .fill)
+                .frame(width: cardWidth, height: cardHeight)
+
+            GaiaAssetImage(name: project.imageName, contentMode: .fill)
+                .frame(width: cardWidth, height: cardHeight)
+                .blur(radius: 1.4)
+                .mask(
+                    LinearGradient(
+                        stops: [
+                            .init(color: .clear, location: 0.417),
+                            .init(color: .black, location: 1)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+
+            LinearGradient(
+                stops: [
+                    .init(color: Color(red: 70 / 255, green: 76 / 255, blue: 19 / 255, opacity: 0), location: 0.417),
+                    .init(color: Color(red: 41 / 255, green: 76 / 255, blue: 19 / 255, opacity: 0.85), location: 1)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+
+            VStack(alignment: .leading, spacing: 0) {
+                Text(project.tag)
+                    .gaiaFont(.caption)
+                    .foregroundStyle(GaiaColor.paperWhite50)
+                    .padding(.horizontal, 10)
+                    .frame(height: 20)
+                    .background(Color.black.opacity(0.5), in: Capsule())
+                    .overlay(
+                        Capsule()
+                            .stroke(GaiaColor.blackishGrey200, lineWidth: 0.5)
+                    )
+                    .padding(12)
+
+                Spacer(minLength: 0)
+
+                VStack(alignment: .leading, spacing: GaiaSpacing.xs) {
+                    Text(project.title)
+                        .gaiaFont(.subheadSerif)
+                        .foregroundStyle(GaiaColor.paperWhite50)
+                        .lineLimit(1)
+
+                    HStack(spacing: GaiaSpacing.xxs) {
+                        GaiaIcon(kind: .observe(selected: true), size: 14, tint: GaiaColor.paperWhite50)
+                            .frame(width: 14, height: 10)
+
+                        Text(project.countLabel)
+                            .font(.custom("Neue Haas Unica W1G", size: 10))
+                            .foregroundStyle(GaiaColor.paperWhite50)
+                    }
+                }
+                .padding(12)
+            }
+        }
+        .frame(width: cardWidth, height: cardHeight)
+        .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                .stroke(GaiaColor.blackishGrey200, lineWidth: 0.5)
+        )
+        .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
+    }
+
+    private func mayaRecentFindCard(_ item: MayaRecentFind, sideLength: CGFloat) -> some View {
+        ZStack(alignment: .bottomLeading) {
+            GaiaAssetImage(name: item.imageName, contentMode: .fill)
+                .frame(width: sideLength, height: sideLength)
+
+            LinearGradient(
+                stops: [
+                    .init(color: Color.black.opacity(0), location: 0),
+                    .init(color: Color.black.opacity(0.56), location: 1)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+
+            Text(item.title)
+                .gaiaFont(.bodySerif)
+                .foregroundStyle(GaiaColor.paperWhite50)
+                .lineLimit(2)
+                .frame(width: max(sideLength - (GaiaSpacing.sm * 2), 0), alignment: .leading)
+                .padding(.leading, GaiaSpacing.sm)
+                .padding(.bottom, 8)
+        }
+        .frame(width: sideLength, height: sideLength)
+        .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
+        )
+    }
+}
+
+private struct MayaProfileProject: Identifiable {
+    let id: String
+    let title: String
+    let tag: String
+    let countLabel: String
+    let imageName: String
+}
+
+private struct MayaRecentFind: Identifiable {
+    let id: String
+    let title: String
+    let imageName: String
 }

@@ -59,7 +59,7 @@ struct LearnTabView: View {
 
     private func sectionTitle(_ title: String) -> some View {
         Text(title)
-            .font(GaiaTypography.titleRegular)
+            .gaiaFont(.title3)
             .foregroundStyle(GaiaColor.inkBlack300)
     }
 }

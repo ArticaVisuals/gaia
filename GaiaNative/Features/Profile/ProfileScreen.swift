@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct ProfileScreen: View {
     let forcedTab: ProfileTab?
@@ -6,53 +7,40 @@ struct ProfileScreen: View {
     @EnvironmentObject private var appState: AppState
     @EnvironmentObject private var contentStore: ContentStore
     @StateObject private var viewModel = ProfileViewModel()
-    @State private var previousTab: ProfileTab = .impact
-    @State private var isHorizontalTabSwipeActive = false
 
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading, spacing: GaiaSpacing.md) {
-                profileTopActions
-                    .padding(.horizontal, GaiaSpacing.md)
-                    .padding(.top, GaiaSpacing.xs)
+        GeometryReader { proxy in
+            let safeAreaWidth = max(0, proxy.size.width - proxy.safeAreaInsets.leading - proxy.safeAreaInsets.trailing)
+            let contentWidth = min(safeAreaWidth, UIScreen.main.bounds.width)
 
-                ProfileHeaderCard(profile: contentStore.profile)
-                    .padding(.horizontal, GaiaSpacing.md)
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: GaiaSpacing.md) {
+                    profileTopActions
+                        .padding(.horizontal, GaiaSpacing.md)
+                        .padding(.top, GaiaSpacing.xs)
 
-                DraggableTabSwitch(
-                    tabs: ProfileTab.allCases,
-                    selection: $viewModel.selectedTab,
-                    title: { $0.rawValue }
-                )
+                    ProfileHeaderCard(profile: contentStore.profile)
 
-                ZStack(alignment: .topLeading) {
+                    DraggableTabSwitch(
+                        tabs: ProfileTab.allCases,
+                        selection: $viewModel.selectedTab,
+                        tabWidth: 125,
+                        title: { $0.rawValue }
+                    )
+
                     tabContent(for: viewModel.selectedTab)
-                        .id(viewModel.selectedTab)
-                        .transition(tabTransition)
+                        .padding(.bottom, 120)
                 }
-                .frame(maxWidth: .infinity, alignment: .topLeading)
-                .animation(GaiaMotion.quickEase, value: viewModel.selectedTab)
-                .animation(GaiaMotion.quickEase, value: previousTab)
-                .horizontalTabSwipe(
-                    tabs: ProfileTab.allCases,
-                    selection: $viewModel.selectedTab,
-                    onHorizontalDragStateChange: { isActive in
-                        isHorizontalTabSwipeActive = isActive
-                    }
-                )
-                .padding(.horizontal, GaiaSpacing.md)
-                .padding(.bottom, 120)
+                .frame(width: contentWidth, alignment: .leading)
+                .padding(.leading, proxy.safeAreaInsets.leading)
             }
         }
-        .scrollDisabled(isHorizontalTabSwipeActive)
         .background(GaiaColor.surfacePrimary)
         .onAppear {
             let initialTab = forcedTab ?? appState.selectedProfileTab
-            previousTab = initialTab
             viewModel.selectedTab = initialTab
         }
-        .onChange(of: viewModel.selectedTab) { oldValue, newValue in
-            previousTab = oldValue
+        .onChange(of: viewModel.selectedTab) { _, newValue in
             appState.selectedProfileTab = newValue
         }
     }
@@ -88,26 +76,7 @@ struct ProfileScreen: View {
             ProfileImpactTab(profile: contentStore.profile)
         case .community:
             ProfileCommunityTab(posts: contentStore.communityPosts)
-        case .preview:
-            ProfilePreviewTab()
         }
-    }
-
-    private var tabTransition: AnyTransition {
-        let direction: CGFloat = tabDirection
-        return .asymmetric(
-            insertion: .offset(x: 26 * direction).combined(with: .opacity),
-            removal: .offset(x: -26 * direction).combined(with: .opacity)
-        )
-    }
-
-    private var tabDirection: CGFloat {
-        guard let currentIndex = ProfileTab.allCases.firstIndex(of: viewModel.selectedTab),
-              let previousIndex = ProfileTab.allCases.firstIndex(of: previousTab) else {
-            return 1
-        }
-
-        return currentIndex >= previousIndex ? 1 : -1
     }
 }
 
@@ -119,11 +88,11 @@ private struct ProfilePreviewTab: View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: GaiaSpacing.lg) {
                 Text("Unlinked Screens")
-                    .font(GaiaTypography.titleRegular)
+                    .gaiaFont(.title3)
                     .foregroundStyle(GaiaColor.inkBlack300)
 
                 Text("First-pass implementations that still need final routing decisions.")
-                    .font(GaiaTypography.subheadline)
+                    .gaiaFont(.subheadline)
                     .foregroundStyle(GaiaColor.blackishGrey500)
                     .fixedSize(horizontal: false, vertical: true)
 
@@ -159,11 +128,11 @@ private struct ProfilePreviewTab: View {
             GaiaDataCard {
                 VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
                     Text(title)
-                        .font(GaiaTypography.title2)
+                        .gaiaFont(.title2)
                         .foregroundStyle(GaiaColor.inkBlack300)
 
                     Text(subtitle)
-                        .font(GaiaTypography.footnote)
+                        .gaiaFont(.footnote)
                         .foregroundStyle(GaiaColor.blackishGrey500)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -193,12 +162,11 @@ private struct SignUpIdentityScreen: View {
 
                         VStack(alignment: .leading, spacing: 10) {
                             Text("Your Field Journal")
-                                .font(GaiaTypography.displayMedium)
-                                .tracking(-0.5)
+                                .gaiaFont(.displayMedium)
                                 .foregroundStyle(GaiaColor.inkBlack500)
 
                             Text("Every find builds your journal. Track species, earn medals, and watch your impact grow over time.")
-                                .font(GaiaTypography.subheadline)
+                                .gaiaFont(.subheadline)
                                 .foregroundStyle(GaiaColor.inkBlack300)
                                 .fixedSize(horizontal: false, vertical: true)
                         }
@@ -225,7 +193,7 @@ private struct SignUpIdentityScreen: View {
 
                     Button(action: onClose) {
                         Text("Start Exploring")
-                            .font(GaiaTypography.body)
+                            .gaiaFont(.body)
                             .foregroundStyle(GaiaColor.paperWhite50)
                             .frame(maxWidth: .infinity)
                             .frame(height: 50)
@@ -288,16 +256,14 @@ private struct SignUpIdentityPreviewCard: View {
 
             HStack {
                 Text("Level 3")
-                    .font(GaiaTypography.caption)
+                    .gaiaFont(.caption)
                     .foregroundStyle(GaiaColor.inkBlack300)
-                    .tracking(0.25)
 
                 Spacer(minLength: 0)
 
                 Text("55% there")
-                    .font(GaiaTypography.caption)
+                    .gaiaFont(.caption)
                     .foregroundStyle(GaiaColor.inkBlack300)
-                    .tracking(0.25)
             }
 
             GeometryReader { proxy in
@@ -347,14 +313,13 @@ private struct SignUpIdentityMetric: View {
     var body: some View {
         VStack(spacing: GaiaSpacing.sm) {
             Text(value)
-                .font(GaiaTypography.title2)
+                .gaiaFont(.title2)
                 .foregroundStyle(GaiaColor.inkBlack500)
                 .frame(height: 29)
 
             Text(title)
-                .font(GaiaTypography.caption)
+                .gaiaFont(.caption)
                 .foregroundStyle(GaiaColor.inkBlack300)
-                .tracking(0.25)
         }
         .frame(width: 40)
     }

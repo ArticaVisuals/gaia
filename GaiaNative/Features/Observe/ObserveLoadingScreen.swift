@@ -76,7 +76,7 @@ struct ObserveLoadingScreen: View {
                 ObserveLoadingDots(isAnimating: shouldAnimateDots)
 
                 Text("Identifying Species...")
-                    .font(GaiaTypography.title)
+                    .gaiaFont(.title3Medium)
                     .foregroundStyle(GaiaColor.oliveGreen500)
                     .multilineTextAlignment(.center)
             }

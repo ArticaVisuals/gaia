@@ -11,10 +11,10 @@ struct MapOverlayProfileCard: View {
                 .frame(width: 48, height: 48)
             VStack(alignment: .leading, spacing: 2) {
                 Text(name)
-                    .font(GaiaTypography.title)
+                    .gaiaFont(.title3Medium)
                     .foregroundStyle(GaiaColor.olive)
                 Text(subtitle)
-                    .font(GaiaTypography.caption)
+                    .gaiaFont(.caption)
                     .foregroundStyle(GaiaColor.greyMuted)
             }
             Spacer()

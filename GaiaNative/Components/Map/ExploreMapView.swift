@@ -7,7 +7,8 @@ private enum GaiaPinMapConfig {
     static let clusterReuseID = "gaia.cluster"
     static let observationReuseID = "gaia.observation"
     static let clusteringIdentifier = "gaia.cluster.members"
-    static let singleBlankMaxZoom = 6.8
+    static let clusterBlankMaxZoom = 6.8
+    static let singlePhotoMinZoom = 14.2
     static let markerVisualSize: CGFloat = 62
     static let markerTouchPadding: CGFloat = 18
     static let markerMinScale: CGFloat = 0.34
@@ -214,16 +215,12 @@ private struct ExploreMapRepresentable: UIViewRepresentable {
         }
 
         private func configure(_ view: GaiaHostedMarkerAnnotationView, for annotation: MKAnnotation, zoom: Double) {
-            let farOut = zoom <= GaiaPinMapConfig.singleBlankMaxZoom
+            let farOutCluster = zoom <= GaiaPinMapConfig.clusterBlankMaxZoom
+            let showsSinglePhoto = zoom >= GaiaPinMapConfig.singlePhotoMinZoom
             let markerScale = ExploreMapView.markerScale(for: zoom)
 
             if let observationAnnotation = annotation as? GaiaObservationAnnotation {
-                if farOut {
-                    view.apply(
-                        content: AnyView(MarkerRenderContainer { MapAnnotationBlankPin() }),
-                        renderKey: "single.blank"
-                    )
-                } else {
+                if showsSinglePhoto {
                     let imageName = observationAnnotation.observation.thumbnailAssetName ?? "none"
                     view.apply(
                         content: AnyView(
@@ -233,9 +230,14 @@ private struct ExploreMapRepresentable: UIViewRepresentable {
                         ),
                         renderKey: "single.photo.\(imageName)"
                     )
+                } else {
+                    view.apply(
+                        content: AnyView(MarkerRenderContainer { MapAnnotationBlankPin() }),
+                        renderKey: "single.blank"
+                    )
                 }
             } else if let clusterAnnotation = annotation as? MKClusterAnnotation {
-                if farOut {
+                if farOutCluster {
                     view.apply(
                         content: AnyView(MarkerRenderContainer { MapAnnotationBlankPin() }),
                         renderKey: "cluster.blank"

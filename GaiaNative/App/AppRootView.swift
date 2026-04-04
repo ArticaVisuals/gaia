@@ -16,7 +16,7 @@ struct AppRootView: View {
                     .tag(section)
                     .tabItem {
                         Image(section.tabAssetName)
-                            .renderingMode(.template)
+                            .renderingMode(.original)
                         Text(section.title)
                     }
             }

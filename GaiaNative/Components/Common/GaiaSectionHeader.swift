@@ -8,12 +8,12 @@ struct GaiaSectionHeader: View {
         VStack(alignment: .leading, spacing: 2) {
             if let eyebrow {
                 Text(eyebrow)
-                    .font(GaiaTypography.caption2)
+                    .gaiaFont(.caption2)
                     .foregroundStyle(GaiaColor.greyMuted)
                     .textCase(.uppercase)
             }
             Text(title)
-                .font(GaiaTypography.title)
+                .gaiaFont(.title3Medium)
                 .foregroundStyle(GaiaColor.textPrimary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)

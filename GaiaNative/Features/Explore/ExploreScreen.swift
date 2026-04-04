@@ -191,7 +191,7 @@ private struct ExploreDraggableSheet: View {
             let collapsedLift = (1 - contentReveal) * 14
             let shellHorizontalInset = (1 - contentReveal) * 12
             let shellBottomInset = shellHorizontalInset
-            let collapsedBottomLift = (1 - contentReveal) * 12
+            let collapsedBottomLift = (1 - contentReveal) * 14
             let peekInsets = EdgeInsets(
                 top: (1 - contentReveal) * 4,
                 leading: 0,
@@ -443,7 +443,7 @@ private struct ExploreSheetPeekCard: View {
                 .padding(.top, 9)
 
             Text("\(nearbyFindCount) nearby \(nearbyFindCount == 1 ? "find" : "finds")")
-                .font(GaiaTypography.subheadSerif)
+                .gaiaFont(.subheadSerif)
                 .foregroundStyle(GaiaColor.olive)
                 .lineLimit(1)
                 .padding(.top, 22)
@@ -505,7 +505,7 @@ private struct ExploreSearchBar: View {
                     .font(GaiaTypography.body)
                     .foregroundStyle(GaiaColor.blackishGrey500.opacity(0.5))
             )
-            .font(GaiaTypography.body)
+            .gaiaFont(.body)
             .foregroundStyle(GaiaColor.textPrimary)
             .textInputAutocapitalization(.never)
             .autocorrectionDisabled()

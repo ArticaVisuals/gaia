@@ -67,7 +67,7 @@ struct ObserveDetailsScreen: View {
 
                         VStack(alignment: .leading, spacing: GaiaSpacing.md) {
                             Text("Condition")
-                                .font(GaiaTypography.titleRegular)
+                                .gaiaFont(.title3)
                                 .foregroundStyle(GaiaColor.oliveGreen500)
 
                             HStack(spacing: GaiaSpacing.sm) {
@@ -138,14 +138,13 @@ private struct ObserveDetailsToolbar: View {
             ToolbarGlassButton(icon: .back, accessibilityLabel: "Back", action: onBack)
 
             Text("Details")
-                .font(GaiaTypography.title1Medium)
+                .gaiaFont(.title1Medium)
                 .foregroundStyle(GaiaColor.oliveGreen500)
-                .tracking(-0.3)
                 .frame(maxWidth: .infinity)
 
             Button(action: onSave) {
                 Text("Save")
-                    .font(GaiaTypography.footnote)
+                    .gaiaFont(.footnote)
                     .foregroundStyle(GaiaColor.broccoliBrown400)
                     .frame(width: 48, alignment: .trailing)
             }
@@ -168,7 +167,7 @@ private struct ObserveBottomActionBar: View {
         VStack(spacing: 0) {
             Button(action: action) {
                 Text("Save Find")
-                    .font(GaiaTypography.body)
+                    .gaiaFont(.body)
                     .foregroundStyle(GaiaColor.paperWhite50)
                     .frame(maxWidth: .infinity)
                     .frame(height: 50)
@@ -259,7 +258,7 @@ private struct ObserveCapturedPhotoCard: View {
 
             if isHighlight {
                 Text("Highlight")
-                    .font(GaiaTypography.caption)
+                    .gaiaFont(.caption)
                     .foregroundStyle(GaiaColor.paperWhite50)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 3)
@@ -278,7 +277,7 @@ private struct ObserveDetailsSectionTitle: View {
 
     var body: some View {
         Text(title)
-            .font(GaiaTypography.titleRegular)
+            .gaiaFont(.title3)
             .foregroundStyle(GaiaColor.inkBlack300)
     }
 }
@@ -297,15 +296,14 @@ private struct ObserveIdentificationCard: View {
 
                 VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
                     Text("Coast Live Oak")
-                        .font(GaiaTypography.title)
+                        .gaiaFont(.title3Medium)
                         .foregroundStyle(GaiaColor.paperWhite400)
                         .lineLimit(1)
                         .minimumScaleFactor(0.9)
 
                     Text("Quercus agrifolia (94%)")
-                        .font(GaiaTypography.footnote)
+                        .gaiaFont(.footnote)
                         .foregroundStyle(GaiaColor.oliveGreen200)
-                        .tracking(-0.08)
                         .lineLimit(1)
                         .minimumScaleFactor(0.85)
                 }
@@ -345,7 +343,7 @@ private struct ObserveNotesField: View {
                 )
 
             TextEditor(text: $text)
-                .font(GaiaTypography.subheadline)
+                .gaiaFont(.subheadline)
                 .foregroundStyle(GaiaColor.textPrimary)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 6)
@@ -357,7 +355,7 @@ private struct ObserveNotesField: View {
 
             if text.isEmpty {
                 Text("Add find notes...")
-                    .font(GaiaTypography.footnote)
+                    .gaiaFont(.footnote)
                     .foregroundStyle(GaiaColor.broccoliBrown400)
                     .padding(.horizontal, GaiaSpacing.md - 4)
                     .padding(.vertical, GaiaSpacing.md - 4)
@@ -442,16 +440,15 @@ private struct ObserveMapLocationRow: View {
                         .opacity(0.48)
 
                     Text("E Del Mar, Pasadena, California")
-                        .font(GaiaTypography.subheadline)
+                        .gaiaFont(.subheadline)
                         .foregroundStyle(GaiaColor.blackishGrey700)
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
                 }
 
                 Text("34.14, -118.14 · 9m accuracy")
-                    .font(GaiaTypography.caption)
+                    .gaiaFont(.caption)
                     .foregroundStyle(GaiaColor.blackishGrey200)
-                    .tracking(0.25)
                     .lineLimit(1)
             }
 
@@ -470,7 +467,7 @@ private struct ObserveSimpleMapRow: View {
     var body: some View {
         HStack {
             Text(text)
-                .font(GaiaTypography.subheadline)
+                .gaiaFont(.subheadline)
                 .foregroundStyle(color)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
@@ -490,14 +487,14 @@ private struct ObserveGeoPrivacyRow: View {
                     .foregroundStyle(GaiaColor.blackishGrey700)
                     .frame(width: 24, height: 24)
                 Text("Geoprivacy")
-                    .font(GaiaTypography.subheadline)
+                    .gaiaFont(.subheadline)
                     .foregroundStyle(GaiaColor.blackishGrey700)
             }
 
             Spacer(minLength: GaiaSpacing.sm)
 
             Text("Open")
-                .font(GaiaTypography.body)
+                .gaiaFont(.body)
                 .foregroundStyle(GaiaColor.oliveGreen500)
                 .padding(.horizontal, GaiaSpacing.md)
                 .frame(height: 32)
@@ -599,7 +596,7 @@ private struct ObserveMetadataRow: View {
                 )
 
             Text(title)
-                .font(GaiaTypography.subheadline)
+                .gaiaFont(.subheadline)
                 .foregroundStyle(GaiaColor.blackishGrey700)
 
             Spacer(minLength: GaiaSpacing.sm)
@@ -607,7 +604,7 @@ private struct ObserveMetadataRow: View {
             switch valueStyle {
             case .pill:
                 Text(value)
-                    .font(GaiaTypography.body)
+                    .gaiaFont(.body)
                     .foregroundStyle(GaiaColor.oliveGreen500)
                     .padding(.horizontal, GaiaSpacing.md)
                     .frame(height: 32)
@@ -621,7 +618,7 @@ private struct ObserveMetadataRow: View {
                     )
             case .plain:
                 Text(value)
-                    .font(GaiaTypography.body)
+                    .gaiaFont(.body)
                     .foregroundStyle(GaiaColor.broccoliBrown500)
             }
 
@@ -640,20 +637,18 @@ private struct ObserveConditionCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
             Text(label)
-                .font(GaiaTypography.caption)
+                .gaiaFont(.caption)
                 .foregroundStyle(GaiaColor.broccoliBrown500)
-                .tracking(0.25)
 
             VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
                 Text(title)
-                    .font(GaiaTypography.body)
+                    .gaiaFont(.body)
                     .foregroundStyle(GaiaColor.textPrimary)
                     .lineLimit(1)
 
                 Text(subtitle)
-                    .font(GaiaTypography.caption)
+                    .gaiaFont(.caption)
                     .foregroundStyle(GaiaColor.inkBlack200)
-                    .tracking(0.25)
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
             }

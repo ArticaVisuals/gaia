@@ -13,8 +13,8 @@ struct ProjectDetailScreen: View {
     var body: some View {
         GeometryReader { proxy in
             let topInset = proxy.safeAreaInsets.top > 0 ? proxy.safeAreaInsets.top : windowSafeTopInset
-            // Keep the hero under the glass toolbar while matching the Figma vertical rhythm.
-            let heroLift = max(topInset - GaiaSpacing.md, 0)
+            // Keep the hero under the glass toolbar while avoiding an overly tight top crop.
+            let heroLift = max(topInset - GaiaSpacing.lg, 0)
 
             ZStack(alignment: .top) {
                 GaiaColor.surfacePrimary.ignoresSafeArea()
@@ -218,15 +218,14 @@ private struct ProjectHeroSection: View {
 
             VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
                 Text(content.title)
-                    .font(GaiaTypography.displayMedium)
+                    .gaiaFont(.displayMedium)
                     .foregroundStyle(GaiaColor.paperWhite50)
-                    .tracking(-0.5)
                     .lineLimit(2)
 
                 HStack(spacing: 0) {
                     ProjectLocationPinIcon()
                     Text(content.location)
-                        .font(GaiaTypography.subheadline)
+                        .gaiaFont(.subheadline)
                         .foregroundStyle(GaiaColor.paperWhite50)
                         .lineLimit(1)
                 }
@@ -285,7 +284,7 @@ private struct ProjectActionButton: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(GaiaTypography.body)
+                .gaiaFont(.body)
                 .foregroundStyle(style == .filled ? GaiaColor.paperWhite50 : GaiaColor.olive)
                 .frame(maxWidth: .infinity)
                 .frame(height: 50)
@@ -350,7 +349,7 @@ private struct ProjectStatsCard: View {
     private var founderColumn: some View {
         VStack(spacing: GaiaSpacing.md) {
             Text(content.founderLabel)
-                .font(GaiaTypography.caption2)
+                .gaiaFont(.caption2)
                 .foregroundStyle(GaiaColor.olive)
 
             ProjectMediaImage(source: content.founderImageName, contentMode: .fill)
@@ -378,7 +377,7 @@ private struct ProjectStatsCard: View {
     ) -> some View {
         VStack(spacing: GaiaSpacing.md) {
             Text(label)
-                .font(GaiaTypography.caption2)
+                .gaiaFont(.caption2)
                 .foregroundStyle(GaiaColor.olive)
 
             HStack(spacing: -iconTextOverlap) {
@@ -403,15 +402,14 @@ private struct ProjectDescriptionCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: GaiaSpacing.md) {
             Text(content.description)
-                .font(GaiaTypography.subheadline)
+                .gaiaFont(.subheadline)
                 .foregroundStyle(GaiaColor.textInverseSecondary)
-                .lineSpacing(0)
                 .frame(maxWidth: 305, alignment: .leading)
                 .fixedSize(horizontal: false, vertical: true)
 
             Button(action: {}) {
                 Text(content.readMoreLabel)
-                    .font(GaiaTypography.subheadline)
+                    .gaiaFont(.subheadline)
                     .foregroundStyle(GaiaColor.olive)
                     .padding(.horizontal, 14)
                     .frame(height: 34)
@@ -443,14 +441,14 @@ private struct ProjectSectionHeader: View {
     var body: some View {
         HStack(alignment: .bottom, spacing: GaiaSpacing.sm) {
             Text(title)
-                .font(GaiaTypography.titleRegular)
+                .gaiaFont(.title3)
                 .foregroundStyle(GaiaColor.inkBlack300)
 
             Spacer(minLength: 0)
 
             Button(action: {}) {
                 Text(actionTitle)
-                    .font(GaiaTypography.subheadline)
+                    .gaiaFont(.subheadline)
                     .foregroundStyle(GaiaColor.olive)
             }
             .buttonStyle(.plain)
@@ -500,9 +498,8 @@ private struct ProjectRecentFindCard: View {
                 .frame(width: proxy.size.width, height: proxy.size.height)
 
                 Text(item.title)
-                    .font(GaiaTypography.bodySerif)
+                    .gaiaFont(.bodySerif)
                     .foregroundStyle(GaiaColor.paperWhite50)
-                    .lineSpacing(0)
                     .lineLimit(2)
                     .frame(width: max(proxy.size.width - 16, 0), alignment: .leading)
                     .padding(.leading, GaiaSpacing.sm)
@@ -540,9 +537,8 @@ private struct ProjectObserversSection: View {
                     }
 
                     Text("+18")
-                        .font(GaiaTypography.caption)
+                        .gaiaFont(.caption)
                         .foregroundStyle(GaiaColor.olive)
-                        .tracking(0.25)
                         .frame(width: 40, height: 40)
                         .background(Circle().fill(GaiaColor.oliveGreen100))
                         .overlay(
@@ -553,11 +549,11 @@ private struct ProjectObserversSection: View {
 
                 VStack(alignment: .leading, spacing: 1) {
                     Text(content.observersHeadline)
-                        .font(GaiaTypography.subheadSerif)
+                        .gaiaFont(.subheadSerif)
                         .foregroundStyle(GaiaColor.olive)
 
                     Text(content.observersSubtitle)
-                        .font(GaiaTypography.footnote)
+                        .gaiaFont(.footnote)
                         .foregroundStyle(GaiaColor.textSecondary)
                 }
             }
@@ -601,20 +597,19 @@ private struct ProjectUpdateCard: View {
             VStack(alignment: .leading, spacing: GaiaSpacing.md) {
                 VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
                     Text(update.title)
-                        .font(GaiaTypography.subheadSerif)
+                        .gaiaFont(.subheadSerif)
                         .foregroundStyle(GaiaColor.textPrimary)
                         .lineLimit(1)
 
                     Text(update.subtitle)
-                        .font(GaiaTypography.caption2)
+                        .gaiaFont(.caption2)
                         .foregroundStyle(GaiaColor.inkBlack300)
                         .lineLimit(2)
                 }
 
                 Text(update.timeLabel)
-                    .font(GaiaTypography.caption)
+                    .gaiaFont(.caption)
                     .foregroundStyle(GaiaColor.olive)
-                    .tracking(0.25)
                     .lineLimit(1)
             }
 

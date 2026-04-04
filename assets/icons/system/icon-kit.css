@@ -395,3 +395,12 @@
 .gaia-icon--list-32 .gaia-icon__part {
   inset: 26.03% 15.89% 26.24% 15.36%;
 }
+
+.gaia-icon--filter-32 {
+  width: 32px;
+  height: 32px;
+}
+
+.gaia-icon--filter-32 .gaia-icon__part {
+  inset: 0;
+}

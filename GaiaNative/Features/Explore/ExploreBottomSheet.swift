@@ -49,9 +49,8 @@ struct ExploreBottomSheet: View {
 
                 VStack(alignment: .leading, spacing: 0) {
                     Text("Nearby")
-                        .font(GaiaTypography.displayMedium)
+                        .gaiaFont(.displayMedium)
                         .foregroundStyle(GaiaColor.olive)
-                        .tracking(-0.5)
                         .padding(.horizontal, sectionInset)
                         .padding(.top, 4)
                         .padding(.bottom, 8)
@@ -63,7 +62,7 @@ struct ExploreBottomSheet: View {
                                     activeFilter = filter
                                 } label: {
                                     Text(filter.title)
-                                        .font(GaiaTypography.footnote)
+                                        .gaiaFont(.footnote)
                                         .foregroundStyle(filter == activeFilter ? GaiaColor.paperWhite50 : GaiaColor.paperWhite200)
                                         .padding(.horizontal, 10)
                                         .frame(height: 28)
@@ -104,7 +103,7 @@ struct ExploreBottomSheet: View {
                 VStack(alignment: .leading, spacing: 0) {
                     HStack(alignment: .top) {
                         Text("Finds")
-                            .font(GaiaTypography.titleRegular)
+                            .gaiaFont(.title3)
                             .foregroundStyle(GaiaColor.inkBlack300)
 
                         Spacer(minLength: 12)
@@ -231,14 +230,14 @@ private struct ExploreSheetSectionHeader: View {
     var body: some View {
         HStack(alignment: .center) {
             Text(title)
-                .font(GaiaTypography.titleRegular)
+                .gaiaFont(.title3)
                 .foregroundStyle(GaiaColor.inkBlack300)
 
             Spacer(minLength: 12)
 
             if let trailingText {
                 Text(trailingText)
-                    .font(GaiaTypography.caption)
+                    .gaiaFont(.caption)
                     .foregroundStyle(GaiaColor.olive)
             }
         }
@@ -285,24 +284,30 @@ private struct ExploreSheetProjectCard: View {
                 GaiaAssetImage(name: project.imageName)
                     .frame(width: 181, height: 133)
                     .clipped()
-                    .blur(radius: 4)
+                    .blur(radius: 1.4)
                     .mask(
                         LinearGradient(
-                            colors: [.clear, .black],
+                            stops: [
+                                .init(color: .clear, location: 0.417),
+                                .init(color: .black, location: 1)
+                            ],
                             startPoint: .top,
                             endPoint: .bottom
                         )
                     )
 
                 LinearGradient(
-                    colors: [.clear, Color.black.opacity(0.55)],
+                    stops: [
+                        .init(color: Color(red: 70 / 255, green: 76 / 255, blue: 19 / 255, opacity: 0), location: 0.417),
+                        .init(color: Color(red: 41 / 255, green: 76 / 255, blue: 19 / 255, opacity: 0.85), location: 1)
+                    ],
                     startPoint: .top,
                     endPoint: .bottom
                 )
 
                 VStack(alignment: .leading, spacing: 0) {
                     Text(project.tag)
-                        .font(GaiaTypography.caption2)
+                        .gaiaFont(.caption2)
                         .foregroundStyle(GaiaColor.paperWhite50)
                         .padding(.horizontal, 10)
                         .frame(height: 20)
@@ -321,7 +326,7 @@ private struct ExploreSheetProjectCard: View {
 
                     VStack(alignment: .leading, spacing: 4) {
                         Text(project.title)
-                            .font(GaiaTypography.subheadSerif)
+                            .gaiaFont(.subheadSerif)
                             .foregroundStyle(GaiaColor.paperWhite50)
                             .lineLimit(2)
 
@@ -333,7 +338,7 @@ private struct ExploreSheetProjectCard: View {
                             )
 
                             Text(project.countLabel)
-                                .font(GaiaTypography.caption2)
+                                .gaiaFont(.caption2)
                                 .foregroundStyle(GaiaColor.paperWhite50)
                         }
                     }
@@ -416,11 +421,10 @@ private struct ExploreSheetFindGridCard: View {
                 )
 
                 Text(find.title)
-                    .font(GaiaTypography.subheadSerif)
+                    .gaiaFont(.subheadSerif)
                     .foregroundStyle(.white)
                     .multilineTextAlignment(.leading)
                     .lineLimit(2)
-                    .lineSpacing(2)
                     .padding(.horizontal, 8.5)
                     .padding(.bottom, 7.5)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
@@ -450,7 +454,7 @@ private struct ExploreSheetFindListRow: View {
                     .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
 
                 Text(find.title)
-                    .font(GaiaTypography.titleRegular)
+                    .gaiaFont(.title3)
                     .foregroundStyle(GaiaColor.textPrimary)
                     .frame(maxWidth: .infinity, alignment: .leading)
 

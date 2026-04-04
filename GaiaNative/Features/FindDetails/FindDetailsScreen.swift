@@ -13,6 +13,8 @@ struct FindDetailsScreen: View {
     var body: some View {
         GeometryReader { proxy in
             let topInset = proxy.safeAreaInsets.top > 0 ? proxy.safeAreaInsets.top : windowSafeTopInset
+            // Keep hero under the glass toolbar while avoiding the overly tight top crop.
+            let heroLift = max(topInset - GaiaSpacing.lg, 0)
 
             ZStack(alignment: .top) {
                 GaiaColor.surfacePrimary.ignoresSafeArea()
@@ -24,7 +26,7 @@ struct FindDetailsScreen: View {
                             title: species.commonName,
                             subtitle: species.scientificName
                         )
-                        .padding(.top, -topInset)
+                        .padding(.top, -heroLift)
                         .frame(maxWidth: .infinity)
 
                         DraggableTabSwitch(

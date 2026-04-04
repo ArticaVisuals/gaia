@@ -45,8 +45,7 @@ struct BottomNavBar: View {
                             GaiaIcon(kind: iconKind(for: section, currentSelection: visualSelection), size: 32, tint: GaiaColor.olive)
 
                             Text(section.title)
-                                .font(GaiaTypography.nav)
-                                .tracking(0.25)
+                                .gaiaFont(.nav)
                                 .foregroundStyle(GaiaColor.olive)
                                 .frame(width: 44)
                                 .lineLimit(1)

@@ -73,6 +73,7 @@ enum AssetCatalog {
         "Icons/System/grid-32.png": "gaia-icon-grid-32",
         "Icons/System/list-32.png": "gaia-icon-list-32",
         "Icons/System/map-32.png": "gaia-icon-map-32",
+        "Icons/System/filter-32.png": "gaia-icon-filter-32",
         "Icons/System/gear-20.png": "gaia-icon-gear-20",
         "Icons/System/binoculars-20.png": "gaia-icon-binoculars-20",
         "observe-camera-background": "assets/observe/camera-bg.png",

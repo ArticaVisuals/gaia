@@ -30,7 +30,7 @@ struct ActivityTabView: View {
             HStack {
                 Spacer()
                 Text("Read more")
-                    .font(GaiaTypography.subheadline)
+                    .gaiaFont(.subheadline)
                     .foregroundStyle(GaiaColor.olive)
             }
             .padding(.horizontal, GaiaSpacing.xs)
@@ -38,7 +38,7 @@ struct ActivityTabView: View {
 
             VStack(alignment: .leading, spacing: 12) {
                 Text("Leaderboard")
-                    .font(GaiaTypography.titleRegular)
+                    .gaiaFont(.title3)
                     .foregroundStyle(GaiaColor.olive)
 
                 ActivityLeaderboardCard(rows: leaderboardRows)
@@ -71,7 +71,7 @@ private struct ActivityFilterPill: View {
     var body: some View {
         Button(action: {}) {
             Text(title)
-                .font(GaiaTypography.body)
+                .gaiaFont(.body)
                 .foregroundStyle(GaiaColor.paperWhite50)
                 .frame(maxWidth: .infinity)
                 .frame(height: 48)
@@ -97,10 +97,10 @@ private struct ActivitySuggestionCard: View {
 
                     VStack(alignment: .leading, spacing: 8) {
                         Text(scientificName)
-                            .font(GaiaTypography.titleRegular)
+                            .gaiaFont(.title3)
                             .foregroundStyle(GaiaColor.olive)
                         Text("Original suggested ID")
-                            .font(GaiaTypography.caption)
+                            .gaiaFont(.caption)
                             .foregroundStyle(GaiaColor.inkBlack300)
                     }
                     Spacer(minLength: 0)
@@ -136,7 +136,7 @@ private struct ActivityCommentCard: View {
             ActivityCardHeader(author: comment.author, actionText: "commented", timestamp: comment.timestamp)
 
             Text(comment.body)
-                .font(GaiaTypography.caption2)
+                .gaiaFont(.caption2)
                 .foregroundStyle(GaiaColor.blackishGrey300)
                 .padding(12)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -184,19 +184,18 @@ private struct ActivityCardHeader: View {
             HStack(alignment: .top, spacing: 8) {
                 HStack(alignment: .lastTextBaseline, spacing: 4) {
                     Text(author)
-                        .font(GaiaTypography.subheadSerif)
+                        .gaiaFont(.subheadSerif)
                         .foregroundStyle(GaiaColor.olive)
                         .lineLimit(1)
                     Text(actionText)
-                        .font(GaiaTypography.caption2)
+                        .gaiaFont(.caption2)
                         .foregroundStyle(GaiaColor.broccoliBrown500)
                         .lineLimit(1)
                 }
                 Spacer(minLength: 0)
                 Text(timestamp)
-                    .font(GaiaTypography.caption)
+                    .gaiaFont(.caption)
                     .foregroundStyle(GaiaColor.inkBlack200)
-                    .tracking(0.25)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -214,7 +213,7 @@ private struct ActivityOutlinedPill: View {
     var body: some View {
         Button(action: {}) {
             Text(title)
-                .font(GaiaTypography.subheadline)
+                .gaiaFont(.subheadline)
                 .foregroundStyle(GaiaColor.olive)
                 .padding(.horizontal, 14)
                 .frame(height: 34)
@@ -238,7 +237,7 @@ private struct ActivityLeaderboardCard: View {
 
             HStack(spacing: 0) {
                 Text("Show more")
-                    .font(GaiaTypography.callout)
+                    .gaiaFont(.callout)
                     .foregroundStyle(GaiaColor.olive)
                     .frame(maxWidth: .infinity, alignment: .trailing)
                     .padding(.vertical, 12)
@@ -266,7 +265,7 @@ private struct ActivityLeaderboardRow: View {
         HStack(spacing: 0) {
             HStack(spacing: 16) {
                 Text(entry.rank)
-                    .font(GaiaTypography.callout)
+                    .gaiaFont(.callout)
                     .foregroundStyle(rankColor)
                     .monospacedDigit()
                     .lineLimit(1)
@@ -276,7 +275,7 @@ private struct ActivityLeaderboardRow: View {
                 HStack(spacing: 8) {
                     FindProfilePicture(size: .small)
                     Text(entry.name)
-                        .font(GaiaTypography.subheadSerif)
+                        .gaiaFont(.subheadSerif)
                         .foregroundStyle(rankColor)
                         .lineLimit(1)
                 }
@@ -286,7 +285,7 @@ private struct ActivityLeaderboardRow: View {
 
             HStack(spacing: 4) {
                 Text(entry.count)
-                    .font(GaiaTypography.subheadSerif)
+                    .gaiaFont(.subheadSerif)
                     .foregroundStyle(rankColor)
                     .monospacedDigit()
                     .lineLimit(1)

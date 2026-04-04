@@ -149,13 +149,14 @@
   --text-primary:       var(--ink-500);
   --text-secondary:     var(--grey-500);
   --text-secondary-2:   var(--brown-500);
+  --text-warm-secondary: var(--brown-500);
   --text-disabled:      var(--grey-200);
   --text-inverse:       var(--cream-500);
   --text-link:          var(--indigo-500);
   --text-inverse-secondary: var(--olive-200);
 
   --border-default:     var(--brown-200);
-  --border-strong:      var(--olive-500);
+  --border-strong:      var(--olive-100);
 
   --bg-default:         #fcfcf7;
   --bg-subtle:          var(--cream-600);
@@ -200,6 +201,7 @@
   /* Named effect styles */
   --shadow-soft:  0px 0px 20px 25px rgba(94,98,98,0.20);
   --shadow-small: 0px 4px 20px 0px rgba(128,105,38,0.09);
+  --shadow-story: 0px 4px 24px 0px rgba(89,48,7,0.08);
   --shadow-dark:  0px 4px 20px 0px rgba(50,40,8,0.35);
   --shadow-nav:   0px 8px 40px 0px rgba(0,0,0,0.12);
 
