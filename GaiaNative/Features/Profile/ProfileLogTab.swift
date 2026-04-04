@@ -153,9 +153,7 @@ private struct ProfileLogHeader: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(GaiaColor.paperWhite50)
         .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(GaiaColor.border)
-                .frame(height: 0.5)
+            ProfileLogHairline()
         }
         .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
         .animation(GaiaMotion.quickEase, value: isSearchBarVisible)
@@ -218,6 +216,7 @@ private struct ProfileLogBody: View {
                 ProfileLogList(sections: filteredSections)
             case .grid:
                 ProfileLogGrid(items: filteredGridItems)
+                    .padding(.top, GaiaSpacing.md)
                     .padding(.horizontal, GaiaSpacing.md)
             case .map:
                 ProfileLogMap(content: content, observations: observations)
@@ -370,9 +369,7 @@ private struct ProfileLogList: View {
                 ForEach(Array(section.entries.enumerated()), id: \.element.id) { _, entry in
                     ProfileLogRow(entry: entry)
 
-                    Rectangle()
-                        .fill(GaiaColor.border)
-                        .frame(height: 1)
+                    ProfileLogHairline()
                 }
             }
         }
@@ -395,7 +392,6 @@ private struct ProfileLogRow: View {
                         Text(entry.commonName)
                             .gaiaFont(.title3Medium)
                             .foregroundStyle(GaiaColor.textPrimary)
-                            .lineSpacing(0)
                             .lineLimit(2)
                             .truncationMode(.tail)
                             .fixedSize(horizontal: false, vertical: true)
@@ -431,10 +427,13 @@ private struct ProfileLogRow: View {
 private struct ProfileLogGrid: View {
     let items: [ProfileLogGridItem]
 
-    private let columns = Array(repeating: GridItem(.flexible(), spacing: 8), count: 3)
+    private let columns = Array(
+        repeating: GridItem(.flexible(minimum: 0), spacing: GaiaSpacing.sm, alignment: .top),
+        count: 3
+    )
 
     var body: some View {
-        LazyVGrid(columns: columns, spacing: 8) {
+        LazyVGrid(columns: columns, alignment: .leading, spacing: GaiaSpacing.sm) {
             ForEach(items) { item in
                 ProfileLogGridCard(item: item)
             }
@@ -450,35 +449,11 @@ private struct ProfileLogGridCard: View {
     var body: some View {
         GeometryReader { proxy in
             ZStack(alignment: .bottomLeading) {
-                ProfileLogMedia(source: item.imageSource)
-                    .frame(width: proxy.size.width, height: proxy.size.height)
-                    .clipped()
-
-                ProfileLogMedia(source: item.imageSource)
-                    .frame(width: proxy.size.width, height: proxy.size.height)
-                    .clipped()
-                    .blur(radius: 3.7)
-                    .mask(
-                        LinearGradient(
-                            stops: [
-                                .init(color: .clear, location: 0),
-                                .init(color: .clear, location: 0.22),
-                                .init(color: .black.opacity(0.58), location: 0.72),
-                                .init(color: .black, location: 1)
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
-
-                LinearGradient(
-                    colors: [
-                        Color.black.opacity(0),
-                        Color.black.opacity(0.56)
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
+                GaiaFindCardArtwork {
+                    ProfileLogMedia(source: item.imageSource)
+                        .frame(width: proxy.size.width, height: proxy.size.height)
+                        .clipped()
+                }
 
                 Text(item.title)
                     .gaiaFont(.bodySerif)
@@ -573,6 +548,18 @@ private struct ProfileLogGlyphImage: View {
                     .foregroundStyle(tint)
             }
         }
+    }
+}
+
+private struct ProfileLogHairline: View {
+    var color: Color = GaiaColor.border
+    @Environment(\.displayScale) private var displayScale
+
+    var body: some View {
+        Rectangle()
+            .fill(color)
+            .frame(height: 1 / max(displayScale, 1))
+            .accessibilityHidden(true)
     }
 }
 
