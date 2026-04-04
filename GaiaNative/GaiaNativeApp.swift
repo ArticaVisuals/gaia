@@ -32,8 +32,6 @@ enum TabBarAppearanceConfigurator {
         hasConfigured = true
 
         let olive500 = UIColor(red: 103 / 255, green: 118 / 255, blue: 91 / 255, alpha: 1)
-        let paperBase = UIColor(red: 252 / 255, green: 250 / 255, blue: 241 / 255, alpha: 0.96)
-        let borderColor = UIColor(red: 216 / 255, green: 201 / 255, blue: 184 / 255, alpha: 0.72)
         let selectedColor = olive500
         let deselectedColor = olive500
         let titleFont = tabTitleFont()
@@ -41,10 +39,10 @@ enum TabBarAppearanceConfigurator {
         let tabBarItem = UITabBarItem.appearance()
         let appearance = UITabBarAppearance()
 
-        appearance.configureWithOpaqueBackground()
-        appearance.backgroundEffect = nil
-        appearance.backgroundColor = paperBase
-        appearance.shadowColor = borderColor
+        appearance.configureWithTransparentBackground()
+        appearance.backgroundEffect = UIBlurEffect(style: .systemUltraThinMaterialLight)
+        appearance.backgroundColor = UIColor.white.withAlphaComponent(0.46)
+        appearance.shadowColor = .clear
         configure(
             itemAppearance: appearance.stackedLayoutAppearance,
             selectedColor: selectedColor,
@@ -68,7 +66,7 @@ enum TabBarAppearanceConfigurator {
         tabBar.scrollEdgeAppearance = appearance
         tabBar.tintColor = selectedColor
         tabBar.unselectedItemTintColor = deselectedColor
-        tabBar.isTranslucent = false
+        tabBar.isTranslucent = true
 
         // Keep the tab label color consistent across selection states.
         let titleAttributes: [NSAttributedString.Key: Any] = [

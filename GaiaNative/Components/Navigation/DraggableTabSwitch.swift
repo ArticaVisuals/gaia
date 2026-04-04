@@ -255,3 +255,89 @@ extension View {
         )
     }
 }
+
+struct DraggableIconTabSwitch<T: Identifiable & Hashable, Icon: View>: View {
+    let tabs: [T]
+    @Binding var selection: T
+    var buttonSize: CGFloat = 40
+    var gap: CGFloat = 4
+    var pad: CGFloat = 4
+    var buttonRadius: CGFloat = GaiaRadius.sm
+    var containerRadius: CGFloat = GaiaRadius.md
+    var activeFill: Color = GaiaColor.brandPrimary
+    var backgroundFill: Color = GaiaColor.oliveGreen100
+    let accessibilityLabel: (T) -> String
+    @ViewBuilder let icon: (T, Bool) -> Icon
+
+    @State private var dragOffset: CGFloat?
+
+    private var step: CGFloat { buttonSize + gap }
+
+    var body: some View {
+        let selectedIndex = tabs.firstIndex(of: selection) ?? 0
+        let indicatorX = dragOffset ?? (CGFloat(selectedIndex) * step)
+
+        ZStack(alignment: .leading) {
+            RoundedRectangle(cornerRadius: buttonRadius, style: .continuous)
+                .fill(activeFill)
+                .frame(width: buttonSize, height: buttonSize)
+                .offset(x: indicatorX)
+
+            HStack(spacing: gap) {
+                ForEach(tabs) { tab in
+                    Button {
+                        updateSelection(tab)
+                    } label: {
+                        icon(tab, selection == tab)
+                            .frame(width: 22, height: 22)
+                            .frame(width: buttonSize, height: buttonSize)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(GlassReactiveButtonStyle())
+                    .accessibilityLabel(accessibilityLabel(tab))
+                    .accessibilityAddTraits(selection == tab ? .isSelected : [])
+                }
+            }
+        }
+        .padding(pad)
+        .background(
+            RoundedRectangle(cornerRadius: containerRadius, style: .continuous)
+                .fill(backgroundFill)
+        )
+        .contentShape(Rectangle())
+        .highPriorityGesture(dragGesture)
+        .animation(
+            dragOffset == nil
+                ? GaiaMotion.spring
+                : .interactiveSpring(response: 0.18, dampingFraction: 0.86),
+            value: indicatorX
+        )
+    }
+
+    private var dragGesture: some Gesture {
+        DragGesture(minimumDistance: 4, coordinateSpace: .local)
+            .onChanged { value in
+                let x = value.location.x - pad
+                dragOffset = max(0, min(x - buttonSize / 2, step * CGFloat(tabs.count - 1)))
+
+                let index = min(max(Int(x / step), 0), tabs.count - 1)
+                guard tabs.indices.contains(index) else { return }
+                updateSelection(tabs[index], animated: false)
+            }
+            .onEnded { _ in
+                dragOffset = nil
+            }
+    }
+
+    private func updateSelection(_ tab: T, animated: Bool = true) {
+        guard selection != tab else { return }
+        HapticsService.selectionChanged()
+        if animated {
+            withAnimation(GaiaMotion.spring) {
+                selection = tab
+            }
+        } else {
+            selection = tab
+        }
+    }
+}

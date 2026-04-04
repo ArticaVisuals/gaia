@@ -31,6 +31,8 @@ struct ProfileLogGridItem: Identifiable, Codable, Hashable {
 
 enum ProfileLogStatusKind: String, Codable, Hashable {
     case researchGrade
+    case casualGrade
+    case ungraded
     case needsID
     case draft
 }
@@ -87,56 +89,49 @@ enum PreviewProfileLog {
             .init(
                 id: "today",
                 title: "Today",
-                countLabel: "2 finds",
+                countLabel: "3 finds",
                 entries: [
                     .init(
                         id: "red-fox",
                         commonName: "Red Fox",
                         scientificName: "Vulpes vulpes",
                         metaLabel: "Eaton Canyon · 2:15 PM",
-                        statusLabel: "Research Grade",
-                        statusKind: .researchGrade,
+                        statusLabel: "Ungraded",
+                        statusKind: .ungraded,
                         imageSource: "https://www.figma.com/api/mcp/asset/f99a6cfd-ae56-4e80-aac0-92c673a070b5"
                     ),
                     .init(
-                        id: "unknown-moth",
-                        commonName: "Unknown Moth",
-                        scientificName: "Needs ID",
-                        metaLabel: "Eaton Canyon · 2:08 PM",
-                        statusLabel: "Needs ID",
-                        statusKind: .needsID,
+                        id: "annas-hummingbird",
+                        commonName: "Anna's Hummingbird",
+                        scientificName: "Calypte anna",
+                        metaLabel: "Arlington Garden · 1:42 PM",
+                        statusLabel: "Ungraded",
+                        statusKind: .ungraded,
                         imageSource: "https://www.figma.com/api/mcp/asset/3de8ff3b-8537-438e-9014-164c92cd7265"
+                    ),
+                    .init(
+                        id: "coast-live-oak",
+                        commonName: "Coast Live Oak",
+                        scientificName: "Quercus agrifolia",
+                        metaLabel: "Arlington Garden · 1:42 PM",
+                        statusLabel: "Casual Grade",
+                        statusKind: .casualGrade,
+                        imageSource: "coast-live-oak-hero"
                     )
                 ]
             ),
             .init(
                 id: "yesterday",
                 title: "Yesterday",
-                countLabel: "1 find",
-                entries: [
-                    .init(
-                        id: "coast-live-oak",
-                        commonName: "Coast Live Oak",
-                        scientificName: "Quercus agrifolia",
-                        metaLabel: "Arroyo Seco · 10:30 AM",
-                        statusLabel: "Research Grade",
-                        statusKind: .researchGrade,
-                        imageSource: "coast-live-oak-hero"
-                    )
-                ]
-            ),
-            .init(
-                id: "mar-25",
-                title: "Mar 25",
                 countLabel: "3 finds",
                 entries: [
                     .init(
                         id: "western-fence-lizard",
                         commonName: "Western Fence Lizard",
-                        scientificName: "Needs ID",
-                        metaLabel: "Hahamongna · 3:45 PM",
-                        statusLabel: "Needs ID",
-                        statusKind: .needsID,
+                        scientificName: "Sceloporus occidentalis",
+                        metaLabel: "Eaton Canyon · 2:15 PM",
+                        statusLabel: "Research Grade",
+                        statusKind: .researchGrade,
                         imageSource: "observe-photo-square"
                     ),
                     .init(
@@ -152,7 +147,7 @@ enum PreviewProfileLog {
                         id: "california-poppy",
                         commonName: "California Poppy",
                         scientificName: "Eschscholzia californica",
-                        metaLabel: "Eaton Canyon · 11:00 AM",
+                        metaLabel: "Arroyo Seco · 10:15 AM",
                         statusLabel: "Research Grade",
                         statusKind: .researchGrade,
                         imageSource: "https://www.figma.com/api/mcp/asset/56a574ab-72a6-4985-a207-e84398659de6"
@@ -160,8 +155,8 @@ enum PreviewProfileLog {
                 ]
             ),
             .init(
-                id: "mar-24",
-                title: "Mar 24",
+                id: "mar-25",
+                title: "Mar 25",
                 countLabel: "2 finds",
                 entries: [
                     .init(

@@ -18,6 +18,7 @@ enum GaiaTextStyle {
     case callout, calloutMedium
     case subheadline, subheadlineMedium, subheadlineBold
     case footnote, footnoteMedium
+    case pill
     case caption, captionMedium
     case caption2, caption2Medium
     case nav
@@ -36,12 +37,12 @@ enum GaiaTextStyle {
         case .displayMedium:    return (GaiaTypography.displayMedium,    -0.5,  0)           // LH 1.0
         case .title1:           return (GaiaTypography.title1,           -0.3,  28 * 0.1)   // LH 1.1
         case .title1Medium:     return (GaiaTypography.title1Medium,     -0.3,  28 * 0.1)   // LH 1.1
-        case .title2:           return (GaiaTypography.title2,           -0.2,  24 * 0.2)   // LH 1.2
-        case .title2Medium:     return (GaiaTypography.title2Medium,     -0.2,  24 * 0.2)   // LH 1.2
+        case .title2:           return (GaiaTypography.title2,           -0.2,  24 * 0.1)   // LH 1.1
+        case .title2Medium:     return (GaiaTypography.title2Medium,     -0.2,  24 * 0.1)   // LH 1.1
         case .title3:           return (GaiaTypography.titleRegular,      0,    20 * 0.3)   // LH 1.3
         case .title3Medium:     return (GaiaTypography.title,             0,    20 * 0.3)   // LH 1.3
         case .subheadSerif:     return (GaiaTypography.subheadSerif,      0,    16 * 0.3)   // LH 1.3
-        case .subheadSerifMedium: return (GaiaTypography.subheadSerif,    0,    16 * 0.3)   // LH 1.3
+        case .subheadSerifMedium: return (GaiaTypography.subheadSerifMedium, 0, 16 * 0.3)   // LH 1.3
         case .bodySerif:        return (GaiaTypography.bodySerif,         0,    14 * 0.2)   // LH 1.2
         case .bodySerifMedium:  return (GaiaTypography.bodySerifMedium,   0,    14 * 0.3)   // LH 1.3
 
@@ -58,6 +59,7 @@ enum GaiaTextStyle {
         case .subheadlineBold:  return (GaiaTypography.subheadlineBold,   0,    5)          // LH 20px
         case .footnote:         return (GaiaTypography.footnote,         -0.08, 5)          // LH 18px
         case .footnoteMedium:   return (GaiaTypography.footnoteMedium,   -0.08, 5)          // LH 18px
+        case .pill:             return (GaiaTypography.footnote,         -0.08, 13 * 0.2)   // LH 1.2
         case .caption:          return (GaiaTypography.caption,           0.25, 11 * 0.3)   // LH 1.3
         case .captionMedium:    return (GaiaTypography.captionMedium,     0.25, 11 * 0.3)   // LH 1.3
         case .caption2:         return (GaiaTypography.caption2,          0,    12 * 0.2)   // LH 1.2
@@ -97,6 +99,7 @@ enum GaiaTypography {
     static let title = serif(size: 20, weight: .medium, fallbackStyle: .title3)
     static let titleRegular = serif(size: 20, weight: .regular, fallbackStyle: .title3)
     static let subheadSerif = serif(size: 16, weight: .regular, fallbackStyle: .body)
+    static let subheadSerifMedium = serif(size: 16, weight: .medium, fallbackStyle: .body)
     static let bodySerif = serif(size: 14, weight: .regular, fallbackStyle: .body)
     static let bodySerifMedium = serif(size: 14, weight: .medium, fallbackStyle: .body)
 

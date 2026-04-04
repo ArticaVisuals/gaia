@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
   },
   codeCard: {
     width: '100%',
-    backgroundColor: '#fcfaf0',
+    backgroundColor: '#a6a5a1',
     borderRadius: 16,
     borderWidth: 1,
     borderColor: '#d8c9b8',

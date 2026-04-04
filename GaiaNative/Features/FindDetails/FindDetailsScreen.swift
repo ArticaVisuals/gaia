@@ -10,6 +10,8 @@ struct FindDetailsScreen: View {
     @StateObject private var viewModel = FindDetailsViewModel()
     @State private var isHorizontalTabSwipeActive = false
 
+    private let mapDataService = MapDataService()
+
     var body: some View {
         GeometryReader { proxy in
             let topInset = proxy.safeAreaInsets.top > 0 ? proxy.safeAreaInsets.top : windowSafeTopInset
@@ -112,7 +114,13 @@ struct FindDetailsScreen: View {
 
     private var speciesObservations: [Observation] {
         let filtered = contentStore.observations.filter { $0.speciesID == species.id }
-        guard filtered.isEmpty else { return filtered }
+        guard filtered.isEmpty else {
+            return mapDataService.expandedObservations(
+                from: filtered,
+                targetCount: 150,
+                seed: "\(species.id)-find-map"
+            )
+        }
 
         return [
             Observation(

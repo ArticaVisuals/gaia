@@ -248,10 +248,10 @@ struct ProfileImpactTab: View {
         .padding(.bottom, GaiaSpacing.xl)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
+            RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
                 .fill(GaiaColor.paperWhite50)
                 .overlay(
-                    RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
+                    RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
                         .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
                 )
                 .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
@@ -275,10 +275,10 @@ struct ProfileImpactTab: View {
             .padding(.vertical, 12)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
-                RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
+                RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
                     .fill(GaiaColor.paperWhite50)
                     .overlay(
-                        RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
+                        RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
                             .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
                     )
                     .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
@@ -307,7 +307,7 @@ struct ProfileImpactTab: View {
     }
 
     private func goalCard(_ goal: ImpactGoal) -> some View {
-        GaiaDataCard {
+        GaiaDataCard(cornerRadius: GaiaRadius.md) {
             VStack(alignment: .leading, spacing: 12) {
                 HStack(alignment: .top, spacing: GaiaSpacing.sm) {
                     Text(goal.title)
@@ -347,7 +347,7 @@ struct ProfileImpactTab: View {
         Button {
             showsBioCalendarDetail = true
         } label: {
-            GaiaDataCard {
+            GaiaDataCard(cornerRadius: GaiaRadius.md) {
                 VStack(alignment: .leading, spacing: 20) {
                     HStack(alignment: .bottom) {
                         Text("Bio Calendar")
@@ -444,10 +444,10 @@ struct ProfileImpactTab: View {
         .padding(.bottom, GaiaSpacing.lg)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
+            RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
                 .fill(GaiaColor.paperWhite50)
                 .overlay(
-                    RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
+                    RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
                         .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
                 )
                 .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
@@ -514,44 +514,14 @@ struct ProfileImpactTab: View {
                     .gaiaFont(.subheadSerif)
                     .foregroundStyle(GaiaColor.inkBlack300)
                 Spacer(minLength: 0)
-                Text("5 finds")
+                Text(profileFindsLabel)
                     .gaiaFont(.caption2)
                     .foregroundStyle(GaiaColor.inkBlack300)
             }
 
-            VStack(spacing: 0) {
-                ZStack(alignment: .topTrailing) {
-                    GaiaAssetImage(name: "gaia-profile-impact-map-preview", contentMode: .fill)
-                        .frame(height: 214)
-                        .frame(maxWidth: .infinity)
-                        .clipped()
-
-                    GlassCircleButton(size: 44, action: {
-                        showsExpandedMap = true
-                    }) {
-                        ProfileImpactExpandIcon()
-                    }
-                    .padding(GaiaSpacing.md)
-                }
-
-                HStack {
-                    Text(profileFindsLabel)
-                        .gaiaFont(.caption2Medium)
-                        .foregroundStyle(GaiaColor.broccoliBrown500)
-                    Spacer(minLength: 0)
-                }
-                .padding(.horizontal, GaiaSpacing.md)
-                .frame(height: 41)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(GaiaColor.surfaceCard)
+            ProfileImpactSightingsMapCard {
+                showsExpandedMap = true
             }
-            .frame(maxWidth: .infinity)
-            .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
-                    .stroke(GaiaColor.border, lineWidth: 0.5)
-            )
-            .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
         }
     }
 
@@ -773,37 +743,75 @@ struct ProfileImpactTab: View {
     }
 }
 
-private struct ProfileImpactExpandIcon: View {
+private struct ProfileImpactSightingsMapCard: View {
+    let onExpandMap: () -> Void
+
+    private struct PinPlacement {
+        let x: CGFloat
+        let y: CGFloat
+    }
+
+    private let pins: [PinPlacement] = [
+        .init(x: 0.105, y: 0.201),
+        .init(x: 0.208, y: 0.514),
+        .init(x: 0.222, y: 0.617),
+        .init(x: 0.251, y: 0.682),
+        .init(x: 0.305, y: 0.565),
+        .init(x: 0.310, y: 0.440),
+        .init(x: 0.352, y: 0.318),
+        .init(x: 0.635, y: 0.551),
+        .init(x: 0.681, y: 0.734),
+        .init(x: 0.874, y: 0.357),
+        .init(x: 0.894, y: 0.201),
+        .init(x: 0.924, y: 0.351)
+    ]
+
     var body: some View {
-        GeometryReader { proxy in
-            let canvas = min(proxy.size.width, proxy.size.height)
-            let slot = canvas * (1 - 0.3674)
-            let arrowWidth = canvas * (20.359 / 24)
-            let arrowHeight = canvas * (21.148 / 24)
+        ZStack(alignment: .topTrailing) {
+            GaiaAssetImage(name: "learn-map-fallback")
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .clipped()
 
-            ZStack {
-                Image("gaia-profile-impact-expand-a-24")
-                    .resizable()
-                    .renderingMode(.original)
-                    .scaledToFit()
-                    .frame(width: arrowWidth, height: arrowHeight)
-                    .rotationEffect(.degrees(-135))
-                    .frame(width: slot, height: slot)
-                    .position(x: slot * 0.5, y: canvas - (slot * 0.5))
-
-                Image("gaia-profile-impact-expand-b-24")
-                    .resizable()
-                    .renderingMode(.original)
-                    .scaledToFit()
-                    .frame(width: arrowWidth, height: arrowHeight)
-                    .rotationEffect(.degrees(45))
-                    .frame(width: slot, height: slot)
-                    .position(x: canvas - (slot * 0.5), y: slot * 0.5)
+            GeometryReader { proxy in
+                ForEach(Array(pins.enumerated()), id: \.offset) { _, pin in
+                    ProfileImpactSightingsMapPin()
+                        .position(x: proxy.size.width * pin.x, y: proxy.size.height * pin.y)
+                }
             }
-            .frame(width: canvas, height: canvas)
+            .allowsHitTesting(false)
+
+            ExpandMapButton(action: onExpandMap)
+                .padding(12)
         }
-        .frame(width: 24, height: 24)
-        .accessibilityHidden(true)
+        .frame(height: 214)
+        .frame(maxWidth: .infinity)
+        .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
+        )
+        .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
+    }
+}
+
+private struct ProfileImpactSightingsMapPin: View {
+    private let pinSize: CGFloat = 22
+
+    var body: some View {
+        Circle()
+            .fill(
+                LinearGradient(
+                    colors: [
+                        GaiaColor.grassGreen500,
+                        GaiaColor.oliveGreen500
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
+            .frame(width: pinSize, height: pinSize)
+            .shadow(color: GaiaColor.greenGlow.opacity(0.55), radius: 2, x: 0.5, y: 1)
+            .shadow(color: GaiaColor.greenGlow.opacity(0.18), radius: 6, x: 0, y: 3)
     }
 }
 
@@ -1119,13 +1127,14 @@ struct ProfileBioCalendarScreen: View {
                             selectedRange = range
                         } label: {
                             Text(range.rawValue)
-                                .gaiaFont(.footnote)
+                                .gaiaFont(.pill)
                                 .foregroundStyle(
                                     selectedRange == range
                                         ? GaiaColor.paperWhite50
                                         : GaiaColor.inkBlack300
                                 )
-                                .padding(.horizontal, 10)
+                                .padding(.horizontal, GaiaSpacing.pillHorizontal)
+                                .padding(.vertical, GaiaSpacing.xs)
                                 .frame(height: 28)
                                 .background(
                                     Capsule(style: .continuous)

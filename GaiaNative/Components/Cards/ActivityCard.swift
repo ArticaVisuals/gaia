@@ -1,4 +1,4 @@
-// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=870-14978
+// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=995-15449
 import SwiftUI
 
 struct ActivityTopBar: View {
@@ -24,13 +24,22 @@ struct ActivityTopBar: View {
                             onSelect(filter)
                         } label: {
                             Text(filter)
-                                .gaiaFont(.footnote)
-                                .foregroundStyle(filter == selectedFilter ? GaiaColor.paperWhite50 : GaiaColor.inkBlack300)
-                                .padding(.horizontal, 10)
+                                .gaiaFont(.pill)
+                                .foregroundStyle(
+                                    filter == selectedFilter
+                                    ? GaiaColor.paperWhite50
+                                    : GaiaColor.inkBlack300
+                                )
+                                .padding(.horizontal, GaiaSpacing.pillHorizontal)
+                                .padding(.vertical, GaiaSpacing.xs)
                                 .frame(height: 28)
                                 .background(
                                     Capsule()
-                                        .fill(filter == selectedFilter ? GaiaColor.oliveGreen500 : GaiaColor.oliveGreen500.opacity(0.20))
+                                        .fill(
+                                            filter == selectedFilter
+                                            ? GaiaColor.oliveGreen500
+                                            : GaiaColor.oliveGreen500.opacity(0.20)
+                                        )
                                 )
                         }
                         .buttonStyle(.plain)
@@ -52,90 +61,76 @@ struct ActivityTopBar: View {
     }
 }
 
-struct ActivityNotificationThumbnail: View {
-    let assetName: String?
-    var size: CGFloat = 32
+struct ActivityNotificationItem: View {
+    let event: ActivityEvent
 
     var body: some View {
-        Group {
-            if let assetName, let image = AssetCatalog.image(named: assetName) {
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: size, height: size)
-                    .clipShape(Circle())
-            } else {
+        HStack(alignment: .center, spacing: GaiaSpacing.cardInset) {
+            ActivityRowThumbnail(assetName: event.mediaAssetNames.first)
+
+            VStack(alignment: .leading, spacing: GaiaSpacing.cardInset) {
+                HStack(alignment: .top, spacing: GaiaSpacing.sm) {
+                    Text(event.title)
+                        .gaiaFont(.subheadSerifMedium)
+                        .foregroundStyle(GaiaColor.textPrimary)
+                        .lineLimit(1)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    Text(event.timestampLabel)
+                        .gaiaFont(.caption)
+                        .foregroundStyle(GaiaColor.textSecondary)
+                        .monospacedDigit()
+                        .fixedSize()
+                }
+
+                Text(event.subtitle)
+                    .gaiaFont(.callout)
+                    .foregroundStyle(GaiaColor.textSecondary)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+            }
+
+            if event.showsNotificationStyle {
                 Circle()
-                    .fill(GaiaColor.oliveGreen500.opacity(0.15))
-                    .overlay(
-                        Circle()
-                            .stroke(GaiaColor.oliveGreen500.opacity(0.30), lineWidth: 1)
-                    )
-                    .frame(width: size, height: size)
+                    .fill(GaiaColor.vermillion500)
+                    .frame(width: 12, height: 12)
+                    .accessibilityHidden(true)
             }
         }
-        .frame(width: size, height: size)
+        .padding(.horizontal, GaiaSpacing.md)
+        .padding(.vertical, GaiaSpacing.md)
+        .frame(maxWidth: .infinity, minHeight: 107, alignment: .leading)
+        .background(event.showsNotificationStyle ? GaiaColor.broccoliBrown50 : GaiaColor.paperWhite50)
+        .contentShape(Rectangle())
+        .accessibilityElement(children: .contain)
     }
 }
 
-struct ActivityNotificationItem: View {
-    let event: ActivityEvent
-    let showsDivider: Bool
+private struct ActivityRowThumbnail: View {
+    let assetName: String?
+    private let size: CGFloat = 52
 
     var body: some View {
-        VStack(spacing: 0) {
-            HStack(alignment: .top, spacing: 14) {
-                ActivityNotificationThumbnail(assetName: event.thumbnailAssetName)
-                    .padding(.top, 2)
-
-                VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
-                    VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
-                        HStack(alignment: .top, spacing: GaiaSpacing.sm) {
-                            Text(event.title)
-                                .gaiaFont(.subheadSerif)
-                                .foregroundStyle(GaiaColor.textPrimary)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-
-                            Text(event.timestampLabel)
-                                .gaiaFont(.caption2)
-                                .foregroundStyle(GaiaColor.textSecondary)
-                                .fixedSize()
-                        }
-
-                        subtitleText
-                    }
-
-                    if let actionLabel = event.actionLabel {
-                        Text(actionLabel)
-                            .gaiaFont(.footnoteMedium)
-                            .foregroundStyle(GaiaColor.grassGreen500)
-                    }
-                }
-            }
-            .padding(.horizontal, GaiaSpacing.md)
-            .padding(.vertical, 12)
-            .frame(maxWidth: .infinity, minHeight: 100, alignment: .leading)
-
-            if showsDivider {
-                Rectangle()
+        Group {
+            if let assetName {
+                GaiaAssetImage(name: assetName, contentMode: .fill)
+            } else {
+                RoundedRectangle(cornerRadius: GaiaRadius.sm, style: .continuous)
                     .fill(GaiaColor.oliveGreen100)
-                    .frame(height: 1)
-                    .padding(.horizontal, GaiaSpacing.md)
+                    .overlay(
+                        Image(systemName: "bell.fill")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundStyle(GaiaColor.olive)
+                    )
             }
         }
-    }
-
-    private var subtitleText: Text {
-        let fragments = event.subtitle.components(separatedBy: "**")
-
-        return fragments.enumerated().reduce(Text("")) { partial, fragment in
-            let isHighlight = fragment.offset.isMultiple(of: 2) == false
-            let piece = Text(fragment.element)
-                .font(isHighlight ? GaiaTypography.footnoteMedium : GaiaTypography.footnote)
-                .foregroundStyle(isHighlight ? GaiaColor.vermillion300 : GaiaColor.textSecondary)
-
-            return partial + piece
-        }
+        .frame(width: size, height: size)
+        .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.sm, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: GaiaRadius.sm, style: .continuous)
+                .stroke(GaiaColor.border, lineWidth: 0.5)
+        )
+        .accessibilityHidden(true)
     }
 }
 
@@ -143,19 +138,6 @@ struct ActivityCard: View {
     let event: ActivityEvent
 
     var body: some View {
-        GaiaDataCard {
-            VStack(alignment: .leading, spacing: GaiaSpacing.xs) {
-                Text(event.title)
-                    .gaiaFont(.calloutMedium)
-                    .foregroundStyle(GaiaColor.textPrimary)
-                Text(event.subtitle)
-                    .gaiaFont(.subheadline)
-                    .foregroundStyle(GaiaColor.textSecondary)
-                Text(event.timestampLabel)
-                    .gaiaFont(.caption2)
-                    .foregroundStyle(GaiaColor.greyMuted)
-                    .padding(.top, 4)
-            }
-        }
+        ActivityNotificationItem(event: event)
     }
 }

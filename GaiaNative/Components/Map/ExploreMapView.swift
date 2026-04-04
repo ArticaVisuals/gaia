@@ -298,6 +298,7 @@ private struct MarkerRenderContainer<Content: View>: View {
 }
 
 private final class GaiaHostedMarkerAnnotationView: MKAnnotationView {
+    private let contentContainerView = UIView()
     private var hostingController: UIHostingController<AnyView>?
     private var currentRenderKey: String?
 
@@ -315,6 +316,16 @@ private final class GaiaHostedMarkerAnnotationView: MKAnnotationView {
         frame = CGRect(origin: .zero, size: contentSize)
         bounds = CGRect(origin: .zero, size: contentSize)
         centerOffset = .zero
+
+        contentContainerView.backgroundColor = .clear
+        contentContainerView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(contentContainerView)
+        NSLayoutConstraint.activate([
+            contentContainerView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            contentContainerView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            contentContainerView.topAnchor.constraint(equalTo: topAnchor),
+            contentContainerView.bottomAnchor.constraint(equalTo: bottomAnchor)
+        ])
     }
 
     required init?(coder: NSCoder) {
@@ -324,13 +335,17 @@ private final class GaiaHostedMarkerAnnotationView: MKAnnotationView {
     override func prepareForReuse() {
         super.prepareForReuse()
         currentRenderKey = nil
-        transform = .identity
+        contentContainerView.layer.removeAllAnimations()
+        contentContainerView.transform = .identity
     }
 
     func apply(content: AnyView, renderKey: String) {
         let size = contentSize
         if bounds.size != size {
             bounds = CGRect(origin: .zero, size: size)
+        }
+        if frame.size != size {
+            frame = CGRect(origin: frame.origin, size: size)
         }
 
         if let hostingController {
@@ -343,22 +358,24 @@ private final class GaiaHostedMarkerAnnotationView: MKAnnotationView {
         let hostingController = UIHostingController(rootView: content)
         hostingController.view.backgroundColor = .clear
         hostingController.view.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(hostingController.view)
+        contentContainerView.addSubview(hostingController.view)
         NSLayoutConstraint.activate([
-            hostingController.view.leadingAnchor.constraint(equalTo: leadingAnchor),
-            hostingController.view.trailingAnchor.constraint(equalTo: trailingAnchor),
-            hostingController.view.topAnchor.constraint(equalTo: topAnchor),
-            hostingController.view.bottomAnchor.constraint(equalTo: bottomAnchor)
+            hostingController.view.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor),
+            hostingController.view.trailingAnchor.constraint(equalTo: contentContainerView.trailingAnchor),
+            hostingController.view.topAnchor.constraint(equalTo: contentContainerView.topAnchor),
+            hostingController.view.bottomAnchor.constraint(equalTo: contentContainerView.bottomAnchor)
         ])
         self.hostingController = hostingController
         currentRenderKey = renderKey
     }
 
     func setScale(_ scale: CGFloat) {
-        let currentScaleX = transform.a
-        let currentScaleY = transform.d
+        let currentScaleX = contentContainerView.transform.a
+        let currentScaleY = contentContainerView.transform.d
         guard abs(currentScaleX - scale) > 0.0001 || abs(currentScaleY - scale) > 0.0001 else { return }
-        transform = CGAffineTransform(scaleX: scale, y: scale)
+        UIView.performWithoutAnimation {
+            contentContainerView.transform = CGAffineTransform(scaleX: scale, y: scale)
+        }
     }
 }
 

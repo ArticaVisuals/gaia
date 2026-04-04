@@ -62,9 +62,10 @@ struct ExploreBottomSheet: View {
                                     activeFilter = filter
                                 } label: {
                                     Text(filter.title)
-                                        .gaiaFont(.footnote)
+                                        .gaiaFont(.pill)
                                         .foregroundStyle(filter == activeFilter ? GaiaColor.paperWhite50 : GaiaColor.paperWhite200)
-                                        .padding(.horizontal, 10)
+                                        .padding(.horizontal, GaiaSpacing.pillHorizontal)
+                                        .padding(.vertical, GaiaSpacing.xs)
                                         .frame(height: 28)
                                         .background(
                                             Capsule()
@@ -89,9 +90,16 @@ struct ExploreBottomSheet: View {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 8) {
                             ForEach(projects) { project in
-                                ExploreSheetProjectCard(project: project) {
+                                GaiaProjectCard(
+                                    tag: project.tag,
+                                    title: project.title,
+                                    countLabel: project.countLabel,
+                                    imageName: project.imageName,
+                                    crop: project.crop
+                                ) {
                                     onSelectProject(project.detailSelection)
                                 }
+                                .frame(width: GaiaProjectCard.width)
                             }
                         }
                         .padding(.horizontal, sectionInset)
@@ -270,96 +278,6 @@ private struct ExploreSheetViewToggleButton: View {
     }
 }
 
-private struct ExploreSheetProjectCard: View {
-    let project: ExploreSheetProject
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            ZStack(alignment: .topLeading) {
-                GaiaAssetImage(name: project.imageName)
-                    .frame(width: 181, height: 133)
-                    .clipped()
-
-                GaiaAssetImage(name: project.imageName)
-                    .frame(width: 181, height: 133)
-                    .clipped()
-                    .blur(radius: 1.4)
-                    .mask(
-                        LinearGradient(
-                            stops: [
-                                .init(color: .clear, location: 0.417),
-                                .init(color: .black, location: 1)
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
-
-                LinearGradient(
-                    stops: [
-                        .init(color: Color(red: 70 / 255, green: 76 / 255, blue: 19 / 255, opacity: 0), location: 0.417),
-                        .init(color: Color(red: 41 / 255, green: 76 / 255, blue: 19 / 255, opacity: 0.85), location: 1)
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-
-                VStack(alignment: .leading, spacing: 0) {
-                    Text(project.tag)
-                        .gaiaFont(.caption2)
-                        .foregroundStyle(GaiaColor.paperWhite50)
-                        .padding(.horizontal, 10)
-                        .frame(height: 20)
-                        .background(
-                            Capsule()
-                                .fill(Color.black.opacity(0.5))
-                                .overlay(
-                                    Capsule()
-                                        .stroke(GaiaColor.blackishGrey200, lineWidth: 0.5)
-                                )
-                        )
-                        .padding(.top, 8)
-                        .padding(.leading, 8)
-
-                    Spacer()
-
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(project.title)
-                            .gaiaFont(.subheadSerif)
-                            .foregroundStyle(GaiaColor.paperWhite50)
-                            .lineLimit(2)
-
-                        HStack(spacing: 2) {
-                            ExploreSheetTemplateIcon(
-                                path: "Icons/System/binoculars-20.png",
-                                tint: UIColor(GaiaColor.paperWhite50),
-                                size: CGSize(width: 14, height: 9.977)
-                            )
-
-                            Text(project.countLabel)
-                                .gaiaFont(.caption2)
-                                .foregroundStyle(GaiaColor.paperWhite50)
-                        }
-                    }
-                    .padding(12)
-                }
-            }
-            .frame(width: 181, height: 133)
-            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .stroke(Color.black.opacity(0.1), lineWidth: 0.5)
-            )
-            .shadow(color: GaiaColor.broccoliBrown500.opacity(0.16), radius: 20, x: 0, y: 4)
-            .contentShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel("\(project.title), \(project.tag) project, \(project.countLabel) finds")
-        .accessibilityHint("Opens the project details page")
-    }
-}
-
 private struct ExploreSheetFindGrid: View {
     let finds: [ExploreSheetFind]
     let action: (ExploreSheetFind) -> Void
@@ -504,6 +422,7 @@ private struct ExploreSheetProject: Identifiable {
     let tag: String
     let imageName: String
     let countLabel: String
+    var crop: GaiaProjectCardCrop = .identity
 
     var detailSelection: ProjectSelection {
         ProjectSelection(
@@ -516,8 +435,22 @@ private struct ExploreSheetProject: Identifiable {
     }
 
     static let sample: [ExploreSheetProject] = [
-        .init(id: "project-creek", title: "Creek Recovery", tag: "Wetland", imageName: "find-project-creek", countLabel: "12"),
-        .init(id: "project-pollinator", title: "Pollinator Corridor", tag: "Garden", imageName: "find-project-pollinator", countLabel: "12"),
+        .init(
+            id: "project-creek",
+            title: "Creek Recovery",
+            tag: "Wetland",
+            imageName: "find-project-creek",
+            countLabel: "12",
+            crop: .init(scaleX: 1.1289, scaleY: 1.0264, left: 0.105, top: 0.019)
+        ),
+        .init(
+            id: "project-pollinator",
+            title: "Pollinator Corridor",
+            tag: "Garden",
+            imageName: "find-project-pollinator",
+            countLabel: "12",
+            crop: .init(scaleX: 1.2061, scaleY: 1.0966, left: 0.2044, top: 0.0228)
+        ),
         .init(id: "project-sea", title: "Sea Creatures", tag: "Ocean", imageName: "coast-live-oak-gallery-4", countLabel: "12")
     ]
 }

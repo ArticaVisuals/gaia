@@ -45,14 +45,14 @@ enum GaiaColor {
     static let asparagusGreen900 = Color(hex: 0x484837)
 
     static let paperWhite50 = Color(hex: 0xFEFDF9)
-    static let paperWhite100 = Color(hex: 0xFEFCF7)
-    static let paperWhite200 = Color(hex: 0xFDFBF4)
-    static let paperWhite300 = Color(hex: 0xFDFAF1)
-    static let paperWhite400 = Color(hex: 0xFCFAF1)
-    static let paperWhite500 = Color(hex: 0xFCFAF0)
-    static let paperWhite600 = Color(hex: 0xDDDBD3)
-    static let paperWhite700 = Color(hex: 0xBDBBB4)
-    static let paperWhite800 = Color(hex: 0x929189)
+    static let paperWhite100 = Color(hex: 0xE7E6E2)
+    static let paperWhite200 = Color(hex: 0xD7D6D2)
+    static let paperWhite300 = Color(hex: 0xC7C6C1)
+    static let paperWhite400 = Color(hex: 0xB6B5B1)
+    static let paperWhite500 = Color(hex: 0xA6A5A1)
+    static let paperWhite600 = Color(hex: 0x969591)
+    static let paperWhite700 = Color(hex: 0x858480)
+    static let paperWhite800 = Color(hex: 0x757470)
     static let paperWhite900 = Color(hex: 0x5F5E5A)
 
     static let inkBlack50 = Color(hex: 0xEDECEE)
@@ -122,6 +122,7 @@ enum GaiaColor {
     static let greenGlow = grassGreen500
     static let overlay = Color.black.opacity(0.18)
     static let fillVibrantTertiary = Color(hex: 0xE6EDE3)
+    static let projectCardOverlay = Color(hex: 0x294C13)
 
     static let surfacePrimary = paperWhite200
     static let surfaceSheet = paperWhite100

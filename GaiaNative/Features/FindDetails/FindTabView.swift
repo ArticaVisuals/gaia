@@ -56,20 +56,24 @@ struct FindTabView: View {
                 FindDataQualityCard()
             }
 
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: GaiaSpacing.cardInset) {
                 HStack(alignment: .center) {
-                    sectionTitle("Projects")
+                    Text("Projects")
+                        .gaiaFont(.title2)
+                        .foregroundStyle(GaiaColor.inkBlack300)
+
                     Spacer()
+
                     Text("See all")
-                        .gaiaFont(.subheadline)
-                        .foregroundStyle(GaiaColor.olive)
+                        .gaiaFont(.caption2)
+                        .foregroundStyle(GaiaColor.inkBlack300)
                 }
 
                 HStack(alignment: .top, spacing: GaiaSpacing.sm) {
-                    FindProjectCard(
+                    GaiaProjectCard(
                         tag: "Wetland",
                         title: "Creek Recovery",
-                        count: "12",
+                        countLabel: "12",
                         imageName: "find-project-creek",
                         crop: .init(scaleX: 1.1289, scaleY: 1.0264, left: 0.105, top: 0.019)
                     ) {
@@ -85,10 +89,10 @@ struct FindTabView: View {
                     }
                     .frame(maxWidth: .infinity)
 
-                    FindProjectCard(
+                    GaiaProjectCard(
                         tag: "Garden",
                         title: "Pollinator Corridor",
-                        count: "9",
+                        countLabel: "9",
                         imageName: "find-project-pollinator",
                         crop: .init(scaleX: 1.2061, scaleY: 1.0966, left: 0.2044, top: 0.0228)
                     ) {
@@ -353,130 +357,5 @@ private struct FindQualityItem: View {
                 .multilineTextAlignment(.center)
         }
         .frame(width: 91)
-    }
-}
-
-private struct FindProjectImageCrop {
-    let scaleX: CGFloat
-    let scaleY: CGFloat
-    let left: CGFloat
-    let top: CGFloat
-}
-
-private struct FindProjectCard: View {
-    let tag: String
-    let title: String
-    let count: String
-    let imageName: String
-    let crop: FindProjectImageCrop
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            ZStack(alignment: .topLeading) {
-                GeometryReader { proxy in
-                    ZStack(alignment: .topLeading) {
-                        let imageWidth = proxy.size.width * crop.scaleX
-                        let imageHeight = proxy.size.height * crop.scaleY
-                        let imageOffsetX = -(proxy.size.width * crop.left)
-                        let imageOffsetY = -(proxy.size.height * crop.top)
-
-                        GaiaAssetImage(name: imageName, contentMode: .fill)
-                            .frame(width: imageWidth, height: imageHeight)
-                            .offset(x: imageOffsetX, y: imageOffsetY)
-
-                        GaiaAssetImage(name: imageName, contentMode: .fill)
-                            .frame(width: imageWidth, height: imageHeight)
-                            .offset(x: imageOffsetX, y: imageOffsetY)
-                            .blur(radius: 1.4)
-                            .mask(
-                                LinearGradient(
-                                    stops: [
-                                        .init(color: .clear, location: 0.417),
-                                        .init(color: .black, location: 1)
-                                    ],
-                                    startPoint: .top,
-                                    endPoint: .bottom
-                                )
-                            )
-
-                        LinearGradient(
-                            stops: [
-                                .init(color: Color(red: 70 / 255, green: 76 / 255, blue: 19 / 255, opacity: 0), location: 0.417),
-                                .init(color: Color(red: 41 / 255, green: 76 / 255, blue: 19 / 255, opacity: 0.85), location: 1)
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    }
-                }
-                .clipped()
-
-                VStack(alignment: .leading, spacing: 0) {
-                    Text(tag)
-                        .gaiaFont(.caption)
-                        .foregroundStyle(GaiaColor.paperWhite50)
-                        .padding(.horizontal, 10)
-                        .frame(height: 20)
-                        .background(Color.black.opacity(0.5), in: Capsule())
-                        .overlay(
-                            Capsule()
-                                .stroke(GaiaColor.blackishGrey200, lineWidth: 0.5)
-                        )
-                        .padding(12)
-
-                    Spacer(minLength: 0)
-
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(title)
-                            .gaiaFont(.subheadSerif)
-                            .foregroundStyle(GaiaColor.paperWhite50)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.9)
-
-                        HStack(spacing: 2) {
-                            FindBinocularsIcon(tint: GaiaColor.paperWhite50)
-                            Text(count)
-                                .font(.custom("Neue Haas Unica W1G", size: 10))
-                                .foregroundStyle(GaiaColor.paperWhite50)
-                                .tracking(0.25)
-                        }
-                    }
-                    .padding(12)
-                }
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: 133)
-            .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
-                    .stroke(GaiaColor.blackishGrey200, lineWidth: 0.5)
-            )
-            .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
-            .contentShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel("\(title), \(tag) project, \(count) finds")
-        .accessibilityHint("Opens the project details page")
-    }
-}
-
-private struct FindBinocularsIcon: View {
-    let tint: Color
-
-    var body: some View {
-        Group {
-            if let image = AssetCatalog.uiImage(named: "Icons/System/binoculars-20.png") {
-                Image(uiImage: image)
-                    .renderingMode(.template)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .foregroundStyle(tint)
-            } else {
-                GaiaIcon(kind: .observe(selected: false), size: 14)
-                    .foregroundStyle(tint)
-            }
-        }
-        .frame(width: 14, height: 10)
     }
 }

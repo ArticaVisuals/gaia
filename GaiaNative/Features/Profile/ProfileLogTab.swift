@@ -1,4 +1,4 @@
-// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=875-22224 (Grid), 875-23464 (Log List), 875-23090 (Log Top Bar)
+// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=995-15341 (Log List), 982-5804 (Log Top Bar)
 import SwiftUI
 
 private enum ProfileLogViewMode: String, CaseIterable, Identifiable {
@@ -7,6 +7,17 @@ private enum ProfileLogViewMode: String, CaseIterable, Identifiable {
     case map
 
     var id: String { rawValue }
+
+    var accessibilityLabel: String {
+        switch self {
+        case .grid:
+            return "Grid view"
+        case .list:
+            return "List view"
+        case .map:
+            return "Map view"
+        }
+    }
 }
 
 enum ProfileLogPresentation {
@@ -18,18 +29,17 @@ struct LogScreen: View {
     @EnvironmentObject private var contentStore: ContentStore
     @State private var searchText = ""
     @State private var viewMode: ProfileLogViewMode = profileLogLaunchViewMode() ?? .list
+    @State private var showsSearchBar = false
+    private let bottomContentInset = GaiaSpacing.xxxl + GaiaSpacing.xxl + GaiaSpacing.xl + GaiaSpacing.sm + GaiaSpacing.xs
 
     var body: some View {
         VStack(spacing: 0) {
             ProfileLogHeader(
                 presentation: .standalone,
                 searchText: $searchText,
-                viewMode: $viewMode
+                viewMode: $viewMode,
+                showsSearchBar: $showsSearchBar
             )
-            .padding(.horizontal, GaiaSpacing.md)
-            .padding(.top, 12)
-            .padding(.bottom, 12)
-            .background(GaiaColor.surfacePrimary)
             .zIndex(1)
 
             ScrollView(showsIndicators: false) {
@@ -39,10 +49,10 @@ struct LogScreen: View {
                     searchText: searchText,
                     viewMode: viewMode
                 )
-                .padding(.bottom, 156)
+                .padding(.bottom, bottomContentInset)
             }
         }
-        .background(GaiaColor.surfacePrimary)
+        .background(GaiaColor.paperWhite50)
     }
 }
 
@@ -54,11 +64,13 @@ struct ProfileLogTab: View {
 
     @State private var searchText = ""
     @State private var viewMode: ProfileLogViewMode
+    @State private var showsSearchBar: Bool
 
     init(content: ProfileLogContent, presentation: ProfileLogPresentation = .standalone) {
         self.content = content
         self.presentation = presentation
         _viewMode = State(initialValue: profileLogLaunchViewMode() ?? .list)
+        _showsSearchBar = State(initialValue: presentation != .standalone)
     }
 
     var body: some View {
@@ -66,7 +78,8 @@ struct ProfileLogTab: View {
             ProfileLogHeader(
                 presentation: presentation,
                 searchText: $searchText,
-                viewMode: $viewMode
+                viewMode: $viewMode,
+                showsSearchBar: $showsSearchBar
             )
 
             ProfileLogBody(
@@ -76,6 +89,7 @@ struct ProfileLogTab: View {
                 viewMode: viewMode
             )
         }
+        .background(GaiaColor.paperWhite50)
     }
 }
 
@@ -83,24 +97,110 @@ private struct ProfileLogHeader: View {
     let presentation: ProfileLogPresentation
     @Binding var searchText: String
     @Binding var viewMode: ProfileLogViewMode
+    @Binding var showsSearchBar: Bool
 
     var body: some View {
-        VStack(alignment: .leading, spacing: GaiaSpacing.md) {
+        Group {
             if presentation == .standalone {
+                standaloneHeader
+            } else {
+                embeddedHeader
+            }
+        }
+    }
+
+    private var standaloneHeader: some View {
+        VStack(spacing: GaiaSpacing.md) {
+            ZStack {
                 Text("Log")
                     .gaiaFont(.title1Medium)
                     .foregroundStyle(GaiaColor.brandPrimary)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.top, GaiaSpacing.sm)
+
+                HStack {
+                    ProfileLogToolbarIconButton(accessibilityLabel: "Open search", action: revealSearchBar) {
+                        GaiaIcon(kind: .search, size: 20, tint: GaiaColor.brandPrimary)
+                            .accessibilityHidden(true)
+                    }
+
+                    Spacer(minLength: 0)
+
+                    ProfileLogToolbarIconButton(accessibilityLabel: "Filter observations", action: {}) {
+                        ProfileLogGlyphImage(path: "Icons/System/filter-32.png", tint: GaiaColor.brandPrimary)
+                            .frame(width: 20, height: 20)
+                            .accessibilityHidden(true)
+                    }
+                }
+            }
+            .frame(height: 40)
+
+            if isSearchBarVisible {
+                ProfileLogSearchBar(text: $searchText)
+                    .transition(.move(edge: .top).combined(with: .opacity))
             }
 
+            DraggableIconTabSwitch(
+                tabs: ProfileLogViewMode.allCases,
+                selection: $viewMode,
+                accessibilityLabel: { $0.accessibilityLabel }
+            ) { mode, selected in
+                icon(for: mode, selected: selected)
+            }
+            .frame(maxWidth: .infinity)
+        }
+        .padding(.horizontal, GaiaSpacing.md)
+        .padding(.top, GaiaSpacing.cardInset)
+        .padding(.bottom, GaiaSpacing.lg)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(GaiaColor.paperWhite50)
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(GaiaColor.border)
+                .frame(height: 0.5)
+        }
+        .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
+        .animation(GaiaMotion.quickEase, value: isSearchBarVisible)
+    }
+
+    private var embeddedHeader: some View {
+        VStack(alignment: .leading, spacing: GaiaSpacing.md) {
             ProfileLogSearchBar(text: $searchText)
 
             HStack(spacing: GaiaSpacing.sm) {
-                ProfileLogViewToggle(selection: $viewMode)
+                DraggableIconTabSwitch(
+                    tabs: ProfileLogViewMode.allCases,
+                    selection: $viewMode,
+                    accessibilityLabel: { $0.accessibilityLabel }
+                ) { mode, selected in
+                    icon(for: mode, selected: selected)
+                }
                 Spacer(minLength: 0)
                 ProfileLogFilterButton()
             }
+        }
+    }
+
+    private var isSearchBarVisible: Bool {
+        showsSearchBar || !searchText.isEmpty
+    }
+
+    private func revealSearchBar() {
+        guard !showsSearchBar else { return }
+        HapticsService.selectionChanged()
+        withAnimation(GaiaMotion.quickEase) {
+            showsSearchBar = true
+        }
+    }
+
+    @ViewBuilder
+    private func icon(for mode: ProfileLogViewMode, selected: Bool) -> some View {
+        let tint = selected ? GaiaColor.paperWhite50 : GaiaColor.brandPrimary
+        switch mode {
+        case .grid:
+            ProfileLogGlyphImage(path: "Icons/System/grid-32.png", tint: tint)
+        case .list:
+            ProfileLogGlyphImage(path: "Icons/System/list-32.png", tint: tint)
+        case .map:
+            ProfileLogGlyphImage(path: "Icons/System/map-32.png", tint: tint)
         }
     }
 }
@@ -124,7 +224,7 @@ private struct ProfileLogBody: View {
                     .padding(.horizontal, GaiaSpacing.md)
             }
         }
-        .padding(.top, GaiaSpacing.xs)
+        .frame(maxWidth: .infinity, alignment: .topLeading)
     }
 
     private var filteredSections: [ProfileLogSection] {
@@ -189,7 +289,7 @@ private struct ProfileLogSearchBar: View {
     @FocusState private var isFocused: Bool
 
     var body: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: GaiaSpacing.xs) {
             GaiaIcon(kind: .search, size: 20, tint: GaiaColor.textSecondary.opacity(0.55))
                 .frame(width: 26, height: 26)
 
@@ -209,104 +309,37 @@ private struct ProfileLogSearchBar: View {
             GaiaIcon(kind: .microphone, size: 20, tint: GaiaColor.textSecondary.opacity(0.55))
                 .frame(width: 32, height: 32)
         }
-        .padding(.horizontal, 8)
+        .padding(.horizontal, GaiaSpacing.sm)
         .frame(height: 40)
-        .background(GaiaMaterialBackground(cornerRadius: GaiaRadius.full))
-        .clipShape(Capsule())
+        .background(
+            Capsule(style: .continuous)
+                .fill(GaiaColor.paperWhite50)
+                .overlay(
+                    Capsule(style: .continuous)
+                        .stroke(GaiaColor.blackishGrey200, lineWidth: 0.5)
+                )
+        )
         .contentShape(Capsule())
-        .shadow(color: GaiaShadow.navColor.opacity(0.28), radius: 16, x: 0, y: 6)
         .onTapGesture {
             isFocused = true
         }
     }
 }
 
-private struct ProfileLogViewToggle: View {
-    @Binding var selection: ProfileLogViewMode
-    @State private var dragOffset: CGFloat?
-
-    private let buttonSize: CGFloat = 40
-    private let gap: CGFloat = 4
-    private let pad: CGFloat = 4
-    private let buttonRadius: CGFloat = GaiaRadius.sm
-    private var containerRadius: CGFloat { GaiaRadius.md }
-    private var step: CGFloat { buttonSize + gap }
-    private var modes: [ProfileLogViewMode] { ProfileLogViewMode.allCases }
+private struct ProfileLogToolbarIconButton<Content: View>: View {
+    let accessibilityLabel: String
+    let action: () -> Void
+    @ViewBuilder let content: () -> Content
 
     var body: some View {
-        let selectedIdx = modes.firstIndex(of: selection) ?? 0
-        let indicatorX = dragOffset ?? (CGFloat(selectedIdx) * step)
-
-        ZStack(alignment: .leading) {
-            RoundedRectangle(cornerRadius: buttonRadius, style: .continuous)
-                .fill(GaiaColor.brandPrimary)
-                .frame(width: buttonSize, height: buttonSize)
-                .offset(x: indicatorX)
-
-            HStack(spacing: gap) {
-                ForEach(modes) { mode in
-                    Button { select(mode) } label: {
-                        icon(for: mode, selected: selection == mode)
-                            .frame(width: 22, height: 22)
-                            .frame(width: buttonSize, height: buttonSize)
-                            .contentShape(Rectangle())
-                    }
-                    .buttonStyle(GlassReactiveButtonStyle())
-                }
-            }
+        Button(action: action) {
+            content()
+                .frame(width: 20, height: 20)
+                .frame(width: 40, height: 40)
+                .contentShape(Rectangle())
         }
-        .padding(pad)
-        .background(
-            RoundedRectangle(cornerRadius: containerRadius, style: .continuous)
-                .fill(GaiaColor.oliveGreen100)
-        )
-        .contentShape(Rectangle())
-        .highPriorityGesture(modeDragGesture)
-        .animation(
-            dragOffset == nil
-                ? GaiaMotion.spring
-                : .interactiveSpring(response: 0.18, dampingFraction: 0.86),
-            value: indicatorX
-        )
-    }
-
-    private func select(_ mode: ProfileLogViewMode) {
-        guard selection != mode else { return }
-        HapticsService.selectionChanged()
-        withAnimation(GaiaMotion.spring) {
-            selection = mode
-        }
-    }
-
-    private var modeDragGesture: some Gesture {
-        DragGesture(minimumDistance: 4, coordinateSpace: .local)
-            .onChanged { value in
-                let x = value.location.x - pad
-                dragOffset = max(0, min(x - buttonSize / 2, step * CGFloat(modes.count - 1)))
-
-                let idx = min(max(Int(x / step), 0), modes.count - 1)
-                let mode = modes[idx]
-                if selection != mode {
-                    HapticsService.selectionChanged()
-                    selection = mode
-                }
-            }
-            .onEnded { _ in
-                dragOffset = nil
-            }
-    }
-
-    @ViewBuilder
-    private func icon(for mode: ProfileLogViewMode, selected: Bool) -> some View {
-        let tint = selected ? GaiaColor.paperWhite50 : GaiaColor.brandPrimary
-        switch mode {
-        case .grid:
-            ProfileLogGlyphImage(path: "Icons/System/grid-32.png", tint: tint)
-        case .list:
-            ProfileLogGlyphImage(path: "Icons/System/list-32.png", tint: tint)
-        case .map:
-            ProfileLogGlyphImage(path: "Icons/System/map-32.png", tint: tint)
-        }
+        .buttonStyle(GlassReactiveButtonStyle())
+        .accessibilityLabel(accessibilityLabel)
     }
 }
 
@@ -332,7 +365,7 @@ private struct ProfileLogList: View {
     var body: some View {
         LazyVStack(alignment: .leading, spacing: 0) {
             ForEach(sections) { section in
-                ProfileLogDayBar(title: section.title, countLabel: section.countLabel)
+                GaiaDayDivider(title: section.title, detail: section.countLabel)
 
                 ForEach(Array(section.entries.enumerated()), id: \.element.id) { _, entry in
                     ProfileLogRow(entry: entry)
@@ -346,36 +379,9 @@ private struct ProfileLogList: View {
     }
 }
 
-private struct ProfileLogDayBar: View {
-    let title: String
-    let countLabel: String
-
-    var body: some View {
-        HStack(spacing: 10) {
-            Text(title)
-                .gaiaFont(.footnoteMedium)
-                .foregroundStyle(GaiaColor.textPrimary)
-
-            Text(countLabel)
-                .gaiaFont(.caption)
-                .foregroundStyle(GaiaColor.blackishGrey200)
-        }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 8)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .frame(height: 33)
-        .background(GaiaColor.paperWhite500)
-        .overlay(alignment: .top) {
-            Rectangle().fill(GaiaColor.border).frame(height: 1)
-        }
-        .overlay(alignment: .bottom) {
-            Rectangle().fill(GaiaColor.border).frame(height: 1)
-        }
-    }
-}
-
 private struct ProfileLogRow: View {
     let entry: ProfileLogEntry
+    private let rowVerticalPadding = GaiaSpacing.sm + GaiaSpacing.xs + GaiaSpacing.xxs
 
     var body: some View {
         HStack(alignment: .top, spacing: 14) {
@@ -384,13 +390,15 @@ private struct ProfileLogRow: View {
                     .frame(width: 76, height: 76)
                     .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
 
-                VStack(alignment: .leading, spacing: GaiaSpacing.md) {
+                VStack(alignment: .leading, spacing: GaiaSpacing.cardInset) {
                     VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
                         Text(entry.commonName)
-                            .gaiaFont(.title3)
+                            .gaiaFont(.title3Medium)
                             .foregroundStyle(GaiaColor.textPrimary)
-                            .lineLimit(1)
+                            .lineSpacing(0)
+                            .lineLimit(2)
                             .truncationMode(.tail)
+                            .fixedSize(horizontal: false, vertical: true)
 
                         Text(entry.scientificName)
                             .gaiaFont(.footnote)
@@ -401,8 +409,8 @@ private struct ProfileLogRow: View {
                     }
 
                     Text(entry.metaLabel)
-                        .gaiaFont(.caption)
-                        .foregroundStyle(GaiaColor.blackishGrey300)
+                        .gaiaFont(.caption2)
+                        .foregroundStyle(GaiaColor.blackishGrey200)
                         .lineLimit(1)
                         .truncationMode(.tail)
                 }
@@ -411,69 +419,12 @@ private struct ProfileLogRow: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            ProfileLogStatusPill(title: entry.statusLabel, kind: entry.statusKind)
-                .padding(.top, 1)
+            GaiaStatusPill(title: entry.statusLabel, variant: entry.statusKind.pillVariant)
         }
         .padding(.horizontal, GaiaSpacing.md)
-        .padding(.vertical, 14)
+        .padding(.vertical, rowVerticalPadding)
         .frame(maxWidth: .infinity, minHeight: 104, alignment: .leading)
         .background(GaiaColor.paperWhite50)
-    }
-}
-
-private struct ProfileLogStatusPill: View {
-    let title: String
-    let kind: ProfileLogStatusKind
-
-    var body: some View {
-        Text(title)
-            .gaiaFont(.footnote)
-            .foregroundStyle(foreground)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 4)
-            .frame(height: 28)
-            .background(
-                Capsule()
-                    .fill(fill)
-                    .overlay(
-                        Capsule()
-                            .stroke(stroke, lineWidth: 0.5)
-                    )
-            )
-            .fixedSize()
-    }
-
-    private var fill: Color {
-        switch kind {
-        case .researchGrade:
-            return GaiaColor.oliveGreen100
-        case .needsID:
-            return GaiaColor.broccoliBrown100
-        case .draft:
-            return GaiaColor.blackishGrey50
-        }
-    }
-
-    private var stroke: Color {
-        switch kind {
-        case .researchGrade:
-            return GaiaColor.brandPrimary
-        case .needsID:
-            return GaiaColor.broccoliBrown500
-        case .draft:
-            return GaiaColor.blackishGrey200
-        }
-    }
-
-    private var foreground: Color {
-        switch kind {
-        case .researchGrade:
-            return GaiaColor.brandPrimary
-        case .needsID:
-            return GaiaColor.broccoliBrown500
-        case .draft:
-            return GaiaColor.textSecondary
-        }
     }
 }
 
@@ -531,12 +482,12 @@ private struct ProfileLogGridCard: View {
 
                 Text(item.title)
                     .gaiaFont(.bodySerif)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(GaiaColor.paperWhite50)
                     .multilineTextAlignment(.leading)
                     .lineLimit(2)
                     .truncationMode(.tail)
-                    .padding(.horizontal, 9)
-                    .padding(.bottom, 8)
+                    .padding(.horizontal, GaiaSpacing.pillHorizontal)
+                    .padding(.bottom, GaiaSpacing.sm)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
             }
         }
@@ -547,7 +498,7 @@ private struct ProfileLogGridCard: View {
             RoundedRectangle(cornerRadius: cardRadius, style: .continuous)
                 .stroke(GaiaColor.border, lineWidth: 0.5)
         )
-        .shadow(color: Color(red: 128 / 255, green: 105 / 255, blue: 38 / 255).opacity(0.09), radius: 10, x: 0, y: 4)
+        .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
         .contentShape(RoundedRectangle(cornerRadius: cardRadius, style: .continuous))
     }
 }
@@ -621,6 +572,23 @@ private struct ProfileLogGlyphImage: View {
                     .scaledToFit()
                     .foregroundStyle(tint)
             }
+        }
+    }
+}
+
+private extension ProfileLogStatusKind {
+    var pillVariant: GaiaStatusPillVariant {
+        switch self {
+        case .researchGrade:
+            return .research
+        case .casualGrade:
+            return .casual
+        case .ungraded:
+            return .ungraded
+        case .needsID:
+            return .needsID
+        case .draft:
+            return .draft
         }
     }
 }

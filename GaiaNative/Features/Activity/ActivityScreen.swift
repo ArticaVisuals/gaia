@@ -1,4 +1,4 @@
-// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=979-5252
+// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=995-15449
 import SwiftUI
 
 struct ActivityScreen: View {
@@ -17,13 +17,18 @@ struct ActivityScreen: View {
             }
 
             ScrollView(showsIndicators: false) {
-                LazyVStack(alignment: .leading, spacing: GaiaSpacing.lg) {
-                    ForEach(groupedEvents) { group in
-                        ActivityDaySection(group: group)
+                LazyVStack(alignment: .leading, spacing: 0) {
+                    if groupedEvents.isEmpty {
+                        ActivityEmptyState(filter: selectedFilter)
+                            .padding(.horizontal, GaiaSpacing.md)
+                            .padding(.top, GaiaSpacing.lg)
+                    } else {
+                        ForEach(groupedEvents) { group in
+                            ActivityDaySection(group: group)
+                        }
                     }
                 }
-                .padding(.top, GaiaSpacing.lg)
-                .padding(.bottom, 140)
+                .padding(.bottom, GaiaSpacing.lg)
             }
             .background(GaiaColor.paperWhite50)
         }
@@ -91,20 +96,57 @@ private struct ActivityDaySection: View {
     let group: ActivityEventGroup
 
     var body: some View {
-        VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
+        VStack(alignment: .leading, spacing: 0) {
             Text(group.title)
-                .gaiaFont(.subheadSerif)
-                .foregroundStyle(GaiaColor.textSecondary)
+                .gaiaFont(.title1Medium)
+                .foregroundStyle(GaiaColor.inkBlack300)
+                .padding(.top, GaiaSpacing.lg)
+                .padding(.bottom, GaiaSpacing.cardInset)
                 .padding(.horizontal, GaiaSpacing.md)
 
             VStack(spacing: 0) {
-                ForEach(Array(group.events.enumerated()), id: \.element.id) { index, event in
-                    ActivityNotificationItem(
-                        event: event,
-                        showsDivider: index < group.events.count - 1
-                    )
+                ActivitySectionDivider()
+
+                ForEach(group.events) { event in
+                    ActivityNotificationItem(event: event)
+                    ActivitySectionDivider()
                 }
             }
         }
+    }
+}
+
+private struct ActivitySectionDivider: View {
+    var body: some View {
+        Rectangle()
+            .fill(GaiaColor.border)
+            .frame(height: 0.5)
+            .accessibilityHidden(true)
+    }
+}
+
+private struct ActivityEmptyState: View {
+    let filter: ActivityFilter
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
+            Text("No activity yet")
+                .gaiaFont(.title3)
+                .foregroundStyle(GaiaColor.textPrimary)
+
+            Text("There isn’t any activity in \(filter.rawValue.lowercased()) right now.")
+                .gaiaFont(.footnote)
+                .foregroundStyle(GaiaColor.textSecondary)
+        }
+        .padding(GaiaSpacing.lg)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
+                .fill(GaiaColor.surfaceCard)
+                .overlay(
+                    RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
+                        .stroke(GaiaColor.border, lineWidth: 0.5)
+                )
+        )
     }
 }

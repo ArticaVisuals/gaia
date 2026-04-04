@@ -209,6 +209,8 @@ struct GaiaIcon: View {
         Group {
             if case .microphone = kind {
                 GaiaMicrophoneIcon(tint: tint ?? GaiaColor.inkBlack900)
+            } else if case .expand = kind {
+                GaiaExpandIcon(tint: tint ?? GaiaColor.inkBlack900)
             } else {
                 ZStack {
                     ForEach(Array(layout.layers.enumerated()), id: \.offset) { _, layer in
@@ -220,6 +222,131 @@ struct GaiaIcon: View {
         .frame(width: canvasSize, height: canvasSize)
         .compositingGroup()
         .accessibilityHidden(true)
+    }
+}
+
+private struct GaiaExpandIcon: View {
+    let tint: Color
+
+    private let baseCanvas: CGFloat = 24
+    private let arrowSize = CGSize(width: 20.359, height: 21.148)
+    private let leadingArrowInsets = GaiaIconInsets.css(36.74, 36.74, 0, 0)
+    private let trailingArrowInsets = GaiaIconInsets.css(0, 0, 36.74, 36.74)
+
+    var body: some View {
+        GeometryReader { proxy in
+            let leadingFrame = rect(for: leadingArrowInsets, in: proxy.size)
+            let trailingFrame = rect(for: trailingArrowInsets, in: proxy.size)
+            let scale = min(proxy.size.width, proxy.size.height) / baseCanvas
+
+            ZStack {
+                GaiaExpandArrowShape()
+                    .fill(tint)
+                    .frame(width: arrowSize.width * scale, height: arrowSize.height * scale)
+                    .rotationEffect(.degrees(-135))
+                    .position(x: leadingFrame.midX, y: leadingFrame.midY)
+
+                GaiaExpandArrowShape()
+                    .fill(tint)
+                    .frame(width: arrowSize.width * scale, height: arrowSize.height * scale)
+                    .rotationEffect(.degrees(45))
+                    .position(x: trailingFrame.midX, y: trailingFrame.midY)
+            }
+        }
+    }
+
+    private func rect(for insets: GaiaIconInsets, in size: CGSize) -> CGRect {
+        let scaleX = size.width / baseCanvas
+        let scaleY = size.height / baseCanvas
+        let left = insets.left * 0.01 * baseCanvas * scaleX
+        let right = insets.right * 0.01 * baseCanvas * scaleX
+        let top = insets.top * 0.01 * baseCanvas * scaleY
+        let bottom = insets.bottom * 0.01 * baseCanvas * scaleY
+
+        return CGRect(
+            x: left,
+            y: top,
+            width: max(0, size.width - left - right),
+            height: max(0, size.height - top - bottom)
+        )
+    }
+}
+
+private struct GaiaExpandArrowShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        let scaleX = rect.width / 10.5313
+        let scaleY = rect.height / 10.9396
+
+        func point(_ x: CGFloat, _ y: CGFloat) -> CGPoint {
+            CGPoint(x: rect.minX + (x * scaleX), y: rect.minY + (y * scaleY))
+        }
+
+        var path = Path()
+        path.move(to: point(5.73756, 0.191825))
+        path.addCurve(
+            to: point(5.22344, 0.00252285),
+            control1: point(5.59944, 0.0527459),
+            control2: point(5.41016, -0.0142181)
+        )
+        path.addCurve(
+            to: point(5.2017, 0.00509844),
+            control1: point(5.21576, 0.00252285),
+            control2: point(5.20937, 0.00381068)
+        )
+        path.addCurve(
+            to: point(4.795, 0.191825),
+            control1: point(5.05078, 0.0179761),
+            control2: point(4.90499, 0.0823645)
+        )
+        path.addLine(to: point(0.187042, 4.83165))
+        path.addCurve(
+            to: point(0.187042, 5.7421),
+            control1: point(-0.0623475, 5.08276),
+            control2: point(-0.0623475, 5.49098)
+        )
+        path.addCurve(
+            to: point(1.09124, 5.7421),
+            control1: point(0.436432, 5.99321),
+            control2: point(0.84185, 5.99321)
+        )
+        path.addLine(to: point(4.20286, 2.60896))
+        path.addCurve(
+            to: point(4.62618, 2.78539),
+            control1: point(4.35889, 2.45185),
+            control2: point(4.62618, 2.5626)
+        )
+        path.addLine(to: point(4.62618, 10.2684))
+        path.addCurve(
+            to: point(5.20298, 10.9367),
+            control1: point(4.62618, 10.6045),
+            control2: point(4.87046, 10.9045)
+        )
+        path.addCurve(
+            to: point(5.9051, 10.2954),
+            control1: point(5.58409, 10.9728),
+            control2: point(5.9051, 10.6727)
+        )
+        path.addLine(to: point(5.9051, 2.7841))
+        path.addCurve(
+            to: point(6.32843, 2.60767),
+            control1: point(5.9051, 2.56131),
+            control2: point(6.1724, 2.45057)
+        )
+        path.addLine(to: point(9.44004, 5.74081))
+        path.addCurve(
+            to: point(10.3442, 5.74081),
+            control1: point(9.68943, 5.99192),
+            control2: point(10.0949, 5.99192)
+        )
+        path.addCurve(
+            to: point(10.3442, 4.83036),
+            control1: point(10.5936, 5.4897),
+            control2: point(10.5936, 5.08147)
+        )
+        path.addLine(to: point(5.73629, 0.190537))
+        path.addLine(to: point(5.73756, 0.191825))
+        path.closeSubpath()
+        return path
     }
 }
 

@@ -16,8 +16,17 @@
   --olive-400: #8a9b7e;
   --olive:     #67765b;
   --paper-50:  #fefdf9;
-  --paper:     #fdfbf4;
-  --cream-300: #fbf7eb;
+  --paper-100: #e7e6e2;
+  --paper-200: #d7d6d2;
+  --paper-300: #c7c6c1;
+  --paper-400: #b6b5b1;
+  --paper-500: #a6a5a1;
+  --paper-600: #969591;
+  --paper-700: #858480;
+  --paper-800: #757470;
+  --paper-900: #5f5e5a;
+  --paper:     var(--paper-200);
+  --cream-300: var(--paper-300);
   --bb-50:     #F6F2EE;
   --bb-100:    #EDE5DC;
   --bb-200:    #D8C9B8;
@@ -199,7 +208,7 @@ body {
 /* ─── Sticky nav / toolbar ───────────────────────────────────── */
 .ds-nav {
   position: sticky; top: 0; z-index: 100;
-  background: rgba(253,251,244,0.85);
+  background: rgba(215,214,210,0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(0,0,0,0.07);
@@ -221,7 +230,7 @@ body {
 .ds-nav .push { margin-left: auto; }
 .push-btn {
   display: flex; align-items: center; gap: 6px;
-  background: var(--olive); color: #fdfbf4;
+  background: var(--olive); color: var(--paper-50);
   border: none; border-radius: 8px;
   padding: 7px 14px; font-size: 13px; font-weight: 600;
   cursor: pointer; transition: background 0.15s;
@@ -349,7 +358,7 @@ section[id] { scroll-margin-top: 50px; }
 
     <!-- Cream -->
     <div class="collection-wrap">
-      <div class="col-title-row"><h3>cream</h3><span class="mode-chip">1 mode</span></div>
+      <div class="col-title-row"><h3>cream</h3><span class="mode-chip">1 mode · compatibility alias</span></div>
       <div class="swatch-grid" id="cream-swatches"></div>
     </div>
 
@@ -435,8 +444,11 @@ const TOKENS = {
       { name:'500', hex:'#67765b' },
     ],
     'pw-swatches': [
-      { name:'50',  hex:'#fefdf9' }, { name:'100', hex:'#fefcf7' },
-      { name:'200', hex:'#fdfbf4' },
+      { name:'50',  hex:'#fefdf9' }, { name:'100', hex:'#e7e6e2' },
+      { name:'200', hex:'#d7d6d2' }, { name:'300', hex:'#c7c6c1' },
+      { name:'400', hex:'#b6b5b1' }, { name:'500', hex:'#a6a5a1' },
+      { name:'600', hex:'#969591' }, { name:'700', hex:'#858480' },
+      { name:'800', hex:'#757470' }, { name:'900', hex:'#5f5e5a' },
     ],
     'bb-swatches': [
       { name:'50',  hex:'#F6F2EE' }, { name:'100', hex:'#EDE5DC' },
@@ -456,10 +468,11 @@ const TOKENS = {
       { name:'500', hex:'#b5493a' },
     ],
     'cream-swatches': [
-      { name:'50',  hex:'#fefdf9' }, { name:'100', hex:'#fefcf7' },
-      { name:'200', hex:'#fdfbf4' }, { name:'300', hex:'#fbf7eb' },
-      { name:'400', hex:'#f6f0dd' }, { name:'500', hex:'#f0e8ce' },
-      { name:'600', hex:'#e9dfbf' },
+      { name:'50',  hex:'#fefdf9' }, { name:'100', hex:'#e7e6e2' },
+      { name:'200', hex:'#d7d6d2' }, { name:'300', hex:'#c7c6c1' },
+      { name:'400', hex:'#b6b5b1' }, { name:'500', hex:'#a6a5a1' },
+      { name:'600', hex:'#969591' }, { name:'700', hex:'#858480' },
+      { name:'800', hex:'#757470' }, { name:'900', hex:'#5f5e5a' },
     ],
     'water-swatches': [
       { name:'500', hex:'#4F638D' },
@@ -469,8 +482,8 @@ const TOKENS = {
     { name:'border-default',        hex:'#D8C9B8', desc:'Default border for cards and inputs' },
     { name:'border-strong',         hex:'#E3E7DF', desc:'Stronger border aligned to GaiaColor.borderStrong' },
     { name:'fill-vibrant-tertiary', hex:'#E6EDE3', desc:'Nav selection highlight' },
-    { name:'surface-primary',       hex:'#FDFBF4', desc:'Page background' },
-    { name:'surface-sheet',         hex:'#FEFCF7', desc:'Bottom sheet background' },
+    { name:'surface-primary',       hex:'#D7D6D2', desc:'Page background' },
+    { name:'surface-sheet',         hex:'#E7E6E2', desc:'Bottom sheet background' },
     { name:'surface-card',          hex:'#FEFDF9', desc:'Card or elevated surface' },
     { name:'text-primary',          hex:'#252024', desc:'Primary text' },
     { name:'text-secondary',        hex:'#5B5C61', desc:'Secondary text from Figma Components page' },
@@ -479,19 +492,19 @@ const TOKENS = {
     { name:'text-disabled',         hex:'#B1B2B5', desc:'Disabled text from Figma Components page' },
     { name:'text-brand',            hex:'#67765B', desc:'Brand-colored text' },
     { name:'text-on-fill',          hex:'#FEFDF9', desc:'Text on filled backgrounds' },
-    { name:'text-inverse',          hex:'#FCFAF0', desc:'Inverse text from Figma Components page' },
+    { name:'text-inverse',          hex:'#A6A5A1', desc:'Inverse text from Figma Components page' },
     { name:'text-inverse-secondary',hex:'#C8CFBF', desc:'Secondary inverse text from Figma Components page' },
   ],
   typography: {
     serif: [
       { name:'display / regular',  family:'New Spirit',     size:32, weight:400, lh:'1.1',  ls:'-0.5px' },
       { name:'display / medium',   family:'New Spirit',     size:32, weight:500, lh:'1.1',  ls:'-0.5px' },
-      { name:'title-1 / regular',  family:'New Spirit',     size:28, weight:400, lh:'1.15', ls:'-0.3px' },
-      { name:'title-1 / medium',   family:'New Spirit',     size:28, weight:500, lh:'1.15', ls:'-0.3px' },
-      { name:'title-2 / regular',  family:'New Spirit',     size:24, weight:400, lh:'1.2',  ls:'-0.2px' },
-      { name:'title-2 / medium',   family:'New Spirit',     size:24, weight:500, lh:'1.2',  ls:'-0.2px' },
-      { name:'title-3 / regular',  family:'New Spirit',     size:20, weight:400, lh:'1.3',  ls:'0px' },
-      { name:'title-3 / medium',   family:'New Spirit',     size:20, weight:500, lh:'1.3',  ls:'0px' },
+      { name:'title-1 / regular',  family:'New Spirit',     size:28, weight:400, lh:'1.1',  ls:'-0.3px' },
+      { name:'title-1 / medium',   family:'New Spirit',     size:28, weight:500, lh:'1.1',  ls:'-0.3px' },
+      { name:'title-2 / regular',  family:'New Spirit',     size:24, weight:400, lh:'1.1',  ls:'-0.2px' },
+      { name:'title-2 / medium',   family:'New Spirit',     size:24, weight:500, lh:'1.1',  ls:'-0.2px' },
+      { name:'title-3 / regular',  family:'New Spirit',     size:20, weight:400, lh:'0.93', ls:'0px' },
+      { name:'title-3 / medium',   family:'New Spirit',     size:20, weight:500, lh:'0.93', ls:'0px' },
       { name:'subheadSerif',       family:'New Spirit',     size:16, weight:400, lh:'18px', ls:'0px' },
     ],
     sans: [
@@ -502,12 +515,12 @@ const TOKENS = {
       { name:'calloutMedium',      family:'Neue Haas Unica', size:16, weight:500, lh:'1.35', ls:'0px' },
       { name:'subheadline',        family:'Neue Haas Unica', size:15, weight:400, lh:'1.35', ls:'0px' },
       { name:'subheadlineMedium',  family:'Neue Haas Unica', size:15, weight:500, lh:'1.35', ls:'0px' },
-      { name:'footnote',           family:'Neue Haas Unica', size:13, weight:400, lh:'1.25', ls:'0px' },
-      { name:'footnoteMedium',     family:'Neue Haas Unica', size:13, weight:500, lh:'1.25', ls:'0px' },
-      { name:'caption',            family:'Neue Haas Unica', size:12, weight:400, lh:'1.25', ls:'0px' },
-      { name:'captionMedium',      family:'Neue Haas Unica', size:12, weight:500, lh:'1.25', ls:'0px' },
-      { name:'caption2',           family:'Neue Haas Unica', size:10, weight:400, lh:'1.3',  ls:'0.25px' },
-      { name:'caption2Medium',     family:'Neue Haas Unica', size:10, weight:500, lh:'1.3',  ls:'0.25px' },
+      { name:'footnote',           family:'Neue Haas Unica', size:13, weight:400, lh:'1.2',  ls:'-0.08px' },
+      { name:'footnoteMedium',     family:'Neue Haas Unica', size:13, weight:500, lh:'1.2',  ls:'-0.08px' },
+      { name:'caption',            family:'Neue Haas Unica', size:11, weight:400, lh:'1.3',  ls:'0.25px' },
+      { name:'captionMedium',      family:'Neue Haas Unica', size:11, weight:500, lh:'1.3',  ls:'0.25px' },
+      { name:'caption2',           family:'Neue Haas Unica', size:12, weight:400, lh:'1.2',  ls:'0px' },
+      { name:'caption2Medium',     family:'Neue Haas Unica', size:12, weight:500, lh:'1.2',  ls:'0px' },
       { name:'nav',                family:'Neue Haas Unica', size:10, weight:400, lh:'1.3',  ls:'0.25px' },
     ],
   },
@@ -556,7 +569,10 @@ const TOKENS = {
     { name:'Story Card',      icon:'🌿', variants:4  },
     { name:'Organism Cell',   icon:'🐛', variants:3  },
     { name:'Tag / Chip',      icon:'🏷',  variants:5  },
+    { name:'Status Pill',     icon:'🏷',  variants:3  },
     { name:'Search Bar',      icon:'🔎', variants:2  },
+    { name:'Day Divider',     icon:'📅', variants:2  },
+    { name:'View Mode Toggle',icon:'🧭', variants:3  },
     { name:'Profile Card',    icon:'👤', variants:1  },
     { name:'Locate Button',   icon:'📍', variants:2  },
     { name:'Toolbar Button',  icon:'⚙️', variants:4  },

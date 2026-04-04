@@ -452,9 +452,10 @@ private struct ProfileCommunityPersonRow: View {
         switch person.followState {
         case .following:
             Text("Following")
-                .gaiaFont(.subheadline)
+                .gaiaFont(.pill)
                 .foregroundStyle(GaiaColor.oliveGreen500)
-                .padding(.horizontal, 10)
+                .padding(.horizontal, GaiaSpacing.pillHorizontal)
+                .padding(.vertical, GaiaSpacing.xs)
                 .frame(height: 28)
                 .overlay(
                     Capsule(style: .continuous)
@@ -462,16 +463,18 @@ private struct ProfileCommunityPersonRow: View {
                 )
         case .follow:
             Text("Follow")
-                .gaiaFont(.footnote)
+                .gaiaFont(.pill)
                 .foregroundStyle(GaiaColor.paperWhite50)
-                .padding(.horizontal, 10)
+                .padding(.horizontal, GaiaSpacing.pillHorizontal)
+                .padding(.vertical, GaiaSpacing.xs)
                 .frame(height: 28)
                 .background(GaiaColor.oliveGreen500, in: Capsule())
         case .mutual:
             Text("Mutual")
-                .gaiaFont(.footnote)
+                .gaiaFont(.pill)
                 .foregroundStyle(GaiaColor.paperWhite50)
-                .padding(.horizontal, 10)
+                .padding(.horizontal, GaiaSpacing.pillHorizontal)
+                .padding(.vertical, GaiaSpacing.xs)
                 .frame(height: 28)
                 .background(GaiaColor.broccoliBrown500, in: Capsule())
         }
@@ -605,9 +608,10 @@ private struct ProfilePeopleScreen: View {
                         selectedFilter = filter
                     } label: {
                         Text(filter.title)
-                            .gaiaFont(.footnote)
+                            .gaiaFont(.pill)
                             .foregroundStyle(selectedFilter == filter ? GaiaColor.paperWhite50 : GaiaColor.inkBlack300)
-                            .padding(.horizontal, 10)
+                            .padding(.horizontal, GaiaSpacing.pillHorizontal)
+                            .padding(.vertical, GaiaSpacing.xs)
                             .frame(height: 28)
                             .background {
                                 if selectedFilter == filter {
@@ -836,7 +840,6 @@ private struct MayaProfileDetailScreen: View {
             let topInset = proxy.safeAreaInsets.top > 0 ? proxy.safeAreaInsets.top : windowSafeTopInset
             let horizontalContentPadding = GaiaSpacing.md * 2
             let usableContentWidth = max(proxy.size.width - horizontalContentPadding, 0)
-            let projectCardWidth = min(max(floor((usableContentWidth - GaiaSpacing.sm) / 2), 0), 181)
             let recentFindCardWidth = min(max(floor((usableContentWidth - (GaiaSpacing.sm * 2)) / 3), 0), 118)
 
             ZStack(alignment: .top) {
@@ -846,7 +849,7 @@ private struct MayaProfileDetailScreen: View {
                     VStack(alignment: .leading, spacing: GaiaSpacing.lg) {
                         profileHeader
                         sharedContextCard
-                        projectsSection(cardWidth: projectCardWidth)
+                        projectsSection
                         recentFindsSection(cardWidth: recentFindCardWidth)
                         findMapSection
                     }
@@ -992,17 +995,20 @@ private struct MayaProfileDetailScreen: View {
         .padding(.horizontal, GaiaSpacing.md)
     }
 
-    private func projectsSection(cardWidth: CGFloat) -> some View {
+    private var projectsSection: some View {
         VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
             Text("Projects")
                 .gaiaFont(.title2)
                 .foregroundStyle(GaiaColor.inkBlack300)
 
-            HStack(spacing: GaiaSpacing.sm) {
+            HStack(alignment: .top, spacing: GaiaSpacing.sm) {
                 ForEach(projects) { project in
-                    mayaProjectCard(project, cardWidth: cardWidth)
+                    mayaProjectCard(project)
+                        .frame(maxWidth: .infinity)
+                        .frame(maxWidth: GaiaProjectCard.width)
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
             Button(action: {}) {
                 Text("View All")
@@ -1132,76 +1138,81 @@ private struct MayaProfileDetailScreen: View {
         .frame(width: 60)
     }
 
-    private func mayaProjectCard(_ project: MayaProfileProject, cardWidth: CGFloat) -> some View {
-        let cardHeight = cardWidth * (133.0 / 181.0)
+    private func mayaProjectCard(_ project: MayaProfileProject) -> some View {
+        GeometryReader { proxy in
+            let cardSize = proxy.size
 
-        return ZStack(alignment: .topLeading) {
-            GaiaAssetImage(name: project.imageName, contentMode: .fill)
-                .frame(width: cardWidth, height: cardHeight)
+            ZStack(alignment: .topLeading) {
+                GaiaAssetImage(name: project.imageName, contentMode: .fill)
+                    .frame(width: cardSize.width, height: cardSize.height)
 
-            GaiaAssetImage(name: project.imageName, contentMode: .fill)
-                .frame(width: cardWidth, height: cardHeight)
-                .blur(radius: 1.4)
-                .mask(
-                    LinearGradient(
-                        stops: [
-                            .init(color: .clear, location: 0.417),
-                            .init(color: .black, location: 1)
-                        ],
-                        startPoint: .top,
-                        endPoint: .bottom
+                GaiaAssetImage(name: project.imageName, contentMode: .fill)
+                    .frame(width: cardSize.width, height: cardSize.height)
+                    .blur(radius: 1.4)
+                    .mask(
+                        LinearGradient(
+                            stops: [
+                                .init(color: .clear, location: 0.417),
+                                .init(color: .black, location: 1)
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
                     )
+
+                LinearGradient(
+                    stops: [
+                        .init(color: Color(red: 70 / 255, green: 76 / 255, blue: 19 / 255, opacity: 0), location: 0.417),
+                        .init(color: Color(red: 41 / 255, green: 76 / 255, blue: 19 / 255, opacity: 0.85), location: 1)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
                 )
 
-            LinearGradient(
-                stops: [
-                    .init(color: Color(red: 70 / 255, green: 76 / 255, blue: 19 / 255, opacity: 0), location: 0.417),
-                    .init(color: Color(red: 41 / 255, green: 76 / 255, blue: 19 / 255, opacity: 0.85), location: 1)
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-
-            VStack(alignment: .leading, spacing: 0) {
-                Text(project.tag)
-                    .gaiaFont(.caption)
-                    .foregroundStyle(GaiaColor.paperWhite50)
-                    .padding(.horizontal, 10)
-                    .frame(height: 20)
-                    .background(Color.black.opacity(0.5), in: Capsule())
-                    .overlay(
-                        Capsule()
-                            .stroke(GaiaColor.blackishGrey200, lineWidth: 0.5)
-                    )
-                    .padding(12)
-
-                Spacer(minLength: 0)
-
-                VStack(alignment: .leading, spacing: GaiaSpacing.xs) {
-                    Text(project.title)
-                        .gaiaFont(.subheadSerif)
+                VStack(alignment: .leading, spacing: 0) {
+                    Text(project.tag)
+                        .gaiaFont(.caption)
                         .foregroundStyle(GaiaColor.paperWhite50)
-                        .lineLimit(1)
+                        .padding(.horizontal, 10)
+                        .frame(height: 20)
+                        .background(Color.black.opacity(0.5), in: Capsule())
+                        .overlay(
+                            Capsule()
+                                .stroke(GaiaColor.blackishGrey200, lineWidth: 0.5)
+                        )
+                        .padding(12)
 
-                    HStack(spacing: GaiaSpacing.xxs) {
-                        GaiaIcon(kind: .observe(selected: true), size: 14, tint: GaiaColor.paperWhite50)
-                            .frame(width: 14, height: 10)
+                    Spacer(minLength: 0)
 
-                        Text(project.countLabel)
-                            .font(.custom("Neue Haas Unica W1G", size: 10))
+                    VStack(alignment: .leading, spacing: GaiaSpacing.xs) {
+                        Text(project.title)
+                            .gaiaFont(.subheadSerif)
                             .foregroundStyle(GaiaColor.paperWhite50)
+                            .lineLimit(1)
+
+                        HStack(spacing: GaiaSpacing.xxs) {
+                            GaiaIcon(kind: .observe(selected: true), size: 14, tint: GaiaColor.paperWhite50)
+                                .frame(width: 14, height: 10)
+
+                            Text(project.countLabel)
+                                .font(.custom("Neue Haas Unica W1G", size: 10))
+                                .foregroundStyle(GaiaColor.paperWhite50)
+                        }
                     }
+                    .padding(12)
                 }
-                .padding(12)
             }
+            .frame(width: cardSize.width, height: cardSize.height)
+            .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                    .stroke(GaiaColor.blackishGrey200, lineWidth: 0.5)
+            )
+            .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
         }
-        .frame(width: cardWidth, height: cardHeight)
-        .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
-                .stroke(GaiaColor.blackishGrey200, lineWidth: 0.5)
-        )
-        .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
+        .aspectRatio(GaiaProjectCard.width / GaiaProjectCard.height, contentMode: .fit)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(project.title), \(project.tag) project, \(project.countLabel) finds")
     }
 
     private func mayaRecentFindCard(_ item: MayaRecentFind, sideLength: CGFloat) -> some View {

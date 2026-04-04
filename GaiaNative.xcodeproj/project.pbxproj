@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0336C918B8EA769EF03F5F2E /* StoryPreviewCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9646264F30FB6D0AD5E1E572 /* StoryPreviewCard.swift */; };
+		03A60D88E2A14A55B8D8C101 /* GaiaProjectCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A60D88E2A14A55B8D8C102 /* GaiaProjectCard.swift */; };
 		0DAE8C1B2DA7CA3962301E87 /* ObserveDetailsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67282C7460F9F823AD9AE245 /* ObserveDetailsScreen.swift */; };
 		0DD56CDC3A47A4DDFADB6854 /* ObserveCameraScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10B9C6679E3F4845C332D40C /* ObserveCameraScreen.swift */; };
 		13190C5C2DEFF28FEABD3C9A /* MapDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24DAC259706382EB914DA2F7 /* MapDataService.swift */; };
@@ -107,6 +108,7 @@
 
 /* Begin PBXFileReference section */
 		00668D51194DE7E7756461C6 /* Observation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Observation.swift; sourceTree = "<group>"; };
+		03A60D88E2A14A55B8D8C102 /* GaiaProjectCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaiaProjectCard.swift; sourceTree = "<group>"; };
 		03F8E223E3FFF9D8CE4CE78E /* FindDetailsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindDetailsScreen.swift; sourceTree = "<group>"; };
 		07C1014FFD074B9B7F391996 /* Species.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Species.swift; sourceTree = "<group>"; };
 		0936210E15DA895926002A94 /* GaiaAsyncImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaiaAsyncImage.swift; sourceTree = "<group>"; };
@@ -398,6 +400,7 @@
 				385D8878F5D62218D412C462 /* ActivityCard.swift */,
 				6F20CB050256AA9670C4A3E9 /* FindCard.swift */,
 				45C5FEAF025A451CD8A13BA9 /* GaiaCardSurfaces.swift */,
+				03A60D88E2A14A55B8D8C102 /* GaiaProjectCard.swift */,
 				31438D127669C89572CEE389 /* ImpactSummaryCard.swift */,
 				C6F358B40558E1CCF4EDCBF8 /* LearnSpeciesCard.swift */,
 				6B41E620045247F57247304A /* ProfileHeaderCard.swift */,
@@ -609,6 +612,7 @@
 				9DF69059AD40A6A00A55B568 /* GaiaAsyncImage.swift in Sources */,
 				25DB2E0C8AA50A2FB9F4D45B /* GaiaBadge.swift in Sources */,
 				E5090830A81B3ABDD643EF81 /* GaiaCardSurfaces.swift in Sources */,
+				03A60D88E2A14A55B8D8C101 /* GaiaProjectCard.swift in Sources */,
 				43C4C5F11FD5C7ADF288D67C /* GaiaColor.swift in Sources */,
 				2BFFDF418B96C3C878FA39D2 /* GaiaDivider.swift in Sources */,
 				FAFB6BCD15930BCC23556263 /* GaiaMapbox.swift in Sources */,
