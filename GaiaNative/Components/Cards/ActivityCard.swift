@@ -14,7 +14,7 @@ struct ActivityTopBar: View {
                 .foregroundStyle(GaiaColor.oliveGreen500)
                 .frame(maxWidth: .infinity)
                 .frame(height: 48, alignment: .bottom)
-                .padding(.top, 12)
+                .padding(.top, GaiaSpacing.cardInset)
                 .padding(.horizontal, GaiaSpacing.md)
 
             ScrollView(.horizontal, showsIndicators: false) {
@@ -23,24 +23,10 @@ struct ActivityTopBar: View {
                         Button {
                             onSelect(filter)
                         } label: {
-                            Text(filter)
-                                .gaiaFont(.pill)
-                                .foregroundStyle(
-                                    filter == selectedFilter
-                                    ? GaiaColor.paperWhite50
-                                    : GaiaColor.inkBlack300
-                                )
-                                .padding(.horizontal, GaiaSpacing.pillHorizontal)
-                                .padding(.vertical, GaiaSpacing.xs)
-                                .frame(height: 28)
-                                .background(
-                                    Capsule()
-                                        .fill(
-                                            filter == selectedFilter
-                                            ? GaiaColor.oliveGreen500
-                                            : GaiaColor.oliveGreen500.opacity(0.20)
-                                        )
-                                )
+                            GaiaPill(
+                                title: filter,
+                                style: filter == selectedFilter ? .prominent : .soft
+                            )
                         }
                         .buttonStyle(.plain)
                     }
@@ -51,13 +37,16 @@ struct ActivityTopBar: View {
         }
         .padding(.bottom, GaiaSpacing.lg)
         .frame(maxWidth: .infinity)
-        .background(GaiaColor.paperWhite50)
-        .overlay(alignment: .bottom) {
+        .background {
             Rectangle()
-                .fill(GaiaColor.broccoliBrown200)
-                .frame(height: 0.5)
+                .fill(GaiaColor.paperWhite50)
+                .ignoresSafeArea(edges: .top)
+                .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
         }
-        .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
+        .overlay(alignment: .bottom) {
+            ActivityHairline(color: GaiaColor.broccoliBrown200)
+        }
+        .zIndex(1)
     }
 }
 
@@ -68,7 +57,7 @@ struct ActivityNotificationItem: View {
         HStack(alignment: .center, spacing: GaiaSpacing.cardInset) {
             ActivityRowThumbnail(assetName: event.mediaAssetNames.first)
 
-            VStack(alignment: .leading, spacing: GaiaSpacing.cardInset) {
+            VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
                 HStack(alignment: .top, spacing: GaiaSpacing.sm) {
                     Text(event.title)
                         .gaiaFont(.subheadSerifMedium)
@@ -119,7 +108,9 @@ private struct ActivityRowThumbnail: View {
                     .fill(GaiaColor.oliveGreen100)
                     .overlay(
                         Image(systemName: "bell.fill")
-                            .font(.system(size: 14, weight: .medium))
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 14, height: 14)
                             .foregroundStyle(GaiaColor.olive)
                     )
             }

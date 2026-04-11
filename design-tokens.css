@@ -56,26 +56,20 @@
 
   /* ── Colors: Paper White ─────────────────────────────────── */
   --cream-50:  #fefdf9;
-  --cream-100: #e7e6e2;
-  --cream-200: #d7d6d2;
-  --cream-300: #c7c6c1;
-  --cream-400: #b6b5b1;
-  --cream-500: #a6a5a1;
-  --cream-600: #969591;
-  --cream-700: #858480;
-  --cream-800: #757470;
+  --cream-100: #fefcf7;
+  --cream-200: #fdfbf4;
+  --cream-300: #fdfaf1;
+  --cream-400: #fcfaf1;
+  --cream-500: #fcfaf0;
+  --cream-600: #dddbd3;
+  --cream-700: #bdbbb4;
+  --cream-800: #929189;
   --cream-900: #5f5e5a;
   --paper:     var(--cream-200);
   --paper-50:  var(--cream-50);
-  --paper-100: var(--cream-100);
   --paper-200: var(--cream-200);
-  --paper-300: var(--cream-300);
   --paper-400: var(--cream-400);
   --paper-500: var(--cream-500);
-  --paper-600: var(--cream-600);
-  --paper-700: var(--cream-700);
-  --paper-800: var(--cream-800);
-  --paper-900: var(--cream-900);
   --cream:     var(--cream-200);
 
   /* ── Colors: Ink Black ───────────────────────────────────── */
@@ -299,10 +293,10 @@
 .type-serif-display-med   { font-family: var(--font-serif); font-size: 32px; font-weight: 500; line-height: 1.1; }
 .type-serif-title-1       { font-family: var(--font-serif); font-size: 28px; font-weight: 400; line-height: 1.1; }
 .type-serif-title-1-med   { font-family: var(--font-serif); font-size: 28px; font-weight: 500; line-height: 1.1; }
-.type-serif-title-2       { font-family: var(--font-serif); font-size: 24px; font-weight: 400; line-height: 1.1; letter-spacing: -0.2px; }
-.type-serif-title-2-med   { font-family: var(--font-serif); font-size: 24px; font-weight: 500; line-height: 1.1; letter-spacing: -0.2px; }
-.type-serif-title-3       { font-family: var(--font-serif); font-size: 20px; font-weight: 400; line-height: 0.93; }
-.type-serif-title-3-med   { font-family: var(--font-serif); font-size: 20px; font-weight: 500; line-height: 0.93; }
+.type-serif-title-2       { font-family: var(--font-serif); font-size: 24px; font-weight: 400; line-height: 1.2; }
+.type-serif-title-2-med   { font-family: var(--font-serif); font-size: 24px; font-weight: 500; line-height: 1.2; }
+.type-serif-title-3       { font-family: var(--font-serif); font-size: 20px; font-weight: 400; line-height: 1.3; }
+.type-serif-title-3-med   { font-family: var(--font-serif); font-size: 20px; font-weight: 500; line-height: 1.3; }
 .type-serif-subhead-1     { font-family: var(--font-serif); font-size: 16px; font-weight: 400; line-height: 18px; }
 .type-serif-subhead-1-med { font-family: var(--font-serif); font-size: 16px; font-weight: 500; line-height: 18px; }
 .type-serif-caption        { font-family: var(--font-serif); font-size: 14px; font-weight: 400; line-height: 1.4; }
@@ -318,12 +312,12 @@
 .type-sans-callout-med    { font-family: var(--font-sans); font-size: 16px; font-weight: 500; line-height: 21px; }
 .type-sans-subheadline    { font-family: var(--font-sans); font-size: 15px; font-weight: 400; line-height: 20px; }
 .type-sans-subheadline-med{ font-family: var(--font-sans); font-size: 15px; font-weight: 500; line-height: 20px; }
-.type-sans-footnote       { font-family: var(--font-sans); font-size: 13px; font-weight: 400; line-height: 1.2; letter-spacing: -0.08px; }
-.type-sans-footnote-med   { font-family: var(--font-sans); font-size: 13px; font-weight: 500; line-height: 1.2; letter-spacing: -0.08px; }
-.type-sans-caption        { font-family: var(--font-sans); font-size: 11px; font-weight: 400; line-height: 1.3; letter-spacing: 0.25px; }
-.type-sans-caption-med    { font-family: var(--font-sans); font-size: 11px; font-weight: 500; line-height: 1.3; letter-spacing: 0.25px; }
-.type-sans-caption-2      { font-family: var(--font-sans); font-size: 12px; font-weight: 400; line-height: 1.2; }
-.type-sans-caption-2-med  { font-family: var(--font-sans); font-size: 12px; font-weight: 500; line-height: 1.2; }
+.type-sans-footnote       { font-family: var(--font-sans); font-size: 13px; font-weight: 400; line-height: 18px; }
+.type-sans-footnote-med   { font-family: var(--font-sans); font-size: 13px; font-weight: 500; line-height: 18px; }
+.type-sans-caption        { font-family: var(--font-sans); font-size: 12px; font-weight: 400; line-height: 20px; }
+.type-sans-caption-med    { font-family: var(--font-sans); font-size: 12px; font-weight: 500; line-height: 20px; }
+.type-sans-caption-2      { font-family: var(--font-sans); font-size: 11px; font-weight: 400; line-height: 1.3; letter-spacing: 0.25px; }
+.type-sans-caption-2-med  { font-family: var(--font-sans); font-size: 11px; font-weight: 500; line-height: 1.3; letter-spacing: 0.25px; }
 
 /* Nav label — special 10px size used in bottom nav */
 .type-sans-nav-label      { font-family: var(--font-sans); font-size: 10px; font-weight: 400; line-height: 1.3; letter-spacing: 0.25px; }

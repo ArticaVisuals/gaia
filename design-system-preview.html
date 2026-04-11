@@ -16,17 +16,8 @@
   --olive-400: #8a9b7e;
   --olive:     #67765b;
   --paper-50:  #fefdf9;
-  --paper-100: #e7e6e2;
-  --paper-200: #d7d6d2;
-  --paper-300: #c7c6c1;
-  --paper-400: #b6b5b1;
-  --paper-500: #a6a5a1;
-  --paper-600: #969591;
-  --paper-700: #858480;
-  --paper-800: #757470;
-  --paper-900: #5f5e5a;
-  --paper:     var(--paper-200);
-  --cream-300: var(--paper-300);
+  --paper:     #fdfbf4;
+  --cream-300: #fbf7eb;
   --bb-50:     #F6F2EE;
   --bb-100:    #EDE5DC;
   --bb-200:    #D8C9B8;
@@ -52,7 +43,7 @@ html { font-size: 16px; }
 body {
   background: var(--paper-50);
   color: var(--ink);
-  font-family: -apple-system, 'Helvetica Neue', sans-serif;
+  font-family: "Neue Haas Unica", "Helvetica Neue", -apple-system, sans-serif;
   min-height: 100vh;
 }
 
@@ -182,33 +173,182 @@ body {
 .comp-grid { display: flex; flex-wrap: wrap; gap: 20px; }
 .comp-card {
   display: flex; flex-direction: column; gap: 10px;
-  padding: 16px;
+  padding: 18px;
   background: #fff;
-  border-radius: 12px;
+  border-radius: 16px;
   border: 1px solid var(--bb-100);
-  min-width: 120px;
-  align-items: center;
+  width: 220px;
 }
 .comp-thumb {
   background: var(--paper-50);
-  border-radius: 8px;
-  width: 120px; height: 80px;
+  border-radius: 14px;
+  width: 100%; min-height: 110px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px;
+  overflow: hidden;
+}
+.comp-kicker { font-size: 10px; font-weight: 700; color: var(--ink-300); letter-spacing: 1px; text-transform: uppercase; }
+.comp-name  { font-size: 14px; font-weight: 600; color: var(--ink); }
+.comp-file { font-size: 10px; color: var(--ink-300); font-family: ui-monospace, "SF Mono", monospace; }
+.comp-notes { font-size: 11px; color: var(--ink-300); line-height: 1.4; }
+
+.mini-stack { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+.mini-pill {
+  align-self: flex-start;
+  padding: 0 16px;
+  height: 29px;
+  border-radius: 999px;
+  background: var(--bb-500);
+  color: var(--paper-50);
+  font-size: 13px;
+  display: flex; align-items: center;
+}
+.mini-badge {
+  align-self: flex-start;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--olive);
+  font-size: 11px;
+  border: 1px solid rgba(103,118,91,0.12);
+}
+.mini-section-title { font-family: "New Spirit", Georgia, serif; font-size: 20px; color: var(--ink); }
+.mini-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.25px;
+  text-transform: uppercase;
+  color: var(--grey);
+}
+.mini-glass-circle {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: rgba(255,255,255,0.68);
+  border: 1px solid rgba(255,255,255,0.55);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+  backdrop-filter: blur(16px);
   display: flex; align-items: center; justify-content: center;
 }
-.comp-thumb-icon {
-  width: 36px; height: 36px;
-  border-radius: 10px;
-  background: var(--olive-100);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px;
+.mini-glass-line {
+  width: 18px; height: 18px; border-radius: 9px;
+  border: 2px solid var(--olive);
+  position: relative;
 }
-.comp-name  { font-size: 12px; font-weight: 500; color: var(--ink); text-align: center; }
-.comp-variants { font-size: 10px; color: var(--ink-300); text-align: center; }
+.mini-glass-line::after {
+  content: "";
+  position: absolute;
+  right: -5px; bottom: -5px;
+  width: 8px; height: 2px;
+  background: var(--olive);
+  transform: rotate(45deg);
+  transform-origin: center;
+  border-radius: 2px;
+}
+.mini-glass-pill {
+  display: flex; align-items: center; gap: 18px;
+  height: 48px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.68);
+  border: 1px solid rgba(255,255,255,0.55);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+  backdrop-filter: blur(16px);
+}
+.mini-glass-pill .dot {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(255,255,255,0.6);
+  border: 1px solid rgba(103,118,91,0.14);
+}
+.mini-filter-bar { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+.mini-filter-title {
+  font-family: "New Spirit", Georgia, serif;
+  font-size: 20px;
+  color: var(--olive);
+  text-align: center;
+}
+.mini-chip-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.mini-chip {
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  display: flex; align-items: center;
+  font-size: 13px;
+  color: var(--ink-300);
+  background: rgba(103,118,91,0.2);
+}
+.mini-chip.active {
+  background: var(--olive);
+  color: var(--paper-50);
+}
+.mini-profile {
+  display: flex; align-items: center; gap: 12px; width: 100%;
+}
+.mini-avatar {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: linear-gradient(135deg, #d9d9db, #e3e7df);
+  border: 0.5px solid var(--olive-100);
+  flex-shrink: 0;
+}
+.mini-profile-title {
+  font-family: "New Spirit", Georgia, serif;
+  font-size: 22px;
+  color: var(--olive);
+}
+.mini-profile-meta { font-size: 13px; color: var(--grey); }
+.mini-bottom-nav {
+  width: 100%; height: 64px;
+  border-radius: 296px;
+  background: rgba(255,255,255,0.72);
+  border: 1px solid rgba(255,255,255,0.55);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+  display: flex; align-items: center;
+  padding: 5px 2px 5px 1px;
+  position: relative;
+}
+.mini-bottom-nav::before {
+  content: "";
+  position: absolute;
+  left: 4px; top: 5px;
+  width: 74px; height: 54px;
+  border-radius: 999px;
+  background: #e6ede3;
+}
+.mini-nav-item {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  font-size: 10px;
+  color: var(--olive);
+}
+.mini-nav-icon {
+  width: 18px; height: 18px;
+  border-radius: 5px;
+  background: rgba(103,118,91,0.18);
+}
+.mini-tab-switch {
+  width: 100%;
+  display: flex; flex-direction: column; gap: 0;
+}
+.mini-tab-row {
+  display: flex;
+  border-bottom: 1px solid #b1b2b5;
+}
+.mini-tab {
+  flex: 1;
+  height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+  color: #b1b2b5;
+}
+.mini-tab.active {
+  color: var(--olive);
+  border-bottom: 3px solid var(--olive);
+  margin-bottom: -2px;
+}
 
 /* ─── Sticky nav / toolbar ───────────────────────────────────── */
 .ds-nav {
   position: sticky; top: 0; z-index: 100;
-  background: rgba(215,214,210,0.85);
+  background: rgba(253,251,244,0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(0,0,0,0.07);
@@ -230,7 +370,7 @@ body {
 .ds-nav .push { margin-left: auto; }
 .push-btn {
   display: flex; align-items: center; gap: 6px;
-  background: var(--olive); color: var(--paper-50);
+  background: var(--olive); color: #fdfbf4;
   border: none; border-radius: 8px;
   padding: 7px 14px; font-size: 13px; font-weight: 600;
   cursor: pointer; transition: background 0.15s;
@@ -295,6 +435,7 @@ section[id] { scroll-margin-top: 50px; }
   <a href="#effects">Effects</a>
   <a href="#spacing">Spacing</a>
   <a href="#radii">Radii</a>
+  <a href="#components">Components</a>
   <span class="push"></span>
   <button class="push-btn" onclick="alert('Install the plugin in Figma → Plugins → Development → Import from manifest → select the design-system-plugin/manifest.json file, then run it to push directly to Figma.')">
     <svg width="14" height="14" fill="none" viewBox="0 0 14 14">
@@ -356,16 +497,28 @@ section[id] { scroll-margin-top: 50px; }
       <div class="swatch-grid" id="verm-swatches"></div>
     </div>
 
-    <!-- Cream -->
+    <!-- Grass -->
     <div class="collection-wrap">
-      <div class="col-title-row"><h3>cream</h3><span class="mode-chip">1 mode · compatibility alias</span></div>
-      <div class="swatch-grid" id="cream-swatches"></div>
+      <div class="col-title-row"><h3>accent / grass-green</h3><span class="mode-chip">1 mode</span></div>
+      <div class="swatch-grid" id="grass-swatches"></div>
     </div>
 
-    <!-- Water -->
+    <!-- Asparagus -->
     <div class="collection-wrap">
-      <div class="col-title-row"><h3>water</h3><span class="mode-chip">1 mode · compatibility alias</span></div>
-      <div class="swatch-grid" id="water-swatches"></div>
+      <div class="col-title-row"><h3>accent / asparagus-green</h3><span class="mode-chip">1 mode</span></div>
+      <div class="swatch-grid" id="asparagus-swatches"></div>
+    </div>
+
+    <!-- Indigo -->
+    <div class="collection-wrap">
+      <div class="col-title-row"><h3>accent / indigo-blue</h3><span class="mode-chip">1 mode</span></div>
+      <div class="swatch-grid" id="indigo-swatches"></div>
+    </div>
+
+    <!-- Siskin -->
+    <div class="collection-wrap">
+      <div class="col-title-row"><h3>accent / siskin</h3><span class="mode-chip">1 mode</span></div>
+      <div class="swatch-grid" id="siskin-swatches"></div>
     </div>
   </section>
 
@@ -439,89 +592,126 @@ section[id] { scroll-margin-top: 50px; }
 const TOKENS = {
   swatches: {
     'og-swatches': [
-      { name:'50',  hex:'#f2f4f0' }, { name:'100', hex:'#e3e7df' },
-      { name:'200', hex:'#c8cfbf' }, { name:'400', hex:'#8a9b7e' },
-      { name:'500', hex:'#67765b' },
+      { name:'50',  hex:'#F2F4F0' }, { name:'100', hex:'#E3E7DF' },
+      { name:'200', hex:'#C8CFBF' }, { name:'300', hex:'#A3AE95' },
+      { name:'400', hex:'#8A9B7E' }, { name:'500', hex:'#67765B' },
+      { name:'600', hex:'#5B6850' }, { name:'700', hex:'#4F5A45' },
+      { name:'800', hex:'#3D4535' }, { name:'900', hex:'#282D22' },
     ],
     'pw-swatches': [
-      { name:'50',  hex:'#fefdf9' }, { name:'100', hex:'#e7e6e2' },
-      { name:'200', hex:'#d7d6d2' }, { name:'300', hex:'#c7c6c1' },
-      { name:'400', hex:'#b6b5b1' }, { name:'500', hex:'#a6a5a1' },
-      { name:'600', hex:'#969591' }, { name:'700', hex:'#858480' },
-      { name:'800', hex:'#757470' }, { name:'900', hex:'#5f5e5a' },
+      { name:'50',  hex:'#FEFDF9' }, { name:'100', hex:'#FEFCF7' },
+      { name:'200', hex:'#FDFBF4' }, { name:'300', hex:'#FDFAF1' },
+      { name:'400', hex:'#FCFAF1' }, { name:'500', hex:'#FCFAF0' },
+      { name:'600', hex:'#DDDBD3' }, { name:'700', hex:'#BDBBB4' },
+      { name:'800', hex:'#929189' }, { name:'900', hex:'#5F5E5A' },
     ],
     'bb-swatches': [
       { name:'50',  hex:'#F6F2EE' }, { name:'100', hex:'#EDE5DC' },
       { name:'200', hex:'#D8C9B8' }, { name:'300', hex:'#BFA98F' },
       { name:'400', hex:'#AC9479' }, { name:'500', hex:'#9B856B' },
-      { name:'600', hex:'#89755E' },
+      { name:'600', hex:'#89755E' }, { name:'700', hex:'#756350' },
+      { name:'800', hex:'#5A4C3E' }, { name:'900', hex:'#3B3129' },
     ],
     'ink-swatches': [
-      { name:'300', hex:'#7d7981' }, { name:'500', hex:'#252024' },
-      { name:'700', hex:'#1b181b' },
+      { name:'50',  hex:'#EDECEE' }, { name:'100', hex:'#D8D6DA' },
+      { name:'200', hex:'#B0ADB3' }, { name:'300', hex:'#7D7981' },
+      { name:'400', hex:'#524E56' }, { name:'500', hex:'#252024' },
+      { name:'600', hex:'#201C20' }, { name:'700', hex:'#1B181B' },
+      { name:'800', hex:'#151315' }, { name:'900', hex:'#0D0C0D' },
     ],
     'grey-swatches': [
-      { name:'50',  hex:'#ededee' }, { name:'100', hex:'#d9d9db' },
-      { name:'500', hex:'#5b5c61' },
+      { name:'50',  hex:'#EDEDEE' }, { name:'100', hex:'#D9D9DB' },
+      { name:'200', hex:'#B1B2B5' }, { name:'300', hex:'#848589' },
+      { name:'400', hex:'#6D6E73' }, { name:'500', hex:'#5B5C61' },
+      { name:'600', hex:'#505156' }, { name:'700', hex:'#454649' },
+      { name:'800', hex:'#353638' }, { name:'900', hex:'#222324' },
     ],
     'verm-swatches': [
-      { name:'500', hex:'#b5493a' },
+      { name:'50',  hex:'#F6EDEC' }, { name:'100', hex:'#ECD8D5' },
+      { name:'200', hex:'#D6AFA9' }, { name:'300', hex:'#BC7D73' },
+      { name:'400', hex:'#BD6356' }, { name:'500', hex:'#B5493A' },
+      { name:'600', hex:'#9F4033' }, { name:'700', hex:'#88372B' },
+      { name:'800', hex:'#692A21' }, { name:'900', hex:'#441B16' },
     ],
-    'cream-swatches': [
-      { name:'50',  hex:'#fefdf9' }, { name:'100', hex:'#e7e6e2' },
-      { name:'200', hex:'#d7d6d2' }, { name:'300', hex:'#c7c6c1' },
-      { name:'400', hex:'#b6b5b1' }, { name:'500', hex:'#a6a5a1' },
-      { name:'600', hex:'#969591' }, { name:'700', hex:'#858480' },
-      { name:'800', hex:'#757470' }, { name:'900', hex:'#5f5e5a' },
+    'grass-swatches': [
+      { name:'100', hex:'#B0D1A5' }, { name:'200', hex:'#A3CA96' },
+      { name:'300', hex:'#95C287' }, { name:'400', hex:'#88BB78' },
+      { name:'500', hex:'#7BB369' }, { name:'600', hex:'#6FA15F' },
+      { name:'700', hex:'#628F54' }, { name:'800', hex:'#567D4A' },
+      { name:'900', hex:'#4A6B3F' },
     ],
-    'water-swatches': [
-      { name:'500', hex:'#4F638D' },
+    'asparagus-swatches': [
+      { name:'50',  hex:'#F7F7EE' }, { name:'100', hex:'#EEEEDC' },
+      { name:'200', hex:'#DDDCB6' }, { name:'300', hex:'#CCCB8B' },
+      { name:'400', hex:'#C9C87B' }, { name:'500', hex:'#C2C190' },
+      { name:'600', hex:'#ABAA7F' }, { name:'700', hex:'#91906C' },
+      { name:'800', hex:'#707053' }, { name:'900', hex:'#484837' },
+    ],
+    'indigo-swatches': [
+      { name:'50',  hex:'#ECEEF3' }, { name:'100', hex:'#D5DAE5' },
+      { name:'200', hex:'#A9B4C9' }, { name:'300', hex:'#7589A9' },
+      { name:'400', hex:'#61739B' }, { name:'500', hex:'#4F638D' },
+      { name:'600', hex:'#45577C' }, { name:'700', hex:'#3B4A6A' },
+      { name:'800', hex:'#2D3951' }, { name:'900', hex:'#1D2535' },
+    ],
+    'siskin-swatches': [
+      { name:'50',  hex:'#F8F8EE' }, { name:'100', hex:'#F0F0DB' },
+      { name:'200', hex:'#E0DFB5' }, { name:'300', hex:'#CECD86' },
+      { name:'400', hex:'#D2D17A' }, { name:'500', hex:'#C8C76F' },
+      { name:'600', hex:'#B0AF62' }, { name:'700', hex:'#969553' },
+      { name:'800', hex:'#737240' }, { name:'900', hex:'#4A4A2A' },
     ],
   },
   semantic: [
-    { name:'border-default',        hex:'#D8C9B8', desc:'Default border for cards and inputs' },
-    { name:'border-strong',         hex:'#E3E7DF', desc:'Stronger border aligned to GaiaColor.borderStrong' },
-    { name:'fill-vibrant-tertiary', hex:'#E6EDE3', desc:'Nav selection highlight' },
-    { name:'surface-primary',       hex:'#D7D6D2', desc:'Page background' },
-    { name:'surface-sheet',         hex:'#E7E6E2', desc:'Bottom sheet background' },
-    { name:'surface-card',          hex:'#FEFDF9', desc:'Card or elevated surface' },
-    { name:'text-primary',          hex:'#252024', desc:'Primary text' },
-    { name:'text-secondary',        hex:'#5B5C61', desc:'Secondary text from Figma Components page' },
-    { name:'text-secondary-2',      hex:'#9B856B', desc:'Warm secondary text used in Gaia detail flows' },
-    { name:'text-tertiary',         hex:'#5B5C61', desc:'Placeholder or helper text' },
-    { name:'text-disabled',         hex:'#B1B2B5', desc:'Disabled text from Figma Components page' },
-    { name:'text-brand',            hex:'#67765B', desc:'Brand-colored text' },
-    { name:'text-on-fill',          hex:'#FEFDF9', desc:'Text on filled backgrounds' },
-    { name:'text-inverse',          hex:'#A6A5A1', desc:'Inverse text from Figma Components page' },
-    { name:'text-inverse-secondary',hex:'#C8CFBF', desc:'Secondary inverse text from Figma Components page' },
+    { name:'border',                 hex:'#D8C9B8', desc:'Default border for cards and inputs' },
+    { name:'border-strong',          hex:'#E3E7DF', desc:'Stronger border for emphasized outlines' },
+    { name:'green-glow',             hex:'#7BB369', desc:'Accent glow source used in elevated treatments' },
+    { name:'fill-vibrant-tertiary',  hex:'#E6EDE3', desc:'Selected nav and pill highlight' },
+    { name:'surface-primary',        hex:'#FDFBF4', desc:'Main page background' },
+    { name:'surface-sheet',          hex:'#FEFCF7', desc:'Sheet background' },
+    { name:'surface-card',           hex:'#FEFDF9', desc:'Card or elevated surface' },
+    { name:'surface-story',          hex:'#F6F2EE', desc:'Story card background' },
+    { name:'text-primary',           hex:'#252024', desc:'Primary copy' },
+    { name:'text-secondary',         hex:'#5B5C61', desc:'Secondary copy' },
+    { name:'text-warm-secondary',    hex:'#9B856B', desc:'Warm supporting text' },
+    { name:'text-inverse',           hex:'#FCFAF0', desc:'Text on dark or brand fills' },
+    { name:'text-inverse-secondary', hex:'#C8CFBF', desc:'Muted inverse copy' },
+    { name:'brand-primary',          hex:'#67765B', desc:'Core Gaia olive accent' },
+    { name:'brand-secondary',        hex:'#9B856B', desc:'Warm brown accent' },
+    { name:'brand-accent',           hex:'#C2C190', desc:'Asparagus accent' },
   ],
   typography: {
     serif: [
-      { name:'display / regular',  family:'New Spirit',     size:32, weight:400, lh:'1.1',  ls:'-0.5px' },
-      { name:'display / medium',   family:'New Spirit',     size:32, weight:500, lh:'1.1',  ls:'-0.5px' },
-      { name:'title-1 / regular',  family:'New Spirit',     size:28, weight:400, lh:'1.1',  ls:'-0.3px' },
-      { name:'title-1 / medium',   family:'New Spirit',     size:28, weight:500, lh:'1.1',  ls:'-0.3px' },
-      { name:'title-2 / regular',  family:'New Spirit',     size:24, weight:400, lh:'1.1',  ls:'-0.2px' },
-      { name:'title-2 / medium',   family:'New Spirit',     size:24, weight:500, lh:'1.1',  ls:'-0.2px' },
-      { name:'title-3 / regular',  family:'New Spirit',     size:20, weight:400, lh:'0.93', ls:'0px' },
-      { name:'title-3 / medium',   family:'New Spirit',     size:20, weight:500, lh:'0.93', ls:'0px' },
-      { name:'subheadSerif',       family:'New Spirit',     size:16, weight:400, lh:'18px', ls:'0px' },
+      { name:'display',            family:'New Spirit', size:32, weight:400, lh:'35.2px', ls:'-0.5px' },
+      { name:'displayMedium',      family:'New Spirit', size:32, weight:500, lh:'32px',   ls:'-0.5px' },
+      { name:'title1',             family:'New Spirit', size:28, weight:400, lh:'30.8px', ls:'-0.3px' },
+      { name:'title1Medium',       family:'New Spirit', size:28, weight:500, lh:'30.8px', ls:'-0.3px' },
+      { name:'title2',             family:'New Spirit', size:24, weight:400, lh:'28.8px', ls:'-0.2px' },
+      { name:'title2Medium',       family:'New Spirit', size:24, weight:500, lh:'28.8px', ls:'-0.2px' },
+      { name:'title3',             family:'New Spirit', size:20, weight:400, lh:'26px',   ls:'0px' },
+      { name:'title3Medium',       family:'New Spirit', size:20, weight:500, lh:'26px',   ls:'0px' },
+      { name:'subheadSerif',       family:'New Spirit', size:16, weight:400, lh:'20.8px', ls:'0px' },
+      { name:'bodySerif',          family:'New Spirit', size:14, weight:400, lh:'16.8px', ls:'0px' },
+      { name:'bodySerifMedium',    family:'New Spirit', size:14, weight:500, lh:'18.2px', ls:'0px' },
     ],
     sans: [
-      { name:'body',               family:'Neue Haas Unica', size:17, weight:400, lh:'1.3',  ls:'0px' },
-      { name:'bodyMedium',         family:'Neue Haas Unica', size:17, weight:500, lh:'1.3',  ls:'0px' },
-      { name:'bodyBold',           family:'Neue Haas Unica', size:17, weight:700, lh:'1.3',  ls:'0px' },
-      { name:'callout',            family:'Neue Haas Unica', size:16, weight:400, lh:'1.35', ls:'0px' },
-      { name:'calloutMedium',      family:'Neue Haas Unica', size:16, weight:500, lh:'1.35', ls:'0px' },
-      { name:'subheadline',        family:'Neue Haas Unica', size:15, weight:400, lh:'1.35', ls:'0px' },
-      { name:'subheadlineMedium',  family:'Neue Haas Unica', size:15, weight:500, lh:'1.35', ls:'0px' },
-      { name:'footnote',           family:'Neue Haas Unica', size:13, weight:400, lh:'1.2',  ls:'-0.08px' },
-      { name:'footnoteMedium',     family:'Neue Haas Unica', size:13, weight:500, lh:'1.2',  ls:'-0.08px' },
-      { name:'caption',            family:'Neue Haas Unica', size:11, weight:400, lh:'1.3',  ls:'0.25px' },
-      { name:'captionMedium',      family:'Neue Haas Unica', size:11, weight:500, lh:'1.3',  ls:'0.25px' },
-      { name:'caption2',           family:'Neue Haas Unica', size:12, weight:400, lh:'1.2',  ls:'0px' },
-      { name:'caption2Medium',     family:'Neue Haas Unica', size:12, weight:500, lh:'1.2',  ls:'0px' },
-      { name:'nav',                family:'Neue Haas Unica', size:10, weight:400, lh:'1.3',  ls:'0.25px' },
+      { name:'titleSans',          family:'Neue Haas Unica', size:20, weight:400, lh:'25px',   ls:'-0.45px' },
+      { name:'titleSansMedium',    family:'Neue Haas Unica', size:20, weight:500, lh:'25px',   ls:'-0.45px' },
+      { name:'body',               family:'Neue Haas Unica', size:17, weight:400, lh:'22.1px', ls:'0px' },
+      { name:'bodyMedium',         family:'Neue Haas Unica', size:17, weight:500, lh:'22.1px', ls:'0px' },
+      { name:'bodyBold',           family:'Neue Haas Unica', size:17, weight:700, lh:'22.1px', ls:'0px' },
+      { name:'callout',            family:'Neue Haas Unica', size:16, weight:400, lh:'21px',   ls:'-0.31px' },
+      { name:'calloutMedium',      family:'Neue Haas Unica', size:16, weight:500, lh:'21px',   ls:'-0.31px' },
+      { name:'subheadline',        family:'Neue Haas Unica', size:15, weight:400, lh:'19.5px', ls:'0px' },
+      { name:'subheadlineMedium',  family:'Neue Haas Unica', size:15, weight:500, lh:'18px',   ls:'0px' },
+      { name:'subheadlineBold',    family:'Neue Haas Unica', size:15, weight:800, lh:'20px',   ls:'0px' },
+      { name:'footnote',           family:'Neue Haas Unica', size:13, weight:400, lh:'18px',   ls:'-0.08px' },
+      { name:'footnoteMedium',     family:'Neue Haas Unica', size:13, weight:500, lh:'18px',   ls:'-0.08px' },
+      { name:'caption',            family:'Neue Haas Unica', size:11, weight:400, lh:'14.3px', ls:'0.25px' },
+      { name:'captionMedium',      family:'Neue Haas Unica', size:11, weight:500, lh:'14.3px', ls:'0.25px' },
+      { name:'caption2',           family:'Neue Haas Unica', size:12, weight:400, lh:'14.4px', ls:'0px' },
+      { name:'caption2Medium',     family:'Neue Haas Unica', size:12, weight:500, lh:'14.4px', ls:'0px' },
+      { name:'nav',                family:'Neue Haas Unica', size:11, weight:400, lh:'14.3px', ls:'0.25px' },
     ],
   },
   shadows: [
@@ -535,6 +725,8 @@ const TOKENS = {
       css:'0px 0px 20px 25px rgba(94,98,98,0.20)' },
     { name:'shadow/small',desc:'Organism cards',
       css:'0px 4px 20px rgba(128,105,38,0.09)' },
+    { name:'shadow/story',desc:'Story cards and warm media tiles',
+      css:'0px 4px 24px rgba(89,48,7,0.08)' },
     { name:'shadow/dark', desc:'Project cards',
       css:'0px 4px 20px rgba(50,40,8,0.35)' },
     { name:'shadow/nav',  desc:'Nav bar',
@@ -563,21 +755,15 @@ const TOKENS = {
     { name:'sheet',     val:28  },
   ],
   components: [
-    { name:'Nav Bar',         icon:'🗺', variants:3  },
-    { name:'Bottom Sheet',    icon:'📋', variants:3  },
-    { name:'FAB',             icon:'🔍', variants:2  },
-    { name:'Story Card',      icon:'🌿', variants:4  },
-    { name:'Organism Cell',   icon:'🐛', variants:3  },
-    { name:'Tag / Chip',      icon:'🏷',  variants:5  },
-    { name:'Status Pill',     icon:'🏷',  variants:3  },
-    { name:'Search Bar',      icon:'🔎', variants:2  },
-    { name:'Day Divider',     icon:'📅', variants:2  },
-    { name:'View Mode Toggle',icon:'🧭', variants:3  },
-    { name:'Profile Card',    icon:'👤', variants:1  },
-    { name:'Locate Button',   icon:'📍', variants:2  },
-    { name:'Toolbar Button',  icon:'⚙️', variants:4  },
-    { name:'Location Bar',    icon:'📌', variants:1  },
-    { name:'Input Field',     icon:'✏️', variants:3  },
+    { name:'GaiaPill',            kind:'common',     type:'pill',         file:'GaiaNative/Components/Common/GaiaPill.swift',               notes:'29pt capsule, footnote typography, brown fill with light foreground.' },
+    { name:'GaiaBadge',           kind:'common',     type:'badge',        file:'GaiaNative/Components/Common/GaiaBadge.swift',              notes:'Light capsule badge with olive text for small taxonomy labels.' },
+    { name:'GaiaSectionHeader',   kind:'common',     type:'section',      file:'GaiaNative/Components/Common/GaiaSectionHeader.swift',      notes:'Eyebrow plus serif heading pairing used across feature sections.' },
+    { name:'ToolbarGlassButton',  kind:'navigation', type:'glassCircle',  file:'GaiaNative/Components/Navigation/ToolbarGlassButton.swift', notes:'48pt circular glass button wrapping search, back, and close artwork.' },
+    { name:'ToolbarGlassPill',    kind:'navigation', type:'glassPill',    file:'GaiaNative/Components/Navigation/ToolbarGlassPill.swift',   notes:'Shared floating pill for add/share actions with two 36pt tap targets.' },
+    { name:'ActivityTopBar',      kind:'feature',    type:'activityTop',  file:'GaiaNative/Components/Cards/ActivityCard.swift',            notes:'Serif title plus horizontal filter chips with sheet shadow and divider.' },
+    { name:'ProfileHeaderCard',   kind:'card',       type:'profile',      file:'GaiaNative/Components/Cards/ProfileHeaderCard.swift',      notes:'72pt avatar with olive title and muted find count summary.' },
+    { name:'BottomNavBar',        kind:'navigation', type:'bottomNav',    file:'GaiaNative/Components/Navigation/BottomNavBar.swift',      notes:'5-tab glass nav with dragable selection pill and nav typography.' },
+    { name:'DraggableTabSwitch',  kind:'navigation', type:'tabSwitch',    file:'GaiaNative/Components/Navigation/DraggableTabSwitch.swift',notes:'Underline tab switch for 2-tab and 3-tab surfaces with drag selection.' },
   ],
 };
 
@@ -654,7 +840,7 @@ function renderTypeRows(data, containerId) {
       font-weight:${s.weight};
       line-height:${s.lh};
       letter-spacing:${s.ls};
-      font-family:"${s.family}", serif;
+      font-family:"${s.family}", ${s.family === 'New Spirit' ? 'Georgia, serif' : '"Helvetica Neue", sans-serif'};
     `;
 
     const meta = document.createElement('div');
@@ -727,22 +913,46 @@ TOKENS.radii.forEach(({ name, val }) => {
 });
 
 // ─── Render components ────────────────────────────────────────
+function componentPreview(type) {
+  switch (type) {
+    case 'pill':
+      return `<div class="mini-stack"><div class="mini-pill">Verified</div></div>`;
+    case 'badge':
+      return `<div class="mini-stack"><div class="mini-badge">Bird</div></div>`;
+    case 'section':
+      return `<div class="mini-stack"><div class="mini-eyebrow">Community</div><div class="mini-section-title">Recent finds</div></div>`;
+    case 'glassCircle':
+      return `<div class="mini-stack"><div class="mini-glass-circle"><div class="mini-glass-line"></div></div></div>`;
+    case 'glassPill':
+      return `<div class="mini-stack"><div class="mini-glass-pill"><div class="dot"></div><div class="dot"></div></div></div>`;
+    case 'activityTop':
+      return `<div class="mini-filter-bar"><div class="mini-filter-title">Activity</div><div class="mini-chip-row"><div class="mini-chip active">All</div><div class="mini-chip">Projects</div><div class="mini-chip">People</div></div></div>`;
+    case 'profile':
+      return `<div class="mini-profile"><div class="mini-avatar"></div><div class="mini-stack"><div class="mini-profile-title">Alice</div><div class="mini-profile-meta">127 finds</div></div></div>`;
+    case 'bottomNav':
+      return `<div class="mini-bottom-nav"><div class="mini-nav-item"><div class="mini-nav-icon"></div><span>Explore</span></div><div class="mini-nav-item"><div class="mini-nav-icon"></div><span>Log</span></div><div class="mini-nav-item"><div class="mini-nav-icon"></div><span>Observe</span></div><div class="mini-nav-item"><div class="mini-nav-icon"></div><span>Activity</span></div><div class="mini-nav-item"><div class="mini-nav-icon"></div><span>Profile</span></div></div>`;
+    case 'tabSwitch':
+      return `<div class="mini-tab-switch"><div class="mini-tab-row"><div class="mini-tab active">Impact</div><div class="mini-tab">Community</div></div></div>`;
+    default:
+      return `<div class="mini-stack"><div class="mini-badge">Preview</div></div>`;
+  }
+}
+
 const compGrid = document.getElementById('comp-grid');
-TOKENS.components.forEach(({ name, icon, variants }) => {
+TOKENS.components.forEach(({ name, kind, type, file, notes }) => {
   const card = document.createElement('div');
   card.className = 'comp-card';
 
   const thumb = document.createElement('div');
   thumb.className = 'comp-thumb';
-  const ic = document.createElement('div');
-  ic.className = 'comp-thumb-icon';
-  ic.textContent = icon;
-  thumb.appendChild(ic);
+  thumb.innerHTML = componentPreview(type);
 
+  const kicker = document.createElement('div'); kicker.className='comp-kicker'; kicker.textContent=kind;
   const nm  = document.createElement('div'); nm.className='comp-name'; nm.textContent=name;
-  const vv  = document.createElement('div'); vv.className='comp-variants'; vv.textContent=`${variants} variant${variants!==1?'s':''}`;
+  const ff  = document.createElement('div'); ff.className='comp-file'; ff.textContent=file;
+  const note = document.createElement('div'); note.className='comp-notes'; note.textContent=notes;
 
-  card.appendChild(thumb); card.appendChild(nm); card.appendChild(vv);
+  card.appendChild(thumb); card.appendChild(kicker); card.appendChild(nm); card.appendChild(ff); card.appendChild(note);
   compGrid.appendChild(card);
 });
 

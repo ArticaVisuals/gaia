@@ -367,13 +367,13 @@ struct ProfileCommunityTab: View {
                 if let action {
                     Button(action: action) {
                         Text(actionTitle)
-                            .gaiaFont(.caption2)
+                            .gaiaFont(.caption2Medium)
                             .foregroundStyle(GaiaColor.inkBlack300)
                     }
                     .buttonStyle(.plain)
                 } else {
                     Text(actionTitle)
-                        .gaiaFont(.caption2)
+                        .gaiaFont(.caption2Medium)
                         .foregroundStyle(GaiaColor.inkBlack300)
                 }
             }
@@ -420,13 +420,12 @@ private struct ProfileCommunityPersonRow: View {
     }
 
     private var avatar: some View {
-        GaiaAssetImage(name: person.avatarImageName, contentMode: .fill)
-            .frame(width: 44, height: 44)
-            .clipShape(Circle())
-            .overlay(
-                Circle()
-                    .stroke(GaiaColor.oliveGreen100, lineWidth: 0.688)
-            )
+        GaiaProfileAvatar(
+            imageName: person.avatarImageName,
+            size: 44,
+            borderWidth: 0.688,
+            strokeColor: GaiaColor.oliveGreen100
+        )
             .accessibilityHidden(true)
     }
 
@@ -451,32 +450,15 @@ private struct ProfileCommunityPersonRow: View {
     private var followPill: some View {
         switch person.followState {
         case .following:
-            Text("Following")
-                .gaiaFont(.pill)
-                .foregroundStyle(GaiaColor.oliveGreen500)
-                .padding(.horizontal, GaiaSpacing.pillHorizontal)
-                .padding(.vertical, GaiaSpacing.xs)
-                .frame(height: 28)
-                .overlay(
-                    Capsule(style: .continuous)
-                        .stroke(GaiaColor.oliveGreen500, lineWidth: 1)
-                )
+            GaiaPill(title: "Following", style: .bordered)
         case .follow:
-            Text("Follow")
-                .gaiaFont(.pill)
-                .foregroundStyle(GaiaColor.paperWhite50)
-                .padding(.horizontal, GaiaSpacing.pillHorizontal)
-                .padding(.vertical, GaiaSpacing.xs)
-                .frame(height: 28)
-                .background(GaiaColor.oliveGreen500, in: Capsule())
+            GaiaPill(title: "Follow")
         case .mutual:
-            Text("Mutual")
-                .gaiaFont(.pill)
-                .foregroundStyle(GaiaColor.paperWhite50)
-                .padding(.horizontal, GaiaSpacing.pillHorizontal)
-                .padding(.vertical, GaiaSpacing.xs)
-                .frame(height: 28)
-                .background(GaiaColor.broccoliBrown500, in: Capsule())
+            GaiaPill(
+                title: "Mutual",
+                fill: GaiaColor.broccoliBrown500,
+                foreground: GaiaColor.paperWhite50
+            )
         }
     }
 }
@@ -607,21 +589,10 @@ private struct ProfilePeopleScreen: View {
                         HapticsService.selectionChanged()
                         selectedFilter = filter
                     } label: {
-                        Text(filter.title)
-                            .gaiaFont(.pill)
-                            .foregroundStyle(selectedFilter == filter ? GaiaColor.paperWhite50 : GaiaColor.inkBlack300)
-                            .padding(.horizontal, GaiaSpacing.pillHorizontal)
-                            .padding(.vertical, GaiaSpacing.xs)
-                            .frame(height: 28)
-                            .background {
-                                if selectedFilter == filter {
-                                    Capsule(style: .continuous)
-                                        .fill(GaiaColor.oliveGreen500)
-                                } else {
-                                    Capsule(style: .continuous)
-                                        .fill(GaiaColor.oliveGreen500.opacity(0.20))
-                                }
-                            }
+                        GaiaPill(
+                            title: filter.title,
+                            style: selectedFilter == filter ? .prominent : .soft
+                        )
                     }
                     .buttonStyle(.plain)
                 }
@@ -903,13 +874,12 @@ private struct MayaProfileDetailScreen: View {
                 VStack(spacing: GaiaSpacing.md) {
                     // Profile image container (Figma: 150px wide)
                     VStack(spacing: GaiaSpacing.sm) {
-                        GaiaAssetImage(name: "profile-avatar-maya", contentMode: .fill)
-                            .frame(width: 72, height: 72)
-                            .clipShape(Circle())
-                            .overlay(
-                                Circle()
-                                    .stroke(GaiaColor.oliveGreen100, lineWidth: 1.125)
-                            )
+                        GaiaProfileAvatar(
+                            imageName: "profile-avatar-maya",
+                            size: 72,
+                            borderWidth: 1.125,
+                            strokeColor: GaiaColor.oliveGreen100
+                        )
 
                         VStack(spacing: GaiaSpacing.xs) {
                             Text("Maya Chen")
@@ -1217,17 +1187,11 @@ private struct MayaProfileDetailScreen: View {
 
     private func mayaRecentFindCard(_ item: MayaRecentFind, sideLength: CGFloat) -> some View {
         ZStack(alignment: .bottomLeading) {
-            GaiaAssetImage(name: item.imageName, contentMode: .fill)
-                .frame(width: sideLength, height: sideLength)
-
-            LinearGradient(
-                stops: [
-                    .init(color: Color.black.opacity(0), location: 0),
-                    .init(color: Color.black.opacity(0.56), location: 1)
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
+            GaiaFindCardArtwork {
+                GaiaAssetImage(name: item.imageName, contentMode: .fill)
+                    .frame(width: sideLength, height: sideLength)
+                    .clipped()
+            }
 
             Text(item.title)
                 .gaiaFont(.bodySerif)

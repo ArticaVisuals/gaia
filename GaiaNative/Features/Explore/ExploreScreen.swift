@@ -21,7 +21,7 @@ struct ExploreScreen: View {
                 observations: contentStore.observations,
                 recenterRequestID: recenterRequestID,
                 onSelectObservation: { observation in
-                    appState.openFindDetails(speciesID: observation.speciesID, tab: .learn)
+                    appState.openFindDetails(speciesID: observation.speciesID, tab: .find)
                 }
             )
             .ignoresSafeArea()
@@ -31,7 +31,7 @@ struct ExploreScreen: View {
                     nearbyFindCount: max(12, contentStore.observations.count),
                     topInset: searchBarTopInset,
                     onSelectFind: { species in
-                        appState.openFindDetails(speciesID: species.id, tab: .learn)
+                        appState.openFindDetails(speciesID: species.id, tab: .find)
                     },
                     onSelectProject: { project in
                         appState.openProjectDetail(project)

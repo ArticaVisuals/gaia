@@ -13,7 +13,7 @@ struct SwipeableStoryDeck: View {
     private let throwDistance: CGFloat = 75
     private let throwMagnitude: CGFloat = 1000
     private let throwDuration: Double = 0.36
-    private let baseCardSize = CGSize(width: 333, height: 397)
+    private let baseCardSize = CGSize(width: 333, height: 435)
 
     private var pages: [StoryDeckPage] {
         story.pages.isEmpty ? PreviewStories.keystone.pages : story.pages
@@ -44,30 +44,38 @@ struct SwipeableStoryDeck: View {
         max(-20, min(20, activeDrag.width * 0.06))
     }
 
+    private var pageControlSpacing: CGFloat {
+        (GaiaSpacing.md + GaiaSpacing.xs) * deckScale
+    }
+
+    private var pageDotSize: CGFloat {
+        GaiaSpacing.sm * deckScale
+    }
+
     var body: some View {
-        VStack(spacing: 18 * deckScale) {
+        VStack(spacing: pageControlSpacing) {
             deckArea
                 .frame(width: layout.stackWidth, height: layout.stackHeight)
 
             if activeIndex < pages.count {
-                HStack(spacing: 6) {
+                HStack(spacing: GaiaSpacing.sm * deckScale) {
                     ForEach(pages.indices, id: \.self) { index in
-                        Capsule(style: .continuous)
-                            .fill(index == activeIndex ? GaiaColor.oliveGreen500 : GaiaColor.broccoliBrown200)
-                            .frame(width: index == activeIndex ? 20 : 6, height: 6)
+                        Circle()
+                            .fill(index == activeIndex ? GaiaColor.oliveGreen500 : GaiaColor.oliveGreen200)
+                            .frame(width: pageDotSize, height: pageDotSize)
                     }
                 }
                 .animation(.spring(response: 0.36, dampingFraction: 0.85), value: activeIndex)
             } else {
-                VStack(spacing: 14) {
+                VStack(spacing: GaiaSpacing.buttonHorizontalLarge) {
                     Text("You've read\nevery card.")
-                        .font(.custom("NewSpirit-Medium", size: 30))
+                        .font(GaiaTypography.title1Medium)
                         .foregroundStyle(GaiaColor.oliveGreen500)
                         .multilineTextAlignment(.center)
 
                     Text("The Coast Live Oak thanks you.")
-                        .font(.custom("Neue Haas Unica W1G", size: 14))
-                        .tracking(0.4)
+                        .font(GaiaTypography.footnote)
+                        .tracking(GaiaTextStyle.caption.tracking)
                         .foregroundStyle(GaiaColor.blackishGrey500)
                         .multilineTextAlignment(.center)
 
@@ -76,14 +84,14 @@ struct SwipeableStoryDeck: View {
                             activeIndex = 0
                         }
                     }
-                    .font(.custom("Neue Haas Unica W1G", size: 14))
+                    .font(GaiaTypography.footnoteMedium)
                     .foregroundStyle(GaiaColor.paperWhite50)
-                    .padding(.horizontal, 32)
+                    .padding(.horizontal, GaiaSpacing.xl)
                     .frame(height: 44)
                     .background(GaiaColor.oliveGreen500)
                     .clipShape(.capsule)
                 }
-                .padding(.top, 32)
+                .padding(.top, GaiaSpacing.xl)
             }
         }
         .onAppear(perform: reset)
@@ -125,7 +133,7 @@ struct SwipeableStoryDeck: View {
             .blur(radius: blurAmount)
             .overlay {
                 if position != .front {
-                    RoundedRectangle(cornerRadius: 16 * deckScale, style: .continuous)
+                    RoundedRectangle(cornerRadius: GaiaRadius.lg * deckScale, style: .continuous)
                         .fill(GaiaColor.broccoliBrown200.opacity(tintOpacity))
                 }
             }
@@ -198,37 +206,44 @@ private struct StoryLearningCard: View {
     let page: StoryDeckPage
     let scale: CGFloat
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 18 * scale) {
-            Text(page.title)
-                .font(.custom("NewSpirit-Medium", size: 32 * scale))
-                .foregroundStyle(GaiaColor.broccoliBrown500)
-                .lineSpacing(-3 * scale)
-                .multilineTextAlignment(.leading)
+    private var bodyLineSpacing: CGFloat {
+        14 * 0.19 * scale
+    }
 
-            VStack(alignment: .leading, spacing: 12 * scale) {
+    var body: some View {
+        VStack(alignment: .leading, spacing: GaiaSpacing.xxl * scale) {
+            Text(page.title)
+                .font(GaiaTypography.displayMedium)
+                .tracking(GaiaTextStyle.displayMedium.tracking * scale)
+                .foregroundStyle(GaiaColor.broccoliBrown500)
+                .lineSpacing(-0.64 * scale)
+                .lineLimit(2, reservesSpace: true)
+                .multilineTextAlignment(.leading)
+                .fixedSize(horizontal: false, vertical: true)
+
+            VStack(alignment: .leading, spacing: GaiaSpacing.cardInset * scale) {
                 GaiaAssetImage(name: page.imageAssetName, contentMode: .fill)
                     .frame(height: 183 * scale)
                     .frame(maxWidth: .infinity)
-                    .clipShape(RoundedRectangle(cornerRadius: 8 * scale, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md * scale, style: .continuous))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 8 * scale, style: .continuous)
+                        RoundedRectangle(cornerRadius: GaiaRadius.md * scale, style: .continuous)
                             .stroke(GaiaColor.broccoliBrown200, lineWidth: max(0.5, scale))
                     )
 
                 Text(page.body)
-                    .font(.custom("NewSpirit-Regular", size: 14 * scale))
+                    .font(GaiaTypography.bodySerif)
                     .foregroundStyle(GaiaColor.blackishGrey500)
-                    .lineSpacing(2 * scale)
+                    .lineSpacing(bodyLineSpacing)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
-        .padding(16 * scale)
+        .padding(GaiaSpacing.md * scale)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(GaiaColor.paperWhite500)
-        .clipShape(RoundedRectangle(cornerRadius: 16 * scale, style: .continuous))
+        .background(GaiaColor.paperWhite50)
+        .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.lg * scale, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 16 * scale, style: .continuous)
+            RoundedRectangle(cornerRadius: GaiaRadius.lg * scale, style: .continuous)
                 .stroke(GaiaColor.broccoliBrown200, lineWidth: max(0.75, scale))
         )
         .shadow(color: GaiaShadow.lgColor, radius: 40 * scale, x: 0, y: 8 * scale)
@@ -245,22 +260,22 @@ private struct StoryDeckLayout {
     let scale: CGFloat
 
     var stackWidth: CGFloat { 364 * scale }
-    var stackHeight: CGFloat { 438 * scale }
+    var stackHeight: CGFloat { 476 * scale }
 
     func transform(for position: StoryDeckPosition, progress: CGFloat) -> StoryDeckTransform {
         switch position {
         case .front:
-            return transformedPosition(x: 0, y: 18, scale: 1)
+            return transformedPosition(x: 0, y: 41, scale: 1)
         case .mid:
             return interpolatedTransform(
-                from: transformedPosition(x: 14.72, y: -3.84, scale: 303.559 / 333),
-                to: transformedPosition(x: 0, y: 18, scale: 1),
+                from: transformedPosition(x: 14.72, y: 19.16, scale: 303.559 / 333),
+                to: transformedPosition(x: 0, y: 41, scale: 1),
                 progress: progress
             )
         case .back:
             return interpolatedTransform(
-                from: transformedPosition(x: 31.05, y: -23, scale: 270.902 / 333),
-                to: transformedPosition(x: 14.72, y: -3.84, scale: 303.559 / 333),
+                from: transformedPosition(x: 31.05, y: 0, scale: 270.902 / 333),
+                to: transformedPosition(x: 14.72, y: 19.16, scale: 303.559 / 333),
                 progress: progress
             )
         }
@@ -271,9 +286,9 @@ private struct StoryDeckLayout {
         case .front:
             return 0
         case .mid:
-            return 0.8 * scale
+            return 1 * scale
         case .back:
-            return 2.2 * scale
+            return 2.5 * scale
         }
     }
 

@@ -3,8 +3,37 @@ import SwiftUI
 struct AppRootView: View {
     @EnvironmentObject private var appState: AppState
     @EnvironmentObject private var contentStore: ContentStore
+    @AppStorage("gaia.hasCompletedOnboarding") private var hasCompletedOnboarding = false
+    @State private var dismissedForcedOnboarding = false
 
     var body: some View {
+        Group {
+            if shouldShowOnboarding {
+                OnboardingFlowScreen {
+                    hasCompletedOnboarding = true
+                    dismissedForcedOnboarding = true
+                    appState.select(section: .explore)
+                }
+            } else {
+                mainAppShell
+            }
+        }
+        .preferredColorScheme(.light)
+    }
+
+    private var shouldShowOnboarding: Bool {
+        guard !launchArguments.contains("-gaiaSkipOnboarding") else {
+            return false
+        }
+
+        if launchArguments.contains("-gaiaShowOnboarding") {
+            return !dismissedForcedOnboarding
+        }
+
+        return !hasCompletedOnboarding
+    }
+
+    private var mainAppShell: some View {
         TabView(
             selection: Binding(
                 get: { appState.selectedSection },
@@ -22,7 +51,11 @@ struct AppRootView: View {
             }
         }
         .tint(GaiaColor.olive)
-        .preferredColorScheme(.light)
+        .fullScreenCover(isPresented: $appState.showsFindDetailsPrototype) {
+            FindDetailsPrototypeScreen(species: selectedSpecies)
+                .environmentObject(appState)
+                .environmentObject(contentStore)
+        }
         .fullScreenCover(isPresented: $appState.showsFindDetails) {
             FindDetailsScreen(species: selectedSpecies)
                 .environmentObject(appState)
@@ -46,6 +79,10 @@ struct AppRootView: View {
         }
 
         return species
+    }
+
+    private var launchArguments: Set<String> {
+        Set(ProcessInfo.processInfo.arguments)
     }
 }
 

@@ -93,7 +93,7 @@ struct FindDetailsScreen: View {
     private var tabContent: some View {
         switch viewModel.selectedTab {
         case .find:
-            FindTabView(
+            FindDetailsLegacyTabView(
                 species: species,
                 observations: speciesObservations,
                 onExpandMap: { viewModel.showsExpandedMap = true },
@@ -104,11 +104,15 @@ struct FindDetailsScreen: View {
         case .activity:
             ActivityTabView(species: species)
         case .learn:
-            LearnTabView(species: species, stories: contentStore.stories, onExpandMap: {
-                viewModel.showsExpandedMap = true
-            }, onOpenStory: { story in
-                appState.openStoryDeck(story.id)
-            })
+            LearnTabView(
+                species: species,
+                observations: speciesObservations,
+                stories: contentStore.stories,
+                onExpandMap: { viewModel.showsExpandedMap = true },
+                onOpenStory: { story in
+                    appState.openStoryDeck(story.id)
+                }
+            )
         }
     }
 

@@ -63,6 +63,18 @@ struct ActivityScreen: View {
     }
 }
 
+struct ActivityHairline: View {
+    var color: Color = GaiaColor.border
+    @Environment(\.displayScale) private var displayScale
+
+    var body: some View {
+        Rectangle()
+            .fill(color)
+            .frame(height: 1 / max(displayScale, 1))
+            .accessibilityHidden(true)
+    }
+}
+
 private enum ActivityFilter: String, CaseIterable, Identifiable {
     case all = "All"
     case needsAttention = "Needs Attention"
@@ -118,10 +130,7 @@ private struct ActivityDaySection: View {
 
 private struct ActivitySectionDivider: View {
     var body: some View {
-        Rectangle()
-            .fill(GaiaColor.border)
-            .frame(height: 0.5)
-            .accessibilityHidden(true)
+        ActivityHairline()
     }
 }
 

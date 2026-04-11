@@ -5,12 +5,18 @@ import UIKit
 
 enum GaiaTextStyle {
     // Serif (New Spirit)
+    case heroMedium
+    case heroFindExpanded
+    case heroFindCollapsed
     case display, displayMedium
     case title1, title1Medium
     case title2, title2Medium
     case title3, title3Medium          // serif 20px
     case subheadSerif, subheadSerifMedium
     case bodySerif, bodySerifMedium
+    case statValue
+    case scientificLabel
+    case weatherValue
 
     // Sans (Neue Haas Unica)
     case titleSans, titleSansMedium    // sans 20px
@@ -29,10 +35,23 @@ enum GaiaTextStyle {
     /// Computed as `(lineHeightMultiplier × fontSize) − fontSize` for ratio-based,
     /// or `fixedLineHeight − fontSize` for pixel-based values.
     var lineSpacing: CGFloat { spec.lineSpacing }
+    var fixedLineHeight: CGFloat? {
+        switch self {
+        case .heroFindExpanded, .heroFindCollapsed:
+            return 40
+        case .scientificLabel:
+            return 15.6
+        default:
+            return nil
+        }
+    }
 
     private var spec: (font: Font, tracking: CGFloat, lineSpacing: CGFloat) {
         switch self {
         // ── Serif ──────────────────────────────────────
+        case .heroMedium:       return (GaiaTypography.heroMedium,       -0.9184, 58.775 * 0.1) // LH 1.1
+        case .heroFindExpanded: return (GaiaTypography.heroFindExpanded, -0.5, 0)
+        case .heroFindCollapsed:return (GaiaTypography.heroFindCollapsed, -0.2, 0)
         case .display:          return (GaiaTypography.display,          -0.5,  32 * 0.1)   // LH 1.1
         case .displayMedium:    return (GaiaTypography.displayMedium,    -0.5,  0)           // LH 1.0
         case .title1:           return (GaiaTypography.title1,           -0.3,  28 * 0.1)   // LH 1.1
@@ -43,8 +62,11 @@ enum GaiaTextStyle {
         case .title3Medium:     return (GaiaTypography.title,             0,    20 * 0.3)   // LH 1.3
         case .subheadSerif:     return (GaiaTypography.subheadSerif,      0,    16 * 0.3)   // LH 1.3
         case .subheadSerifMedium: return (GaiaTypography.subheadSerifMedium, 0, 16 * 0.3)   // LH 1.3
-        case .bodySerif:        return (GaiaTypography.bodySerif,         0,    14 * 0.2)   // LH 1.2
+        case .bodySerif:        return (GaiaTypography.bodySerif,         0,    0)          // LH 1.0
         case .bodySerifMedium:  return (GaiaTypography.bodySerifMedium,   0,    14 * 0.3)   // LH 1.3
+        case .statValue:        return (GaiaTypography.statValue,        -0.272, 30.471 * 0.2) // LH 1.2
+        case .scientificLabel:  return (GaiaTypography.scientificLabel,   0.1, 12 * 0.3)
+        case .weatherValue:     return (GaiaTypography.weatherValue,     -1.0865, 0)
 
         // ── Sans ───────────────────────────────────────
         case .titleSans:        return (GaiaTypography.titleSans,        -0.45, 5)          // LH 25px
@@ -90,6 +112,9 @@ extension View {
 // MARK: - Raw Font tokens (kept for custom / decorative uses)
 
 enum GaiaTypography {
+    static let heroMedium = serif(size: 58.775, weight: .medium, fallbackStyle: .largeTitle)
+    static let heroFindExpanded = serif(size: 40, weight: .medium, fallbackStyle: .largeTitle)
+    static let heroFindCollapsed = serif(size: 24, weight: .medium, fallbackStyle: .title2)
     static let display = serif(size: 32, weight: .regular, fallbackStyle: .largeTitle)
     static let displayMedium = serif(size: 32, weight: .medium, fallbackStyle: .largeTitle)
     static let title1 = serif(size: 28, weight: .regular, fallbackStyle: .title)
@@ -102,6 +127,18 @@ enum GaiaTypography {
     static let subheadSerifMedium = serif(size: 16, weight: .medium, fallbackStyle: .body)
     static let bodySerif = serif(size: 14, weight: .regular, fallbackStyle: .body)
     static let bodySerifMedium = serif(size: 14, weight: .medium, fallbackStyle: .body)
+    static let statValue = serif(size: 30.471, weight: .medium, fallbackStyle: .title)
+    static let scientificLabel = customFont(
+        candidates: [
+            "BasierCircleMono-Regular",
+            "Basier Circle Mono",
+            "BasierCircleMono",
+            "Basier Circle Mono Regular"
+        ],
+        size: 12,
+        fallback: .system(size: 12, weight: .regular, design: .monospaced)
+    )
+    static let weatherValue = serif(size: 69.537, weight: .regular, fallbackStyle: .largeTitle)
 
     static let titleSans = sans(size: 20, weight: .regular, fallbackStyle: .title3)
     static let titleSansMedium = sans(size: 20, weight: .medium, fallbackStyle: .title3)

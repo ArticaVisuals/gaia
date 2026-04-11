@@ -12,12 +12,14 @@ struct ProjectDetailScreen: View {
 
     var body: some View {
         GeometryReader { proxy in
+            let safeAreaWidth = max(0, proxy.size.width - proxy.safeAreaInsets.leading - proxy.safeAreaInsets.trailing)
+            let contentWidth = min(safeAreaWidth, UIScreen.main.bounds.width)
             let topInset = proxy.safeAreaInsets.top > 0 ? proxy.safeAreaInsets.top : windowSafeTopInset
             // Keep the hero under the glass toolbar while avoiding an overly tight top crop.
             let heroLift = max(topInset - GaiaSpacing.lg, 0)
 
             ZStack(alignment: .top) {
-                GaiaColor.surfacePrimary.ignoresSafeArea()
+                GaiaColor.surfaceSheet.ignoresSafeArea()
 
                 ScrollView(showsIndicators: false) {
                     VStack(alignment: .leading, spacing: GaiaSpacing.xl) {
@@ -32,9 +34,10 @@ struct ProjectDetailScreen: View {
                             ProjectUpdatesSection(updates: content.updates)
                         }
                         .padding(.horizontal, GaiaSpacing.md)
-                        .padding(.bottom, GaiaSpacing.xxxl)
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.bottom, GaiaSpacing.xxxl)
+                    .frame(width: contentWidth, alignment: .leading)
+                    .padding(.leading, proxy.safeAreaInsets.leading)
                 }
 
                 VStack {
@@ -50,7 +53,9 @@ struct ProjectDetailScreen: View {
 
                     Spacer()
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                .frame(width: contentWidth, alignment: .top)
+                .frame(maxHeight: .infinity, alignment: .top)
+                .padding(.leading, proxy.safeAreaInsets.leading)
             }
         }
         .ignoresSafeArea(edges: .top)
@@ -147,7 +152,7 @@ private struct ProjectDetailContent {
         title: "Pollinator Corridor",
         location: "Arroyo Seco",
         heroImageName: "project-detail-hero-pollinator",
-        founderImageName: "project-detail-profile-stack",
+        founderImageName: "find-avatar-alice",
         founderLabel: "Founder",
         observersLabel: "Observers",
         observersCount: "24",
@@ -166,7 +171,7 @@ private struct ProjectDetailContent {
         title: "Creek Recovery",
         location: "Arroyo Seco",
         heroImageName: "find-project-creek",
-        founderImageName: "project-detail-profile-stack",
+        founderImageName: "find-avatar-alice",
         founderLabel: "Founder",
         observersLabel: "Observers",
         observersCount: "24",
@@ -230,8 +235,8 @@ private struct ProjectHeroSection: View {
                         .lineLimit(1)
                 }
             }
-            .padding(.leading, 15)
-            .padding(.bottom, 10)
+            .padding(.leading, GaiaSpacing.detailInset)
+            .padding(.bottom, GaiaSpacing.pillHorizontal)
         }
         .clipShape(
             UnevenRoundedRectangle(
@@ -245,10 +250,10 @@ private struct ProjectHeroSection: View {
             )
         )
         .shadow(
-            color: Color(red: 115 / 255, green: 115 / 255, blue: 100 / 255).opacity(0.5),
-            radius: 16.2,
+            color: GaiaShadow.projectHeroColor,
+            radius: GaiaShadow.projectHeroRadius,
             x: 0,
-            y: 4
+            y: GaiaShadow.projectHeroYOffset
         )
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("\(content.title), \(content.location)")
@@ -276,6 +281,28 @@ private enum ProjectActionButtonStyle {
     case outlined
 }
 
+private enum ProjectDetailLayout {
+    static let cardHorizontalInset = GaiaSpacing.lg - GaiaSpacing.xs
+    static let statsValueWidth: CGFloat = 58
+    static let descriptionTextWidth: CGFloat = 305
+    static let updateTitleWidth: CGFloat = 210
+    static let updateTextWidth: CGFloat = 217
+    static let statsDividerHorizontalInset: CGFloat = 7.5
+    static let statsIconSize: CGFloat = 32
+    static let statsIconSlotSize: CGFloat = 40
+    static let statsValueSpacing: CGFloat = 2
+    static let statsDividerHeight: CGFloat = 46
+}
+
+private struct ProjectResponsiveButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .brightness(configuration.isPressed ? -0.01 : 0)
+            .scaleEffect(configuration.isPressed ? 0.985 : 1)
+            .animation(.interactiveSpring(response: 0.22, dampingFraction: 0.82), value: configuration.isPressed)
+    }
+}
+
 private struct ProjectActionButton: View {
     let title: String
     let style: ProjectActionButtonStyle
@@ -284,15 +311,15 @@ private struct ProjectActionButton: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .gaiaFont(.body)
+                .gaiaFont(.bodyMedium)
                 .foregroundStyle(style == .filled ? GaiaColor.paperWhite50 : GaiaColor.olive)
                 .frame(maxWidth: .infinity)
                 .frame(height: 50)
+                .background(backgroundView)
+                .clipShape(Capsule(style: .continuous))
+                .contentShape(Capsule(style: .continuous))
         }
-        .buttonStyle(.plain)
-        .background(backgroundView)
-        .clipShape(Capsule(style: .continuous))
-        .contentShape(Capsule(style: .continuous))
+        .buttonStyle(ProjectResponsiveButtonStyle())
     }
 
     @ViewBuilder
@@ -318,22 +345,28 @@ private struct ProjectStatsCard: View {
     var body: some View {
         HStack(spacing: 0) {
             founderColumn
+                .frame(maxWidth: .infinity)
+
             divider
+
             metricColumn(
                 label: content.observersLabel,
                 icon: .profile(selected: false),
-                value: content.observersCount,
-                iconTextOverlap: 11
+                value: content.observersCount
             )
+            .frame(maxWidth: .infinity)
+
             divider
+
             metricColumn(
                 label: content.findsLabel,
                 icon: .observe(selected: false),
-                value: content.findsCount,
-                iconTextOverlap: 6
+                value: content.findsCount
             )
+            .frame(maxWidth: .infinity)
         }
-        .padding(.horizontal, GaiaSpacing.lg - 4)
+        .padding(.horizontal, ProjectDetailLayout.cardHorizontalInset)
+        .padding(.vertical, GaiaSpacing.lg)
         .frame(height: 118)
         .background(
             RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
@@ -349,7 +382,7 @@ private struct ProjectStatsCard: View {
     private var founderColumn: some View {
         VStack(spacing: GaiaSpacing.md) {
             Text(content.founderLabel)
-                .gaiaFont(.caption2)
+                .gaiaFont(.caption2Medium)
                 .foregroundStyle(GaiaColor.olive)
 
             ProjectMediaImage(source: content.founderImageName, contentMode: .fill)
@@ -366,33 +399,35 @@ private struct ProjectStatsCard: View {
     private var divider: some View {
         Rectangle()
             .fill(GaiaColor.border)
-            .frame(width: 1, height: 69)
+            .frame(width: 1, height: ProjectDetailLayout.statsDividerHeight)
+            .padding(.horizontal, ProjectDetailLayout.statsDividerHorizontalInset)
     }
 
     private func metricColumn(
         label: String,
         icon: GaiaIconKind,
-        value: String,
-        iconTextOverlap: CGFloat
+        value: String
     ) -> some View {
         VStack(spacing: GaiaSpacing.md) {
             Text(label)
-                .gaiaFont(.caption2)
+                .gaiaFont(.caption2Medium)
                 .foregroundStyle(GaiaColor.olive)
 
-            HStack(spacing: -iconTextOverlap) {
-                GaiaIcon(kind: icon, size: 40, tint: GaiaColor.olive)
-                    .frame(width: 40, height: 40)
+            HStack(spacing: ProjectDetailLayout.statsValueSpacing) {
+                GaiaIcon(kind: icon, size: ProjectDetailLayout.statsIconSize, tint: GaiaColor.olive)
+                    .frame(width: ProjectDetailLayout.statsIconSlotSize, height: ProjectDetailLayout.statsIconSlotSize)
 
                 Text(value)
-                    .font(.custom("NewSpirit-Medium", size: 30.471))
+                    .gaiaFont(.statValue)
                     .foregroundStyle(GaiaColor.olive)
-                    .tracking(-0.272)
-                    .frame(width: 58, height: 59, alignment: .leading)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+                    .fixedSize(horizontal: true, vertical: false)
+                    .frame(minWidth: ProjectDetailLayout.statsValueWidth, alignment: .leading)
+                    .frame(height: 59, alignment: .leading)
             }
             .frame(height: 49)
         }
-        .frame(maxWidth: .infinity)
     }
 }
 
@@ -404,25 +439,25 @@ private struct ProjectDescriptionCard: View {
             Text(content.description)
                 .gaiaFont(.subheadline)
                 .foregroundStyle(GaiaColor.textInverseSecondary)
-                .frame(maxWidth: 305, alignment: .leading)
+                .frame(maxWidth: ProjectDetailLayout.descriptionTextWidth, alignment: .leading)
                 .fixedSize(horizontal: false, vertical: true)
 
             Button(action: {}) {
                 Text(content.readMoreLabel)
                     .gaiaFont(.subheadline)
                     .foregroundStyle(GaiaColor.olive)
-                    .padding(.horizontal, 14)
+                    .padding(.horizontal, GaiaSpacing.buttonHorizontalLarge)
                     .frame(height: 34)
                     .background(
                         Capsule(style: .continuous)
                             .fill(GaiaColor.paperWhite50)
                     )
             }
-            .buttonStyle(.plain)
+            .buttonStyle(ProjectResponsiveButtonStyle())
         }
-        .padding(.horizontal, GaiaSpacing.lg - 4)
+        .padding(.horizontal, ProjectDetailLayout.cardHorizontalInset)
         .padding(.vertical, GaiaSpacing.lg)
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity, minHeight: 128, alignment: .topLeading)
         .background(
             RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
                 .fill(GaiaColor.olive)
@@ -451,7 +486,7 @@ private struct ProjectSectionHeader: View {
                     .gaiaFont(.subheadline)
                     .foregroundStyle(GaiaColor.olive)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(ProjectResponsiveButtonStyle())
         }
     }
 }
@@ -485,25 +520,19 @@ private struct ProjectRecentFindCard: View {
     var body: some View {
         GeometryReader { proxy in
             ZStack(alignment: .bottomLeading) {
-                ProjectMediaImage(source: item.imageName, contentMode: .fill)
-                    .frame(width: proxy.size.width, height: proxy.size.height)
-                    .clipped()
-                    .blur(radius: 2.3)
-
-                LinearGradient(
-                    colors: [Color.clear, Color.black.opacity(0.56)],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .frame(width: proxy.size.width, height: proxy.size.height)
+                GaiaFindCardArtwork {
+                    ProjectMediaImage(source: item.imageName, contentMode: .fill)
+                        .frame(width: proxy.size.width, height: proxy.size.height)
+                        .clipped()
+                }
 
                 Text(item.title)
-                    .gaiaFont(.bodySerif)
+                    .gaiaFont(.callout)
                     .foregroundStyle(GaiaColor.paperWhite50)
                     .lineLimit(2)
                     .frame(width: max(proxy.size.width - 16, 0), alignment: .leading)
                     .padding(.leading, GaiaSpacing.sm)
-                    .padding(.bottom, 8)
+                    .padding(.bottom, GaiaSpacing.sm)
             }
         }
         .aspectRatio(1, contentMode: .fit)
@@ -511,7 +540,7 @@ private struct ProjectRecentFindCard: View {
         .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
-                .stroke(GaiaColor.border, lineWidth: 1)
+                .stroke(GaiaColor.blackishGrey200, lineWidth: 0.5)
         )
         .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
     }
@@ -546,8 +575,9 @@ private struct ProjectObserversSection: View {
                                 .stroke(GaiaColor.paperWhite50, lineWidth: 2)
                         )
                 }
+                .padding(.trailing, GaiaSpacing.md)
 
-                VStack(alignment: .leading, spacing: 1) {
+                VStack(alignment: .leading, spacing: 10) {
                     Text(content.observersHeadline)
                         .gaiaFont(.subheadSerif)
                         .foregroundStyle(GaiaColor.olive)
@@ -594,17 +624,19 @@ private struct ProjectUpdateCard: View {
                 .frame(width: 104, height: 84)
                 .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.sm, style: .continuous))
 
-            VStack(alignment: .leading, spacing: GaiaSpacing.md) {
+            VStack(alignment: .leading, spacing: 12) {
                 VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
                     Text(update.title)
                         .gaiaFont(.subheadSerif)
                         .foregroundStyle(GaiaColor.textPrimary)
                         .lineLimit(1)
+                        .frame(maxWidth: ProjectDetailLayout.updateTitleWidth, alignment: .leading)
 
                     Text(update.subtitle)
                         .gaiaFont(.caption2)
                         .foregroundStyle(GaiaColor.inkBlack300)
                         .lineLimit(2)
+                        .frame(maxWidth: ProjectDetailLayout.updateTextWidth, alignment: .leading)
                 }
 
                 Text(update.timeLabel)
@@ -612,6 +644,7 @@ private struct ProjectUpdateCard: View {
                     .foregroundStyle(GaiaColor.olive)
                     .lineLimit(1)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
             Spacer(minLength: 0)
         }

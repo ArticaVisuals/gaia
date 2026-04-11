@@ -1,5 +1,12 @@
 import SwiftUI
 
+private enum GalleryRailLayout {
+    static let height: CGFloat = 112
+    static let itemSpacing: CGFloat = GaiaSpacing.sm
+    static let horizontalInset: CGFloat = GaiaSpacing.md
+    static let defaultItemWidth: CGFloat = 112
+}
+
 struct GalleryRail: View {
     let imageNames: [String]
 
@@ -7,13 +14,20 @@ struct GalleryRail: View {
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
+            LazyHStack(spacing: GalleryRailLayout.itemSpacing) {
                 ForEach(Array(imageNames.enumerated()), id: \.offset) { index, imageName in
-                    galleryImage(name: imageName, width: itemWidths[safe: index] ?? 112)
+                    galleryImage(
+                        name: imageName,
+                        width: itemWidths[safe: index] ?? GalleryRailLayout.defaultItemWidth
+                    )
                 }
             }
-            .padding(.horizontal, GaiaSpacing.md)
+            .scrollTargetLayout()
         }
+        .frame(height: GalleryRailLayout.height)
+        .contentMargins(.horizontal, GalleryRailLayout.horizontalInset, for: .scrollContent)
+        .defaultScrollAnchor(.leading)
+        .scrollTargetBehavior(.viewAligned)
     }
 
     @ViewBuilder
@@ -22,7 +36,7 @@ struct GalleryRail: View {
 
         GaiaAssetImage(name: name)
             .aspectRatio(contentMode: .fill)
-            .frame(width: width, height: 112)
+            .frame(width: width, height: GalleryRailLayout.height)
             .clipShape(shape)
             .overlay(
                 shape

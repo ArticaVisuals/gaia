@@ -13,29 +13,41 @@ struct ProfileScreen: View {
             let safeAreaWidth = max(0, proxy.size.width - proxy.safeAreaInsets.leading - proxy.safeAreaInsets.trailing)
             let contentWidth = min(safeAreaWidth, UIScreen.main.bounds.width)
 
-            ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading, spacing: GaiaSpacing.md) {
-                    profileTopActions
-                        .padding(.horizontal, GaiaSpacing.md)
-                        .padding(.top, GaiaSpacing.xs)
+            ZStack(alignment: .topLeading) {
+                ScrollView(showsIndicators: false) {
+                    VStack(alignment: .leading, spacing: GaiaSpacing.md) {
+                        profileTopActionsChrome
+                            .opacity(0)
+                            .allowsHitTesting(false)
+                            .accessibilityHidden(true)
 
-                    ProfileHeaderCard(profile: contentStore.profile)
+                        ProfileHeaderCard(profile: contentStore.profile)
 
-                    DraggableTabSwitch(
-                        tabs: ProfileTab.allCases,
-                        selection: $viewModel.selectedTab,
-                        tabWidth: 125,
-                        title: { $0.rawValue }
-                    )
+                        DraggableTabSwitch(
+                            tabs: ProfileTab.allCases,
+                            selection: $viewModel.selectedTab,
+                            tabWidth: 125,
+                            title: { $0.rawValue }
+                        )
 
-                    tabContent(for: viewModel.selectedTab)
-                        .padding(.bottom, 120)
+                        tabContent(for: viewModel.selectedTab)
+                            .padding(.bottom, 120)
+                    }
+                    .frame(width: contentWidth, alignment: .leading)
+                    .padding(.leading, proxy.safeAreaInsets.leading)
                 }
-                .frame(width: contentWidth, alignment: .leading)
+
+                VStack(spacing: 0) {
+                    profileTopActionsChrome
+
+                    Spacer(minLength: 0)
+                }
+                .frame(width: contentWidth, alignment: .topLeading)
+                .frame(maxHeight: .infinity, alignment: .topLeading)
                 .padding(.leading, proxy.safeAreaInsets.leading)
             }
         }
-        .background(GaiaColor.surfacePrimary)
+        .background(GaiaColor.paperWhite50)
         .onAppear {
             let initialTab = forcedTab ?? appState.selectedProfileTab
             viewModel.selectedTab = initialTab
@@ -67,6 +79,12 @@ struct ProfileScreen: View {
             }
             .accessibilityLabel("More")
         }
+    }
+
+    private var profileTopActionsChrome: some View {
+        profileTopActions
+            .padding(.horizontal, GaiaSpacing.md)
+            .padding(.top, GaiaSpacing.xs)
     }
 
     @ViewBuilder

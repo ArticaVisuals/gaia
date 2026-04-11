@@ -10,7 +10,7 @@ private enum ObserveDetailsLayout {
     static let addCardWidth: CGFloat = 60
     static let notesHeight: CGFloat = 125
     static let mapHeight: CGFloat = 214
-    static let mapCardHeight: CGFloat = 441
+    static let conditionCardWidth: CGFloat = 181
     static let actionButtonHeight: CGFloat = 50
 }
 
@@ -26,7 +26,7 @@ struct ObserveDetailsScreen: View {
         speciesID: "observe-draft",
         latitude: 34.14,
         longitude: -118.14,
-        thumbnailAssetName: "observe-photo-highlight"
+        thumbnailAssetName: "observe-photo-square"
     )
 
     var body: some View {
@@ -58,7 +58,6 @@ struct ObserveDetailsScreen: View {
                             observation: draftObservation,
                             onExpandMap: { showsExpandedMap = true }
                         )
-                            .frame(height: ObserveDetailsLayout.mapCardHeight)
 
                         VStack(alignment: .leading, spacing: GaiaSpacing.md) {
                             ObserveDetailsSectionTitle(title: "Details")
@@ -134,7 +133,7 @@ private struct ObserveDetailsToolbar: View {
     let onSave: () -> Void
 
     var body: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: GaiaSpacing.pillHorizontal) {
             ToolbarGlassButton(icon: .back, accessibilityLabel: "Back", action: onBack)
 
             Text("Details")
@@ -167,7 +166,7 @@ private struct ObserveBottomActionBar: View {
         VStack(spacing: 0) {
             Button(action: action) {
                 Text("Save Find")
-                    .gaiaFont(.body)
+                    .gaiaFont(.bodyBold)
                     .foregroundStyle(GaiaColor.paperWhite50)
                     .frame(maxWidth: .infinity)
                     .frame(height: 50)
@@ -189,41 +188,46 @@ private struct ObserveBottomActionBar: View {
 
 private struct ObserveDetailsPhotoStrip: View {
     var body: some View {
-        HStack(spacing: GaiaSpacing.sm) {
-            ObserveCapturedPhotoCard(
-                imageName: "observe-photo-highlight",
-                width: ObserveDetailsLayout.highlightCardWidth,
-                isHighlight: true
-            )
+        ScrollView(.horizontal, showsIndicators: false) {
+            LazyHStack(spacing: GaiaSpacing.sm) {
+                ObserveCapturedPhotoCard(
+                    imageName: "observe-photo-highlight",
+                    width: ObserveDetailsLayout.highlightCardWidth,
+                    isHighlight: true
+                )
 
-            ObserveCapturedPhotoCard(
-                imageName: "observe-photo-square",
-                width: ObserveDetailsLayout.squareCardWidth
-            )
+                ObserveCapturedPhotoCard(
+                    imageName: "observe-photo-square",
+                    width: ObserveDetailsLayout.squareCardWidth
+                )
 
-            ObserveCapturedPhotoCard(
-                imageName: "observe-photo-portrait",
-                width: ObserveDetailsLayout.portraitCardWidth
-            )
+                ObserveCapturedPhotoCard(
+                    imageName: "observe-photo-portrait",
+                    width: ObserveDetailsLayout.portraitCardWidth
+                )
 
-            Button(action: {}) {
-                ZStack {
-                    RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
-                        .fill(Color.clear)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
-                                .stroke(GaiaColor.inkBlack300, lineWidth: 1)
-                        )
+                Button(action: {}) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                            .fill(Color.clear)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                                    .stroke(GaiaColor.inkBlack300, lineWidth: 1)
+                            )
 
-                    GaiaIcon(kind: .plus, size: 24, tint: GaiaColor.inkBlack300)
+                        GaiaIcon(kind: .plus, size: 24, tint: GaiaColor.inkBlack300)
+                    }
+                    .frame(width: ObserveDetailsLayout.addCardWidth, height: ObserveDetailsLayout.photoCardHeight)
                 }
-                .frame(width: ObserveDetailsLayout.addCardWidth, height: ObserveDetailsLayout.photoCardHeight)
+                .buttonStyle(.plain)
+                .accessibilityLabel("Add photo")
             }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Add photo")
+            .scrollTargetLayout()
         }
+        .frame(height: ObserveDetailsLayout.photoCardHeight)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .clipped()
+        .defaultScrollAnchor(.leading)
+        .scrollTargetBehavior(.viewAligned)
     }
 }
 
@@ -246,9 +250,7 @@ private struct ObserveCapturedPhotoCard: View {
                 ZStack {
                     Circle()
                         .fill(Color.black.opacity(0.1))
-                    Image(systemName: "xmark")
-                        .font(.system(size: 10, weight: .medium))
-                        .foregroundStyle(Color.white.opacity(0.95))
+                    GaiaIcon(kind: .close, size: 12, tint: Color.white.opacity(0.95))
                 }
                 .frame(width: 24, height: 24)
             }
@@ -260,10 +262,17 @@ private struct ObserveCapturedPhotoCard: View {
                 Text("Highlight")
                     .gaiaFont(.caption)
                     .foregroundStyle(GaiaColor.paperWhite50)
-                    .padding(.horizontal, 10)
+                    .padding(.horizontal, GaiaSpacing.pillHorizontal)
                     .padding(.vertical, 3)
-                    .background(Color.black.opacity(0.5), in: Capsule())
-                    .padding(10)
+                    .background(
+                        Capsule(style: .continuous)
+                            .fill(Color.black.opacity(0.5))
+                            .overlay(
+                                Capsule(style: .continuous)
+                                    .stroke(GaiaColor.blackishGrey200.opacity(0.8), lineWidth: 0.5)
+                            )
+                    )
+                    .padding(GaiaSpacing.pillHorizontal)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
                     .allowsHitTesting(false)
             }
@@ -285,45 +294,44 @@ private struct ObserveDetailsSectionTitle: View {
 private struct ObserveIdentificationCard: View {
     var body: some View {
         Button(action: {}) {
-            HStack(spacing: GaiaSpacing.md - 4) {
+            HStack(spacing: GaiaSpacing.cardInset) {
                 GaiaAssetImage(name: "observe-suggestion-top")
                     .frame(width: 82, height: 82)
                     .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
                     .overlay(
                         RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
-                            .stroke(GaiaColor.broccoliBrown200, lineWidth: 1)
+                            .stroke(GaiaColor.oliveGreen500, lineWidth: 1)
                     )
 
-                VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
+                VStack(alignment: .leading, spacing: GaiaSpacing.cardInset) {
                     Text("Coast Live Oak")
-                        .gaiaFont(.title3Medium)
-                        .foregroundStyle(GaiaColor.paperWhite400)
+                        .gaiaFont(.title2Medium)
+                        .foregroundStyle(GaiaColor.oliveGreen500)
                         .lineLimit(1)
-                        .minimumScaleFactor(0.9)
+                        .minimumScaleFactor(0.85)
 
                     Text("Quercus agrifolia (94%)")
                         .gaiaFont(.footnote)
-                        .foregroundStyle(GaiaColor.oliveGreen200)
+                        .foregroundStyle(GaiaColor.blackishGrey500)
                         .lineLimit(1)
                         .minimumScaleFactor(0.85)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 25, weight: .light))
-                    .foregroundStyle(GaiaColor.paperWhite50.opacity(0.85))
+                ObserveChevronIcon(size: 32)
             }
-            .padding(GaiaSpacing.md - 4)
+            .padding(GaiaSpacing.cardInset)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
-                    .fill(GaiaColor.oliveGreen400)
+                    .fill(Color.white)
                     .overlay(
                         RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
                             .stroke(GaiaColor.broccoliBrown200, lineWidth: 1)
                     )
             )
-            .shadow(color: GaiaShadow.lgColor, radius: GaiaShadow.lgRadius, x: 0, y: GaiaShadow.lgYOffset)
+            .shadow(color: GaiaColor.grassGreen500.opacity(0.23), radius: 13, x: 0, y: 6)
+            .shadow(color: GaiaColor.grassGreen500.opacity(0.12), radius: 24, x: 0, y: 24)
         }
         .buttonStyle(.plain)
     }
@@ -345,7 +353,7 @@ private struct ObserveNotesField: View {
             TextEditor(text: $text)
                 .gaiaFont(.subheadline)
                 .foregroundStyle(GaiaColor.textPrimary)
-                .padding(.horizontal, 8)
+                .padding(.horizontal, GaiaSpacing.sm)
                 .padding(.vertical, 6)
                 .scrollContentBackground(.hidden)
                 .background(Color.clear)
@@ -378,32 +386,25 @@ private struct ObserveMapDataCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             ZStack {
-                ExploreMapView(
-                    observations: [observation],
-                    recenterRequestID: nil,
-                    onSelectObservation: nil,
-                    showsMarkers: false,
-                    initialZoomOverride: 13.0
-                )
-                .allowsHitTesting(false)
+                GaiaAssetImage(name: "observe-map-preview", contentMode: .fill)
 
                 MapAnnotationPhotoPin(imageName: observation.thumbnailAssetName)
                     .frame(width: 63, height: 63)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                     .allowsHitTesting(false)
             }
-            .overlay(alignment: .topTrailing) {
-                ExpandMapButton(action: onExpandMap)
-                    .padding(12)
-            }
-            .frame(height: ObserveDetailsLayout.mapHeight)
-            .frame(maxWidth: .infinity)
-            .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
-                    .stroke(GaiaColor.broccoliBrown200, lineWidth: 1)
-            )
-            .padding(.top, GaiaSpacing.md - 4)
+                .overlay(alignment: .topTrailing) {
+                    ExpandMapButton(action: onExpandMap)
+                        .padding(GaiaSpacing.cardInset)
+                }
+                .frame(height: ObserveDetailsLayout.mapHeight)
+                .frame(maxWidth: .infinity)
+                .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                        .stroke(GaiaColor.broccoliBrown200, lineWidth: 1)
+                )
+                .padding(.top, GaiaSpacing.md - 4)
 
             VStack(spacing: 0) {
                 ObserveMapLocationRow()
@@ -412,8 +413,8 @@ private struct ObserveMapDataCard: View {
                 ObserveMapRowDivider()
                 ObserveGeoPrivacyRow()
             }
-            .padding(.horizontal, 2)
-            .padding(.top, 2)
+            .padding(.horizontal, GaiaSpacing.xxs)
+            .padding(.top, GaiaSpacing.xxs)
         }
         .padding(.horizontal, GaiaSpacing.md - 4)
         .padding(.bottom, GaiaSpacing.md - 4)
@@ -482,10 +483,7 @@ private struct ObserveGeoPrivacyRow: View {
     var body: some View {
         HStack(spacing: GaiaSpacing.md - 4) {
             HStack(spacing: GaiaSpacing.xs) {
-                Image(systemName: "globe")
-                    .font(.system(size: 14, weight: .regular))
-                    .foregroundStyle(GaiaColor.blackishGrey700)
-                    .frame(width: 24, height: 24)
+                ObserveGlobeIcon()
                 Text("Geoprivacy")
                     .gaiaFont(.subheadline)
                     .foregroundStyle(GaiaColor.blackishGrey700)
@@ -524,21 +522,7 @@ private struct ObserveMapRowDivider: View {
 
 private struct ObserveRowChevron: View {
     var body: some View {
-        Group {
-            if let chevron = AssetCatalog.image(named: "Icons/System/chevron-20.png") {
-                chevron
-                    .resizable()
-                    .renderingMode(.template)
-                    .foregroundStyle(GaiaColor.blackishGrey300)
-            } else {
-                Image(systemName: "chevron.right")
-                    .resizable()
-                    .scaledToFit()
-                    .foregroundStyle(GaiaColor.blackishGrey300)
-            }
-        }
-        .frame(width: 20, height: 20)
-        .accessibilityHidden(true)
+        ObserveChevronIcon(size: 20)
     }
 }
 
@@ -586,12 +570,14 @@ private struct ObserveMetadataRow: View {
 
     var body: some View {
         HStack(spacing: GaiaSpacing.md - 4) {
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(Color(hex: 0xF3F0E6))
+            RoundedRectangle(cornerRadius: GaiaRadius.thumbnail, style: .continuous)
+                .fill(GaiaColor.broccoliBrown50)
                 .frame(width: 24, height: 24)
                 .overlay(
                     Image(systemName: icon)
-                        .font(.system(size: 12, weight: .medium))
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 12, height: 12)
                         .foregroundStyle(GaiaColor.broccoliBrown500)
                 )
 
@@ -654,9 +640,8 @@ private struct ObserveConditionCard: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(GaiaSpacing.md - 4)
-        .padding(.bottom, showsActionIcon ? GaiaSpacing.md : GaiaSpacing.md - 4)
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(GaiaSpacing.cardInset)
+        .frame(width: ObserveDetailsLayout.conditionCardWidth, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
                 .fill(Color.white)
@@ -672,6 +657,61 @@ private struct ObserveConditionCard: View {
                     .accessibilityHidden(true)
             }
         }
+    }
+}
+
+private struct ObserveChevronIcon: View {
+    let size: CGFloat
+
+    var body: some View {
+        Group {
+            if let chevron = AssetCatalog.image(named: "Icons/System/chevron-20.png") {
+                chevron
+                    .resizable()
+                    .renderingMode(.template)
+                    .scaledToFit()
+                    .foregroundStyle(GaiaColor.blackishGrey300)
+            } else {
+                Image(systemName: "chevron.right")
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundStyle(GaiaColor.blackishGrey300)
+            }
+        }
+        .frame(width: vectorSize.width, height: vectorSize.height)
+        .rotationEffect(.degrees(90))
+        .frame(width: size, height: size)
+        .accessibilityHidden(true)
+    }
+
+    private var vectorSize: CGSize {
+        switch size {
+        case 32:
+            return CGSize(width: 21.5, height: 11.086)
+        default:
+            return CGSize(width: 13.437, height: 6.929)
+        }
+    }
+}
+
+private struct ObserveGlobeIcon: View {
+    var body: some View {
+        Group {
+            if let globe = AssetCatalog.image(named: "Icons/System/globe-24.png") {
+                globe
+                    .resizable()
+                    .renderingMode(.template)
+                    .scaledToFit()
+                    .foregroundStyle(GaiaColor.blackishGrey700)
+            } else {
+                Image(systemName: "globe")
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundStyle(GaiaColor.blackishGrey700)
+            }
+        }
+        .frame(width: 24, height: 24)
+        .accessibilityHidden(true)
     }
 }
 

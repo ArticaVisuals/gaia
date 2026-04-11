@@ -1,361 +1,575 @@
 import SwiftUI
 
+private enum FindTabLayout {
+    static let sectionSpacing: CGFloat = 32
+    static let cardSpacing: CGFloat = 8
+    static let mapHeight: CGFloat = 181
+    static let mapCardInset: CGFloat = 12
+    static let photoHeight: CGFloat = 138
+    static let photoCornerRadius: CGFloat = 10
+    static let conditionHeight: CGFloat = 206
+    static let projectCardHeight: CGFloat = 81
+}
+
 struct FindTabView: View {
-    let species: Species
-    let observations: [Observation]
+    let collapseProgress: CGFloat
+    let usesCollapsedContentLayout: Bool
+    let photoAssetNames: [String]
+    let mapObservation: Observation
     let onExpandMap: () -> Void
     let onOpenProject: (ProjectSelection) -> Void
 
-    private enum FindReference {
-        static let latitude = 35.1797
-        static let longitude = -120.7361
-    }
-
-    private var mapObservation: Observation {
-        Observation(
-            id: "\(species.id)-find-preview",
-            speciesID: species.id,
-            latitude: FindReference.latitude,
-            longitude: FindReference.longitude,
-            thumbnailAssetName: species.galleryAssetNames.first ?? observations.first?.thumbnailAssetName
-        )
-    }
-
     var body: some View {
-        VStack(alignment: .leading, spacing: 32) {
-            FindMapPreviewCard(observation: mapObservation, onExpandMap: onExpandMap)
-
-            VStack(alignment: .leading, spacing: 8) {
-                sectionTitle("Condition")
-
-                HStack(alignment: .top, spacing: GaiaSpacing.sm) {
-                    FindConditionCard(
-                        label: "Biome",
-                        title: "Riparian Edge",
-                        subtitle: "Perfumo Canyon"
-                    ) {
-                        GaiaAssetImage(name: "find-biome-riparian", contentMode: .fill)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    }
-                    .frame(maxWidth: .infinity)
-
-                    FindConditionCard(
-                        label: "Weather",
-                        title: "Partly Cloudy",
-                        subtitle: "July 10, 2025, 10:19 AM"
-                    ) {
-                        FindWeatherImage()
-                    }
-                    .frame(maxWidth: .infinity)
-                }
-                .frame(maxWidth: .infinity)
-            }
-
-            VStack(alignment: .leading, spacing: 8) {
-                sectionTitle("Data Quality")
-                FindDataQualityCard()
-            }
-
-            VStack(alignment: .leading, spacing: GaiaSpacing.cardInset) {
-                HStack(alignment: .center) {
-                    Text("Projects")
-                        .gaiaFont(.title2)
-                        .foregroundStyle(GaiaColor.inkBlack300)
-
-                    Spacer()
-
-                    Text("See all")
-                        .gaiaFont(.caption2)
-                        .foregroundStyle(GaiaColor.inkBlack300)
+        VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: FindTabLayout.sectionSpacing) {
+                section(title: "Found in") {
+                    FindMapPreviewCard(
+                        observation: mapObservation,
+                        collapseProgress: collapseProgress,
+                        onExpandMap: onExpandMap
+                    )
                 }
 
-                HStack(alignment: .top, spacing: GaiaSpacing.sm) {
-                    GaiaProjectCard(
-                        tag: "Wetland",
-                        title: "Creek Recovery",
-                        countLabel: "12",
-                        imageName: "find-project-creek",
-                        crop: .init(scaleX: 1.1289, scaleY: 1.0264, left: 0.105, top: 0.019)
-                    ) {
-                        onOpenProject(
-                            ProjectSelection(
-                                id: "project-creek",
-                                title: "Creek Recovery",
-                                tag: "Wetland",
-                                countLabel: "12",
-                                imageName: "find-project-creek"
+                section(title: "Photos") {
+                    FindPhotoRail(imageNames: photoAssetNames)
+                }
+
+                section(title: "Condition") {
+                    FindConditionRow()
+                }
+
+                section(title: "Data Quality") {
+                    VStack(alignment: .leading, spacing: 12) {
+                        FindDataQualityCard()
+                        FindSectionFooterLink(title: "Learn more")
+                    }
+                }
+
+                section(title: "Participating Projects") {
+                    VStack(alignment: .leading, spacing: 12) {
+                        FindProjectListCard(
+                            eyebrow: nil,
+                            title: "Creek Recovery",
+                            subtitle: "Ends tomorrow",
+                            imageName: "coast-live-oak-gallery-2",
+                            showsAccessory: usesCollapsedContentLayout
+                        ) {
+                            onOpenProject(
+                                ProjectSelection(
+                                    id: "project-creek",
+                                    title: "Creek Recovery",
+                                    tag: "Wetland",
+                                    countLabel: "12",
+                                    imageName: "find-project-creek"
+                                )
                             )
-                        )
-                    }
-                    .frame(maxWidth: .infinity)
+                        }
 
-                    GaiaProjectCard(
-                        tag: "Garden",
-                        title: "Pollinator Corridor",
-                        countLabel: "9",
-                        imageName: "find-project-pollinator",
-                        crop: .init(scaleX: 1.2061, scaleY: 1.0966, left: 0.2044, top: 0.0228)
-                    ) {
-                        onOpenProject(
-                            ProjectSelection(
-                                id: "project-pollinator",
-                                title: "Pollinator Corridor",
-                                tag: "Garden",
-                                countLabel: "9",
-                                imageName: "find-project-pollinator"
+                        FindProjectListCard(
+                            eyebrow: usesCollapsedContentLayout ? nil : "Garden",
+                            title: "Pollinator Corridor",
+                            subtitle: usesCollapsedContentLayout ? "Ends in 10 days" : nil,
+                            imageName: usesCollapsedContentLayout ? "find-project-pollinator" : "coast-live-oak-gallery-2",
+                            showsAccessory: usesCollapsedContentLayout
+                        ) {
+                            onOpenProject(
+                                ProjectSelection(
+                                    id: "project-pollinator",
+                                    title: "Pollinator Corridor",
+                                    tag: "Garden",
+                                    countLabel: "9",
+                                    imageName: "find-project-pollinator"
+                                )
                             )
-                        )
+                        }
+
+                        if !usesCollapsedContentLayout {
+                            FindSectionFooterLink(title: "Show all")
+                        }
                     }
-                    .frame(maxWidth: .infinity)
                 }
-                .frame(maxWidth: .infinity)
             }
         }
         .padding(.horizontal, GaiaSpacing.md)
         .frame(maxWidth: .infinity, alignment: .leading)
+        .background(GaiaColor.paperWhite50)
     }
 
-    private func sectionTitle(_ title: String) -> some View {
-        Text(title)
-            .gaiaFont(.title3)
-            .foregroundStyle(GaiaColor.inkBlack300)
+    private func section<Content: View>(
+        title: String,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        VStack(alignment: .leading, spacing: GaiaSpacing.cardInset) {
+            Text(title)
+                .gaiaFont(.titleSans)
+                .foregroundStyle(GaiaColor.inkBlack300)
+
+            content()
+        }
     }
+}
+
+private struct FindConditionRow: View {
+    var body: some View {
+        GeometryReader { proxy in
+            let availableWidth = max(0, proxy.size.width)
+            let cardWidth = max(0, (availableWidth - FindTabLayout.cardSpacing) / 2)
+
+            HStack(alignment: .top, spacing: FindTabLayout.cardSpacing) {
+                FindConditionCard(
+                    label: "Biome",
+                    title: "Riparian Edge",
+                    subtitle: nil
+                ) {
+                    FindBiomeImage()
+                }
+                .frame(width: cardWidth)
+
+                FindConditionCard(
+                    label: "Weather",
+                    title: "Partly Cloudy",
+                    subtitle: nil
+                ) {
+                    FindWeatherImage()
+                }
+                .frame(width: cardWidth)
+            }
+            .frame(width: availableWidth, alignment: .leading)
+        }
+        .frame(height: FindTabLayout.conditionHeight)
+    }
+}
+
+private struct FindSectionFooterLink: View {
+    let title: String
+
+    var body: some View {
+        HStack {
+            Spacer()
+            Text(title)
+                .gaiaFont(.subheadline)
+                .foregroundStyle(GaiaColor.olive)
+        }
+    }
+}
+
+private struct FindPhotoRail: View {
+    let imageNames: [String]
+
+    private let widths: [CGFloat] = [223, 138, 104]
+
+    private var displayedImages: [String] {
+        guard !imageNames.isEmpty else {
+            return Array(repeating: "coast-live-oak-gallery-1", count: widths.count)
+        }
+
+        return widths.indices.map { imageNames[$0 % imageNames.count] }
+    }
+
+    var body: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: FindTabLayout.cardSpacing) {
+                ForEach(Array(displayedImages.enumerated()), id: \.offset) { index, imageName in
+                    GaiaAssetImage(name: imageName)
+                        .frame(width: widths[index], height: FindTabLayout.photoHeight)
+                        .clipShape(
+                            RoundedRectangle(
+                                cornerRadius: FindTabLayout.photoCornerRadius,
+                                style: .continuous
+                            )
+                        )
+                        .overlay(
+                            RoundedRectangle(
+                                cornerRadius: FindTabLayout.photoCornerRadius,
+                                style: .continuous
+                            )
+                                .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
+                        )
+                }
+            }
+            .scrollTargetLayout()
+        }
+        .frame(height: FindTabLayout.photoHeight)
+        .defaultScrollAnchor(.leading)
+        .scrollClipDisabled()
+    }
+}
+
+private enum FindMapPreviewArtworkLayout {
+    static let widthScale: CGFloat = 2.4458
+    static let heightScale: CGFloat = 5.4741
+    static let leftOffset: CGFloat = 1.4471
+    static let topOffset: CGFloat = 2.7361
 }
 
 private struct FindMapPreviewCard: View {
     let observation: Observation
+    let collapseProgress: CGFloat
     let onExpandMap: () -> Void
 
+    private var outerCornerRadius: CGFloat {
+        GaiaRadius.lg - ((GaiaRadius.lg - GaiaRadius.md) * min(max(collapseProgress, 0), 1))
+    }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            FindMapProfileRow()
+        VStack(alignment: .leading, spacing: 12) {
+            FindMapLocationRow()
 
             ZStack {
-                ExploreMapView(
-                    observations: [observation],
-                    recenterRequestID: nil,
-                    onSelectObservation: nil,
-                    showsMarkers: false,
-                    initialZoomOverride: 13.0
-                )
-                .allowsHitTesting(false)
-
-                FindMapInteractionShield()
+                FindMapPreviewArtwork()
 
                 MapAnnotationPhotoPin(imageName: observation.thumbnailAssetName)
                     .frame(width: 63, height: 63)
             }
             .overlay(alignment: .topTrailing) {
                 ExpandMapButton(action: onExpandMap)
-                    .padding(12)
+                    .padding(GaiaSpacing.cardInset)
             }
-            .frame(height: 214)
+            .frame(height: FindTabLayout.mapHeight)
             .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
                     .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
             )
 
-            FindLocationDetails()
+            FindMapProfileRow()
         }
-        .padding(12)
+        .padding(FindTabLayout.mapCardInset)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+            RoundedRectangle(cornerRadius: outerCornerRadius, style: .continuous)
                 .fill(GaiaColor.paperWhite50)
                 .overlay(
-                    RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                    RoundedRectangle(cornerRadius: outerCornerRadius, style: .continuous)
                         .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
                 )
+                .shadow(color: GaiaShadow.cardColor, radius: GaiaShadow.cardRadius, x: 0, y: GaiaShadow.mdYOffset)
         )
-        .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
     }
 }
 
-private struct FindMapInteractionShield: View {
+private struct FindMapLocationRow: View {
     var body: some View {
-        Rectangle()
-            .fill(Color.clear)
-            .contentShape(Rectangle())
-            .gesture(
-                DragGesture(minimumDistance: 0)
-                    .onChanged { _ in }
-            )
-            .onTapGesture { }
+        HStack(spacing: GaiaSpacing.iconGapTight) {
+            GaiaAssetImage(name: "Icons/System/pin-20.png", contentMode: .fit)
+                .frame(width: 13, height: 18)
+                .opacity(0.55)
+
+            Text("Avila Beach, California")
+                .gaiaFont(.body)
+                .foregroundStyle(GaiaColor.olive)
+                .lineLimit(1)
+        }
     }
 }
 
 private struct FindMapProfileRow: View {
     var body: some View {
-        HStack(spacing: 8) {
-            GaiaAssetImage(name: "find-avatar-alice")
-                .frame(width: 48, height: 48)
-                .clipShape(Circle())
-                .overlay(Circle().stroke(Color.black.opacity(0.1), lineWidth: 0.5))
+        HStack(spacing: GaiaSpacing.sm) {
+            GaiaProfileAvatar(
+                imageName: "find-avatar-alice",
+                size: 40,
+                borderWidth: 0.417
+            )
 
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: 6) {
                 Text("Alice Edwards")
-                    .gaiaFont(.subheadSerif)
+                    .gaiaFont(.callout)
                     .foregroundStyle(GaiaColor.olive)
                     .lineLimit(1)
 
-                Text("127 finds")
+                Text("July 10, 2025, 10:19 AM")
                     .gaiaFont(.caption)
-                    .foregroundStyle(GaiaColor.broccoliBrown500)
+                    .foregroundStyle(GaiaColor.paperWhite600)
                     .lineLimit(1)
             }
         }
     }
 }
 
-private struct FindLocationDetails: View {
+private struct FindMapPreviewArtwork: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            HStack(alignment: .center, spacing: 4) {
-                GaiaAssetImage(name: "Icons/System/pin-20.png", contentMode: .fit)
-                    .frame(width: 10, height: 21)
-                    .opacity(0.48)
-
-                Text("Avila Beach, CA, United States of America")
-                    .gaiaFont(.subheadline)
-                    .foregroundStyle(GaiaColor.blackishGrey400)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.82)
-            }
-
-            Text("July 10, 2025, 10:19 AM")
-                .gaiaFont(.caption)
-                .foregroundStyle(GaiaColor.inkBlack200)
-                .lineLimit(1)
+        GeometryReader { proxy in
+            GaiaAssetImage(name: "find-map-preview-card", contentMode: .fill)
+                .frame(
+                    width: proxy.size.width * FindMapPreviewArtworkLayout.widthScale,
+                    height: proxy.size.height * FindMapPreviewArtworkLayout.heightScale
+                )
+                .offset(
+                    x: -(proxy.size.width * FindMapPreviewArtworkLayout.leftOffset),
+                    y: -(proxy.size.height * FindMapPreviewArtworkLayout.topOffset)
+                )
         }
+        .clipped()
+        .allowsHitTesting(false)
     }
+}
+
+private enum FindConditionCardLayout {
+    static let imageHeight: CGFloat = 126
+    static let cardInset: CGFloat = 12
+    static let contentSpacing: CGFloat = 8
 }
 
 private struct FindConditionCard<ImageContent: View>: View {
     let label: String
     let title: String
-    let subtitle: String
+    let subtitle: String?
     @ViewBuilder let imageContent: () -> ImageContent
 
+    init(
+        label: String,
+        title: String,
+        subtitle: String?,
+        @ViewBuilder imageContent: @escaping () -> ImageContent
+    ) {
+        self.label = label
+        self.title = title
+        self.subtitle = subtitle
+        self.imageContent = imageContent
+    }
+
+    private var imageShape: RoundedRectangle {
+        RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+    }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            imageContent()
-                .frame(maxWidth: .infinity)
-                .frame(height: 126)
-                .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
-                .overlay(
-                    RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
-                        .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
-                )
-                .clipped()
+        VStack(alignment: .leading, spacing: FindConditionCardLayout.contentSpacing) {
+            ZStack {
+                imageContent()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: FindConditionCardLayout.imageHeight)
+            .compositingGroup()
+            .clipShape(imageShape)
+            .overlay(
+                imageShape
+                    .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
+            )
 
             Text(label)
                 .gaiaFont(.caption)
                 .foregroundStyle(GaiaColor.broccoliBrown500)
+                .lineLimit(1)
 
-            HStack(alignment: .top, spacing: 8) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(title)
-                        .gaiaFont(.body)
-                        .foregroundStyle(GaiaColor.textPrimary)
-                        .lineLimit(1)
+            VStack(alignment: .leading, spacing: FindConditionCardLayout.contentSpacing) {
+                Text(title)
+                    .gaiaFont(.titleSans)
+                    .foregroundStyle(GaiaColor.olive)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.9)
+                    .allowsTightening(true)
 
+                if let subtitle, !subtitle.isEmpty {
                     Text(subtitle)
                         .gaiaFont(.caption)
-                        .foregroundStyle(GaiaColor.inkBlack200)
-                        .lineLimit(1)
+                        .foregroundStyle(GaiaColor.paperWhite600)
+                        .lineLimit(2)
                         .minimumScaleFactor(0.9)
                 }
-
-                Spacer(minLength: 4)
-
-                GaiaIcon(kind: .circleArrowRight, size: 16)
-                    .padding(.top, 1)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(12)
-        .frame(maxWidth: .infinity, minHeight: 202, maxHeight: 202, alignment: .topLeading)
+        .padding(FindConditionCardLayout.cardInset)
+        .frame(height: FindTabLayout.conditionHeight, alignment: .topLeading)
         .background(
-            RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+            RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous)
                 .fill(GaiaColor.paperWhite50)
                 .overlay(
-                    RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                    RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous)
                         .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
                 )
+                .shadow(color: GaiaShadow.cardColor, radius: GaiaShadow.cardRadius, x: 0, y: GaiaShadow.mdYOffset)
         )
-        .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
+    }
+}
+
+private struct FindBiomeImage: View {
+    var body: some View {
+        GaiaAssetImage(name: "find-biome-riparian", contentMode: .fill)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 
 private struct FindWeatherImage: View {
+    private enum Layout {
+        static let backgroundWidthScale: CGFloat = 1.7865
+        static let backgroundHeightScale: CGFloat = 2.2261
+        static let backgroundLeftOffset: CGFloat = 0.0828
+        static let backgroundTopOffset: CGFloat = 0.4235
+    }
+
     var body: some View {
         GeometryReader { proxy in
-            ZStack(alignment: .topLeading) {
-                GaiaAssetImage(name: "find-weather-bg", contentMode: .fill)
-                    .frame(width: proxy.size.width * 1.7865, height: proxy.size.height * 2.2261)
-                    .offset(x: -(proxy.size.width * 0.0828), y: -(proxy.size.height * 0.4235))
+            ZStack {
+                weatherBackground(in: proxy.size)
 
                 Text("54º")
-                    .font(.custom("NewSpirit-Regular", size: 69.5))
-                    .foregroundStyle(GaiaColor.paperWhite500)
-                    .tracking(-1.09)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                    .gaiaFont(.weatherValue)
+                    .foregroundStyle(GaiaColor.paperWhite50)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                    .padding(.leading, GaiaSpacing.cardInset)
+                    .offset(y: -6)
+                    .accessibilityHidden(true)
             }
+        }
+        .clipped()
+    }
+
+    @ViewBuilder
+    private func weatherBackground(in size: CGSize) -> some View {
+        if let image = AssetCatalog.uiImage(named: "find-weather-bg") {
+            Image(uiImage: image)
+                .resizable()
+                .interpolation(.high)
+                .frame(
+                    width: size.width * Layout.backgroundWidthScale,
+                    height: size.height * Layout.backgroundHeightScale
+                )
+                .offset(
+                    x: -(size.width * Layout.backgroundLeftOffset),
+                    y: -(size.height * Layout.backgroundTopOffset)
+                )
+        } else {
+            GaiaAssetImage(name: "find-weather-bg", contentMode: .fill)
+                .frame(
+                    width: size.width * Layout.backgroundWidthScale,
+                    height: size.height * Layout.backgroundHeightScale
+                )
+                .offset(
+                    x: -(size.width * Layout.backgroundLeftOffset),
+                    y: -(size.height * Layout.backgroundTopOffset)
+                )
         }
     }
 }
 
 private struct FindDataQualityCard: View {
+    private let items: [FindQualityItemModel] = [
+        .init(title: "Ungraded", state: .checked),
+        .init(title: "Casual Grade", state: .checked),
+        .init(title: "Research Grade", state: .unchecked)
+    ]
+
     var body: some View {
-        HStack(spacing: 24) {
-            FindQualityItem(
-                title: "Ungraded",
-                imageName: "find-dq-checked",
-                isActive: true
-            )
-            FindQualityItem(
-                title: "Casual Grade",
-                imageName: "find-dq-checked",
-                isActive: true
-            )
-            FindQualityItem(
-                title: "Research Grade",
-                imageName: "find-dq-unchecked",
-                isActive: false
-            )
+        HStack(spacing: GaiaSpacing.lg) {
+            ForEach(items) { item in
+                FindQualityItem(item: item)
+            }
         }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 16)
+        .padding(.horizontal, GaiaSpacing.md)
+        .padding(.vertical, GaiaSpacing.cardContentInsetWide)
         .frame(maxWidth: .infinity)
         .background(
-            RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+            RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous)
                 .fill(GaiaColor.paperWhite50)
                 .overlay(
-                    RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                    RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous)
                         .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
                 )
+                .shadow(color: GaiaShadow.cardColor, radius: GaiaShadow.cardRadius, x: 0, y: GaiaShadow.mdYOffset)
         )
-        .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
+    }
+}
+
+private struct FindQualityItemModel: Identifiable {
+    let title: String
+    let state: GaiaQualityCheckmarkState
+
+    var id: String { title }
+
+    var isActive: Bool {
+        state == .checked
     }
 }
 
 private struct FindQualityItem: View {
-    let title: String
-    let imageName: String
-    let isActive: Bool
+    let item: FindQualityItemModel
 
     var body: some View {
-        VStack(spacing: 8) {
-            GaiaAssetImage(name: imageName, contentMode: .fit)
-                .frame(width: 40, height: 40)
+        VStack(spacing: GaiaSpacing.sm) {
+            GaiaQualityCheckmark(state: item.state)
 
-            Text(title)
-                .gaiaFont(.caption)
-                .foregroundStyle(isActive ? GaiaColor.olive : GaiaColor.blackishGrey200)
-                .lineLimit(1)
+            Text(item.title)
+                .gaiaFont(.caption2)
+                .foregroundStyle(item.isActive ? GaiaColor.oliveGreen400 : GaiaColor.blackishGrey200)
+                .lineLimit(2)
                 .minimumScaleFactor(0.9)
                 .multilineTextAlignment(.center)
         }
         .frame(width: 91)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(item.title)
+        .accessibilityValue(item.isActive ? "Checked" : "Unchecked")
+    }
+}
+
+private struct FindProjectListCard: View {
+    let eyebrow: String?
+    let title: String
+    let subtitle: String?
+    let imageName: String
+    let showsAccessory: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: GaiaSpacing.cardInset) {
+                GaiaAssetImage(name: imageName, contentMode: .fill)
+                    .frame(width: 89, height: 57)
+                    .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
+
+                VStack(alignment: .leading, spacing: textStackSpacing) {
+                    if let eyebrow, !eyebrow.isEmpty {
+                        Text(eyebrow)
+                            .gaiaFont(.footnote)
+                            .foregroundStyle(GaiaColor.inkBlack300)
+                            .lineLimit(1)
+                    }
+
+                    Text(title)
+                        .gaiaFont(.titleSans)
+                        .foregroundStyle(GaiaColor.olive)
+                        .lineLimit(1)
+
+                    if let subtitle, !subtitle.isEmpty {
+                        Text(subtitle)
+                            .gaiaFont(.footnote)
+                            .foregroundStyle(GaiaColor.inkBlack300)
+                            .lineLimit(1)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                if showsAccessory {
+                    GaiaIcon(kind: .circleArrowRight, size: 16, tint: GaiaColor.olive.opacity(0.35))
+                        .frame(width: 32, height: 32)
+                }
+            }
+            .padding(GaiaSpacing.cardInset)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(height: FindTabLayout.projectCardHeight, alignment: .leading)
+            .background(
+                RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous)
+                    .fill(GaiaColor.paperWhite50)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous)
+                            .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
+                    )
+                    .shadow(color: GaiaShadow.cardColor, radius: GaiaShadow.cardRadius, x: 0, y: GaiaShadow.mdYOffset)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var textStackSpacing: CGFloat {
+        if let eyebrow, !eyebrow.isEmpty {
+            return 12
+        }
+        if let subtitle, !subtitle.isEmpty {
+            return GaiaSpacing.sm
+        }
+        return 0
     }
 }

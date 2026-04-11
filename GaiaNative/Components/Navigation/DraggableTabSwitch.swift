@@ -5,6 +5,7 @@ struct DraggableTabSwitch<T: Identifiable & Hashable>: View {
     let tabs: [T]
     @Binding var selection: T
     let tabWidth: CGFloat?
+    let allowsDragSelection: Bool
     let title: (T) -> String
     @State private var dragX: CGFloat?
 
@@ -12,11 +13,13 @@ struct DraggableTabSwitch<T: Identifiable & Hashable>: View {
         tabs: [T],
         selection: Binding<T>,
         tabWidth: CGFloat? = nil,
+        allowsDragSelection: Bool = true,
         title: @escaping (T) -> String
     ) {
         self.tabs = tabs
         self._selection = selection
         self.tabWidth = tabWidth
+        self.allowsDragSelection = allowsDragSelection
         self.title = title
     }
 
@@ -66,7 +69,7 @@ struct DraggableTabSwitch<T: Identifiable & Hashable>: View {
                     leadingInset: leadingInset,
                     trackWidth: trackWidth
                 ),
-                including: .gesture
+                including: allowsDragSelection ? .gesture : .subviews
             )
         }
         .frame(height: 52)

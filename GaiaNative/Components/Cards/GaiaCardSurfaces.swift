@@ -10,6 +10,7 @@ struct GaiaSurfaceCard<Content: View>: View {
             .background(
                 RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
                     .fill(GaiaColor.surfaceCard)
+                    .shadow(color: GaiaShadow.cardColor, radius: GaiaShadow.cardRadius, x: 0, y: GaiaShadow.mdYOffset)
             )
     }
 }
@@ -29,7 +30,7 @@ struct GaiaDataCard<Content: View>: View {
                         RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                             .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
                     )
-                    .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
+                    .shadow(color: GaiaShadow.cardColor, radius: GaiaShadow.cardRadius, x: 0, y: GaiaShadow.mdYOffset)
             )
     }
 }
@@ -73,6 +74,7 @@ struct GaiaActionCard<Content: View>: View {
                     RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
                         .stroke(GaiaColor.oliveGreen100, lineWidth: 1)
                 )
+                .shadow(color: GaiaShadow.cardColor, radius: GaiaShadow.cardRadius, x: 0, y: GaiaShadow.mdYOffset)
         )
         .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous))
     }

@@ -189,7 +189,16 @@ enum PreviewProfileLog {
             .init(id: "garden-orbweaver", title: "Garden\nOrbweaver", imageSource: "https://www.figma.com/api/mcp/asset/7911b149-22d8-416f-b72d-3bcd00c42a5b"),
             .init(id: "southern-black-korhaan", title: "Southern Black\nKorhaan", imageSource: "https://www.figma.com/api/mcp/asset/5480f314-a42a-4aff-b091-ade77472cf43"),
             .init(id: "phlogistus", title: "Phlogistus", imageSource: "https://www.figma.com/api/mcp/asset/0b80c8ea-d015-4df0-ac86-82f4da3979fe"),
-            .init(id: "spiny-starwort", title: "Spiny\nStarowort", imageSource: "https://www.figma.com/api/mcp/asset/56a574ab-72a6-4985-a207-e84398659de6")
+            .init(id: "spiny-starwort", title: "Spiny\nStarowort", imageSource: "https://www.figma.com/api/mcp/asset/56a574ab-72a6-4985-a207-e84398659de6"),
+            .init(id: "annas-hummingbird-grid", title: "Anna's\nHummingbird", imageSource: "https://www.figma.com/api/mcp/asset/3de8ff3b-8537-438e-9014-164c92cd7265"),
+            .init(id: "red-fox-grid", title: "Red Fox", imageSource: "https://www.figma.com/api/mcp/asset/f99a6cfd-ae56-4e80-aac0-92c673a070b5"),
+            .init(id: "coast-live-oak-grid", title: "Coast Live\nOak", imageSource: "coast-live-oak-hero"),
+            .init(id: "western-fence-lizard-grid", title: "Western Fence\nLizard", imageSource: "observe-photo-square"),
+            .init(id: "black-phoebe-grid", title: "Black\nPhoebe", imageSource: "https://www.figma.com/api/mcp/asset/5480f314-a42a-4aff-b091-ade77472cf43"),
+            .init(id: "california-poppy-grid", title: "California\nPoppy", imageSource: "https://www.figma.com/api/mcp/asset/56a574ab-72a6-4985-a207-e84398659de6"),
+            .init(id: "red-tailed-hawk-grid", title: "Red-tailed\nHawk", imageSource: "observe-photo-portrait"),
+            .init(id: "buckwheat-grid", title: "Buckwheat", imageSource: "coast-live-oak-gallery-2"),
+            .init(id: "sage-sparrow-grid", title: "Sage\nSparrow", imageSource: "coast-live-oak-gallery-3")
         ]
     )
 }

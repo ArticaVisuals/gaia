@@ -54,6 +54,7 @@ enum GaiaColor {
     static let paperWhite700 = Color(hex: 0x858480)
     static let paperWhite800 = Color(hex: 0x757470)
     static let paperWhite900 = Color(hex: 0x5F5E5A)
+    static let neutralWhite = Color.white
 
     static let inkBlack50 = Color(hex: 0xEDECEE)
     static let inkBlack100 = Color(hex: 0xD8D6DA)
@@ -120,12 +121,22 @@ enum GaiaColor {
     static let border = broccoliBrown200
     static let borderStrong = oliveGreen100
     static let greenGlow = grassGreen500
+    static let pinFillTop = grassGreen500
+    static let pinFillBottom = Color(hex: 0x6E9152)
+    static let pinText = Color(hex: 0xE0F2DA)
+    static let pinRing = neutralWhite.opacity(0.50)
     static let overlay = Color.black.opacity(0.18)
     static let fillVibrantTertiary = Color(hex: 0xE6EDE3)
     static let projectCardOverlay = Color(hex: 0x294C13)
+    static let shadowSoft = Color(hex: 0x5E6262, opacity: 0.20)
+    static let shadowSmall = Color(hex: 0x806926, opacity: 0.09)
+    static let shadowStory = Color(hex: 0x593007, opacity: 0.08)
+    static let shadowDark = Color(hex: 0x322808, opacity: 0.35)
+    static let shadowNav = Color(hex: 0x000000, opacity: 0.12)
+    static let shadowProjectHero = Color(hex: 0x737364, opacity: 0.50)
 
     static let surfacePrimary = paperWhite200
-    static let surfaceSheet = paperWhite100
+    static let surfaceSheet = paperWhite50
     static let surfaceCard = paperWhite50
     static let surfaceStory = broccoliBrown50
     static let textPrimary = inkBlack500

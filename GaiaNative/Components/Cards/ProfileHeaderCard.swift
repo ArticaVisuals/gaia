@@ -7,18 +7,11 @@ struct ProfileHeaderCard: View {
 
     var body: some View {
         HStack(alignment: .center, spacing: 12) {
-            ZStack(alignment: .topLeading) {
-                Circle()
-                    .fill(GaiaColor.blackishGrey100)
-
-                avatarImage
-                    .frame(width: avatarSize, height: avatarSize)
-            }
-            .frame(width: avatarSize, height: avatarSize)
-            .clipShape(Circle())
-            .overlay(
-                Circle()
-                    .stroke(GaiaColor.oliveGreen100, lineWidth: 0.5)
+            GaiaProfileAvatar(
+                imageName: "find-avatar-alice",
+                size: avatarSize,
+                borderWidth: 0.5,
+                strokeColor: GaiaColor.oliveGreen100
             )
 
             VStack(alignment: .leading, spacing: 2) {
@@ -38,18 +31,6 @@ struct ProfileHeaderCard: View {
         }
         .padding(.horizontal, GaiaSpacing.md)
         .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    @ViewBuilder
-    private var avatarImage: some View {
-        if let image = AssetCatalog.image(named: "find-avatar-alice") {
-            image
-                .resizable()
-                .interpolation(.high)
-                .scaledToFill()
-        } else {
-            Color.clear
-        }
     }
 
     private var findsLabel: String {

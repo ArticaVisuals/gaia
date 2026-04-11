@@ -7,14 +7,26 @@ private enum GaiaPinMapConfig {
     static let clusterReuseID = "gaia.cluster"
     static let observationReuseID = "gaia.observation"
     static let clusteringIdentifier = "gaia.cluster.members"
-    static let clusterBlankMaxZoom = 6.8
-    static let singlePhotoMinZoom = 14.2
+    static let clusterBlankMaxZoom = 3.2
+    static let singlePhotoMinZoom = 13.2
+    static let photoModeHysteresis = 0.35
     static let markerVisualSize: CGFloat = 62
-    static let markerTouchPadding: CGFloat = 18
+    static let markerTouchPadding: CGFloat = 0
     static let markerMinScale: CGFloat = 0.34
     static let markerScaleStartZoom = 3.0
     static let markerScaleEndZoom = 14.0
     static let recenterZoom = 14.4
+}
+
+private enum GaiaPinVisualMode {
+    case blank
+    case count
+    case photo
+}
+
+enum ExploreMapMarkerMode {
+    case standard
+    case compactDots
 }
 
 struct ExploreMapView: View {
@@ -23,6 +35,8 @@ struct ExploreMapView: View {
     var onSelectObservation: ((Observation) -> Void)? = nil
     var showsMarkers: Bool = true
     var initialZoomOverride: CGFloat? = nil
+    var markerMode: ExploreMapMarkerMode = .standard
+    var showsUserLocation: Bool = true
 
     @StateObject private var locationController = GaiaMapLocationController()
 
@@ -31,6 +45,8 @@ struct ExploreMapView: View {
             observations: observations,
             showsMarkers: showsMarkers,
             initialZoomOverride: initialZoomOverride,
+            markerMode: markerMode,
+            showsUserLocation: showsUserLocation,
             onSelectObservation: onSelectObservation,
             locationController: locationController
         )
@@ -41,10 +57,54 @@ struct ExploreMapView: View {
     }
 }
 
+struct SightingsMapPreviewCard: View {
+    let observations: [Observation]
+    let onExpandMap: () -> Void
+
+    private let cornerRadius = GaiaRadius.md
+    private let cardHeight: CGFloat = 214
+
+    var body: some View {
+        ZStack(alignment: .topTrailing) {
+            Button(action: onExpandMap) {
+                ExploreMapView(
+                    observations: observations,
+                    recenterRequestID: nil,
+                    onSelectObservation: nil,
+                    showsMarkers: true,
+                    initialZoomOverride: nil,
+                    markerMode: .compactDots,
+                    showsUserLocation: false
+                )
+                .allowsHitTesting(false)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(GaiaColor.broccoliBrown50)
+                .contentShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Sightings map preview")
+            .accessibilityHint("Opens the expanded map")
+
+            ExpandMapButton(action: onExpandMap)
+                .padding(12)
+        }
+        .frame(height: cardHeight)
+        .frame(maxWidth: .infinity)
+        .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
+        )
+        .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
+    }
+}
+
 private struct ExploreMapRepresentable: UIViewRepresentable {
     let observations: [Observation]
     let showsMarkers: Bool
     let initialZoomOverride: CGFloat?
+    let markerMode: ExploreMapMarkerMode
+    let showsUserLocation: Bool
     let onSelectObservation: ((Observation) -> Void)?
     @ObservedObject var locationController: GaiaMapLocationController
 
@@ -67,7 +127,7 @@ private struct ExploreMapRepresentable: UIViewRepresentable {
             GaiaHostedMarkerAnnotationView.self,
             forAnnotationViewWithReuseIdentifier: GaiaPinMapConfig.clusterReuseID
         )
-        mapView.showsUserLocation = locationController.isAuthorized
+        mapView.showsUserLocation = showsUserLocation && locationController.isAuthorized
         return mapView
     }
 
@@ -82,6 +142,7 @@ private struct ExploreMapRepresentable: UIViewRepresentable {
         private var hasAppliedInitialRegion = false
         private var lastObservationSignature: Int?
         private var lastFollowViewportRequestID: UUID?
+        private var lastClusteringEnabled: Bool?
         private var observationAnnotationsByID: [String: GaiaObservationAnnotation] = [:]
 
         init(parent: ExploreMapRepresentable) {
@@ -89,7 +150,7 @@ private struct ExploreMapRepresentable: UIViewRepresentable {
         }
 
         func update(_ mapView: MKMapView) {
-            mapView.showsUserLocation = parent.locationController.isAuthorized
+            mapView.showsUserLocation = parent.showsUserLocation && parent.locationController.isAuthorized
             syncObservationAnnotations(in: mapView)
 
             let signature = Self.observationsSignature(parent.observations)
@@ -120,6 +181,7 @@ private struct ExploreMapRepresentable: UIViewRepresentable {
                 mapView.setRegion(region, animated: true)
             }
 
+            updateClusterParticipationIfNeeded(in: mapView)
             refreshVisibleAnnotationViews(in: mapView)
         }
 
@@ -147,7 +209,9 @@ private struct ExploreMapRepresentable: UIViewRepresentable {
                     for: annotation
                 ) as! GaiaHostedMarkerAnnotationView
                 view.annotation = annotation
-                view.clusteringIdentifier = GaiaPinMapConfig.clusteringIdentifier
+                view.clusteringIdentifier = clusteringEnabled(for: ExploreMapView.zoomLevel(for: mapView.region))
+                    ? GaiaPinMapConfig.clusteringIdentifier
+                    : nil
                 view.displayPriority = .required
                 view.collisionMode = .circle
                 configure(view, for: annotation, zoom: ExploreMapView.zoomLevel(for: mapView.region))
@@ -158,6 +222,7 @@ private struct ExploreMapRepresentable: UIViewRepresentable {
         }
 
         func mapViewDidChangeVisibleRegion(_ mapView: MKMapView) {
+            updateClusterParticipationIfNeeded(in: mapView)
             refreshVisibleAnnotationViews(in: mapView)
         }
 
@@ -180,6 +245,7 @@ private struct ExploreMapRepresentable: UIViewRepresentable {
                     mapView.removeAnnotations(Array(observationAnnotationsByID.values))
                     observationAnnotationsByID.removeAll()
                 }
+                lastClusteringEnabled = nil
                 return
             }
 
@@ -215,12 +281,34 @@ private struct ExploreMapRepresentable: UIViewRepresentable {
         }
 
         private func configure(_ view: GaiaHostedMarkerAnnotationView, for annotation: MKAnnotation, zoom: Double) {
-            let farOutCluster = zoom <= GaiaPinMapConfig.clusterBlankMaxZoom
-            let showsSinglePhoto = zoom >= GaiaPinMapConfig.singlePhotoMinZoom
+            if parent.markerMode == .compactDots {
+                view.clusteringIdentifier = nil
+                view.apply(
+                    content: AnyView(MarkerRenderContainer { MapAnnotationDotPin() }),
+                    renderKey: "compact.dot"
+                )
+                view.setScale(1)
+                return
+            }
+
+            let visualMode = visualMode(for: zoom)
             let markerScale = ExploreMapView.markerScale(for: zoom)
 
             if let observationAnnotation = annotation as? GaiaObservationAnnotation {
-                if showsSinglePhoto {
+                let clusteringIdentifier = clusteringEnabled(for: zoom)
+                    ? GaiaPinMapConfig.clusteringIdentifier
+                    : nil
+                if view.clusteringIdentifier != clusteringIdentifier {
+                    view.clusteringIdentifier = clusteringIdentifier
+                }
+
+                switch visualMode {
+                case .blank:
+                    view.apply(
+                        content: AnyView(MarkerRenderContainer { MapAnnotationBlankPin() }),
+                        renderKey: "single.blank"
+                    )
+                case .count:
                     let imageName = observationAnnotation.observation.thumbnailAssetName ?? "none"
                     view.apply(
                         content: AnyView(
@@ -230,28 +318,80 @@ private struct ExploreMapRepresentable: UIViewRepresentable {
                         ),
                         renderKey: "single.photo.\(imageName)"
                     )
-                } else {
+                case .photo:
+                    let imageName = observationAnnotation.observation.thumbnailAssetName ?? "none"
                     view.apply(
-                        content: AnyView(MarkerRenderContainer { MapAnnotationBlankPin() }),
-                        renderKey: "single.blank"
+                        content: AnyView(
+                            MarkerRenderContainer {
+                                MapAnnotationPhotoPin(imageName: observationAnnotation.observation.thumbnailAssetName)
+                            }
+                        ),
+                        renderKey: "single.photo.\(imageName)"
                     )
                 }
             } else if let clusterAnnotation = annotation as? MKClusterAnnotation {
-                if farOutCluster {
+                switch visualMode {
+                case .blank:
                     view.apply(
                         content: AnyView(MarkerRenderContainer { MapAnnotationBlankPin() }),
                         renderKey: "cluster.blank"
                     )
-                } else {
+                case .count, .photo:
                     let count = observationCount(in: clusterAnnotation)
-                    view.apply(
-                        content: AnyView(MarkerRenderContainer { MapAnnotationClusterPin(count: count) }),
-                        renderKey: "cluster.count.\(count)"
-                    )
+                    if count <= 1 {
+                        let thumbnailName = thumbnailAssetName(for: clusterAnnotation)
+                        let imageName = thumbnailName ?? "none"
+                        view.apply(
+                            content: AnyView(
+                                MarkerRenderContainer {
+                                    MapAnnotationPhotoPin(imageName: thumbnailName)
+                                }
+                            ),
+                            renderKey: "cluster.photo.\(imageName)"
+                        )
+                    } else {
+                        view.apply(
+                            content: AnyView(MarkerRenderContainer { MapAnnotationClusterPin(count: count) }),
+                            renderKey: "cluster.count.\(count)"
+                        )
+                    }
                 }
             }
 
             view.setScale(markerScale)
+        }
+
+        private func updateClusterParticipationIfNeeded(in mapView: MKMapView) {
+            let zoom = ExploreMapView.zoomLevel(for: mapView.region)
+            let nextClusteringEnabled = clusteringEnabled(for: zoom)
+            guard nextClusteringEnabled != lastClusteringEnabled else { return }
+
+            lastClusteringEnabled = nextClusteringEnabled
+            guard !observationAnnotationsByID.isEmpty else { return }
+
+            let annotations = Array(observationAnnotationsByID.values)
+            mapView.removeAnnotations(annotations)
+            mapView.addAnnotations(annotations)
+        }
+
+        private func visualMode(for zoom: Double) -> GaiaPinVisualMode {
+            if zoom <= GaiaPinMapConfig.clusterBlankMaxZoom {
+                return .blank
+            }
+
+            return clusteringEnabled(for: zoom) ? .count : .photo
+        }
+
+        private func clusteringEnabled(for zoom: Double) -> Bool {
+            guard parent.markerMode == .standard else {
+                return false
+            }
+
+            if let lastClusteringEnabled, !lastClusteringEnabled {
+                return zoom < (GaiaPinMapConfig.singlePhotoMinZoom - GaiaPinMapConfig.photoModeHysteresis)
+            }
+
+            return zoom < GaiaPinMapConfig.singlePhotoMinZoom
         }
 
         private func observationCount(in cluster: MKClusterAnnotation) -> Int {
@@ -270,6 +410,18 @@ private struct ExploreMapRepresentable: UIViewRepresentable {
             }
 
             return 0
+        }
+
+        private func thumbnailAssetName(for annotation: MKAnnotation) -> String? {
+            if let observationAnnotation = annotation as? GaiaObservationAnnotation {
+                return observationAnnotation.observation.thumbnailAssetName
+            }
+
+            if let nestedCluster = annotation as? MKClusterAnnotation {
+                return nestedCluster.memberAnnotations.compactMap(thumbnailAssetName(for:)).first
+            }
+
+            return nil
         }
 
         private static func observationsSignature(_ observations: [Observation]) -> Int {

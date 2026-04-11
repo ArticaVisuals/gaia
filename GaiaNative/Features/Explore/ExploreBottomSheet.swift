@@ -61,16 +61,10 @@ struct ExploreBottomSheet: View {
                                 Button {
                                     activeFilter = filter
                                 } label: {
-                                    Text(filter.title)
-                                        .gaiaFont(.pill)
-                                        .foregroundStyle(filter == activeFilter ? GaiaColor.paperWhite50 : GaiaColor.paperWhite200)
-                                        .padding(.horizontal, GaiaSpacing.pillHorizontal)
-                                        .padding(.vertical, GaiaSpacing.xs)
-                                        .frame(height: 28)
-                                        .background(
-                                            Capsule()
-                                                .fill(filter == activeFilter ? GaiaColor.olive : GaiaColor.olive.opacity(0.2))
-                                        )
+                                    GaiaPill(
+                                        title: filter.title,
+                                        style: filter == activeFilter ? .prominent : .soft
+                                    )
                                 }
                                 .buttonStyle(.plain)
                             }
@@ -103,12 +97,12 @@ struct ExploreBottomSheet: View {
                             }
                         }
                         .padding(.horizontal, sectionInset)
-                        .padding(.bottom, 8)
+                        .padding(.bottom, GaiaSpacing.xl)
                     }
                     .scrollClipDisabled()
                 }
 
-                VStack(alignment: .leading, spacing: 0) {
+                VStack(alignment: .leading, spacing: GaiaSpacing.md) {
                     HStack(alignment: .top) {
                         Text("Finds")
                             .gaiaFont(.title3)
@@ -116,25 +110,22 @@ struct ExploreBottomSheet: View {
 
                         Spacer(minLength: 12)
 
-                        HStack(spacing: 4) {
-                            ExploreSheetViewToggleButton(
-                                iconPath: "Icons/System/grid-32.png",
-                                isActive: viewMode == .grid
-                            ) {
-                                viewMode = .grid
-                            }
-
-                            ExploreSheetViewToggleButton(
-                                iconPath: "Icons/System/list-32.png",
-                                isActive: viewMode == .list
-                            ) {
-                                viewMode = .list
+                        DraggableIconTabSwitch(
+                            tabs: ExploreSheetViewMode.allCases,
+                            selection: $viewMode,
+                            accessibilityLabel: { $0.accessibilityLabel }
+                        ) { mode, isSelected in
+                            if let uiImage = AssetCatalog.uiImage(named: mode.iconPath) {
+                                Image(uiImage: uiImage)
+                                    .renderingMode(.template)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .foregroundStyle(isSelected ? GaiaColor.paperWhite50 : GaiaColor.olive)
+                                    .accessibilityHidden(true)
                             }
                         }
                     }
                     .padding(.horizontal, sectionInset)
-                    .padding(.top, 0)
-                    .padding(.bottom, 8)
 
                     if viewMode == .grid {
                         ExploreSheetFindGrid(finds: finds) { _ in
@@ -226,9 +217,29 @@ private enum ExploreSheetFilter: String, CaseIterable, Identifiable {
     var title: String { rawValue }
 }
 
-private enum ExploreSheetViewMode {
+private enum ExploreSheetViewMode: String, CaseIterable, Identifiable {
     case grid
     case list
+
+    var id: String { rawValue }
+
+    var iconPath: String {
+        switch self {
+        case .grid:
+            return "Icons/System/grid-32.png"
+        case .list:
+            return "Icons/System/list-32.png"
+        }
+    }
+
+    var accessibilityLabel: String {
+        switch self {
+        case .grid:
+            return "Grid view"
+        case .list:
+            return "List view"
+        }
+    }
 }
 
 private struct ExploreSheetSectionHeader: View {
@@ -249,32 +260,6 @@ private struct ExploreSheetSectionHeader: View {
                     .foregroundStyle(GaiaColor.olive)
             }
         }
-    }
-}
-
-private struct ExploreSheetViewToggleButton: View {
-    let iconPath: String
-    let isActive: Bool
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 4, style: .continuous)
-                    .fill(isActive ? GaiaColor.olive : GaiaColor.oliveGreen200)
-
-                if let uiImage = AssetCatalog.uiImage(named: iconPath) {
-                    Image(uiImage: uiImage)
-                        .renderingMode(.template)
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundStyle(isActive ? GaiaColor.paperWhite50 : GaiaColor.paperWhite50.opacity(0.92))
-                        .padding(7)
-                }
-            }
-            .frame(width: 32, height: 32)
-        }
-        .buttonStyle(.plain)
     }
 }
 
@@ -316,27 +301,11 @@ private struct ExploreSheetFindGridCard: View {
     var body: some View {
         Button(action: action) {
             ZStack(alignment: .bottomLeading) {
-                GaiaAssetImage(name: find.imageName)
-                    .frame(width: sideLength, height: sideLength)
-                    .clipped()
-
-                GaiaAssetImage(name: find.imageName)
-                    .frame(width: sideLength, height: sideLength)
-                    .clipped()
-                    .blur(radius: 3.7)
-                    .mask(
-                        LinearGradient(
-                            colors: [.clear, .black],
-                            startPoint: UnitPoint(x: 0.5, y: 0.25),
-                            endPoint: .bottom
-                        )
-                    )
-
-                LinearGradient(
-                    colors: [.clear, Color.black.opacity(0.75)],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
+                GaiaFindCardArtwork {
+                    GaiaAssetImage(name: find.imageName)
+                        .frame(width: sideLength, height: sideLength)
+                        .clipped()
+                }
 
                 Text(find.title)
                     .gaiaFont(.subheadSerif)
