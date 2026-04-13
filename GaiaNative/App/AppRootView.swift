@@ -53,13 +53,8 @@ struct AppRootView: View {
             }
         }
         .tint(GaiaColor.olive)
-        .fullScreenCover(isPresented: $appState.showsFindDetailsPrototype) {
-            FindDetailsPrototypeScreen(species: selectedSpecies)
-                .environmentObject(appState)
-                .environmentObject(contentStore)
-        }
         .fullScreenCover(isPresented: $appState.showsFindDetails) {
-            FindDetailsScreen(species: selectedSpecies)
+            FindDetailsPrototypeScreen(species: selectedSpecies)
                 .environmentObject(appState)
                 .environmentObject(contentStore)
         }

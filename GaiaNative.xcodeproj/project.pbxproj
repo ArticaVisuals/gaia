@@ -29,7 +29,6 @@
 		3E485D3200C073439ECC9F75 /* FindDetailsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F8E223E3FFF9D8CE4CE78E /* FindDetailsScreen.swift */; };
 		F2A6C91D8B4E47F5A1234579 /* FindDetailsLearnFoundInMapArtwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A6C91D8B4E47F5A1234580 /* FindDetailsLearnFoundInMapArtwork.swift */; };
 		F2A6C91D8B4E47F5A1234567 /* FindDetailsPrototypeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A6C91D8B4E47F5A1234568 /* FindDetailsPrototypeScreen.swift */; };
-		F2A6C91D8B4E47F5A1234571 /* FindDetailsLegacyTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A6C91D8B4E47F5A1234572 /* FindDetailsLegacyTabView.swift */; };
 		F2A6C91D8B4E47F5A1234575 /* FindDetailsLearnScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A6C91D8B4E47F5A1234576 /* FindDetailsLearnScreen.swift */; };
 		3F57F46D353F47C028A3B80B /* ActivityViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE44E4B2B4055BA89D58E91A /* ActivityViewModel.swift */; };
 		41398D188AB1B3E91750C634 /* ExploreScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A83366EDC64D8617F1948136 /* ExploreScreen.swift */; };
@@ -117,7 +116,6 @@
 		03A60D88E2A14A55B8D8C102 /* GaiaProjectCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaiaProjectCard.swift; sourceTree = "<group>"; };
 		03F8E223E3FFF9D8CE4CE78E /* FindDetailsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindDetailsScreen.swift; sourceTree = "<group>"; };
 		F2A6C91D8B4E47F5A1234568 /* FindDetailsPrototypeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindDetailsPrototypeScreen.swift; sourceTree = "<group>"; };
-		F2A6C91D8B4E47F5A1234572 /* FindDetailsLegacyTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindDetailsLegacyTabView.swift; sourceTree = "<group>"; };
 		F2A6C91D8B4E47F5A1234576 /* FindDetailsLearnScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindDetailsLearnScreen.swift; sourceTree = "<group>"; };
 		F2A6C91D8B4E47F5A1234580 /* FindDetailsLearnFoundInMapArtwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindDetailsLearnFoundInMapArtwork.swift; sourceTree = "<group>"; };
 		07C1014FFD074B9B7F391996 /* Species.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Species.swift; sourceTree = "<group>"; };
@@ -359,7 +357,6 @@
 				51F60AA112B2EC6350829FD9 /* ActivityTabView.swift */,
 				F2A6C91D8B4E47F5A1234580 /* FindDetailsLearnFoundInMapArtwork.swift */,
 				F2A6C91D8B4E47F5A1234576 /* FindDetailsLearnScreen.swift */,
-				F2A6C91D8B4E47F5A1234572 /* FindDetailsLegacyTabView.swift */,
 				F2A6C91D8B4E47F5A1234568 /* FindDetailsPrototypeScreen.swift */,
 				03F8E223E3FFF9D8CE4CE78E /* FindDetailsScreen.swift */,
 				5935E3D649A9470881E239D0 /* FindDetailsViewModel.swift */,
@@ -633,7 +630,6 @@
 				2A71395633CE89E8E0747B06 /* FindCard.swift in Sources */,
 				F2A6C91D8B4E47F5A1234579 /* FindDetailsLearnFoundInMapArtwork.swift in Sources */,
 				F2A6C91D8B4E47F5A1234575 /* FindDetailsLearnScreen.swift in Sources */,
-				F2A6C91D8B4E47F5A1234571 /* FindDetailsLegacyTabView.swift in Sources */,
 				F2A6C91D8B4E47F5A1234567 /* FindDetailsPrototypeScreen.swift in Sources */,
 				3E485D3200C073439ECC9F75 /* FindDetailsScreen.swift in Sources */,
 				B3CD2642A022FEFF29531B97 /* FindDetailsViewModel.swift in Sources */,

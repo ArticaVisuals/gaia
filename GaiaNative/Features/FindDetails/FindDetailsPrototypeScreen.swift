@@ -174,7 +174,7 @@ struct FindDetailsPrototypeScreen: View {
                         .accessibilityHidden(true)
 
                     PrototypeToolbarOverlay(
-                        onBack: { appState.closeFindDetailsPrototype() }
+                        onBack: { appState.closeFindDetails() }
                     )
                     .frame(width: contentWidth, alignment: .top)
 

@@ -24,13 +24,8 @@ struct ProjectSelection: Identifiable, Hashable {
 }
 
 final class AppState: ObservableObject {
-    private static var usesFindDetailsPrototypeByDefault: Bool {
-        !ProcessInfo.processInfo.arguments.contains("-gaiaUseLegacyFindDetails")
-    }
-
     @Published var selectedSection: AppSection
     @Published var showsFindDetails = false
-    @Published var showsFindDetailsPrototype = false
     @Published var showsStoryDeck = false
     @Published var showsProjectDetail = false
     @Published var selectedFindTab: FindDetailsTab = .learn
@@ -47,7 +42,7 @@ final class AppState: ObservableObject {
         }
 
         if let launchFindDetailsPrototype = Self.launchFindDetailsPrototype {
-            openFindDetailsPrototype(
+            openFindDetails(
                 speciesID: launchFindDetailsPrototype.speciesID,
                 tab: launchFindDetailsPrototype.tab
             )
@@ -81,31 +76,23 @@ final class AppState: ObservableObject {
     }
 
     func openSampleFind(tab: FindDetailsTab = .learn) {
-        presentFindDetails(speciesID: nil, tab: tab, usingPrototype: Self.usesFindDetailsPrototypeByDefault)
+        presentFindDetails(speciesID: nil, tab: tab)
     }
 
     func openSampleFindPrototype(tab: FindDetailsTab = .find) {
-        presentFindDetails(speciesID: nil, tab: tab, usingPrototype: true)
+        presentFindDetails(speciesID: nil, tab: tab)
     }
 
     func openFindDetails(speciesID: String?, tab: FindDetailsTab = .learn) {
-        presentFindDetails(
-            speciesID: speciesID,
-            tab: tab,
-            usingPrototype: Self.usesFindDetailsPrototypeByDefault
-        )
+        presentFindDetails(speciesID: speciesID, tab: tab)
     }
 
     func openFindDetailsPrototype(speciesID: String?, tab: FindDetailsTab = .find) {
-        presentFindDetails(speciesID: speciesID, tab: tab, usingPrototype: true)
+        presentFindDetails(speciesID: speciesID, tab: tab)
     }
 
     func closeFindDetails() {
         showsFindDetails = false
-    }
-
-    func closeFindDetailsPrototype() {
-        showsFindDetailsPrototype = false
     }
 
     func openStoryDeck(_ storyID: String?, speciesID: String? = nil) {
@@ -252,17 +239,9 @@ final class AppState: ObservableObject {
         }
     }
 
-    private func presentFindDetails(speciesID: String?, tab: FindDetailsTab, usingPrototype: Bool) {
+    private func presentFindDetails(speciesID: String?, tab: FindDetailsTab) {
         selectedSpeciesID = speciesID
-
-        if usingPrototype {
-            selectedFindTab = Self.prototypeTab(for: tab)
-            showsFindDetails = false
-            showsFindDetailsPrototype = true
-        } else {
-            selectedFindTab = tab
-            showsFindDetailsPrototype = false
-            showsFindDetails = true
-        }
+        selectedFindTab = Self.prototypeTab(for: tab)
+        showsFindDetails = true
     }
 }
