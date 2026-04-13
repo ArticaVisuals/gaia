@@ -3,12 +3,17 @@ import SwiftUI
 private enum FindTabLayout {
     static let sectionSpacing: CGFloat = 32
     static let cardSpacing: CGFloat = 8
+    static let conditionCardWidth: CGFloat = 181
     static let mapHeight: CGFloat = 181
     static let mapCardInset: CGFloat = 12
-    static let photoHeight: CGFloat = 138
-    static let photoCornerRadius: CGFloat = 10
+    static let photoHeight: CGFloat = 134
+    static let photoCornerRadius: CGFloat = GaiaRadius.md
     static let conditionHeight: CGFloat = 206
-    static let projectCardHeight: CGFloat = 81
+    static let projectCardHeight: CGFloat = 72
+
+    static var conditionRowWidth: CGFloat {
+        (conditionCardWidth * 2) + cardSpacing
+    }
 }
 
 struct FindTabView: View {
@@ -39,14 +44,11 @@ struct FindTabView: View {
                 }
 
                 section(title: "Data Quality") {
-                    VStack(alignment: .leading, spacing: 12) {
-                        FindDataQualityCard()
-                        FindSectionFooterLink(title: "Learn more")
-                    }
+                    FindDataQualityCard()
                 }
 
                 section(title: "Participating Projects") {
-                    VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 8) {
                         FindProjectListCard(
                             eyebrow: nil,
                             title: "Creek Recovery",
@@ -111,31 +113,27 @@ struct FindTabView: View {
 
 private struct FindConditionRow: View {
     var body: some View {
-        GeometryReader { proxy in
-            let availableWidth = max(0, proxy.size.width)
-            let cardWidth = max(0, (availableWidth - FindTabLayout.cardSpacing) / 2)
-
-            HStack(alignment: .top, spacing: FindTabLayout.cardSpacing) {
-                FindConditionCard(
-                    label: "Biome",
-                    title: "Riparian Edge",
-                    subtitle: nil
-                ) {
-                    FindBiomeImage()
-                }
-                .frame(width: cardWidth)
-
-                FindConditionCard(
-                    label: "Weather",
-                    title: "Partly Cloudy",
-                    subtitle: nil
-                ) {
-                    FindWeatherImage()
-                }
-                .frame(width: cardWidth)
+        HStack(alignment: .top, spacing: FindTabLayout.cardSpacing) {
+            FindConditionCard(
+                label: "Biome",
+                title: "Riparian Edge",
+                subtitle: nil
+            ) {
+                FindBiomeImage()
             }
-            .frame(width: availableWidth, alignment: .leading)
+            .frame(width: FindTabLayout.conditionCardWidth)
+
+            FindConditionCard(
+                label: "Weather",
+                title: "Partly Cloudy",
+                subtitle: nil
+            ) {
+                FindWeatherImage()
+            }
+            .frame(width: FindTabLayout.conditionCardWidth)
         }
+        .frame(width: FindTabLayout.conditionRowWidth, alignment: .leading)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .frame(height: FindTabLayout.conditionHeight)
     }
 }
@@ -195,11 +193,11 @@ private struct FindPhotoRail: View {
     }
 }
 
-private enum FindMapPreviewArtworkLayout {
-    static let widthScale: CGFloat = 2.4458
-    static let heightScale: CGFloat = 5.4741
-    static let leftOffset: CGFloat = 1.4471
-    static let topOffset: CGFloat = 2.7361
+private enum FindMapProfileTextLayout {
+    static let nameMinHeight: CGFloat = 17.6
+    static let nameTracking: CGFloat = -0.31
+    static let timestampMinHeight: CGFloat = 14.3
+    static let timestampTracking: CGFloat = 0.25
 }
 
 private struct FindMapPreviewCard: View {
@@ -207,23 +205,18 @@ private struct FindMapPreviewCard: View {
     let collapseProgress: CGFloat
     let onExpandMap: () -> Void
 
-    private var outerCornerRadius: CGFloat {
-        GaiaRadius.lg - ((GaiaRadius.lg - GaiaRadius.md) * min(max(collapseProgress, 0), 1))
-    }
-
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             FindMapLocationRow()
 
-            ZStack {
+            ZStack(alignment: .topTrailing) {
                 FindMapPreviewArtwork()
 
                 MapAnnotationPhotoPin(imageName: observation.thumbnailAssetName)
                     .frame(width: 63, height: 63)
-            }
-            .overlay(alignment: .topTrailing) {
+
                 ExpandMapButton(action: onExpandMap)
-                    .padding(GaiaSpacing.cardInset)
+                    .padding(12)
             }
             .frame(height: FindTabLayout.mapHeight)
             .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
@@ -237,13 +230,12 @@ private struct FindMapPreviewCard: View {
         .padding(FindTabLayout.mapCardInset)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RoundedRectangle(cornerRadius: outerCornerRadius, style: .continuous)
+            RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous)
                 .fill(GaiaColor.paperWhite50)
                 .overlay(
-                    RoundedRectangle(cornerRadius: outerCornerRadius, style: .continuous)
+                    RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous)
                         .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
                 )
-                .shadow(color: GaiaShadow.cardColor, radius: GaiaShadow.cardRadius, x: 0, y: GaiaShadow.mdYOffset)
         )
     }
 }
@@ -272,34 +264,33 @@ private struct FindMapProfileRow: View {
                 borderWidth: 0.417
             )
 
-            VStack(alignment: .leading, spacing: 6) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text("Alice Edwards")
-                    .gaiaFont(.callout)
+                    .font(GaiaTypography.callout)
+                    .tracking(FindMapProfileTextLayout.nameTracking)
                     .foregroundStyle(GaiaColor.olive)
+                    .frame(minHeight: FindMapProfileTextLayout.nameMinHeight, alignment: .topLeading)
                     .lineLimit(1)
 
                 Text("July 10, 2025, 10:19 AM")
-                    .gaiaFont(.caption)
+                    .font(GaiaTypography.caption)
+                    .tracking(FindMapProfileTextLayout.timestampTracking)
                     .foregroundStyle(GaiaColor.paperWhite600)
+                    .frame(minHeight: FindMapProfileTextLayout.timestampMinHeight, alignment: .topLeading)
                     .lineLimit(1)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 }
 
 private struct FindMapPreviewArtwork: View {
     var body: some View {
-        GeometryReader { proxy in
-            GaiaAssetImage(name: "find-map-preview-card", contentMode: .fill)
-                .frame(
-                    width: proxy.size.width * FindMapPreviewArtworkLayout.widthScale,
-                    height: proxy.size.height * FindMapPreviewArtworkLayout.heightScale
-                )
-                .offset(
-                    x: -(proxy.size.width * FindMapPreviewArtworkLayout.leftOffset),
-                    y: -(proxy.size.height * FindMapPreviewArtworkLayout.topOffset)
-                )
+        ZStack {
+            GaiaAssetImage(name: "find-map-preview-base", contentMode: .fill)
+            GaiaAssetImage(name: "find-map-preview-overlay", contentMode: .fill)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .clipped()
         .allowsHitTesting(false)
     }
@@ -380,7 +371,6 @@ private struct FindConditionCard<ImageContent: View>: View {
                     RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous)
                         .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
                 )
-                .shadow(color: GaiaShadow.cardColor, radius: GaiaShadow.cardRadius, x: 0, y: GaiaShadow.mdYOffset)
         )
     }
 }
@@ -466,9 +456,8 @@ private struct FindDataQualityCard: View {
                 .fill(GaiaColor.paperWhite50)
                 .overlay(
                     RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous)
-                        .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
+                        .strokeBorder(GaiaColor.broccoliBrown200, lineWidth: 0.5)
                 )
-                .shadow(color: GaiaShadow.cardColor, radius: GaiaShadow.cardRadius, x: 0, y: GaiaShadow.mdYOffset)
         )
     }
 }
@@ -493,7 +482,7 @@ private struct FindQualityItem: View {
 
             Text(item.title)
                 .gaiaFont(.caption2)
-                .foregroundStyle(item.isActive ? GaiaColor.oliveGreen400 : GaiaColor.blackishGrey200)
+                .foregroundStyle(item.isActive ? GaiaColor.dataQualityActive : GaiaColor.blackishGrey200)
                 .lineLimit(2)
                 .minimumScaleFactor(0.9)
                 .multilineTextAlignment(.center)
@@ -515,27 +504,27 @@ private struct FindProjectListCard: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: GaiaSpacing.cardInset) {
+            HStack(spacing: GaiaSpacing.sm) {
                 GaiaAssetImage(name: imageName, contentMode: .fill)
-                    .frame(width: 89, height: 57)
+                    .frame(width: 80, height: 50)
                     .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
 
                 VStack(alignment: .leading, spacing: textStackSpacing) {
                     if let eyebrow, !eyebrow.isEmpty {
                         Text(eyebrow)
-                            .gaiaFont(.footnote)
+                            .gaiaFont(.caption)
                             .foregroundStyle(GaiaColor.inkBlack300)
                             .lineLimit(1)
                     }
 
                     Text(title)
-                        .gaiaFont(.titleSans)
+                        .gaiaFont(.title3)
                         .foregroundStyle(GaiaColor.olive)
                         .lineLimit(1)
 
                     if let subtitle, !subtitle.isEmpty {
                         Text(subtitle)
-                            .gaiaFont(.footnote)
+                            .gaiaFont(.caption)
                             .foregroundStyle(GaiaColor.inkBlack300)
                             .lineLimit(1)
                     }
@@ -547,7 +536,7 @@ private struct FindProjectListCard: View {
                         .frame(width: 32, height: 32)
                 }
             }
-            .padding(GaiaSpacing.cardInset)
+            .padding(GaiaSpacing.sm)
             .frame(maxWidth: .infinity, alignment: .leading)
             .frame(height: FindTabLayout.projectCardHeight, alignment: .leading)
             .background(
@@ -557,7 +546,6 @@ private struct FindProjectListCard: View {
                         RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous)
                             .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
                     )
-                    .shadow(color: GaiaShadow.cardColor, radius: GaiaShadow.cardRadius, x: 0, y: GaiaShadow.mdYOffset)
             )
         }
         .buttonStyle(.plain)
@@ -565,10 +553,10 @@ private struct FindProjectListCard: View {
 
     private var textStackSpacing: CGFloat {
         if let eyebrow, !eyebrow.isEmpty {
-            return 12
+            return 8
         }
         if let subtitle, !subtitle.isEmpty {
-            return GaiaSpacing.sm
+            return 4
         }
         return 0
     }

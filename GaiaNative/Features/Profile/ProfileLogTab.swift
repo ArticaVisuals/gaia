@@ -1,4 +1,4 @@
-// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=995-15341 (Log List), 982-5804 (Log Top Bar)
+// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=995-15341 (Log List), 875-22720 (Log Grid), 982-5804 (Log Top Bar)
 import SwiftUI
 
 private enum ProfileLogViewMode: String, CaseIterable, Identifiable {
@@ -30,7 +30,7 @@ struct LogScreen: View {
     @State private var searchText = ""
     @State private var viewMode: ProfileLogViewMode = profileLogLaunchViewMode() ?? .list
     @State private var showsSearchBar = false
-    private let bottomContentInset = GaiaSpacing.xxxl + GaiaSpacing.xxl + GaiaSpacing.xl + GaiaSpacing.sm + GaiaSpacing.xs
+    private let bottomContentInset = GaiaSpacing.sm
 
     var body: some View {
         VStack(spacing: 0) {
@@ -53,6 +53,7 @@ struct LogScreen: View {
             }
         }
         .background(GaiaColor.paperWhite50)
+        .ignoresSafeArea(edges: .bottom)
     }
 }
 
@@ -279,7 +280,7 @@ private func profileLogFilteredGridItems(content: ProfileLogContent, query: Stri
 
     let needle = trimmed.lowercased()
     return content.gridItems.filter {
-        $0.title.replacingOccurrences(of: "\n", with: " ").lowercased().contains(needle)
+        $0.displayTitle.lowercased().contains(needle)
     }
 }
 
@@ -455,14 +456,14 @@ private struct ProfileLogGridCard: View {
                         .clipped()
                 }
 
-                Text(item.title)
-                    .gaiaFont(.bodySerif)
+                Text(item.displayTitle)
+                    .gaiaFont(.calloutTight)
                     .foregroundStyle(GaiaColor.paperWhite50)
                     .multilineTextAlignment(.leading)
                     .lineLimit(2)
                     .truncationMode(.tail)
-                    .padding(.horizontal, GaiaSpacing.pillHorizontal)
-                    .padding(.bottom, GaiaSpacing.sm)
+                    .padding(.horizontal, 8.5)
+                    .padding(.bottom, 11.5)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
             }
         }
@@ -577,5 +578,19 @@ private extension ProfileLogStatusKind {
         case .draft:
             return .draft
         }
+    }
+}
+
+private extension ProfileLogGridItem {
+    var displayTitle: String {
+        title.profileLogInlineText
+    }
+}
+
+private extension String {
+    var profileLogInlineText: String {
+        components(separatedBy: .whitespacesAndNewlines)
+            .filter { !$0.isEmpty }
+            .joined(separator: " ")
     }
 }

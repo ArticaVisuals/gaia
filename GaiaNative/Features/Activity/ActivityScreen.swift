@@ -28,12 +28,13 @@ struct ActivityScreen: View {
                         }
                     }
                 }
-                .padding(.bottom, GaiaSpacing.lg)
+                .padding(.bottom, GaiaSpacing.sm)
             }
             .background(GaiaColor.paperWhite50)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(GaiaColor.paperWhite50.ignoresSafeArea())
+        .ignoresSafeArea(edges: .bottom)
     }
 
     private var filteredEvents: [ActivityEvent] {

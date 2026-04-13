@@ -22,6 +22,12 @@ struct LearnTabView: View {
         ]
     }
 
+    private var relatedStories: [StoryCard] {
+        let matchedStories = stories.filter { species.storyIDs.contains($0.id) }
+        guard matchedStories.isEmpty else { return matchedStories }
+        return [stories.first ?? PreviewStories.keystone]
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 32) {
             LearnSpeciesCard(species: species)
@@ -40,8 +46,8 @@ struct LearnTabView: View {
                 LearnMapCard(observations: observations, action: onExpandMap)
             }
 
-            section(title: "Stories") {
-                ForEach(stories) { story in
+            section(title: relatedStories.count == 1 ? "Story" : "Stories") {
+                ForEach(relatedStories) { story in
                     StoryPreviewCard(story: story) {
                         onOpenStory(story)
                     }

@@ -13,7 +13,7 @@ struct SwipeableStoryDeck: View {
     private let throwDistance: CGFloat = 75
     private let throwMagnitude: CGFloat = 1000
     private let throwDuration: Double = 0.36
-    private let baseCardSize = CGSize(width: 333, height: 435)
+    private let baseCardSize = StoryLearningCardMetrics.cardSize
 
     private var pages: [StoryDeckPage] {
         story.pages.isEmpty ? PreviewStories.keystone.pages : story.pages
@@ -45,11 +45,11 @@ struct SwipeableStoryDeck: View {
     }
 
     private var pageControlSpacing: CGFloat {
-        (GaiaSpacing.md + GaiaSpacing.xs) * deckScale
+        StoryLearningCardMetrics.pageControlSpacing * deckScale
     }
 
     private var pageDotSize: CGFloat {
-        GaiaSpacing.sm * deckScale
+        StoryLearningCardMetrics.pageDotSize * deckScale
     }
 
     var body: some View {
@@ -61,7 +61,7 @@ struct SwipeableStoryDeck: View {
                 HStack(spacing: GaiaSpacing.sm * deckScale) {
                     ForEach(pages.indices, id: \.self) { index in
                         Circle()
-                            .fill(index == activeIndex ? GaiaColor.oliveGreen500 : GaiaColor.oliveGreen200)
+                            .fill(index == activeIndex ? StoryDeckVisualStyle.brandPrimary : StoryDeckVisualStyle.inactivePageDot)
                             .frame(width: pageDotSize, height: pageDotSize)
                     }
                 }
@@ -69,8 +69,8 @@ struct SwipeableStoryDeck: View {
             } else {
                 VStack(spacing: GaiaSpacing.buttonHorizontalLarge) {
                     Text("You've read\nevery card.")
-                        .font(GaiaTypography.title1Medium)
-                        .foregroundStyle(GaiaColor.oliveGreen500)
+                        .gaiaFont(.title1Medium)
+                        .foregroundStyle(StoryDeckVisualStyle.brandPrimary)
                         .multilineTextAlignment(.center)
 
                     Text("The Coast Live Oak thanks you.")
@@ -88,7 +88,7 @@ struct SwipeableStoryDeck: View {
                     .foregroundStyle(GaiaColor.paperWhite50)
                     .padding(.horizontal, GaiaSpacing.xl)
                     .frame(height: 44)
-                    .background(GaiaColor.oliveGreen500)
+                    .background(StoryDeckVisualStyle.brandPrimary)
                     .clipShape(.capsule)
                 }
                 .padding(.top, GaiaSpacing.xl)
@@ -207,29 +207,42 @@ private struct StoryLearningCard: View {
     let scale: CGFloat
 
     private var bodyLineSpacing: CGFloat {
-        14 * 0.19 * scale
+        GaiaTextStyle.bodySerifTight.lineSpacing * scale
+    }
+
+    private var titleLineSpacing: CGFloat {
+        (GaiaTextStyle.displayMedium.lineSpacing - StoryLearningCardMetrics.titleLineHeightTightening) * scale
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: GaiaSpacing.xxl * scale) {
+        VStack(alignment: .leading, spacing: StoryLearningCardMetrics.sectionSpacing * scale) {
             Text(page.title)
                 .font(GaiaTypography.displayMedium)
                 .tracking(GaiaTextStyle.displayMedium.tracking * scale)
                 .foregroundStyle(GaiaColor.broccoliBrown500)
-                .lineSpacing(-0.64 * scale)
+                .lineSpacing(titleLineSpacing)
                 .lineLimit(2, reservesSpace: true)
                 .multilineTextAlignment(.leading)
                 .fixedSize(horizontal: false, vertical: true)
 
-            VStack(alignment: .leading, spacing: GaiaSpacing.cardInset * scale) {
-                GaiaAssetImage(name: page.imageAssetName, contentMode: .fill)
-                    .frame(height: 183 * scale)
-                    .frame(maxWidth: .infinity)
-                    .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md * scale, style: .continuous))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: GaiaRadius.md * scale, style: .continuous)
-                            .stroke(GaiaColor.broccoliBrown200, lineWidth: max(0.5, scale))
-                    )
+            VStack(alignment: .leading, spacing: StoryLearningCardMetrics.imageCopySpacing * scale) {
+                ZStack {
+                    Color.white
+
+                    GaiaAssetImage(name: page.imageAssetName, contentMode: .fill)
+                        .frame(
+                            width: StoryLearningCardMetrics.imageCropSize.width * scale,
+                            height: StoryLearningCardMetrics.imageCropSize.height * scale
+                        )
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: StoryLearningCardMetrics.imageFrameHeight * scale)
+                .clipped()
+                .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md * scale, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: GaiaRadius.md * scale, style: .continuous)
+                        .stroke(GaiaColor.broccoliBrown200, lineWidth: max(0.5, scale))
+                )
 
                 Text(page.body)
                     .font(GaiaTypography.bodySerif)
@@ -259,8 +272,8 @@ private enum StoryDeckPosition {
 private struct StoryDeckLayout {
     let scale: CGFloat
 
-    var stackWidth: CGFloat { 364 * scale }
-    var stackHeight: CGFloat { 476 * scale }
+    var stackWidth: CGFloat { StoryLearningCardMetrics.stackSize.width * scale }
+    var stackHeight: CGFloat { StoryLearningCardMetrics.stackSize.height * scale }
 
     func transform(for position: StoryDeckPosition, progress: CGFloat) -> StoryDeckTransform {
         switch position {
@@ -297,9 +310,9 @@ private struct StoryDeckLayout {
         case .front:
             return 0
         case .mid:
-            return 0.12
+            return 0.08
         case .back:
-            return 0.20
+            return 0.14
         }
     }
 
@@ -324,4 +337,16 @@ private struct StoryDeckTransform {
     let x: CGFloat
     let y: CGFloat
     let scale: CGFloat
+}
+
+private enum StoryLearningCardMetrics {
+    static let cardSize = CGSize(width: 333, height: 431)
+    static let stackSize = CGSize(width: 364, height: 472)
+    static let pageControlSpacing: CGFloat = 20
+    static let pageDotSize: CGFloat = 8
+    static let sectionSpacing: CGFloat = 48
+    static let imageCopySpacing: CGFloat = 12
+    static let imageFrameHeight: CGFloat = 183
+    static let imageCropSize = CGSize(width: 342, height: 192)
+    static let titleLineHeightTightening: CGFloat = 0.64
 }

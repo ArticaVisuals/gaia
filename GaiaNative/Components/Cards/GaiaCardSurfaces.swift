@@ -43,13 +43,13 @@ struct GaiaStoryCardSurface<Content: View>: View {
             .padding(20)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
-                RoundedRectangle(cornerRadius: GaiaRadius.storyCard, style: .continuous)
+                RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
                     .fill(GaiaColor.surfaceStory)
                     .overlay(
-                        RoundedRectangle(cornerRadius: GaiaRadius.storyCard, style: .continuous)
-                            .stroke(GaiaColor.broccoliBrown100, lineWidth: 1)
+                        RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
+                            .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
                     )
-                    .shadow(color: GaiaShadow.storyColor, radius: GaiaShadow.storyRadius, x: 0, y: GaiaShadow.storyYOffset)
+                    .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
             )
     }
 }

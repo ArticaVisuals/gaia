@@ -8,7 +8,9 @@ struct AppRootView: View {
 
     var body: some View {
         Group {
-            if shouldShowOnboarding {
+            if let qaPreviewStory {
+                StoryPreviewCardQAScreen(story: qaPreviewStory)
+            } else if shouldShowOnboarding {
                 OnboardingFlowScreen {
                     hasCompletedOnboarding = true
                     dismissedForcedOnboarding = true
@@ -84,6 +86,27 @@ struct AppRootView: View {
     private var launchArguments: Set<String> {
         Set(ProcessInfo.processInfo.arguments)
     }
+
+    private var qaPreviewStory: StoryCard? {
+        guard let previewID = launchStoryPreviewCardID else {
+            return nil
+        }
+
+        return contentStore.stories.first(where: { $0.id == previewID })
+            ?? PreviewStories.all.first(where: { $0.id == previewID })
+            ?? PreviewStories.keystone
+    }
+
+    private var launchStoryPreviewCardID: String? {
+        let arguments = ProcessInfo.processInfo.arguments
+
+        guard let flagIndex = arguments.firstIndex(of: "-gaiaStoryPreviewCard"),
+              arguments.indices.contains(flagIndex + 1) else {
+            return nil
+        }
+
+        return arguments[flagIndex + 1]
+    }
 }
 
 private extension AppSection {
@@ -99,6 +122,27 @@ private extension AppSection {
             return "gaia-tab-activity-selected-32"
         case .profile:
             return "gaia-tab-profile-selected-32"
+        }
+    }
+}
+
+private struct StoryPreviewCardQAScreen: View {
+    let story: StoryCard
+
+    var body: some View {
+        ZStack {
+            GaiaColor.paperWhite50
+                .ignoresSafeArea()
+
+            VStack(alignment: .leading, spacing: GaiaSpacing.cardInset) {
+                Text("Story")
+                    .gaiaFont(.titleSans)
+                    .foregroundStyle(GaiaColor.inkBlack300)
+
+                StoryPreviewCard(story: story)
+            }
+            .frame(maxWidth: 370, alignment: .leading)
+            .padding(.horizontal, GaiaSpacing.md)
         }
     }
 }

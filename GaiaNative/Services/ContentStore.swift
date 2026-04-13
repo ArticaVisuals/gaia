@@ -182,23 +182,23 @@ enum PreviewProfileLog {
         ],
         gridItems: [
             .init(id: "cacti", title: "Cacti", imageSource: "https://www.figma.com/api/mcp/asset/2e4ece4a-e9f3-4a6a-b76c-2146c08e35e0"),
-            .init(id: "indian-cormorant", title: "Indian\nCormorant", imageSource: "https://www.figma.com/api/mcp/asset/f99a6cfd-ae56-4e80-aac0-92c673a070b5"),
-            .init(id: "european-roller", title: "European\nRoller", imageSource: "https://www.figma.com/api/mcp/asset/dfbddfc8-fc8f-458e-b30e-21497d574985"),
-            .init(id: "bindweed-tribe", title: "Bindweed\nTribe", imageSource: "https://www.figma.com/api/mcp/asset/f2391b2e-1a45-435b-acd7-1207dda76c0e"),
-            .init(id: "emperor-gum-moth", title: "Emperor\nGum Moth", imageSource: "https://www.figma.com/api/mcp/asset/3de8ff3b-8537-438e-9014-164c92cd7265"),
-            .init(id: "garden-orbweaver", title: "Garden\nOrbweaver", imageSource: "https://www.figma.com/api/mcp/asset/7911b149-22d8-416f-b72d-3bcd00c42a5b"),
-            .init(id: "southern-black-korhaan", title: "Southern Black\nKorhaan", imageSource: "https://www.figma.com/api/mcp/asset/5480f314-a42a-4aff-b091-ade77472cf43"),
+            .init(id: "indian-cormorant", title: "Indian Cormorant", imageSource: "https://www.figma.com/api/mcp/asset/f99a6cfd-ae56-4e80-aac0-92c673a070b5"),
+            .init(id: "european-roller", title: "European Roller", imageSource: "https://www.figma.com/api/mcp/asset/dfbddfc8-fc8f-458e-b30e-21497d574985"),
+            .init(id: "bindweed-tribe", title: "Bindweed Tribe", imageSource: "https://www.figma.com/api/mcp/asset/f2391b2e-1a45-435b-acd7-1207dda76c0e"),
+            .init(id: "emperor-gum-moth", title: "Emperor Gum Moth", imageSource: "https://www.figma.com/api/mcp/asset/3de8ff3b-8537-438e-9014-164c92cd7265"),
+            .init(id: "garden-orbweaver", title: "Garden Orbweaver", imageSource: "https://www.figma.com/api/mcp/asset/7911b149-22d8-416f-b72d-3bcd00c42a5b"),
+            .init(id: "southern-black-korhaan", title: "Southern Black Korhaan", imageSource: "https://www.figma.com/api/mcp/asset/5480f314-a42a-4aff-b091-ade77472cf43"),
             .init(id: "phlogistus", title: "Phlogistus", imageSource: "https://www.figma.com/api/mcp/asset/0b80c8ea-d015-4df0-ac86-82f4da3979fe"),
-            .init(id: "spiny-starwort", title: "Spiny\nStarowort", imageSource: "https://www.figma.com/api/mcp/asset/56a574ab-72a6-4985-a207-e84398659de6"),
-            .init(id: "annas-hummingbird-grid", title: "Anna's\nHummingbird", imageSource: "https://www.figma.com/api/mcp/asset/3de8ff3b-8537-438e-9014-164c92cd7265"),
+            .init(id: "spiny-starwort", title: "Spiny Starowort", imageSource: "https://www.figma.com/api/mcp/asset/56a574ab-72a6-4985-a207-e84398659de6"),
+            .init(id: "annas-hummingbird-grid", title: "Anna's Hummingbird", imageSource: "https://www.figma.com/api/mcp/asset/3de8ff3b-8537-438e-9014-164c92cd7265"),
             .init(id: "red-fox-grid", title: "Red Fox", imageSource: "https://www.figma.com/api/mcp/asset/f99a6cfd-ae56-4e80-aac0-92c673a070b5"),
-            .init(id: "coast-live-oak-grid", title: "Coast Live\nOak", imageSource: "coast-live-oak-hero"),
-            .init(id: "western-fence-lizard-grid", title: "Western Fence\nLizard", imageSource: "observe-photo-square"),
-            .init(id: "black-phoebe-grid", title: "Black\nPhoebe", imageSource: "https://www.figma.com/api/mcp/asset/5480f314-a42a-4aff-b091-ade77472cf43"),
-            .init(id: "california-poppy-grid", title: "California\nPoppy", imageSource: "https://www.figma.com/api/mcp/asset/56a574ab-72a6-4985-a207-e84398659de6"),
-            .init(id: "red-tailed-hawk-grid", title: "Red-tailed\nHawk", imageSource: "observe-photo-portrait"),
+            .init(id: "coast-live-oak-grid", title: "Coast Live Oak", imageSource: "coast-live-oak-hero"),
+            .init(id: "western-fence-lizard-grid", title: "Western Fence Lizard", imageSource: "observe-photo-square"),
+            .init(id: "black-phoebe-grid", title: "Black Phoebe", imageSource: "https://www.figma.com/api/mcp/asset/5480f314-a42a-4aff-b091-ade77472cf43"),
+            .init(id: "california-poppy-grid", title: "California Poppy", imageSource: "https://www.figma.com/api/mcp/asset/56a574ab-72a6-4985-a207-e84398659de6"),
+            .init(id: "red-tailed-hawk-grid", title: "Red-tailed Hawk", imageSource: "observe-photo-portrait"),
             .init(id: "buckwheat-grid", title: "Buckwheat", imageSource: "coast-live-oak-gallery-2"),
-            .init(id: "sage-sparrow-grid", title: "Sage\nSparrow", imageSource: "coast-live-oak-gallery-3")
+            .init(id: "sage-sparrow-grid", title: "Sage Sparrow", imageSource: "coast-live-oak-gallery-3")
         ]
     )
 }

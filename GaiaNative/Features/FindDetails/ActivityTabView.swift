@@ -2,6 +2,14 @@ import SwiftUI
 
 struct ActivityTabView: View {
     let species: Species
+    let bottomInset: CGFloat
+    let showsFooter: Bool
+
+    init(species: Species, bottomInset: CGFloat = 12, showsFooter: Bool = true) {
+        self.species = species
+        self.bottomInset = bottomInset
+        self.showsFooter = showsFooter
+    }
 
     @State private var showsAllComments = false
 
@@ -63,27 +71,29 @@ struct ActivityTabView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: GaiaSpacing.md) {
-            ActivitySuggestionCard(suggestion: suggestion)
+        VStack(alignment: .leading, spacing: showsFooter ? 32 : 16) {
+            VStack(alignment: .leading, spacing: 16) {
+                ActivitySuggestionCard(suggestion: suggestion)
 
-            ActivityCommentThread(
-                comments: visibleComments,
-                showsReadMore: showsReadMore,
-                onReadMore: {
-                    HapticsService.selectionChanged()
-                    withAnimation(GaiaMotion.spring) {
-                        showsAllComments = true
+                ActivityCommentThread(
+                    comments: visibleComments,
+                    showsReadMore: showsReadMore,
+                    onReadMore: {
+                        HapticsService.selectionChanged()
+                        withAnimation(GaiaMotion.spring) {
+                            showsAllComments = true
+                        }
                     }
-                }
-            )
+                )
+            }
 
-            HStack(spacing: 12) {
-                ActivityPrimaryButton(title: "Suggest ID")
-                ActivityPrimaryButton(title: "Comment")
+            if showsFooter {
+                ActivityFooterBar()
             }
         }
         .padding(.horizontal, 10)
-        .padding(.top, GaiaSpacing.xs)
+        .padding(.top, 8)
+        .padding(.bottom, bottomInset)
     }
 }
 
@@ -133,7 +143,8 @@ private struct ActivitySuggestionCard: View {
                 author: suggestion.author,
                 actionText: "suggested an ID",
                 timestamp: suggestion.timestamp,
-                avatarImageName: suggestion.avatarImageName
+                avatarImageName: suggestion.avatarImageName,
+                actionTextStyle: .caption2Medium
             )
 
             VStack(alignment: .leading, spacing: 12) {
@@ -162,7 +173,12 @@ private struct ActivitySuggestionCard: View {
             }
             .padding(12)
         }
-        .background(ActivityCardBackground(cornerRadius: GaiaRadius.lg))
+        .background(
+            ActivityCardBackground(
+                cornerRadius: GaiaRadius.lg,
+                highlightStrokeColor: GaiaColor.olive
+            )
+        )
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
@@ -173,14 +189,16 @@ private struct ActivityCommentThread: View {
     let onReadMore: () -> Void
 
     var body: some View {
-        HStack(alignment: .top, spacing: GaiaSpacing.md) {
+        HStack(alignment: .top, spacing: 16) {
             Rectangle()
                 .fill(GaiaColor.broccoliBrown200)
                 .frame(width: 0.5)
 
-            VStack(alignment: .leading, spacing: GaiaSpacing.md) {
-                ForEach(comments) { comment in
-                    ActivityCommentCard(comment: comment)
+            VStack(alignment: .leading, spacing: 0) {
+                VStack(alignment: .leading, spacing: 16) {
+                    ForEach(comments) { comment in
+                        ActivityCommentCard(comment: comment)
+                    }
                 }
 
                 if showsReadMore {
@@ -196,6 +214,7 @@ private struct ActivityCommentThread: View {
                         .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.plain)
+                    .padding(.top, 4)
                 }
             }
         }
@@ -212,7 +231,8 @@ private struct ActivityCommentCard: View {
                 author: comment.author,
                 actionText: "commented",
                 timestamp: comment.timestamp,
-                avatarImageName: comment.avatarImageName
+                avatarImageName: comment.avatarImageName,
+                actionTextStyle: .caption2
             )
 
             Text(comment.body)
@@ -231,36 +251,39 @@ private struct ActivityCardHeader: View {
     let actionText: String
     let timestamp: String
     let avatarImageName: String
+    let actionTextStyle: GaiaTextStyle
 
     private let avatarDimension: CGFloat = 48
-    private let timestampWidth: CGFloat = 77
-
     var body: some View {
-        HStack(alignment: .center, spacing: 8) {
+        HStack(alignment: .top, spacing: 8) {
             FindProfilePicture(size: .large, imageName: avatarImageName)
 
-            HStack(alignment: .center, spacing: 8) {
-                HStack(alignment: .bottom, spacing: 4) {
+            VStack(alignment: .leading, spacing: 0) {
+                HStack(alignment: .firstTextBaseline, spacing: 4) {
                     Text(author)
                         .gaiaFont(.subheadSerif)
                         .foregroundStyle(GaiaColor.olive)
                         .lineLimit(1)
 
                     Text(actionText)
-                        .gaiaFont(.caption2Medium)
+                        .gaiaFont(actionTextStyle)
                         .foregroundStyle(GaiaColor.broccoliBrown500)
                         .lineLimit(1)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-                Text(timestamp)
-                    .gaiaFont(.caption)
-                    .foregroundStyle(GaiaColor.inkBlack200)
-                    .monospacedDigit()
-                    .lineLimit(1)
-                    .frame(width: timestampWidth, height: avatarDimension, alignment: .topTrailing)
+                Spacer(minLength: 0)
             }
-            .frame(maxWidth: .infinity, minHeight: avatarDimension, alignment: .leading)
+            .frame(maxWidth: .infinity, minHeight: avatarDimension, alignment: .topLeading)
+
+            Text(timestamp)
+                .gaiaFont(.caption)
+                .foregroundStyle(GaiaColor.inkBlack200)
+                .monospacedDigit()
+                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
+                .padding(.top, 2)
+                .frame(minHeight: avatarDimension, alignment: .topTrailing)
         }
         .padding(12)
         .overlay(alignment: .bottom) {
@@ -293,16 +316,35 @@ private struct ActivityOutlinedPill: View {
     }
 }
 
+struct ActivityFooterBar: View {
+    var body: some View {
+        HStack(spacing: 12) {
+            ActivityPrimaryButton(title: "Suggest ID")
+            ActivityPrimaryButton(title: "Comment")
+        }
+    }
+}
+
 private struct ActivityCardBackground: View {
     let cornerRadius: CGFloat
+    var highlightStrokeColor: Color? = nil
 
     var body: some View {
-        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+        let cardShape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+
+        cardShape
             .fill(GaiaColor.paperWhite50)
-            .overlay(
-                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
-            )
+            .overlay {
+                cardShape
+                    .strokeBorder(GaiaColor.broccoliBrown200, lineWidth: 0.5)
+            }
+            .overlay {
+                if let highlightStrokeColor {
+                    cardShape
+                        .inset(by: 1)
+                        .strokeBorder(highlightStrokeColor, lineWidth: 1)
+                }
+            }
             .shadow(color: GaiaShadow.cardColor, radius: GaiaShadow.cardRadius, x: 0, y: GaiaShadow.mdYOffset)
     }
 }

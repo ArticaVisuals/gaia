@@ -105,6 +105,8 @@ enum AssetCatalog {
         "profile-avatar-maya": "assets/profile/all-people/avatar-maya.png",
         "profile-avatar-lena": "assets/profile/all-people/avatar-lena.png",
         "find-map-preview-card": "assets/find-details/find-tab-final/map-preview-card.png",
+        "find-map-preview-base": "assets/find-details/find-tab-final/map-preview-card-base.png",
+        "find-map-preview-overlay": "assets/find-details/find-tab-final/map-preview-card-overlay.png",
         "find-biome-riparian": "assets/find-details/find-tab-final/biome-riparian.png",
         "find-weather-bg": "assets/find-details/find-tab-final/weather-bg.png",
         "find-project-creek": "assets/find-details/find-tab-final/project-creek-recovery.png",

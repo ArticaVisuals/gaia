@@ -7,8 +7,7 @@ struct StatsCard: View {
     var body: some View {
         HStack(spacing: 15) {
             statColumn(label: "Category") {
-                GaiaAssetImage(name: "learn-category-badge", contentMode: .fit)
-                    .frame(width: 53.3, height: 53.3)
+                GaiaCategoryBadgeIcon(width: 53.3, height: 53.3)
             }
 
             divider

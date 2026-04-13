@@ -108,7 +108,10 @@ final class AppState: ObservableObject {
         showsFindDetailsPrototype = false
     }
 
-    func openStoryDeck(_ storyID: String?) {
+    func openStoryDeck(_ storyID: String?, speciesID: String? = nil) {
+        if let speciesID {
+            selectedSpeciesID = speciesID
+        }
         selectedStoryID = storyID
         showsStoryDeck = true
     }

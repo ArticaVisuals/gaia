@@ -5,8 +5,8 @@ struct ExpandMapButton: View {
     let action: () -> Void
 
     var body: some View {
-        GlassCircleButton(size: 40, action: action) {
-            GaiaIcon(kind: .expand, size: 26.667, tint: GaiaColor.olive)
+        GlassCircleButton(size: 44, action: action) {
+            GaiaIcon(kind: .expand, size: 24, tint: GaiaColor.inkBlack900)
         }
         .accessibilityLabel("Expand map")
     }

@@ -31,7 +31,7 @@ struct ProfileScreen: View {
                         )
 
                         tabContent(for: viewModel.selectedTab)
-                            .padding(.bottom, 120)
+                            .padding(.bottom, GaiaSpacing.sm)
                     }
                     .frame(width: contentWidth, alignment: .leading)
                     .padding(.leading, proxy.safeAreaInsets.leading)
@@ -48,6 +48,7 @@ struct ProfileScreen: View {
             }
         }
         .background(GaiaColor.paperWhite50)
+        .ignoresSafeArea(edges: .bottom)
         .onAppear {
             let initialTab = forcedTab ?? appState.selectedProfileTab
             viewModel.selectedTab = initialTab
@@ -127,7 +128,7 @@ private struct ProfilePreviewTab: View {
                 )
             }
             .padding(.top, GaiaSpacing.sm)
-            .padding(.bottom, 120)
+            .padding(.bottom, GaiaSpacing.sm)
         }
         .fullScreenCover(isPresented: $showsSignUpIdentity) {
             SignUpIdentityScreen {

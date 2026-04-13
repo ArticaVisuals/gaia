@@ -11,6 +11,11 @@ private enum FindDetailsLearnLayout {
     static let statsGap: CGFloat = 8
     static let galleryHeight: CGFloat = 228.479
     static let galleryCornerRadius: CGFloat = 16.336
+    static let galleryBorderWidth: CGFloat = 0.828
+    static let galleryItemSpacing: CGFloat = 8
+    static let galleryLandscapeWidth: CGFloat = 369.209
+    static let gallerySquareWidth: CGFloat = 228.479
+    static let galleryAlternateLandscapeWidth: CGFloat = 371.278
     static let pageDotSize: CGFloat = 8
     static let mapHeight: CGFloat = 214
     static let mapCornerRadius: CGFloat = 16
@@ -19,7 +24,7 @@ private enum FindDetailsLearnLayout {
     static let listImageSize: CGFloat = 88.556
     static let leaderboardRowHeight: CGFloat = 52.368
     static let highlightedLeaderboardRowHeight: CGFloat = 56
-    static let footerTopPadding: CGFloat = 12
+    static let footerTopPadding: CGFloat = 8
     static let footerBottomPadding: CGFloat = 48
 }
 
@@ -36,6 +41,7 @@ private struct FindDetailsLeaderboardEntry: Identifiable {
     let name: String
     let points: String
     let highlighted: Bool
+    let avatarImageName: String
 }
 
 struct FindDetailsLearnScreen: View {
@@ -45,12 +51,33 @@ struct FindDetailsLearnScreen: View {
     let dismiss: () -> Void
     let onOpenStory: (StoryCard) -> Void
 
-    @State private var selectedGalleryIndex = 0
+    @State private var selectedGalleryIndex: Int? = 0
     @State private var showsExpandedMap = false
+
+    private enum ScrollMarker: Hashable {
+        case recentActivity
+        case project
+    }
 
     private var galleryImages: [String] {
         let images = Array(species.galleryAssetNames.dropFirst())
         return images.isEmpty ? ["coast-live-oak-gallery-1"] : images
+    }
+
+    private var galleryCards: [FindDetailsLearnGalleryCard] {
+        let widths = [
+            FindDetailsLearnLayout.galleryLandscapeWidth,
+            FindDetailsLearnLayout.gallerySquareWidth,
+            FindDetailsLearnLayout.galleryAlternateLandscapeWidth
+        ]
+
+        return Array(galleryImages.enumerated()).map { index, imageName in
+            FindDetailsLearnGalleryCard(
+                id: index,
+                imageName: imageName,
+                width: widths[safe: index] ?? FindDetailsLearnLayout.galleryAlternateLandscapeWidth
+            )
+        }
     }
 
     private var featuredStory: StoryCard {
@@ -82,10 +109,10 @@ struct FindDetailsLearnScreen: View {
 
     private var leaderboardEntries: [FindDetailsLeaderboardEntry] {
         [
-            .init(id: "oliver", rank: "1", name: "Oliver King", points: "738", highlighted: false),
-            .init(id: "maya", rank: "2", name: "Maya Chen", points: "641", highlighted: false),
-            .init(id: "jules", rank: "3", name: "Jules Kim", points: "448", highlighted: false),
-            .init(id: "alice", rank: "12", name: "Alice Edwards", points: "12", highlighted: true)
+            .init(id: "oliver", rank: "1", name: "Oliver King", points: "738", highlighted: false, avatarImageName: "profile-avatar-noah"),
+            .init(id: "maya", rank: "2", name: "Maya Chen", points: "641", highlighted: false, avatarImageName: "profile-avatar-noah"),
+            .init(id: "jules", rank: "3", name: "Jules Kim", points: "448", highlighted: false, avatarImageName: "profile-avatar-noah"),
+            .init(id: "alice", rank: "12", name: "Alice Edwards", points: "12", highlighted: true, avatarImageName: "find-avatar-alice")
         ]
     }
 
@@ -94,20 +121,41 @@ struct FindDetailsLearnScreen: View {
             GaiaColor.paperWhite50
                 .ignoresSafeArea()
 
-            ScrollView(showsIndicators: false) {
-                VStack(alignment: .center, spacing: FindDetailsLearnLayout.sectionSpacing) {
-                    introSection
-                    statsSection
-                    gallerySection
-                    foundInSection
-                    recentActivitySection
-                    storySection
-                    topObserversSection
-                    projectSection
+            ScrollViewReader { scrollProxy in
+                ScrollView(showsIndicators: false) {
+                    VStack(alignment: .center, spacing: FindDetailsLearnLayout.sectionSpacing) {
+                        introSection
+                        statsSection
+                        gallerySection
+                        foundInSection
+                        recentActivitySection
+                            .id(ScrollMarker.recentActivity)
+                        storySection
+                        topObserversSection
+                        projectSection
+                            .id(ScrollMarker.project)
+                    }
+                    .padding(.top, FindDetailsLearnLayout.contentTopPadding)
+                    .padding(.bottom, FindDetailsLearnLayout.footerBottomPadding)
+                    .frame(maxWidth: .infinity)
                 }
-                .padding(.top, FindDetailsLearnLayout.contentTopPadding)
-                .padding(.bottom, FindDetailsLearnLayout.footerBottomPadding)
-                .frame(maxWidth: .infinity)
+                .task {
+                    let target: ScrollMarker?
+                    if launchArguments.contains("-gaiaFindDetailsPrototypeLearnDeep") {
+                        target = .project
+                    } else if launchArguments.contains("-gaiaFindDetailsPrototypeLearnLower") {
+                        target = .recentActivity
+                    } else {
+                        target = nil
+                    }
+
+                    guard let target else { return }
+                    DispatchQueue.main.async {
+                        withAnimation(.none) {
+                            scrollProxy.scrollTo(target, anchor: .top)
+                        }
+                    }
+                }
             }
 
             ToolbarGlassButton(icon: .back, accessibilityLabel: "Back", action: dismiss)
@@ -115,11 +163,16 @@ struct FindDetailsLearnScreen: View {
                 .safeAreaPadding(.top, 8)
         }
         .ignoresSafeArea(edges: .top)
+        .statusBarHidden(true)
         .fullScreenCover(isPresented: $showsExpandedMap) {
             LearnMapExpandedScreen(observations: observations) {
                 showsExpandedMap = false
             }
         }
+    }
+
+    private var launchArguments: Set<String> {
+        Set(ProcessInfo.processInfo.arguments)
     }
 
     private var introSection: some View {
@@ -156,8 +209,7 @@ struct FindDetailsLearnScreen: View {
     private var statsSection: some View {
         HStack(spacing: FindDetailsLearnLayout.statsGap) {
             FindDetailsLearnStatCard(label: "Category") {
-                GaiaAssetImage(name: "learn-category-badge", contentMode: .fit)
-                    .frame(width: 53.324, height: 53.333)
+                GaiaCategoryBadgeIcon()
             }
 
             FindDetailsLearnStatCard(label: "Status") {
@@ -182,41 +234,59 @@ struct FindDetailsLearnScreen: View {
 
     private var gallerySection: some View {
         VStack(spacing: GaiaSpacing.sm) {
-            TabView(selection: $selectedGalleryIndex) {
-                ForEach(Array(galleryImages.enumerated()), id: \.offset) { index, imageName in
-                    GaiaAssetImage(name: imageName, contentMode: .fill)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .clipShape(
-                            RoundedRectangle(
-                                cornerRadius: FindDetailsLearnLayout.galleryCornerRadius,
-                                style: .continuous
-                            )
-                        )
-                        .overlay(
-                            RoundedRectangle(
-                                cornerRadius: FindDetailsLearnLayout.galleryCornerRadius,
-                                style: .continuous
-                            )
-                                .stroke(GaiaColor.oliveGreen200, lineWidth: 0.828)
-                        )
-                        .padding(.horizontal, FindDetailsLearnLayout.horizontalInset)
-                        .tag(index)
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(spacing: FindDetailsLearnLayout.galleryItemSpacing) {
+                    ForEach(galleryCards) { card in
+                        galleryCard(card)
+                            .id(card.id)
+                    }
                 }
+                .padding(.horizontal, FindDetailsLearnLayout.horizontalInset)
+                .scrollTargetLayout()
             }
             .frame(height: FindDetailsLearnLayout.galleryHeight)
-            .tabViewStyle(.page(indexDisplayMode: .never))
+            .defaultScrollAnchor(.leading)
+            .scrollPosition(id: $selectedGalleryIndex)
+            .findDetailsGalleryScrollBehavior()
 
             HStack(spacing: GaiaSpacing.sm) {
-                ForEach(galleryImages.indices, id: \.self) { index in
-                    Circle()
-                        .fill(index == selectedGalleryIndex ? GaiaColor.olive : GaiaColor.oliveGreen200)
-                        .frame(
-                            width: FindDetailsLearnLayout.pageDotSize,
-                            height: FindDetailsLearnLayout.pageDotSize
-                        )
+                ForEach(galleryCards) { card in
+                    Button {
+                        withAnimation(GaiaMotion.spring) {
+                            selectedGalleryIndex = card.id
+                        }
+                    } label: {
+                        Circle()
+                            .fill(card.id == currentGalleryIndex ? GaiaColor.olive : GaiaColor.oliveGreen200)
+                            .frame(
+                                width: FindDetailsLearnLayout.pageDotSize,
+                                height: FindDetailsLearnLayout.pageDotSize
+                            )
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Show gallery image \(card.id + 1)")
                 }
             }
         }
+    }
+
+    private var currentGalleryIndex: Int {
+        selectedGalleryIndex ?? galleryCards.first?.id ?? 0
+    }
+
+    private func galleryCard(_ card: FindDetailsLearnGalleryCard) -> some View {
+        let shape = RoundedRectangle(
+            cornerRadius: FindDetailsLearnLayout.galleryCornerRadius,
+            style: .continuous
+        )
+
+        return GaiaAssetImage(name: card.imageName, contentMode: .fill)
+            .frame(width: card.width, height: FindDetailsLearnLayout.galleryHeight)
+            .clipShape(shape)
+            .overlay(
+                shape
+                    .stroke(GaiaColor.oliveGreen200, lineWidth: FindDetailsLearnLayout.galleryBorderWidth)
+            )
     }
 
     private var foundInSection: some View {
@@ -224,7 +294,7 @@ struct FindDetailsLearnScreen: View {
             Button {
                 showsExpandedMap = true
             } label: {
-                GaiaAssetImage(name: "observe-map-preview", contentMode: .fill)
+                FindDetailsLearnFoundInMapArtwork()
                     .frame(maxWidth: .infinity)
                     .frame(height: FindDetailsLearnLayout.mapHeight)
                     .clipShape(
@@ -313,12 +383,6 @@ struct FindDetailsLearnScreen: View {
         .background(
             RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous)
                 .fill(GaiaColor.broccoliBrown500)
-                .shadow(
-                    color: GaiaShadow.cardColor,
-                    radius: GaiaShadow.cardRadius,
-                    x: 0,
-                    y: GaiaShadow.mdYOffset
-                )
         )
         .padding(.horizontal, FindDetailsLearnLayout.horizontalInset)
     }
@@ -327,6 +391,17 @@ struct FindDetailsLearnScreen: View {
         let trimmed = species.summary.trimmingCharacters(in: .whitespacesAndNewlines)
         guard let first = trimmed.first else { return trimmed }
         return first.uppercased() + trimmed.dropFirst()
+    }
+}
+
+private extension View {
+    @ViewBuilder
+    func findDetailsGalleryScrollBehavior() -> some View {
+        if #available(iOS 26.0, *) {
+            scrollTargetBehavior(.viewAligned(limitBehavior: .alwaysByOne, anchor: .leading))
+        } else {
+            scrollTargetBehavior(.viewAligned)
+        }
     }
 }
 
@@ -388,7 +463,7 @@ private struct FindDetailsLearnRecentActivityCard: View {
 
             VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
                 Text(item.dayLabel)
-                    .gaiaFont(.caption)
+                    .gaiaFont(.footnote)
                     .foregroundStyle(GaiaColor.inkBlack300)
 
                 Text(item.locationText)
@@ -448,7 +523,7 @@ private struct FindDetailsLeaderboardRow: View {
 
                 HStack(spacing: entry.highlighted ? GaiaSpacing.sm : 7.481) {
                     GaiaProfileAvatar(
-                        imageName: "find-avatar-alice",
+                        imageName: entry.avatarImageName,
                         size: entry.highlighted ? 32 : 29.924,
                         borderWidth: entry.highlighted ? 0.333 : 0.312
                     )
@@ -514,5 +589,17 @@ private enum FindDetailsLearnFontResolver {
             return .custom("NewSpirit-Regular", size: size)
         }
         return .system(size: size, weight: weight, design: .serif)
+    }
+}
+
+private struct FindDetailsLearnGalleryCard: Identifiable {
+    let id: Int
+    let imageName: String
+    let width: CGFloat
+}
+
+private extension Collection {
+    subscript(safe index: Index) -> Element? {
+        indices.contains(index) ? self[index] : nil
     }
 }

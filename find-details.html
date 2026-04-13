@@ -36,8 +36,8 @@ body.nav-page-exit {
   overflow-y: auto; overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
-  /* bottom padding = nav height + bottom gap + extra breathing room */
-  padding-bottom: calc(var(--nav-h) + var(--nav-bottom) + 16px);
+  /* bottom padding = nav height (56px) + nav bottom inset (12px) + breathing room */
+  padding-bottom: 84px;
   background: var(--cream-50);
 }
 #page::-webkit-scrollbar { display: none; }
@@ -241,7 +241,7 @@ body.nav-page-exit {
   content: '';
   position: absolute; inset: 0;
   border-radius: inherit;
-  padding: 0.5px;
+  padding: 1px;
   background: conic-gradient(
     from var(--shimmer-angle, 0deg),
     #D8C9B8 0%,
@@ -818,7 +818,7 @@ body.nav-page-exit {
 
 /* ── TAB PANELS ─────────────────────────────────────────── */
 .tab-panel { display: block; }
-.tab-panel[hidden] { display: none; }
+.tab-panel[hidden] { display: none !important; }
 
 /* ── LEARN TAB ───────────────────────────────────────────── */
 #panel-learn {

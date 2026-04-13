@@ -2,6 +2,7 @@
 import SwiftUI
 
 struct GlassPillButton<Content: View>: View {
+    var showsShadow: Bool = true
     @ViewBuilder let content: () -> Content
 
     var body: some View {
@@ -10,7 +11,13 @@ struct GlassPillButton<Content: View>: View {
         }
         .padding(.horizontal, 10)
         .frame(height: 48)
-        .background(GaiaMaterialBackground(cornerRadius: GaiaRadius.full, interactive: true))
+        .background(
+            GaiaMaterialBackground(
+                cornerRadius: GaiaRadius.full,
+                interactive: true,
+                showsShadow: showsShadow
+            )
+        )
         .clipShape(Capsule())
     }
 }

@@ -147,6 +147,7 @@ enum GaiaColor {
     static let brandPrimary = oliveGreen500
     static let brandSecondary = broccoliBrown500
     static let brandAccent = asparagusGreen500
+    static let dataQualityActive = Color(hex: 0x6B8352)
 }
 
 private extension Color {

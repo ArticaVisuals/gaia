@@ -1159,13 +1159,13 @@ body.nav-page-exit {
   color: var(--olive); margin-bottom: 8px;
 }
 .fd-condition-row {
-  display: flex; gap: 8px;
+  display: flex; gap: 8px; align-items: flex-start;
 }
 .fd-condition-cell {
-  flex: 1; background: var(--paper-50);
-  border: 0.5px solid var(--brown-200); border-radius: 8px;
+  flex: 0 0 181px; width: 181px; background: var(--paper-50);
+  border: 0.5px solid var(--brown-200); border-radius: var(--radius-lg);
   padding: 12px; overflow: hidden;
-  box-shadow: 0px 4px 20px rgba(155,133,107,0.16);
+  box-shadow: none;
   display: flex; flex-direction: column; gap: 8px;
 }
 .fd-condition-label {
@@ -3563,7 +3563,7 @@ body.nav-page-exit {
               <div class="fd-condition-cell">
                 <span class="fd-condition-label">Biome</span>
                 <div class="fd-biome-img-wrap">
-                  <img src="https://www.figma.com/api/mcp/asset/d17de230-48b7-4004-bbda-35bb238f4fd3" alt="Riparian Edge">
+                  <img src="assets/find-details/find-tab/biome-riparian.png" alt="Riparian Edge">
                 </div>
                 <div class="fd-condition-meta">
                   <div>
@@ -3583,7 +3583,7 @@ body.nav-page-exit {
               <div class="fd-condition-cell">
                 <span class="fd-condition-label">Weather</span>
                 <div class="fd-weather-box">
-                  <img class="fd-weather-bg" src="https://www.figma.com/api/mcp/asset/44899393-1b31-49b0-b046-ce4548239b7f" alt="">
+                  <img class="fd-weather-bg" src="assets/find-details/find-tab/weather-bg.png" alt="">
                   <span class="fd-weather-temp">54º</span>
                 </div>
                 <div class="fd-condition-meta">

@@ -27,6 +27,17 @@ struct GaiaAssetImage: View {
     }
 }
 
+struct GaiaCategoryBadgeIcon: View {
+    var width: CGFloat = 53.324
+    var height: CGFloat = 53.333
+
+    var body: some View {
+        GaiaAssetImage(name: "learn-category-badge", contentMode: .fit)
+            .frame(width: width, height: height)
+            .accessibilityHidden(true)
+    }
+}
+
 // figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=870-13065
 enum GaiaQualityCheckmarkState: Equatable {
     case checked
@@ -38,46 +49,18 @@ struct GaiaQualityCheckmark: View {
     var size: CGFloat = 40
 
     var body: some View {
-        ZStack {
-            switch state {
-            case .checked:
-                Circle()
-                    .fill(GaiaColor.oliveGreen300)
-
-                GaiaQualityCheckmarkGlyph()
-                    .stroke(
-                        GaiaColor.paperWhite50,
-                        style: StrokeStyle(
-                            lineWidth: max(size * 0.095, 3.2),
-                            lineCap: .round,
-                            lineJoin: .round
-                        )
-                    )
-                    .padding(size * 0.06)
-            case .unchecked:
-                Circle()
-                    .stroke(GaiaColor.blackishGrey200, lineWidth: max(size * 0.03, 1))
-            }
-        }
+        GaiaAssetImage(name: assetName, contentMode: .fit)
         .frame(width: size, height: size)
         .accessibilityHidden(true)
     }
-}
 
-private struct GaiaQualityCheckmarkGlyph: Shape {
-    func path(in rect: CGRect) -> Path {
-        let scaleX = rect.width / 40
-        let scaleY = rect.height / 40
-
-        func point(_ x: CGFloat, _ y: CGFloat) -> CGPoint {
-            CGPoint(x: rect.minX + (x * scaleX), y: rect.minY + (y * scaleY))
+    private var assetName: String {
+        switch state {
+        case .checked:
+            return "quality-checkmark-checked"
+        case .unchecked:
+            return "quality-checkmark-unchecked"
         }
-
-        var path = Path()
-        path.move(to: point(11.1993, 20.4604))
-        path.addLine(to: point(16.955, 26.2163))
-        path.addLine(to: point(29.7941, 13.3774))
-        return path
     }
 }
 

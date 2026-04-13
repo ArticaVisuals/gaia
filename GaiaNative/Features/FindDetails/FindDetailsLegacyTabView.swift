@@ -270,7 +270,7 @@ private struct LegacyFindConditionCard<ImageContent: View>: View {
                 Spacer(minLength: 4)
 
                 GaiaIcon(kind: .circleArrowRight, size: 16)
-                    .padding(.top, 1)
+                    .padding(.top, GaiaSpacing.xxs)
             }
         }
         .padding(12)
@@ -296,9 +296,8 @@ private struct LegacyFindWeatherImage: View {
                     .offset(x: -(proxy.size.width * 0.0828), y: -(proxy.size.height * 0.4235))
 
                 Text("54º")
-                    .font(.custom("NewSpirit-Regular", size: 69.5))
+                    .gaiaFont(.weatherValue)
                     .foregroundStyle(GaiaColor.paperWhite500)
-                    .tracking(-1.09)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
             }
         }
@@ -307,32 +306,29 @@ private struct LegacyFindWeatherImage: View {
 
 private struct LegacyFindDataQualityCard: View {
     var body: some View {
-        HStack(spacing: 24) {
+        HStack(spacing: GaiaSpacing.lg) {
             LegacyFindQualityItem(
                 title: "Ungraded",
-                imageName: "find-dq-checked",
-                isActive: true
+                state: .checked
             )
             LegacyFindQualityItem(
                 title: "Casual Grade",
-                imageName: "find-dq-checked",
-                isActive: true
+                state: .checked
             )
             LegacyFindQualityItem(
                 title: "Research Grade",
-                imageName: "find-dq-unchecked",
-                isActive: false
+                state: .unchecked
             )
         }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 16)
+        .padding(.horizontal, GaiaSpacing.md)
+        .padding(.vertical, GaiaSpacing.cardContentInsetWide)
         .frame(maxWidth: .infinity)
         .background(
             RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
                 .fill(GaiaColor.paperWhite50)
                 .overlay(
                     RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
-                        .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
+                        .strokeBorder(GaiaColor.broccoliBrown200, lineWidth: 0.5)
                 )
         )
         .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
@@ -341,17 +337,19 @@ private struct LegacyFindDataQualityCard: View {
 
 private struct LegacyFindQualityItem: View {
     let title: String
-    let imageName: String
-    let isActive: Bool
+    let state: GaiaQualityCheckmarkState
+
+    private var isActive: Bool {
+        state == .checked
+    }
 
     var body: some View {
-        VStack(spacing: 8) {
-            GaiaAssetImage(name: imageName, contentMode: .fit)
-                .frame(width: 40, height: 40)
+        VStack(spacing: GaiaSpacing.sm) {
+            GaiaQualityCheckmark(state: state)
 
             Text(title)
                 .gaiaFont(.caption)
-                .foregroundStyle(isActive ? GaiaColor.olive : GaiaColor.blackishGrey200)
+                .foregroundStyle(isActive ? GaiaColor.dataQualityActive : GaiaColor.blackishGrey200)
                 .lineLimit(1)
                 .minimumScaleFactor(0.9)
                 .multilineTextAlignment(.center)

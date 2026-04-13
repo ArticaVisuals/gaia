@@ -79,7 +79,7 @@ struct GaiaProjectCard: View {
 
                     VStack(alignment: .leading, spacing: GaiaSpacing.xs) {
                         Text(title)
-                            .font(GaiaTypography.subheadSerif)
+                            .gaiaFont(.calloutTight)
                             .foregroundStyle(GaiaColor.paperWhite50)
                             .lineLimit(2)
                             .minimumScaleFactor(0.9)
@@ -89,7 +89,7 @@ struct GaiaProjectCard: View {
                             GaiaProjectCardBinocularsIcon(tint: GaiaColor.paperWhite50)
 
                             Text(countLabel)
-                                .font(GaiaTypography.caption)
+                                .gaiaFont(.micro)
                                 .foregroundStyle(GaiaColor.paperWhite50)
                                 .lineLimit(1)
                         }

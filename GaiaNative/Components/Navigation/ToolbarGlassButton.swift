@@ -37,7 +37,7 @@ struct ToolbarGlassLearnButton: View {
         static let horizontalPadding: CGFloat = 20
         static let verticalPadding: CGFloat = 14
         static let contentSpacing: CGFloat = 8
-        static let borderWidth: CGFloat = 0.5
+        static let borderWidth: CGFloat = 1.0
         static let arrowAssetWidth: CGFloat = 15.59
         static let arrowAssetHeight: CGFloat = 20.103
         static let arrowWidth: CGFloat = 20.103

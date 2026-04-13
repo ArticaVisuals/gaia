@@ -5,8 +5,11 @@ private enum FindDetailsPrototypeLayout {
     static let designWidth: CGFloat = 402
     static let expandedHeroHeight: CGFloat = 441
     static let collapsedHeroHeight: CGFloat = 228
-    static let expandedImageHeight: CGFloat = 441
-    static let collapsedImageHeight: CGFloat = 228
+    // The hero image bleeds below the static top container so it can fill the
+    // panel's rounded top corners. Figma sets the image frame to 487 in expanded
+    // and 264 in contracted (the static-top container heights are 441 / 191).
+    static let expandedImageHeight: CGFloat = 487
+    static let collapsedImageHeight: CGFloat = 264
     static let expandedPanelTop: CGFloat = 428
     static let collapsedPanelTop: CGFloat = 205
     static let tabHeaderHeight: CGFloat = 60
@@ -51,13 +54,19 @@ struct FindDetailsPrototypeScreen: View {
     @EnvironmentObject private var contentStore: ContentStore
 
     @State private var selectedTab: FindDetailsTab = .find
-    @State private var scrollOriginY: CGFloat?
     @State private var scrollOffset: CGFloat = 0
     @State private var showsExpandedMap = false
     @State private var showsLearnScreen = false
 
-    private let contentBottomInset = GaiaSpacing.xxxl + GaiaSpacing.xxl + GaiaSpacing.sm
     private let mapDataService = MapDataService()
+
+    private var deviceBottomSafeArea: CGFloat {
+        UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap(\.windows)
+            .first(where: \.isKeyWindow)?
+            .safeAreaInsets.bottom ?? 0
+    }
 
     private enum FindMapReference {
         static let latitude = 35.1797
@@ -66,6 +75,10 @@ struct FindDetailsPrototypeScreen: View {
 
     private enum ScrollMarker: Hashable {
         case lockPoint
+    }
+
+    private enum ScrollCoordinateSpace {
+        static let name = "find-details-prototype-scroll"
     }
 
     var body: some View {
@@ -82,6 +95,14 @@ struct FindDetailsPrototypeScreen: View {
                 let heroHeight = metrics.expandedHeroHeight + ((metrics.collapsedHeroHeight - metrics.expandedHeroHeight) * collapseProgress)
                 let heroImageHeight = metrics.expandedImageHeight + ((metrics.collapsedImageHeight - metrics.expandedImageHeight) * collapseProgress)
                 let panelTop = metrics.expandedPanelTop + ((metrics.collapsedPanelTop - metrics.expandedPanelTop) * collapseProgress)
+                let contentBottomInset = max(
+                    metrics.collapsedContentOffset,
+                    GaiaSpacing.xxxl + GaiaSpacing.xxl + GaiaSpacing.sm
+                ) + deviceBottomSafeArea
+                let activityContentTopPadding = contentWidth * (8 / FindDetailsPrototypeLayout.designWidth)
+                let tabContentTopPadding = selectedTab == .activity
+                    ? activityContentTopPadding
+                    : metrics.contentTopPadding
 
                 ZStack(alignment: .topLeading) {
                     GaiaColor.surfaceSheet.ignoresSafeArea()
@@ -98,26 +119,19 @@ struct FindDetailsPrototypeScreen: View {
                             Color.clear
                                 .frame(height: 0)
                                 .onGeometryChange(for: CGFloat.self) { geometry in
-                                    geometry.frame(in: .global).minY
+                                    geometry.frame(in: .named(ScrollCoordinateSpace.name)).minY
                                 } action: { newValue in
-                                    if let originY = scrollOriginY {
-                                        scrollOffset = max(0, originY - newValue)
-                                    } else {
-                                        scrollOriginY = newValue
-                                        scrollOffset = 0
-                                    }
+                                    scrollOffset = max(0, -newValue)
                                 }
 
                             if isLockedScreenshotMode {
-                                Color.clear
-                                    .frame(height: metrics.collapsedContentOffset)
+                                collapsedHeaderSpacer(metrics: metrics, contentWidth: contentWidth)
                             } else {
                                 Color.clear
                                     .frame(height: metrics.collapseDistance)
                                     .id(ScrollMarker.lockPoint)
 
-                                Color.clear
-                                    .frame(height: metrics.collapsedContentOffset)
+                                collapsedHeaderSpacer(metrics: metrics, contentWidth: contentWidth)
                             }
 
                             currentTabContent(
@@ -125,14 +139,20 @@ struct FindDetailsPrototypeScreen: View {
                                 usesCollapsedContentLayout: usesCollapsedContentLayout
                             )
                                 .frame(maxWidth: .infinity, alignment: .topLeading)
-                                .padding(.top, metrics.contentTopPadding)
+                                .padding(.top, tabContentTopPadding)
                                 .offset(y: screenshotContentShift)
+
+                            if screenshotContentBottomCompensation > 0 {
+                                Color.clear
+                                    .frame(height: screenshotContentBottomCompensation)
+                            }
 
                             Color.clear
                                 .frame(height: contentBottomInset)
                         }
                         .frame(width: contentWidth, alignment: .topLeading)
                     }
+                    .coordinateSpace(name: ScrollCoordinateSpace.name)
                     .allowsHitTesting(!isLockedScreenshotMode)
 
                     FindDetailsPrototypeHero(
@@ -150,17 +170,20 @@ struct FindDetailsPrototypeScreen: View {
                     PrototypeTabHeader(selection: $selectedTab)
                         .frame(width: contentWidth, height: metrics.tabHeaderHeight)
                         .offset(y: panelTop)
+                        .allowsHitTesting(false)
+                        .accessibilityHidden(true)
 
                     PrototypeToolbarOverlay(
                         onBack: { appState.closeFindDetailsPrototype() }
                     )
                     .frame(width: contentWidth, alignment: .top)
+
                 }
             }
         }
-        .ignoresSafeArea(edges: .top)
+        .ignoresSafeArea(edges: [.top, .bottom])
+        .statusBarHidden(true)
         .onAppear {
-            scrollOriginY = nil
             scrollOffset = 0
             selectedTab = prototypeSelection(for: appState.selectedFindTab)
             appState.selectedFindTab = selectedTab
@@ -190,7 +213,7 @@ struct FindDetailsPrototypeScreen: View {
                 dismiss: { showsLearnScreen = false },
                 onOpenStory: { story in
                     showsLearnScreen = false
-                    appState.openStoryDeck(story.id)
+                    appState.openStoryDeck(story.id, speciesID: species.id)
                 }
             )
         }
@@ -219,6 +242,10 @@ struct FindDetailsPrototypeScreen: View {
             return -540
         }
         return -360
+    }
+
+    private var screenshotContentBottomCompensation: CGFloat {
+        max(0, -screenshotContentShift)
     }
 
     private func screenshotCollapseOffset(
@@ -295,7 +322,7 @@ struct FindDetailsPrototypeScreen: View {
             speciesID: species.id,
             latitude: FindMapReference.latitude,
             longitude: FindMapReference.longitude,
-            thumbnailAssetName: (usesCollapsedContentLayout ? prototypePhotoAssetNames.first : prototypePhotoAssetNames.first)
+            thumbnailAssetName: species.galleryAssetNames.first
                 ?? contentStore.observations.first(where: { $0.speciesID == species.id })?.thumbnailAssetName
         )
     }
@@ -308,36 +335,47 @@ struct FindDetailsPrototypeScreen: View {
             return .find
         }
     }
+
+    private func collapsedHeaderSpacer(
+        metrics: FindDetailsPrototypeMetrics,
+        contentWidth: CGFloat
+    ) -> some View {
+        VStack(spacing: 0) {
+            Color.clear
+                .frame(height: metrics.collapsedPanelTop)
+
+            // Keep an in-scroll interactive header aligned under the pinned visual
+            // overlay so vertical drags continue to belong to the scroll view.
+            PrototypeTabHeader(selection: $selectedTab)
+                .frame(width: contentWidth, height: metrics.tabHeaderHeight)
+                .opacity(0.001)
+        }
+    }
+}
+
+private func prototypePanelTopShape() -> UnevenRoundedRectangle {
+    UnevenRoundedRectangle(
+        cornerRadii: .init(
+            topLeading: GaiaRadius.xl,
+            bottomLeading: 0,
+            bottomTrailing: 0,
+            topTrailing: GaiaRadius.xl
+        ),
+        style: .circular
+    )
 }
 
 private struct PrototypePanelSurface: View {
-    private let topCornerRadius: CGFloat = 24
 
     var body: some View {
-        UnevenRoundedRectangle(
-            cornerRadii: .init(
-                topLeading: topCornerRadius,
-                bottomLeading: 0,
-                bottomTrailing: 0,
-                topTrailing: topCornerRadius
-            ),
-            style: .continuous
-        )
-        .fill(GaiaColor.paperWhite50)
-        .shadow(color: GaiaShadow.cardColor, radius: GaiaShadow.cardRadius, x: 0, y: GaiaShadow.mdYOffset)
-        .overlay {
-            UnevenRoundedRectangle(
-                cornerRadii: .init(
-                    topLeading: topCornerRadius,
-                    bottomLeading: 0,
-                    bottomTrailing: 0,
-                    topTrailing: topCornerRadius
-                ),
-                style: .continuous
-            )
-            .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
-        }
-        .allowsHitTesting(false)
+        prototypePanelTopShape()
+            .fill(GaiaColor.paperWhite50)
+            .overlay {
+                prototypePanelTopShape()
+                    .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
+            }
+            .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
+            .allowsHitTesting(false)
     }
 }
 
@@ -345,19 +383,6 @@ private struct PrototypeTabHeader: View {
     @Binding var selection: FindDetailsTab
 
     private let visibleTabs: [FindDetailsTab] = [.find, .activity]
-    private let topCornerRadius: CGFloat = 24
-    @State private var dragX: CGFloat?
-    @State private var dragAxisLock: DragAxisLock = .undecided
-
-    private let gestureMinimumDistance: CGFloat = 10
-    private let axisDecisionThreshold: CGFloat = 12
-    private let horizontalDominanceRatio: CGFloat = 1.25
-
-    private enum DragAxisLock {
-        case undecided
-        case horizontal
-        case vertical
-    }
 
     var body: some View {
         GeometryReader { proxy in
@@ -366,17 +391,9 @@ private struct PrototypeTabHeader: View {
             let tabWidth = proxy.size.width / CGFloat(max(visibleTabs.count, 1))
 
             ZStack(alignment: .topLeading) {
-                UnevenRoundedRectangle(
-                    cornerRadii: .init(
-                        topLeading: topCornerRadius,
-                        bottomLeading: 0,
-                        bottomTrailing: 0,
-                        topTrailing: topCornerRadius
-                    ),
-                    style: .continuous
-                )
-                .fill(GaiaColor.paperWhite50)
-                .allowsHitTesting(false)
+                prototypePanelTopShape()
+                    .fill(GaiaColor.paperWhite50)
+                    .allowsHitTesting(false)
 
                 VStack(spacing: 0) {
                     Color.clear
@@ -392,11 +409,8 @@ private struct PrototypeTabHeader: View {
                         Rectangle()
                             .fill(GaiaColor.olive)
                             .frame(width: tabWidth, height: 3)
-                            .offset(x: indicatorOffset(tabWidth: tabWidth, totalWidth: proxy.size.width))
-                            .animation(
-                                dragX == nil ? GaiaMotion.spring : .interactiveSpring(response: 0.18, dampingFraction: 0.86),
-                                value: indicatorOffset(tabWidth: tabWidth, totalWidth: proxy.size.width)
-                            )
+                            .offset(x: indicatorOffset(tabWidth: tabWidth))
+                            .animation(GaiaMotion.spring, value: selectedIndex)
                             .allowsHitTesting(false)
 
                         HStack(spacing: 0) {
@@ -419,21 +433,9 @@ private struct PrototypeTabHeader: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
                     .frame(height: switchHeight)
-                    .contentShape(Rectangle())
-                    .simultaneousGesture(selectionDragGesture(tabWidth: tabWidth, totalWidth: proxy.size.width))
                 }
             }
-            .clipShape(
-                UnevenRoundedRectangle(
-                    cornerRadii: .init(
-                        topLeading: topCornerRadius,
-                        bottomLeading: 0,
-                        bottomTrailing: 0,
-                        topTrailing: topCornerRadius
-                    ),
-                    style: .continuous
-                )
-            )
+            .clipShape(prototypePanelTopShape())
         }
     }
 
@@ -441,65 +443,8 @@ private struct PrototypeTabHeader: View {
         visibleTabs.firstIndex(of: selection == .activity ? .activity : .find) ?? 0
     }
 
-    private func indicatorOffset(tabWidth: CGFloat, totalWidth: CGFloat) -> CGFloat {
-        let clampedDragX = min(max((dragX ?? (CGFloat(selectedIndex) * tabWidth + (tabWidth / 2))) - (tabWidth / 2), 0), totalWidth - tabWidth)
-        return clampedDragX
-    }
-
-    private func selectionDragGesture(tabWidth: CGFloat, totalWidth: CGFloat) -> some Gesture {
-        DragGesture(minimumDistance: gestureMinimumDistance, coordinateSpace: .local)
-            .onChanged { value in
-                if dragAxisLock == .undecided {
-                    let horizontalTravel = abs(value.translation.width)
-                    let verticalTravel = abs(value.translation.height)
-                    guard max(horizontalTravel, verticalTravel) >= axisDecisionThreshold else { return }
-
-                    if horizontalTravel > (verticalTravel * horizontalDominanceRatio) {
-                        dragAxisLock = .horizontal
-                    } else if verticalTravel > (horizontalTravel * horizontalDominanceRatio) {
-                        dragAxisLock = .vertical
-                    } else {
-                        return
-                    }
-                }
-
-                guard dragAxisLock == .horizontal else { return }
-                dragX = max(0, min(totalWidth - 1, value.location.x))
-            }
-            .onEnded { value in
-                defer {
-                    dragAxisLock = .undecided
-                }
-
-                guard dragAxisLock == .horizontal else {
-                    withAnimation(GaiaMotion.spring) {
-                        dragX = nil
-                    }
-                    return
-                }
-
-                let projectedLocation = max(
-                    0,
-                    min(
-                        totalWidth - 1,
-                        abs(value.predictedEndTranslation.width) > abs(value.translation.width)
-                            ? value.predictedEndLocation.x
-                            : value.location.x
-                    )
-                )
-                let index = min(max(Int(projectedLocation / tabWidth), 0), visibleTabs.count - 1)
-                if visibleTabs.indices.contains(index) {
-                    let target = visibleTabs[index]
-                    if selection != target {
-                        HapticsService.selectionChanged()
-                        selection = target
-                    }
-                }
-
-                withAnimation(GaiaMotion.spring) {
-                    dragX = nil
-                }
-            }
+    private func indicatorOffset(tabWidth: CGFloat) -> CGFloat {
+        CGFloat(selectedIndex) * tabWidth
     }
 }
 
@@ -513,20 +458,20 @@ private struct FindDetailsPrototypeHero: View {
     private enum Layout {
         static let designWidth: CGFloat = 402
         static let heroTextWidth: CGFloat = 301
-        static let panelTopCornerRadius: CGFloat = 24
+        // Figma keeps the image frame 59pt below the panel top in both states.
+        static let panelArtworkBleed: CGFloat = 59
         static let expandedScientificTop: CGFloat = 289
         static let collapsedScientificTop: CGFloat = 57
         static let expandedTitleTop: CGFloat = 341
         static let collapsedTitleTop: CGFloat = 109
         static let expandedButtonTop: CGFloat = 361
+        static let collapsedButtonTop: CGFloat = expandedButtonTop - (expandedScientificTop - collapsedScientificTop)
         static let horizontalInset: CGFloat = 16
         static let learnButtonWidth: CGFloat = 117
         static let expandedTitleHeight: CGFloat = 68
         static let collapsedTitleHeight: CGFloat = 80
         static let scientificHeight: CGFloat = 32
-        static let expandedBlurHeight: CGFloat = 441
-        static let collapsedBlurHeight: CGFloat = 331
-        static let collapsedBlurTop: CGFloat = 58.5
+        static let collapsedBlurRadius: CGFloat = 7.25
         static let titleFontSize: CGFloat = 40
         static let titleLineHeight: CGFloat = 40
         static let titleTracking: CGFloat = -0.5
@@ -566,25 +511,17 @@ private struct FindDetailsPrototypeHero: View {
             let scale = proxy.size.width / Layout.designWidth
             let artworkHeight = imageHeight
             let artworkRevealHeight = min(
-                proxy.size.height,
-                max(0, visibleHeight + (Layout.panelTopCornerRadius * scale))
+                artworkHeight,
+                max(0, visibleHeight + (Layout.panelArtworkBleed * scale))
             )
-            let blurStart = interpolate(
-                from: 0.3322,
-                to: Layout.collapsedBlurTop / FindDetailsPrototypeLayout.collapsedImageHeight
-            )
+            let blurRadius = Layout.collapsedBlurRadius * scale * clampedProgress
 
             ZStack(alignment: .top) {
                 if let imageName = species.galleryAssetNames.first {
-                    ProgressiveBlurImage(
-                        imageName: imageName,
-                        blurRadius: 4.85 * scale,
-                        blurBleed: 3 * scale,
-                        blurMaskStops: heroBlurMaskStops(startLocation: blurStart),
-                        readabilityStops: heroReadabilityStops
-                    )
+                    GaiaAssetImage(name: imageName)
                         .frame(width: proxy.size.width, height: artworkHeight)
-                        .frame(width: proxy.size.width, height: proxy.size.height, alignment: .top)
+                        .blur(radius: blurRadius)
+                        .overlay { readabilityGradient }
                         .mask(alignment: .top) {
                             Rectangle()
                                 .frame(maxWidth: .infinity)
@@ -592,13 +529,13 @@ private struct FindDetailsPrototypeHero: View {
                         }
                 } else {
                     GaiaColor.oliveGreen700
+                        .frame(width: proxy.size.width, height: artworkHeight)
                 }
             }
         }
     }
 
     private var heroCopy: some View {
-        let scientificVisibility = max(0, 1 - min(clampedProgress * 1.55, 1))
         return GeometryReader { proxy in
             let scale = proxy.size.width / Layout.designWidth
             let horizontalInset = Layout.horizontalInset * scale
@@ -621,7 +558,7 @@ private struct FindDetailsPrototypeHero: View {
                     .frame(width: textWidth, alignment: .leading)
                     .frame(height: Layout.scientificHeight * scale, alignment: .topLeading)
                     .offset(x: horizontalInset, y: scientificTop)
-                    .opacity(scientificVisibility)
+                    .opacity(collapseAccessoryOpacity)
 
                 titleLabelView(scale: scale, targetHeight: titleHeight)
                     .frame(width: textWidth, alignment: .leading)
@@ -634,15 +571,24 @@ private struct FindDetailsPrototypeHero: View {
     private var collapseActionButton: some View {
         GeometryReader { proxy in
             let scale = proxy.size.width / Layout.designWidth
-            let topOffset = Layout.expandedButtonTop * scale
+            let topOffset = interpolate(
+                from: Layout.expandedButtonTop * scale,
+                to: Layout.collapsedButtonTop * scale
+            )
 
-            ToolbarGlassLearnButton(title: "Learn", accessibilityLabel: "Learn", action: onLearnAction)
+            ToolbarGlassLearnButton(title: "Learn", accessibilityLabel: "Learn", showsShadow: true, action: onLearnAction)
                 .accessibilityHint("Opens the Learn details screen")
                 .scaleEffect(scale, anchor: .topTrailing)
                 .padding(.trailing, Layout.horizontalInset * scale)
                 .offset(y: topOffset)
+                .opacity(collapseAccessoryOpacity)
+                .allowsHitTesting(collapseAccessoryOpacity > 0.01)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
         }
+    }
+
+    private var collapseAccessoryOpacity: CGFloat {
+        max(0, 1 - min(clampedProgress * 1.55, 1))
     }
 
     private func interpolate(from start: CGFloat, to end: CGFloat) -> CGFloat {
@@ -686,12 +632,13 @@ private struct FindDetailsPrototypeHero: View {
         ]
     }
 
-    private func heroBlurMaskStops(startLocation: CGFloat) -> [Gradient.Stop] {
-        [
-            .init(color: .clear, location: 0),
-            .init(color: .clear, location: startLocation),
-            .init(color: .black, location: 1)
-        ]
+    private var readabilityGradient: some View {
+        LinearGradient(
+            stops: heroReadabilityStops,
+            startPoint: .top,
+            endPoint: .bottom
+        )
+        .allowsHitTesting(false)
     }
 
     private var commonNameLines: [String] {
@@ -738,9 +685,9 @@ private struct PrototypeToolbarOverlay: View {
 
     var body: some View {
         HStack {
-            ToolbarGlassButton(icon: .back, accessibilityLabel: "Back", action: onBack)
+            ToolbarGlassButton(icon: .back, accessibilityLabel: "Back", showsShadow: false, action: onBack)
             Spacer()
-            ToolbarGlassPill(primaryAction: {}, secondaryAction: {})
+            ToolbarGlassPill(primaryAction: {}, secondaryAction: {}, showsShadow: false)
         }
         .frame(maxWidth: .infinity)
         .padding(.horizontal, Layout.horizontalInset)

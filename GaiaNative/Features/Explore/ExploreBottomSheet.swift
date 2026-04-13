@@ -256,7 +256,7 @@ private struct ExploreSheetSectionHeader: View {
 
             if let trailingText {
                 Text(trailingText)
-                    .gaiaFont(.caption)
+                    .gaiaFont(.caption2Medium)
                     .foregroundStyle(GaiaColor.olive)
             }
         }
@@ -308,7 +308,7 @@ private struct ExploreSheetFindGridCard: View {
                 }
 
                 Text(find.title)
-                    .gaiaFont(.subheadSerif)
+                    .gaiaFont(.bodySerifTight)
                     .foregroundStyle(.white)
                     .multilineTextAlignment(.leading)
                     .lineLimit(2)

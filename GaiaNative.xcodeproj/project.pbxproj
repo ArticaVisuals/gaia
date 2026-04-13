@@ -27,6 +27,7 @@
 		37DBEF790BACD986F2F554A9 /* GaiaAssetImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3771245A136A07017697132A /* GaiaAssetImage.swift */; };
 		3C765E638800300869488342 /* ExploreBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6DF3EC06F477230FE809AE /* ExploreBottomSheet.swift */; };
 		3E485D3200C073439ECC9F75 /* FindDetailsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F8E223E3FFF9D8CE4CE78E /* FindDetailsScreen.swift */; };
+		F2A6C91D8B4E47F5A1234579 /* FindDetailsLearnFoundInMapArtwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A6C91D8B4E47F5A1234580 /* FindDetailsLearnFoundInMapArtwork.swift */; };
 		F2A6C91D8B4E47F5A1234567 /* FindDetailsPrototypeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A6C91D8B4E47F5A1234568 /* FindDetailsPrototypeScreen.swift */; };
 		F2A6C91D8B4E47F5A1234571 /* FindDetailsLegacyTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A6C91D8B4E47F5A1234572 /* FindDetailsLegacyTabView.swift */; };
 		F2A6C91D8B4E47F5A1234575 /* FindDetailsLearnScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A6C91D8B4E47F5A1234576 /* FindDetailsLearnScreen.swift */; };
@@ -118,6 +119,7 @@
 		F2A6C91D8B4E47F5A1234568 /* FindDetailsPrototypeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindDetailsPrototypeScreen.swift; sourceTree = "<group>"; };
 		F2A6C91D8B4E47F5A1234572 /* FindDetailsLegacyTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindDetailsLegacyTabView.swift; sourceTree = "<group>"; };
 		F2A6C91D8B4E47F5A1234576 /* FindDetailsLearnScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindDetailsLearnScreen.swift; sourceTree = "<group>"; };
+		F2A6C91D8B4E47F5A1234580 /* FindDetailsLearnFoundInMapArtwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindDetailsLearnFoundInMapArtwork.swift; sourceTree = "<group>"; };
 		07C1014FFD074B9B7F391996 /* Species.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Species.swift; sourceTree = "<group>"; };
 		0936210E15DA895926002A94 /* GaiaAsyncImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaiaAsyncImage.swift; sourceTree = "<group>"; };
 		10B9C6679E3F4845C332D40C /* ObserveCameraScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObserveCameraScreen.swift; sourceTree = "<group>"; };
@@ -355,6 +357,7 @@
 			isa = PBXGroup;
 			children = (
 				51F60AA112B2EC6350829FD9 /* ActivityTabView.swift */,
+				F2A6C91D8B4E47F5A1234580 /* FindDetailsLearnFoundInMapArtwork.swift */,
 				F2A6C91D8B4E47F5A1234576 /* FindDetailsLearnScreen.swift */,
 				F2A6C91D8B4E47F5A1234572 /* FindDetailsLegacyTabView.swift */,
 				F2A6C91D8B4E47F5A1234568 /* FindDetailsPrototypeScreen.swift */,
@@ -628,6 +631,7 @@
 				41398D188AB1B3E91750C634 /* ExploreScreen.swift in Sources */,
 				FA3FA3D3910D79D14171FBF0 /* ExploreViewModel.swift in Sources */,
 				2A71395633CE89E8E0747B06 /* FindCard.swift in Sources */,
+				F2A6C91D8B4E47F5A1234579 /* FindDetailsLearnFoundInMapArtwork.swift in Sources */,
 				F2A6C91D8B4E47F5A1234575 /* FindDetailsLearnScreen.swift in Sources */,
 				F2A6C91D8B4E47F5A1234571 /* FindDetailsLegacyTabView.swift in Sources */,
 				F2A6C91D8B4E47F5A1234567 /* FindDetailsPrototypeScreen.swift in Sources */,

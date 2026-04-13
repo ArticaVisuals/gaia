@@ -15,6 +15,7 @@ struct FindDetailsScreen: View {
     var body: some View {
         GeometryReader { proxy in
             let topInset = proxy.safeAreaInsets.top > 0 ? proxy.safeAreaInsets.top : windowSafeTopInset
+            let bottomInset = proxy.safeAreaInsets.bottom > 0 ? proxy.safeAreaInsets.bottom : windowSafeBottomInset
             // Keep hero under the glass toolbar while avoiding the overly tight top crop.
             let heroLift = max(topInset - GaiaSpacing.lg, 0)
 
@@ -34,12 +35,12 @@ struct FindDetailsScreen: View {
                         DraggableTabSwitch(
                             tabs: FindDetailsTab.allCases,
                             selection: $viewModel.selectedTab,
+                            allowsDragSelection: false,
                             title: { $0.rawValue }
                         )
                         .frame(maxWidth: .infinity)
 
-                        tabContent
-                            .padding(.bottom, 120)
+                        tabContent(bottomInset: bottomInset)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .horizontalTabSwipe(
                                 tabs: FindDetailsTab.allCases,
@@ -70,7 +71,7 @@ struct FindDetailsScreen: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
         }
-        .ignoresSafeArea(edges: .top)
+        .ignoresSafeArea(edges: [.top, .bottom])
         .onAppear {
             viewModel.selectedTab = appState.selectedFindTab
         }
@@ -89,8 +90,16 @@ struct FindDetailsScreen: View {
             .safeAreaInsets.top ?? 0
     }
 
+    private var windowSafeBottomInset: CGFloat {
+        UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap(\.windows)
+            .first(where: \.isKeyWindow)?
+            .safeAreaInsets.bottom ?? 0
+    }
+
     @ViewBuilder
-    private var tabContent: some View {
+    private func tabContent(bottomInset: CGFloat) -> some View {
         switch viewModel.selectedTab {
         case .find:
             FindDetailsLegacyTabView(
@@ -102,7 +111,14 @@ struct FindDetailsScreen: View {
                 }
             )
         case .activity:
-            ActivityTabView(species: species)
+            let activityBottomInset = max(
+                GaiaSpacing.xxxl + GaiaSpacing.xxl + GaiaSpacing.sm,
+                bottomInset + GaiaSpacing.sm
+            )
+            ActivityTabView(
+                species: species,
+                bottomInset: activityBottomInset
+            )
         case .learn:
             LearnTabView(
                 species: species,
@@ -110,7 +126,7 @@ struct FindDetailsScreen: View {
                 stories: contentStore.stories,
                 onExpandMap: { viewModel.showsExpandedMap = true },
                 onOpenStory: { story in
-                    appState.openStoryDeck(story.id)
+                    appState.openStoryDeck(story.id, speciesID: species.id)
                 }
             )
         }
