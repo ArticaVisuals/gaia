@@ -199,9 +199,13 @@ body.nav-page-exit {
   pointer-events: none;
 }
 #hero-meta {
-  position: absolute; bottom: 0; left: 15px;
+  position: absolute; bottom: 0; left: 15px; right: 16px;
   display: flex; flex-direction: column; gap: 4px;
   padding-bottom: 16px;
+}
+.hero-title-row {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 12px;
 }
 .hero-title {
   font-family: var(--font-serif);
@@ -216,6 +220,57 @@ body.nav-page-exit {
   color: var(--cream-50);
   letter-spacing: 0.25px;
   line-height: 1.3;
+}
+
+/* ── LEARN CTA BUTTON (brown pill with glow shimmer) ──── */
+.learn-cta {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 20px;
+  border-radius: 1000px;
+  border: none;
+  background: #9B856B;
+  color: var(--cream-50);
+  font-family: var(--font-sans); font-size: 14px; font-weight: 500;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  box-shadow: 0 4px 20px #9B856B;
+}
+/* Gradient stroke overlay — rotates for shimmer */
+.learn-cta::before {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  padding: 0.5px;
+  background: conic-gradient(
+    from var(--shimmer-angle, 0deg),
+    #D8C9B8 0%,
+    #726A61 27.5%,
+    #D8C9B8 50%,
+    #726A61 77.5%,
+    #D8C9B8 100%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  animation: shimmer-rotate 6s linear infinite;
+}
+@property --shimmer-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes shimmer-rotate {
+  to { --shimmer-angle: 360deg; }
+}
+.learn-cta .learn-cta-arrow {
+  width: 15.59px; height: 20.1px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  transform: rotate(90deg);
 }
 
 /* ── PAGE DOTS ──────────────────────────────────────────── */
@@ -497,19 +552,19 @@ body.nav-page-exit {
 
 /* Biome + Weather row */
 .condition-row {
-  display: flex; gap: 8px; align-items: stretch;
+  display: flex; gap: 8px; align-items: flex-start;
 }
 
 /* Biome card */
 .biome-card {
-  width: 169px;
+  width: 181px;
   background: var(--cream-50);
   border: 0.5px solid var(--brown-200);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-lg);
+  box-shadow: none;
   padding: var(--space-4);
   display: flex; flex-direction: column; gap: 8px;
-  flex-shrink: 0; overflow: hidden;
+  flex: 0 0 181px; overflow: hidden;
 }
 .sub-card-label {
   font-family: var(--font-sans);
@@ -560,12 +615,12 @@ body.nav-page-exit {
 
 /* Weather card */
 .weather-card {
-  flex: 1 0 0;
-  min-width: 0;
+  flex: 0 0 181px;
+  width: 181px;
   background: var(--cream-50);
   border: 0.5px solid var(--brown-200);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-lg);
+  box-shadow: none;
   padding: var(--space-4);
   display: flex; flex-direction: column;
   justify-content: space-between;
@@ -1308,8 +1363,14 @@ body.nav-page-exit {
     <img class="hero-img-blur" src="assets/find-details/learn-v2/hero.png" alt="">
     <div id="hero-gradient"></div>
     <div id="hero-meta">
-      <span class="hero-title">Coast Live Oak</span>
       <span class="hero-subtitle">Quercus agrifolia</span>
+      <div class="hero-title-row">
+        <span class="hero-title">Coast Live Oak</span>
+        <button class="learn-cta" type="button" aria-label="Learn more">
+          Learn
+          <img class="learn-cta-arrow" src="assets/icons/system/left-arrow-32.svg" alt="" aria-hidden="true">
+        </button>
+      </div>
     </div>
   </div>
 
