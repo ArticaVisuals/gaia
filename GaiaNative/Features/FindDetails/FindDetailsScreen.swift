@@ -50,6 +50,7 @@ struct FindDetailsScreen: View {
                                 }
                             )
                     }
+                    .padding(.bottom, bottomInset + GaiaSpacing.lg)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .scrollDisabled(isHorizontalTabSwipeActive)
