@@ -159,13 +159,13 @@ enum GaiaIconKind {
                     .slotted(
                         assetPath: "Icons/System/expand-24-a.png",
                         slotInsets: .css(36.74, 36.74, 0, 0),
-                        intrinsicSize: CGSize(width: 20.359, height: 21.148),
+                        intrinsicSize: CGSize(width: 11.7014, height: 12.1552),
                         rotation: .degrees(-135)
                     ),
                     .slotted(
                         assetPath: "Icons/System/expand-24-b.png",
                         slotInsets: .css(0, 0, 36.74, 36.74),
-                        intrinsicSize: CGSize(width: 20.359, height: 21.148),
+                        intrinsicSize: CGSize(width: 11.7014, height: 12.1552),
                         rotation: .degrees(45)
                     )
                 ]
@@ -263,26 +263,74 @@ struct GaiaIcon: View {
 }
 
 private struct GaiaExpandIcon: View {
-    let tint: Color
+    var tint: Color?
 
-    private let layout = GaiaIconKind.expand.layout
+    private enum Layout {
+        static let designCanvas: CGFloat = 26.667
+        static let assetSize = CGSize(width: 11.7014, height: 12.1552)
+        static let slotInsetRatio: CGFloat = 0.3674
+    }
 
     var body: some View {
         GeometryReader { proxy in
             let canvasSize = min(proxy.size.width, proxy.size.height)
+            let scale = canvasSize / Layout.designCanvas
+            let scaledAssetSize = CGSize(
+                width: Layout.assetSize.width * scale,
+                height: Layout.assetSize.height * scale
+            )
+            let slotInset = canvasSize * Layout.slotInsetRatio
+            let slotSize = canvasSize - slotInset
 
             ZStack {
-                ForEach(Array(layout.layers.enumerated()), id: \.offset) { _, layer in
-                    GaiaIconLayerView(
-                        layer: layer,
-                        canvasSize: canvasSize,
-                        baseCanvas: layout.baseCanvas,
-                        tint: tint
-                    )
-                }
+                expandLayer(
+                    named: "gaia-icon-expand-a-24",
+                    size: scaledAssetSize,
+                    rotation: .degrees(-135)
+                )
+                .position(
+                    x: slotInset + (slotSize / 2),
+                    y: slotInset + (slotSize / 2)
+                )
+
+                expandLayer(
+                    named: "gaia-icon-expand-b-24",
+                    size: scaledAssetSize,
+                    rotation: .degrees(45)
+                )
+                .position(
+                    x: slotSize / 2,
+                    y: slotSize / 2
+                )
             }
             .frame(width: canvasSize, height: canvasSize)
             .position(x: proxy.size.width / 2, y: proxy.size.height / 2)
+        }
+    }
+
+    @ViewBuilder
+    private func expandLayer(named assetName: String, size: CGSize, rotation: Angle) -> some View {
+        if let image = AssetCatalog.image(named: assetName) {
+            if let tint {
+                image
+                    .resizable()
+                    .renderingMode(.template)
+                    .interpolation(.high)
+                    .antialiased(true)
+                    .scaledToFit()
+                    .foregroundStyle(tint)
+                    .frame(width: size.width, height: size.height)
+                    .rotationEffect(rotation)
+            } else {
+                image
+                    .resizable()
+                    .renderingMode(.original)
+                    .interpolation(.high)
+                    .antialiased(true)
+                    .scaledToFit()
+                    .frame(width: size.width, height: size.height)
+                    .rotationEffect(rotation)
+            }
         }
     }
 }

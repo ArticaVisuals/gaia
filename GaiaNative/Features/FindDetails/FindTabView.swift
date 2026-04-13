@@ -195,9 +195,7 @@ private struct FindPhotoRail: View {
 
 private enum FindMapProfileTextLayout {
     static let nameMinHeight: CGFloat = 17.6
-    static let nameTracking: CGFloat = -0.31
     static let timestampMinHeight: CGFloat = 14.3
-    static let timestampTracking: CGFloat = 0.25
 }
 
 private struct FindMapPreviewCard: View {
@@ -206,7 +204,7 @@ private struct FindMapPreviewCard: View {
     let onExpandMap: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: GaiaSpacing.cardInset) {
             FindMapLocationRow()
 
             ZStack(alignment: .topTrailing) {
@@ -214,9 +212,11 @@ private struct FindMapPreviewCard: View {
 
                 MapAnnotationPhotoPin(imageName: observation.thumbnailAssetName)
                     .frame(width: 63, height: 63)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                    .allowsHitTesting(false)
 
                 ExpandMapButton(action: onExpandMap)
-                    .padding(12)
+                    .padding(GaiaSpacing.cardInset)
             }
             .frame(height: FindTabLayout.mapHeight)
             .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
@@ -243,13 +243,12 @@ private struct FindMapPreviewCard: View {
 private struct FindMapLocationRow: View {
     var body: some View {
         HStack(spacing: GaiaSpacing.iconGapTight) {
-            GaiaAssetImage(name: "Icons/System/pin-20.png", contentMode: .fit)
+            GaiaIcon(kind: .pin, size: 18, tint: GaiaColor.oliveText)
                 .frame(width: 13, height: 18)
-                .opacity(0.55)
 
             Text("Avila Beach, California")
                 .gaiaFont(.body)
-                .foregroundStyle(GaiaColor.olive)
+                .foregroundStyle(GaiaColor.oliveText)
                 .lineLimit(1)
         }
     }
@@ -264,18 +263,16 @@ private struct FindMapProfileRow: View {
                 borderWidth: 0.417
             )
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 6) {
                 Text("Alice Edwards")
-                    .font(GaiaTypography.callout)
-                    .tracking(FindMapProfileTextLayout.nameTracking)
-                    .foregroundStyle(GaiaColor.olive)
+                    .gaiaFont(.calloutTight)
+                    .foregroundStyle(GaiaColor.oliveText)
                     .frame(minHeight: FindMapProfileTextLayout.nameMinHeight, alignment: .topLeading)
                     .lineLimit(1)
 
                 Text("July 10, 2025, 10:19 AM")
-                    .font(GaiaTypography.caption)
-                    .tracking(FindMapProfileTextLayout.timestampTracking)
-                    .foregroundStyle(GaiaColor.paperWhite600)
+                    .gaiaFont(.caption)
+                    .foregroundStyle(GaiaColor.bgSubtle)
                     .frame(minHeight: FindMapProfileTextLayout.timestampMinHeight, alignment: .topLeading)
                     .lineLimit(1)
             }

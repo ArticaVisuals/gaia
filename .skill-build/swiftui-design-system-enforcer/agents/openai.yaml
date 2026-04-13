@@ -1,0 +1,4 @@
+interface:
+  display_name: "SwiftUI DS Enforcer"
+  short_description: "Audit SwiftUI UI changes against Gaia design rules."
+  default_prompt: "Audit SwiftUI UI changes against Gaia design-system typography, color, spacing, radius, and component rules. Flag mismatches and pause for user direction when a new component decision is required."

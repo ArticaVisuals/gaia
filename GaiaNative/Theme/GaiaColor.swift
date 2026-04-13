@@ -134,6 +134,8 @@ enum GaiaColor {
     static let shadowDark = Color(hex: 0x322808, opacity: 0.35)
     static let shadowNav = Color(hex: 0x000000, opacity: 0.12)
     static let shadowProjectHero = Color(hex: 0x737364, opacity: 0.50)
+    static let bgSubtle = Color(hex: 0xABA795)
+    static let oliveText = Color(hex: 0x6B8352)
 
     static let surfacePrimary = paperWhite200
     static let surfaceSheet = paperWhite50

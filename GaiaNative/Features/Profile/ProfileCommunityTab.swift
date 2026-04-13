@@ -1043,10 +1043,8 @@ private struct MayaProfileDetailScreen: View {
                         .frame(maxWidth: .infinity)
                         .clipped()
 
-                    GlassCircleButton(size: 44) {
+                    ExpandMapButton {
                         showsExpandedMap = true
-                    } label: {
-                        GaiaIcon(kind: .expand, size: 24, tint: GaiaColor.inkBlack900)
                     }
                     .padding(GaiaSpacing.md)
                     .accessibilityLabel("Expand map")
