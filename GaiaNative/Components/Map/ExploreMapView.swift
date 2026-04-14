@@ -7,7 +7,7 @@ private enum GaiaPinMapConfig {
     static let clusterReuseID = "gaia.cluster"
     static let observationReuseID = "gaia.observation"
     static let clusteringIdentifier = "gaia.cluster.members"
-    static let clusterBlankMaxZoom = 6.8
+    static let clusterCountHiddenSpan: CLLocationDegrees = 11.8
     static let singlePhotoMinZoom = 14.2
     static let markerVisualSize: CGFloat = 62
     static let markerTouchPadding: CGFloat = 18
@@ -15,6 +15,8 @@ private enum GaiaPinMapConfig {
     static let markerScaleStartZoom = 3.0
     static let markerScaleEndZoom = 14.0
     static let recenterZoom = 14.4
+    static let fittedRegionThresholdDelta: CLLocationDegrees = 1.2
+    static let fittedRegionPadding = 1.18
 }
 
 struct ExploreMapView: View {
@@ -137,7 +139,12 @@ private struct ExploreMapRepresentable: UIViewRepresentable {
                 view.clusteringIdentifier = nil
                 view.displayPriority = .required
                 view.collisionMode = .circle
-                configure(view, for: annotation, zoom: ExploreMapView.zoomLevel(for: mapView.region))
+                configure(
+                    view,
+                    for: annotation,
+                    zoom: ExploreMapView.zoomLevel(for: mapView.region),
+                    visibleSpan: ExploreMapView.visibleSpan(for: mapView.region)
+                )
                 return view
             }
 
@@ -150,7 +157,12 @@ private struct ExploreMapRepresentable: UIViewRepresentable {
                 view.clusteringIdentifier = GaiaPinMapConfig.clusteringIdentifier
                 view.displayPriority = .required
                 view.collisionMode = .circle
-                configure(view, for: annotation, zoom: ExploreMapView.zoomLevel(for: mapView.region))
+                configure(
+                    view,
+                    for: annotation,
+                    zoom: ExploreMapView.zoomLevel(for: mapView.region),
+                    visibleSpan: ExploreMapView.visibleSpan(for: mapView.region)
+                )
                 return view
             }
 
@@ -207,15 +219,22 @@ private struct ExploreMapRepresentable: UIViewRepresentable {
         }
 
         private func refreshVisibleAnnotationViews(in mapView: MKMapView) {
-            let zoom = ExploreMapView.zoomLevel(for: mapView.region)
+            let region = mapView.region
+            let zoom = ExploreMapView.zoomLevel(for: region)
+            let visibleSpan = ExploreMapView.visibleSpan(for: region)
             for annotation in mapView.annotations {
                 guard let view = mapView.view(for: annotation) as? GaiaHostedMarkerAnnotationView else { continue }
-                configure(view, for: annotation, zoom: zoom)
+                configure(view, for: annotation, zoom: zoom, visibleSpan: visibleSpan)
             }
         }
 
-        private func configure(_ view: GaiaHostedMarkerAnnotationView, for annotation: MKAnnotation, zoom: Double) {
-            let farOutCluster = zoom <= GaiaPinMapConfig.clusterBlankMaxZoom
+        private func configure(
+            _ view: GaiaHostedMarkerAnnotationView,
+            for annotation: MKAnnotation,
+            zoom: Double,
+            visibleSpan: CLLocationDegrees
+        ) {
+            let farOutCluster = visibleSpan >= GaiaPinMapConfig.clusterCountHiddenSpan
             let showsSinglePhoto = zoom >= GaiaPinMapConfig.singlePhotoMinZoom
             let markerScale = ExploreMapView.markerScale(for: zoom)
 
@@ -382,28 +401,54 @@ private final class GaiaObservationAnnotation: NSObject, MKAnnotation {
 }
 
 private extension ExploreMapView {
+    struct ObservationBounds {
+        let minLatitude: Double
+        let maxLatitude: Double
+        let minLongitude: Double
+        let maxLongitude: Double
+
+        var center: CLLocationCoordinate2D {
+            CLLocationCoordinate2D(
+                latitude: (minLatitude + maxLatitude) / 2,
+                longitude: (minLongitude + maxLongitude) / 2
+            )
+        }
+
+        var latitudeDelta: Double {
+            maxLatitude - minLatitude
+        }
+
+        var longitudeDelta: Double {
+            maxLongitude - minLongitude
+        }
+
+        var maxDelta: Double {
+            max(latitudeDelta, longitudeDelta)
+        }
+    }
+
     static func initialRegion(for observations: [Observation], zoomOverride: CGFloat? = nil) -> MKCoordinateRegion {
-        guard let first = observations.first else {
+        guard let bounds = observationBounds(for: observations) else {
             return MKCoordinateRegion(
                 center: GaiaMapbox.fallbackCenter,
                 span: span(for: Double(zoomOverride ?? 11.8))
             )
         }
 
-        let latitudes = observations.map(\.latitude)
-        let longitudes = observations.map(\.longitude)
-        let minLatitude = latitudes.min() ?? first.latitude
-        let maxLatitude = latitudes.max() ?? first.latitude
-        let minLongitude = longitudes.min() ?? first.longitude
-        let maxLongitude = longitudes.max() ?? first.longitude
+        let center = bounds.center
 
-        let center = CLLocationCoordinate2D(
-            latitude: (minLatitude + maxLatitude) / 2,
-            longitude: (minLongitude + maxLongitude) / 2
+        if let zoomOverride {
+            return MKCoordinateRegion(center: center, span: span(for: Double(zoomOverride)))
+        }
+
+        if bounds.maxDelta >= GaiaPinMapConfig.fittedRegionThresholdDelta {
+            return MKCoordinateRegion(center: center, span: fittedSpan(for: bounds))
+        }
+
+        return MKCoordinateRegion(
+            center: center,
+            span: span(for: Double(initialViewportZoom(forMaximumDelta: bounds.maxDelta)))
         )
-
-        let zoom = Double(zoomOverride ?? initialViewportZoom(for: observations))
-        return MKCoordinateRegion(center: center, span: span(for: zoom))
     }
 
     static func span(for zoom: Double) -> MKCoordinateSpan {
@@ -413,9 +458,12 @@ private extension ExploreMapView {
     }
 
     static func zoomLevel(for region: MKCoordinateRegion) -> Double {
-        let maxDelta = max(region.span.latitudeDelta, region.span.longitudeDelta)
-        let safeDelta = max(maxDelta, 0.000_001)
+        let safeDelta = max(visibleSpan(for: region), 0.000_001)
         return log2(360 / safeDelta)
+    }
+
+    static func visibleSpan(for region: MKCoordinateRegion) -> CLLocationDegrees {
+        max(region.span.latitudeDelta, region.span.longitudeDelta)
     }
 
     static func markerScale(for zoom: Double) -> CGFloat {
@@ -427,17 +475,7 @@ private extension ExploreMapView {
         return GaiaPinMapConfig.markerMinScale + (CGFloat(progress) * range)
     }
 
-    static func initialViewportZoom(for observations: [Observation]) -> CGFloat {
-        guard let first = observations.first else { return 11.8 }
-
-        let latitudes = observations.map(\.latitude)
-        let longitudes = observations.map(\.longitude)
-        let minLatitude = latitudes.min() ?? first.latitude
-        let maxLatitude = latitudes.max() ?? first.latitude
-        let minLongitude = longitudes.min() ?? first.longitude
-        let maxLongitude = longitudes.max() ?? first.longitude
-        let maxDelta = max(maxLatitude - minLatitude, maxLongitude - minLongitude)
-
+    static func initialViewportZoom(forMaximumDelta maxDelta: Double) -> CGFloat {
         switch maxDelta {
         case ..<0.008:
             return 12.8
@@ -450,6 +488,32 @@ private extension ExploreMapView {
         default:
             return 10.0
         }
+    }
+
+    static func observationBounds(for observations: [Observation]) -> ObservationBounds? {
+        guard let first = observations.first else { return nil }
+
+        let latitudes = observations.map(\.latitude)
+        let longitudes = observations.map(\.longitude)
+        return ObservationBounds(
+            minLatitude: latitudes.min() ?? first.latitude,
+            maxLatitude: latitudes.max() ?? first.latitude,
+            minLongitude: longitudes.min() ?? first.longitude,
+            maxLongitude: longitudes.max() ?? first.longitude
+        )
+    }
+
+    static func fittedSpan(for bounds: ObservationBounds) -> MKCoordinateSpan {
+        let latitudeDelta = min(
+            170,
+            max(0.012, bounds.latitudeDelta * GaiaPinMapConfig.fittedRegionPadding)
+        )
+        let longitudeDelta = min(
+            330,
+            max(0.012, bounds.longitudeDelta * GaiaPinMapConfig.fittedRegionPadding)
+        )
+
+        return MKCoordinateSpan(latitudeDelta: latitudeDelta, longitudeDelta: longitudeDelta)
     }
 }
 

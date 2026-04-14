@@ -19,10 +19,46 @@ struct GaiaAssetImage: View {
                         endPoint: .bottomTrailing
                     )
                     Image(systemName: "photo")
-                        .font(.system(size: 22, weight: .medium))
+                        .font(GaiaTypography.titleSansMedium)
                         .foregroundStyle(fallbackTint)
                 }
             }
+        }
+    }
+}
+
+struct GaiaCategoryBadgeIcon: View {
+    var width: CGFloat = 53.324
+    var height: CGFloat = 53.333
+
+    var body: some View {
+        GaiaAssetImage(name: "learn-category-badge", contentMode: .fit)
+            .frame(width: width, height: height)
+            .accessibilityHidden(true)
+    }
+}
+
+enum GaiaQualityCheckmarkState: Equatable {
+    case checked
+    case unchecked
+}
+
+struct GaiaQualityCheckmark: View {
+    let state: GaiaQualityCheckmarkState
+    var size: CGFloat = 40
+
+    var body: some View {
+        GaiaAssetImage(name: assetName, contentMode: .fit)
+            .frame(width: size, height: size)
+            .accessibilityHidden(true)
+    }
+
+    private var assetName: String {
+        switch state {
+        case .checked:
+            return "quality-checkmark-checked"
+        case .unchecked:
+            return "quality-checkmark-unchecked"
         }
     }
 }
@@ -37,6 +73,12 @@ enum GaiaIconKind {
     case plus
     case share
     case expand
+    case filter
+    case gear
+    case grid
+    case list
+    case map
+    case binoculars
     case explore(selected: Bool)
     case log(selected: Bool)
     case observe(selected: Bool)
@@ -131,6 +173,48 @@ enum GaiaIconKind {
                         intrinsicSize: CGSize(width: 20.359, height: 21.148),
                         rotation: .degrees(45)
                     )
+                ]
+            )
+        case .filter:
+            return GaiaIconLayout(
+                baseCanvas: 32,
+                layers: [
+                    .direct(assetPath: "Icons/System/filter-32.png", insets: .css(0, 0, 0, 0))
+                ]
+            )
+        case .gear:
+            return GaiaIconLayout(
+                baseCanvas: 20,
+                layers: [
+                    .direct(assetPath: "Icons/System/gear-20.png", insets: .css(0, 0, 0, 0))
+                ]
+            )
+        case .grid:
+            return GaiaIconLayout(
+                baseCanvas: 32,
+                layers: [
+                    .direct(assetPath: "Icons/System/grid-32.png", insets: .css(0, 0, 0, 0))
+                ]
+            )
+        case .list:
+            return GaiaIconLayout(
+                baseCanvas: 32,
+                layers: [
+                    .direct(assetPath: "Icons/System/list-32.png", insets: .css(0, 0, 0, 0))
+                ]
+            )
+        case .map:
+            return GaiaIconLayout(
+                baseCanvas: 32,
+                layers: [
+                    .direct(assetPath: "Icons/System/map-32.png", insets: .css(0, 0, 0, 0))
+                ]
+            )
+        case .binoculars:
+            return GaiaIconLayout(
+                baseCanvas: 20,
+                layers: [
+                    .direct(assetPath: "Icons/System/binoculars-20.png", insets: .css(0, 0, 0, 0))
                 ]
             )
         case .explore:

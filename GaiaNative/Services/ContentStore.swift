@@ -37,6 +37,8 @@ enum ProfileLogStatusKind: String, Codable, Hashable {
 
 @MainActor
 final class ContentStore: ObservableObject {
+    private let mapDataService = MapDataService()
+
     @Published var appCopy: AppCopy = .default
     @Published var species: [Species] = PreviewSpecies.all
     @Published var stories: [StoryCard] = PreviewStories.all
@@ -51,6 +53,10 @@ final class ContentStore: ObservableObject {
         Observation(id: "obs-4", speciesID: "coast-live-oak", latitude: 34.1237, longitude: -118.1033, thumbnailAssetName: "coast-live-oak-gallery-3")
     ]
 
+    init() {
+        loadBundledContentIfAvailable()
+    }
+
     var primarySpecies: Species {
         species.first ?? PreviewSpecies.coastLiveOak
     }
@@ -63,7 +69,8 @@ final class ContentStore: ObservableObject {
         profileLog = load("profile-log", as: ProfileLogContent.self) ?? profileLog
         activityEvents = load("activity", as: [ActivityEvent].self) ?? activityEvents
         communityPosts = load("community", as: [CommunityPost].self) ?? communityPosts
-        observations = load("map-observations", as: [Observation].self) ?? observations
+        let loadedObservations = load("map-observations", as: [Observation].self) ?? observations
+        observations = mapDataService.prototypeObservations(from: loadedObservations)
     }
 
     private func load<T: Decodable>(_ name: String, as type: T.Type) -> T? {

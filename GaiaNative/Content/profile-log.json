@@ -4,57 +4,59 @@
     {
       "id": "today",
       "title": "Today",
-      "countLabel": "2 finds",
+      "countLabel": "3 finds",
       "entries": [
         {
           "id": "red-fox",
           "commonName": "Red Fox",
           "scientificName": "Vulpes vulpes",
-          "metaLabel": "Eaton Canyon · 2:15 PM",
-          "statusLabel": "Research Grade",
-          "statusKind": "researchGrade",
-          "imageSource": "https://www.figma.com/api/mcp/asset/f99a6cfd-ae56-4e80-aac0-92c673a070b5"
+          "metaLabel": "Braunschweig, DE · 2:15 PM",
+          "statusLabel": "Ungraded",
+          "statusKind": "draft",
+          "imageSource": "assets/find-details/project-details/recent-garden-orbweaver.png"
         },
         {
-          "id": "unknown-moth",
-          "commonName": "Unknown Moth",
-          "scientificName": "Needs ID",
-          "metaLabel": "Eaton Canyon · 2:08 PM",
-          "statusLabel": "Needs ID",
+          "id": "annas-hummingbird",
+          "commonName": "Anna’s Hummingbird",
+          "scientificName": "Calypte anna",
+          "metaLabel": "Arlington Garden · 1:42 PM",
+          "statusLabel": "Ungraded",
+          "statusKind": "draft",
+          "imageSource": "assets/find-details/project-details/recent-european-roller.png"
+        },
+        {
+          "id": "coast-live-oak",
+          "commonName": "Coast Live Oak",
+          "scientificName": "Calypte anna",
+          "metaLabel": "Arlington Garden · 1:42 PM",
+          "statusLabel": "Casual Grade",
           "statusKind": "needsID",
-          "imageSource": "https://www.figma.com/api/mcp/asset/3de8ff3b-8537-438e-9014-164c92cd7265"
+          "imageSource": "coast-live-oak-hero"
         }
       ]
     },
     {
       "id": "yesterday",
       "title": "Yesterday",
-      "countLabel": "1 find",
-      "entries": [
-        {
-          "id": "coast-live-oak",
-          "commonName": "Coast Live Oak",
-          "scientificName": "Quercus agrifolia",
-          "metaLabel": "Arroyo Seco · 10:30 AM",
-          "statusLabel": "Research Grade",
-          "statusKind": "researchGrade",
-          "imageSource": "coast-live-oak-hero"
-        }
-      ]
-    },
-    {
-      "id": "mar-25",
-      "title": "Mar 25",
       "countLabel": "3 finds",
       "entries": [
         {
           "id": "western-fence-lizard",
           "commonName": "Western Fence Lizard",
-          "scientificName": "Needs ID",
-          "metaLabel": "Hahamongna · 3:45 PM",
-          "statusLabel": "Needs ID",
-          "statusKind": "needsID",
-          "imageSource": "observe-photo-square"
+          "scientificName": "Sceloporus occidentalis",
+          "metaLabel": "Eaton Canyon · 2:15 PM",
+          "statusLabel": "Research Grade",
+          "statusKind": "researchGrade",
+          "imageSource": "assets/find-details/project-details/recent-emperor-gum-moth.png"
+        },
+        {
+          "id": "california-poppy",
+          "commonName": "California Poppy",
+          "scientificName": "Eschscholzia californica",
+          "metaLabel": "Arroyo Seco · 10:15 AM",
+          "statusLabel": "Research Grade",
+          "statusKind": "researchGrade",
+          "imageSource": "assets/find-details/project-details/update-spring-bloom.png"
         },
         {
           "id": "black-phoebe",
@@ -64,40 +66,6 @@
           "statusLabel": "Research Grade",
           "statusKind": "researchGrade",
           "imageSource": "https://www.figma.com/api/mcp/asset/5480f314-a42a-4aff-b091-ade77472cf43"
-        },
-        {
-          "id": "california-poppy",
-          "commonName": "California Poppy",
-          "scientificName": "Eschscholzia californica",
-          "metaLabel": "Eaton Canyon · 11:00 AM",
-          "statusLabel": "Research Grade",
-          "statusKind": "researchGrade",
-          "imageSource": "https://www.figma.com/api/mcp/asset/56a574ab-72a6-4985-a207-e84398659de6"
-        }
-      ]
-    },
-    {
-      "id": "mar-24",
-      "title": "Mar 24",
-      "countLabel": "2 finds",
-      "entries": [
-        {
-          "id": "red-tailed-hawk",
-          "commonName": "Red-tailed Hawk",
-          "scientificName": "Buteo jamaicensis",
-          "metaLabel": "JPL Trail · 4:10 PM",
-          "statusLabel": "Research Grade",
-          "statusKind": "researchGrade",
-          "imageSource": "observe-photo-portrait"
-        },
-        {
-          "id": "buckwheat",
-          "commonName": "Buckwheat",
-          "scientificName": "Eriogonum fasciculatum",
-          "metaLabel": "Altadena Trail · 9:30 AM",
-          "statusLabel": "Draft",
-          "statusKind": "draft",
-          "imageSource": "coast-live-oak-gallery-2"
         }
       ]
     }

@@ -97,6 +97,7 @@ const INK        = { r: 0.15, g: 0.13, b: 0.14 };
 const MUTED      = { r: 0.60, g: 0.58, b: 0.62 };
 const BORDER_CLR = { r: 0.85, g: 0.83, b: 0.81 };
 const CANVAS_W   = 1200; // width for wrapping grids
+const COMPONENT_FAMILY_ORDER = ['Brand & identity', 'Controls', 'Status & utilities', 'Card families', 'Media', 'Navigation', 'Map', 'General'];
 
 // ─── Low-level node builders ──────────────────────────────────────────────
 function txt(content, size, style, color) {
@@ -556,8 +557,20 @@ async function buildComponents() {
     groups[cat].push(c);
   }
 
-  for (var cat in groups) {
-    const list  = groups[cat];
+  const cats = Object.keys(groups).sort(function(a, b) {
+    const ai = COMPONENT_FAMILY_ORDER.indexOf(a);
+    const bi = COMPONENT_FAMILY_ORDER.indexOf(b);
+    if (ai !== bi) {
+      return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
+    }
+    return a.localeCompare(b);
+  });
+
+  for (var ci = 0; ci < cats.length; ci++) {
+    const cat  = cats[ci];
+    const list = groups[cat].slice().sort(function(a, b) {
+      return a.name.localeCompare(b.name);
+    });
     const group = autoFrame(cat, 'VERTICAL', 20);
     group.appendChild(txt(cat, 14, 'Semi Bold', INK));
 

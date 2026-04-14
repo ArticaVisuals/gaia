@@ -6,7 +6,7 @@ enum GaiaRadius {
     static let lg: CGFloat = 16
     static let xl: CGFloat = 24
     static let xxl: CGFloat = 48
-    static let full: CGFloat = 250
+    static let full: CGFloat = 999
 
     static let thumbnail: CGFloat = 12
     static let card: CGFloat = 16

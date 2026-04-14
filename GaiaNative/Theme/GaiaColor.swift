@@ -3,15 +3,16 @@ import SwiftUI
 enum GaiaColor {
     static let oliveGreen50 = Color(hex: 0xF2F4F0)
     static let oliveGreen100 = Color(hex: 0xE3E7DF)
-    static let oliveGreen200 = Color(hex: 0xC8CFBF)
+    static let oliveGreen200 = Color(hex: 0xADBA9F)
     static let oliveGreen300 = Color(hex: 0xA3AE95)
     static let oliveGreen400 = Color(hex: 0x8A9B7E)
-    static let oliveGreen500 = Color(hex: 0x67765B)
+    static let oliveGreen500 = Color(hex: 0x6B8352)
     static let oliveGreen600 = Color(hex: 0x5B6850)
-    static let oliveGreen700 = Color(hex: 0x4F5A45)
+    static let oliveGreen700 = Color(hex: 0x49583A)
     static let oliveGreen800 = Color(hex: 0x3D4535)
     static let oliveGreen900 = Color(hex: 0x282D22)
 
+    static let grassGreen50 = Color(hex: 0xD0EBC7)
     static let grassGreen100 = Color(hex: 0xB0D1A5)
     static let grassGreen200 = Color(hex: 0xA3CA96)
     static let grassGreen300 = Color(hex: 0x95C287)
@@ -118,23 +119,37 @@ enum GaiaColor {
     static let grey = blackishGrey500
     static let greyMuted = blackishGrey400
     static let border = broccoliBrown200
-    static let borderStrong = oliveGreen100
+    static let borderStrong = oliveGreen200
     static let greenGlow = grassGreen500
     static let overlay = Color.black.opacity(0.18)
     static let fillVibrantTertiary = Color(hex: 0xE6EDE3)
+    static let projectCardOverlay = Color(hex: 0x294C13)
+    static let bgSubtle = paperWhite600
+    static let bgOverlay = paperWhite400
 
     static let surfacePrimary = paperWhite200
     static let surfaceSheet = paperWhite100
     static let surfaceCard = paperWhite50
     static let surfaceStory = broccoliBrown50
     static let textPrimary = inkBlack500
-    static let textSecondary = blackishGrey500
+    static let textSecondary = blackishGrey300
+    static let textDisabled = blackishGrey200
     static let textWarmSecondary = broccoliBrown500
-    static let textInverse = paperWhite500
+    static let textSecondary2 = broccoliBrown500
+    static let textInverse = paperWhite50
     static let textInverseSecondary = oliveGreen200
     static let brandPrimary = oliveGreen500
     static let brandSecondary = broccoliBrown500
     static let brandAccent = asparagusGreen500
+    static let interactiveHover = oliveGreen600
+    static let interactiveDisabled = oliveGreen200
+    static let statusNeedsId = vermillion500
+    static let statusVerified = oliveGreen500
+    static let statusDraft = blackishGrey300
+    static let pinIdentified = oliveGreen500
+    static let pinNeedsId = vermillion500
+    static let pinCommunity = indigoBlue500
+    static let dataQualityActive = oliveGreen500
 }
 
 private extension Color {

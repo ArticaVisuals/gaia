@@ -24,8 +24,13 @@ struct ProjectSelection: Identifiable, Hashable {
 }
 
 final class AppState: ObservableObject {
+    private static var usesFindDetailsPrototypeByDefault: Bool {
+        !ProcessInfo.processInfo.arguments.contains("-gaiaUseLegacyFindDetails")
+    }
+
     @Published var selectedSection: AppSection
     @Published var showsFindDetails = false
+    @Published var showsFindDetailsPrototype = false
     @Published var showsStoryDeck = false
     @Published var showsProjectDetail = false
     @Published var selectedFindTab: FindDetailsTab = .learn
@@ -41,16 +46,27 @@ final class AppState: ObservableObject {
             selectedSection = .explore
         }
 
-        if let launchFindDetails = Self.launchFindDetails {
-            selectedFindTab = launchFindDetails.tab
-            selectedSpeciesID = launchFindDetails.speciesID
-            showsFindDetails = true
+        if let launchFindDetailsPrototype = Self.launchFindDetailsPrototype {
+            openFindDetailsPrototype(
+                speciesID: launchFindDetailsPrototype.speciesID,
+                tab: launchFindDetailsPrototype.tab
+            )
+        } else if let launchFindDetails = Self.launchFindDetails {
+            openFindDetails(
+                speciesID: launchFindDetails.speciesID,
+                tab: launchFindDetails.tab
+            )
         }
 
         if let launchStoryDeck = Self.launchStoryDeck {
             selectedStoryID = launchStoryDeck.storyID
             selectedSpeciesID = launchStoryDeck.speciesID ?? selectedSpeciesID
             showsStoryDeck = true
+        }
+
+        if let launchProjectDetail = Self.launchProjectDetail {
+            selectedProject = launchProjectDetail
+            showsProjectDetail = true
         }
     }
 
@@ -65,22 +81,37 @@ final class AppState: ObservableObject {
     }
 
     func openSampleFind(tab: FindDetailsTab = .learn) {
-        selectedFindTab = tab
-        selectedSpeciesID = nil
-        showsFindDetails = true
+        presentFindDetails(speciesID: nil, tab: tab, usingPrototype: Self.usesFindDetailsPrototypeByDefault)
+    }
+
+    func openSampleFindPrototype(tab: FindDetailsTab = .find) {
+        presentFindDetails(speciesID: nil, tab: tab, usingPrototype: true)
     }
 
     func openFindDetails(speciesID: String?, tab: FindDetailsTab = .learn) {
-        selectedFindTab = tab
-        selectedSpeciesID = speciesID
-        showsFindDetails = true
+        presentFindDetails(
+            speciesID: speciesID,
+            tab: tab,
+            usingPrototype: Self.usesFindDetailsPrototypeByDefault
+        )
+    }
+
+    func openFindDetailsPrototype(speciesID: String?, tab: FindDetailsTab = .find) {
+        presentFindDetails(speciesID: speciesID, tab: tab, usingPrototype: true)
     }
 
     func closeFindDetails() {
         showsFindDetails = false
     }
 
-    func openStoryDeck(_ storyID: String?) {
+    func closeFindDetailsPrototype() {
+        showsFindDetailsPrototype = false
+    }
+
+    func openStoryDeck(_ storyID: String?, speciesID: String? = nil) {
+        if let speciesID {
+            selectedSpeciesID = speciesID
+        }
         selectedStoryID = storyID
         showsStoryDeck = true
     }
@@ -133,6 +164,28 @@ final class AppState: ObservableObject {
         return (speciesID: speciesID, tab: tab)
     }
 
+    private static var launchFindDetailsPrototype: (speciesID: String?, tab: FindDetailsTab)? {
+        let arguments = ProcessInfo.processInfo.arguments
+
+        guard let speciesIndex = arguments.firstIndex(of: "-gaiaFindDetailsPrototype"),
+              arguments.indices.contains(speciesIndex + 1) else {
+            return nil
+        }
+
+        let speciesID = arguments[speciesIndex + 1]
+        let tab: FindDetailsTab
+
+        if let tabIndex = arguments.firstIndex(of: "-gaiaFindTab"),
+           arguments.indices.contains(tabIndex + 1),
+           let launchTab = FindDetailsTab(rawValue: arguments[tabIndex + 1].capitalized) {
+            tab = prototypeTab(for: launchTab)
+        } else {
+            tab = .find
+        }
+
+        return (speciesID: speciesID, tab: tab)
+    }
+
     private static var launchStoryDeck: (storyID: String, speciesID: String?)? {
         let arguments = ProcessInfo.processInfo.arguments
 
@@ -152,5 +205,66 @@ final class AppState: ObservableObject {
         }
 
         return (storyID: storyID, speciesID: speciesID)
+    }
+
+    private static var launchProjectDetail: ProjectSelection? {
+        let arguments = ProcessInfo.processInfo.arguments
+
+        guard let projectIndex = arguments.firstIndex(of: "-gaiaProjectDetail"),
+              arguments.indices.contains(projectIndex + 1) else {
+            return nil
+        }
+
+        let projectID = arguments[projectIndex + 1]
+
+        switch projectID {
+        case "project-creek":
+            return ProjectSelection(
+                id: projectID,
+                title: "Creek Recovery",
+                tag: "Waterway",
+                countLabel: "24",
+                imageName: "find-project-creek"
+            )
+        case "project-pollinator":
+            return ProjectSelection(
+                id: projectID,
+                title: "Pollinator Corridor",
+                tag: "Garden",
+                countLabel: "24",
+                imageName: "find-project-pollinator"
+            )
+        default:
+            return ProjectSelection(
+                id: projectID,
+                title: projectID,
+                tag: "",
+                countLabel: "",
+                imageName: "find-project-pollinator"
+            )
+        }
+    }
+
+    private static func prototypeTab(for tab: FindDetailsTab) -> FindDetailsTab {
+        switch tab {
+        case .activity:
+            return .activity
+        case .find, .learn:
+            return .find
+        }
+    }
+
+    private func presentFindDetails(speciesID: String?, tab: FindDetailsTab, usingPrototype: Bool) {
+        selectedSpeciesID = speciesID
+
+        if usingPrototype {
+            selectedFindTab = Self.prototypeTab(for: tab)
+            showsFindDetails = false
+            showsFindDetailsPrototype = true
+        } else {
+            selectedFindTab = tab
+            showsFindDetailsPrototype = false
+            showsFindDetails = true
+        }
     }
 }

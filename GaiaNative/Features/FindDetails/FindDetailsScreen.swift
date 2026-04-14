@@ -10,9 +10,12 @@ struct FindDetailsScreen: View {
     @StateObject private var viewModel = FindDetailsViewModel()
     @State private var isHorizontalTabSwipeActive = false
 
+    private let mapDataService = MapDataService()
+
     var body: some View {
         GeometryReader { proxy in
             let topInset = proxy.safeAreaInsets.top > 0 ? proxy.safeAreaInsets.top : windowSafeTopInset
+            let bottomInset = proxy.safeAreaInsets.bottom > 0 ? proxy.safeAreaInsets.bottom : windowSafeBottomInset
             // Keep hero under the glass toolbar while avoiding the overly tight top crop.
             let heroLift = max(topInset - GaiaSpacing.lg, 0)
 
@@ -32,12 +35,12 @@ struct FindDetailsScreen: View {
                         DraggableTabSwitch(
                             tabs: FindDetailsTab.allCases,
                             selection: $viewModel.selectedTab,
+                            allowsDragSelection: false,
                             title: { $0.rawValue }
                         )
                         .frame(maxWidth: .infinity)
 
-                        tabContent
-                            .padding(.bottom, 120)
+                        tabContent(bottomInset: bottomInset)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .horizontalTabSwipe(
                                 tabs: FindDetailsTab.allCases,
@@ -47,6 +50,7 @@ struct FindDetailsScreen: View {
                                 }
                             )
                     }
+                    .padding(.bottom, bottomInset + GaiaSpacing.lg)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .scrollDisabled(isHorizontalTabSwipeActive)
@@ -68,7 +72,7 @@ struct FindDetailsScreen: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
         }
-        .ignoresSafeArea(edges: .top)
+        .ignoresSafeArea(edges: [.top, .bottom])
         .onAppear {
             viewModel.selectedTab = appState.selectedFindTab
         }
@@ -87,11 +91,19 @@ struct FindDetailsScreen: View {
             .safeAreaInsets.top ?? 0
     }
 
+    private var windowSafeBottomInset: CGFloat {
+        UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap(\.windows)
+            .first(where: \.isKeyWindow)?
+            .safeAreaInsets.bottom ?? 0
+    }
+
     @ViewBuilder
-    private var tabContent: some View {
+    private func tabContent(bottomInset: CGFloat) -> some View {
         switch viewModel.selectedTab {
         case .find:
-            FindTabView(
+            FindDetailsLegacyTabView(
                 species: species,
                 observations: speciesObservations,
                 onExpandMap: { viewModel.showsExpandedMap = true },
@@ -100,19 +112,36 @@ struct FindDetailsScreen: View {
                 }
             )
         case .activity:
-            ActivityTabView(species: species)
+            let activityBottomInset = max(
+                GaiaSpacing.xxxl + GaiaSpacing.xxl + GaiaSpacing.sm,
+                bottomInset + GaiaSpacing.sm
+            )
+            ActivityTabView(
+                species: species,
+                bottomInset: activityBottomInset
+            )
         case .learn:
-            LearnTabView(species: species, stories: contentStore.stories, onExpandMap: {
-                viewModel.showsExpandedMap = true
-            }, onOpenStory: { story in
-                appState.openStoryDeck(story.id)
-            })
+            LearnTabView(
+                species: species,
+                observations: speciesObservations,
+                stories: contentStore.stories,
+                onExpandMap: { viewModel.showsExpandedMap = true },
+                onOpenStory: { story in
+                    appState.openStoryDeck(story.id, speciesID: species.id)
+                }
+            )
         }
     }
 
     private var speciesObservations: [Observation] {
         let filtered = contentStore.observations.filter { $0.speciesID == species.id }
-        guard filtered.isEmpty else { return filtered }
+        guard filtered.isEmpty else {
+            return mapDataService.expandedObservations(
+                from: filtered,
+                targetCount: 150,
+                seed: "\(species.id)-find-map"
+            )
+        }
 
         return [
             Observation(

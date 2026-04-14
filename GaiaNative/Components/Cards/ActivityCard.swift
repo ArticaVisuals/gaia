@@ -8,14 +8,18 @@ struct ActivityTopBar: View {
     let onSelect: (String) -> Void
 
     var body: some View {
-        VStack(spacing: GaiaSpacing.sm) {
-            Text(title)
-                .gaiaFont(.title1Medium)
-                .foregroundStyle(GaiaColor.oliveGreen500)
-                .frame(maxWidth: .infinity)
-                .frame(height: 48, alignment: .bottom)
-                .padding(.top, 12)
-                .padding(.horizontal, GaiaSpacing.md)
+        VStack(spacing: GaiaSpacing.md) {
+            ZStack {
+                Text(title)
+                    .gaiaFont(.title1Medium)
+                    .foregroundStyle(GaiaColor.oliveGreen500)
+                    .frame(maxWidth: .infinity)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.85)
+            }
+            .frame(height: 48)
+            .padding(.horizontal, GaiaSpacing.md)
+            .padding(.top, 10)
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: GaiaSpacing.sm) {
@@ -26,11 +30,20 @@ struct ActivityTopBar: View {
                             Text(filter)
                                 .gaiaFont(.footnote)
                                 .foregroundStyle(filter == selectedFilter ? GaiaColor.paperWhite50 : GaiaColor.inkBlack300)
-                                .padding(.horizontal, 10)
-                                .frame(height: 28)
+                                .padding(.horizontal, 14)
+                                .frame(height: 34)
                                 .background(
                                     Capsule()
-                                        .fill(filter == selectedFilter ? GaiaColor.oliveGreen500 : GaiaColor.oliveGreen500.opacity(0.20))
+                                        .fill(filter == selectedFilter ? GaiaColor.oliveGreen500 : GaiaColor.paperWhite50)
+                                        .overlay(
+                                            Capsule()
+                                                .stroke(
+                                                    filter == selectedFilter
+                                                        ? GaiaColor.oliveGreen500
+                                                        : GaiaColor.oliveGreen200,
+                                                    lineWidth: 0.5
+                                                )
+                                        )
                                 )
                         }
                         .buttonStyle(.plain)
@@ -40,8 +53,9 @@ struct ActivityTopBar: View {
             }
             .scrollIndicators(.hidden)
         }
-        .padding(.bottom, GaiaSpacing.lg)
+        .padding(.bottom, GaiaSpacing.md)
         .frame(maxWidth: .infinity)
+        .frame(height: 185, alignment: .top)
         .background(GaiaColor.paperWhite50)
         .overlay(alignment: .bottom) {
             Rectangle()
@@ -144,17 +158,23 @@ struct ActivityCard: View {
 
     var body: some View {
         GaiaDataCard {
-            VStack(alignment: .leading, spacing: GaiaSpacing.xs) {
-                Text(event.title)
-                    .gaiaFont(.calloutMedium)
-                    .foregroundStyle(GaiaColor.textPrimary)
+            VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
+                HStack(alignment: .firstTextBaseline, spacing: GaiaSpacing.sm) {
+                    Text(event.title)
+                        .gaiaFont(.calloutMedium)
+                        .foregroundStyle(GaiaColor.textPrimary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    Text(event.timestampLabel)
+                        .gaiaFont(.caption2)
+                        .foregroundStyle(GaiaColor.greyMuted)
+                        .fixedSize()
+                }
+
                 Text(event.subtitle)
                     .gaiaFont(.subheadline)
                     .foregroundStyle(GaiaColor.textSecondary)
-                Text(event.timestampLabel)
-                    .gaiaFont(.caption2)
-                    .foregroundStyle(GaiaColor.greyMuted)
-                    .padding(.top, 4)
+                    .fixedSize(horizontal: false, vertical: true)
             }
         }
     }

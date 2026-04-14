@@ -5,6 +5,7 @@ struct DraggableTabSwitch<T: Identifiable & Hashable>: View {
     let tabs: [T]
     @Binding var selection: T
     let tabWidth: CGFloat?
+    let allowsDragSelection: Bool
     let title: (T) -> String
     @State private var dragX: CGFloat?
 
@@ -12,11 +13,13 @@ struct DraggableTabSwitch<T: Identifiable & Hashable>: View {
         tabs: [T],
         selection: Binding<T>,
         tabWidth: CGFloat? = nil,
+        allowsDragSelection: Bool = true,
         title: @escaping (T) -> String
     ) {
         self.tabs = tabs
         self._selection = selection
         self.tabWidth = tabWidth
+        self.allowsDragSelection = allowsDragSelection
         self.title = title
     }
 
@@ -66,7 +69,7 @@ struct DraggableTabSwitch<T: Identifiable & Hashable>: View {
                     leadingInset: leadingInset,
                     trackWidth: trackWidth
                 ),
-                including: .gesture
+                including: allowsDragSelection ? .gesture : .subviews
             )
         }
         .frame(height: 52)
@@ -253,5 +256,71 @@ extension View {
                 onHorizontalDragStateChange: onHorizontalDragStateChange
             )
         )
+    }
+}
+
+struct GaiaFindViewModeToggle<T: Identifiable & Hashable>: View {
+    let tabs: [T]
+    @Binding var selection: T
+    let icon: (T) -> GaiaIconKind
+    let accessibilityLabel: (T) -> String
+    var outerPadding: CGFloat = 4
+    var segmentSize: CGFloat = 40
+    var segmentSpacing: CGFloat = 4
+
+    init(
+        tabs: [T],
+        selection: Binding<T>,
+        icon: @escaping (T) -> GaiaIconKind,
+        accessibilityLabel: @escaping (T) -> String,
+        outerPadding: CGFloat = 4,
+        segmentSize: CGFloat = 40,
+        segmentSpacing: CGFloat = 4
+    ) {
+        self.tabs = tabs
+        self._selection = selection
+        self.icon = icon
+        self.accessibilityLabel = accessibilityLabel
+        self.outerPadding = outerPadding
+        self.segmentSize = segmentSize
+        self.segmentSpacing = segmentSpacing
+    }
+
+    var body: some View {
+        HStack(spacing: segmentSpacing) {
+            ForEach(tabs) { tab in
+                let isSelected = selection == tab
+
+                Button {
+                    guard !isSelected else { return }
+                    HapticsService.selectionChanged()
+                    withAnimation(GaiaMotion.spring) {
+                        selection = tab
+                    }
+                } label: {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: segmentSize / 2, style: .continuous)
+                            .fill(isSelected ? GaiaColor.olive : .clear)
+
+                        GaiaIcon(
+                            kind: icon(tab),
+                            size: 20,
+                            tint: isSelected ? GaiaColor.paperWhite50 : GaiaColor.oliveGreen500
+                        )
+                    }
+                    .frame(width: segmentSize, height: segmentSize)
+                    .contentShape(RoundedRectangle(cornerRadius: segmentSize / 2, style: .continuous))
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(accessibilityLabel(tab))
+                .accessibilityAddTraits(isSelected ? .isSelected : [])
+            }
+        }
+        .padding(outerPadding)
+        .background(
+            RoundedRectangle(cornerRadius: (segmentSize + outerPadding * 2) / 2, style: .continuous)
+                .fill(GaiaColor.oliveGreen100)
+        )
+        .frame(height: segmentSize + outerPadding * 2)
     }
 }

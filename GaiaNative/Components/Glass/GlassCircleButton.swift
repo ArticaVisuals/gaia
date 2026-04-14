@@ -11,11 +11,18 @@ struct GlassReactiveButtonStyle: ButtonStyle {
 
 struct GlassCircleButton<Label: View>: View {
     let size: CGFloat
+    let showsShadow: Bool
     let action: () -> Void
     @ViewBuilder let label: () -> Label
 
-    init(size: CGFloat = 48, action: @escaping () -> Void, @ViewBuilder label: @escaping () -> Label) {
+    init(
+        size: CGFloat = 48,
+        showsShadow: Bool = true,
+        action: @escaping () -> Void,
+        @ViewBuilder label: @escaping () -> Label
+    ) {
         self.size = size
+        self.showsShadow = showsShadow
         self.action = action
         self.label = label
     }
@@ -23,7 +30,11 @@ struct GlassCircleButton<Label: View>: View {
     var body: some View {
         Button(action: action) {
             ZStack {
-                GaiaMaterialBackground(cornerRadius: size / 2, interactive: true)
+                GaiaMaterialBackground(
+                    cornerRadius: size / 2,
+                    interactive: true,
+                    showsShadow: showsShadow
+                )
 
                 label()
                     .fixedSize()

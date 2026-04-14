@@ -20,6 +20,16 @@ enum AssetCatalog {
         "learn-category-badge": "gaia-learn-category-badge",
         "learn-story-arrow-circle": "gaia-learn-story-arrow-circle",
         "learn-story-arrow": "gaia-learn-story-arrow",
+        "badge/animal/amphibian": "gaia-profile-medal-category-amphibian",
+        "badge/animal/bird": "gaia-profile-medal-category-bird",
+        "badge/animal/fish": "gaia-profile-medal-category-fish",
+        "badge/animal/fungi": "gaia-profile-medal-category-fungus",
+        "badge/animal/fungus": "gaia-profile-medal-category-fungus",
+        "badge/animal/insect": "gaia-profile-medal-category-insect",
+        "badge/animal/mammal": "gaia-profile-medal-category-mammal",
+        "badge/animal/mollusk": "gaia-profile-medal-category-mollusk",
+        "badge/animal/plant": "gaia-profile-medal-category-plant",
+        "badge/animal/reptile": "gaia-profile-medal-category-reptile",
         "find-dq-casual": "gaia-find-dq-casual",
         "find-dq-needs-id": "gaia-find-dq-needs-id",
         "find-dq-research": "gaia-find-dq-research",
@@ -100,6 +110,13 @@ enum AssetCatalog {
         "find-project-pollinator": "assets/find-details/find-tab-final/project-pollinator-corridor.png",
         "activity-suggestion-thumb": "assets/find-details/activity-tab-final/suggestion-thumb.png",
         "project-detail-hero-pollinator": "assets/find-details/project-details/hero-pollinator.png",
+        "project-detail-founder-alice-edwards": "assets/find-details/project-details/founder-alice-edwards.png",
+        "project-detail-contributor-1": "assets/find-details/project-details/contributor-1.png",
+        "project-detail-contributor-2": "assets/find-details/project-details/contributor-2.png",
+        "project-detail-contributor-3": "assets/find-details/project-details/contributor-3.png",
+        "project-detail-contributor-4": "assets/find-details/project-details/contributor-4.png",
+        "project-detail-contributor-5": "assets/find-details/project-details/contributor-5.png",
+        "project-detail-contributor-6": "assets/find-details/project-details/contributor-6.png",
         "project-detail-profile-stack": "assets/find-details/project-details/profile-stack.png",
         "project-detail-recent-cacti": "assets/find-details/project-details/recent-cacti.png",
         "project-detail-recent-indian-cormorant": "assets/find-details/project-details/recent-indian-cormorant.png",
@@ -107,7 +124,9 @@ enum AssetCatalog {
         "project-detail-recent-bindweed-tribe": "assets/find-details/project-details/recent-bindweed-tribe.png",
         "project-detail-recent-emperor-gum-moth": "assets/find-details/project-details/recent-emperor-gum-moth.png",
         "project-detail-recent-garden-orbweaver": "assets/find-details/project-details/recent-garden-orbweaver.png",
-        "project-detail-update-highlight": "assets/find-details/project-details/update-highlight.png"
+        "project-detail-update-highlight": "assets/find-details/project-details/update-highlight.png",
+        "project-detail-update-weekend-goals": "assets/find-details/project-details/update-weekend-goals.png",
+        "project-detail-update-spring-bloom": "assets/find-details/project-details/update-spring-bloom.png"
     ]
 
     static func resolvedPath(for key: String) -> String {

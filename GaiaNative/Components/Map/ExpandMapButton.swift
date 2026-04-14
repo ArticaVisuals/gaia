@@ -4,9 +4,14 @@ import SwiftUI
 struct ExpandMapButton: View {
     let action: () -> Void
 
+    private enum Layout {
+        static let buttonSize: CGFloat = 40
+        static let iconSize: CGFloat = 26.667
+    }
+
     var body: some View {
-        GlassCircleButton(size: 48, action: action) {
-            GaiaIcon(kind: .expand, size: 32, tint: GaiaColor.olive)
+        GlassCircleButton(size: Layout.buttonSize, action: action) {
+            GaiaIcon(kind: .expand, size: Layout.iconSize)
         }
         .accessibilityLabel("Expand map")
     }

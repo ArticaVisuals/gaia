@@ -5,14 +5,15 @@ struct AppRootView: View {
     @EnvironmentObject private var contentStore: ContentStore
 
     var body: some View {
-        TabView(
-            selection: Binding(
-                get: { appState.selectedSection },
-                set: { appState.select(section: $0) }
-            )
-        ) {
+        let selection = Binding(
+            get: { appState.selectedSection },
+            set: { appState.select(section: $0) }
+        )
+
+        TabView(selection: selection) {
             ForEach(AppSection.allCases) { section in
                 AppRouter(section: section)
+                    .toolbar(.hidden, for: .tabBar)
                     .tag(section)
                     .tabItem {
                         Image(section.tabAssetName)
@@ -21,8 +22,20 @@ struct AppRootView: View {
                     }
             }
         }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            BottomNavBar(selection: selection)
+                .padding(.horizontal, GaiaSpacing.lg)
+                .padding(.top, GaiaSpacing.md)
+                .padding(.bottom, GaiaSpacing.sm)
+                .background(Color.clear)
+        }
         .tint(GaiaColor.olive)
         .preferredColorScheme(.light)
+        .fullScreenCover(isPresented: $appState.showsFindDetailsPrototype) {
+            FindDetailsPrototypeScreen(species: selectedSpecies)
+                .environmentObject(appState)
+                .environmentObject(contentStore)
+        }
         .fullScreenCover(isPresented: $appState.showsFindDetails) {
             FindDetailsScreen(species: selectedSpecies)
                 .environmentObject(appState)
