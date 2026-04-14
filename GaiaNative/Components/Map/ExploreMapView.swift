@@ -7,7 +7,7 @@ private enum GaiaPinMapConfig {
     static let clusterReuseID = "gaia.cluster"
     static let observationReuseID = "gaia.observation"
     static let clusteringIdentifier = "gaia.cluster.members"
-    static let clusterCountHiddenSpan: CLLocationDegrees = 11.8
+    static let clusterBlankMaxZoom = 6.8
     static let singlePhotoMinZoom = 14.2
     static let markerVisualSize: CGFloat = 62
     static let markerTouchPadding: CGFloat = 18
@@ -139,12 +139,7 @@ private struct ExploreMapRepresentable: UIViewRepresentable {
                 view.clusteringIdentifier = nil
                 view.displayPriority = .required
                 view.collisionMode = .circle
-                configure(
-                    view,
-                    for: annotation,
-                    zoom: ExploreMapView.zoomLevel(for: mapView.region),
-                    visibleSpan: ExploreMapView.visibleSpan(for: mapView.region)
-                )
+                configure(view, for: annotation, zoom: ExploreMapView.zoomLevel(for: mapView.region))
                 return view
             }
 
@@ -157,12 +152,7 @@ private struct ExploreMapRepresentable: UIViewRepresentable {
                 view.clusteringIdentifier = GaiaPinMapConfig.clusteringIdentifier
                 view.displayPriority = .required
                 view.collisionMode = .circle
-                configure(
-                    view,
-                    for: annotation,
-                    zoom: ExploreMapView.zoomLevel(for: mapView.region),
-                    visibleSpan: ExploreMapView.visibleSpan(for: mapView.region)
-                )
+                configure(view, for: annotation, zoom: ExploreMapView.zoomLevel(for: mapView.region))
                 return view
             }
 
@@ -221,20 +211,14 @@ private struct ExploreMapRepresentable: UIViewRepresentable {
         private func refreshVisibleAnnotationViews(in mapView: MKMapView) {
             let region = mapView.region
             let zoom = ExploreMapView.zoomLevel(for: region)
-            let visibleSpan = ExploreMapView.visibleSpan(for: region)
             for annotation in mapView.annotations {
                 guard let view = mapView.view(for: annotation) as? GaiaHostedMarkerAnnotationView else { continue }
-                configure(view, for: annotation, zoom: zoom, visibleSpan: visibleSpan)
+                configure(view, for: annotation, zoom: zoom)
             }
         }
 
-        private func configure(
-            _ view: GaiaHostedMarkerAnnotationView,
-            for annotation: MKAnnotation,
-            zoom: Double,
-            visibleSpan: CLLocationDegrees
-        ) {
-            let farOutCluster = visibleSpan >= GaiaPinMapConfig.clusterCountHiddenSpan
+        private func configure(_ view: GaiaHostedMarkerAnnotationView, for annotation: MKAnnotation, zoom: Double) {
+            let showsBlankPin = zoom <= GaiaPinMapConfig.clusterBlankMaxZoom
             let showsSinglePhoto = zoom >= GaiaPinMapConfig.singlePhotoMinZoom
             let markerScale = ExploreMapView.markerScale(for: zoom)
 
@@ -249,14 +233,19 @@ private struct ExploreMapRepresentable: UIViewRepresentable {
                         ),
                         renderKey: "single.photo.\(imageName)"
                     )
-                } else {
+                } else if showsBlankPin {
                     view.apply(
                         content: AnyView(MarkerRenderContainer { MapAnnotationBlankPin() }),
                         renderKey: "single.blank"
                     )
+                } else {
+                    view.apply(
+                        content: AnyView(MarkerRenderContainer { MapAnnotationClusterPin(count: 1) }),
+                        renderKey: "single.count.1"
+                    )
                 }
             } else if let clusterAnnotation = annotation as? MKClusterAnnotation {
-                if farOutCluster {
+                if showsBlankPin {
                     view.apply(
                         content: AnyView(MarkerRenderContainer { MapAnnotationBlankPin() }),
                         renderKey: "cluster.blank"
