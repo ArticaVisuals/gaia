@@ -126,7 +126,13 @@ enum AssetCatalog {
         "project-detail-recent-garden-orbweaver": "assets/find-details/project-details/recent-garden-orbweaver.png",
         "project-detail-update-highlight": "assets/find-details/project-details/update-highlight.png",
         "project-detail-update-weekend-goals": "assets/find-details/project-details/update-weekend-goals.png",
-        "project-detail-update-spring-bloom": "assets/find-details/project-details/update-spring-bloom.png"
+        "project-detail-update-spring-bloom": "assets/find-details/project-details/update-spring-bloom.png",
+        "activity-feed-new-find-logged": "assets/find-details/activity-tab-final/activity-feed-new-find-logged.png",
+        "activity-feed-community-agreed": "assets/find-details/activity-tab-final/activity-feed-community-agreed.png",
+        "activity-feed-research-grade": "assets/find-details/activity-tab-final/activity-feed-research-grade.png",
+        "activity-feed-draft-saved": "assets/find-details/activity-tab-final/activity-feed-draft-saved.png",
+        "activity-feed-id-refined": "assets/find-details/activity-tab-final/activity-feed-id-refined.png",
+        "activity-feed-needs-detail": "assets/find-details/activity-tab-final/activity-feed-needs-detail.png"
     ]
 
     static func resolvedPath(for key: String) -> String {

@@ -8,6 +8,7 @@ struct ActivityEvent: Identifiable, Codable, Hashable {
     let timestampLabel: String
     let actionLabel: String?
     let categoryIDs: [String]?
+    let isUnread: Bool?
     let thumbnailAssetName: String?
 
     init(
@@ -18,6 +19,7 @@ struct ActivityEvent: Identifiable, Codable, Hashable {
         timestampLabel: String,
         actionLabel: String?,
         categoryIDs: [String]?,
+        isUnread: Bool? = nil,
         thumbnailAssetName: String? = nil
     ) {
         self.id = id
@@ -27,6 +29,9 @@ struct ActivityEvent: Identifiable, Codable, Hashable {
         self.timestampLabel = timestampLabel
         self.actionLabel = actionLabel
         self.categoryIDs = categoryIDs
+        self.isUnread = isUnread
         self.thumbnailAssetName = thumbnailAssetName
     }
+
+    var showsUnreadIndicator: Bool { isUnread ?? false }
 }

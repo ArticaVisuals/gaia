@@ -36,7 +36,7 @@
   --radius-lg:  16px;
   --radius-xl:  24px;
   --radius-xxl: 48px;
-  --radius-full:250px;
+  --radius-full:999px;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 16px; }
@@ -590,7 +590,7 @@ section[id] { scroll-margin-top: 50px; }
   <div class="ds-header">
     <h1>Design System</h1>
     <p>Gaia Prototype &nbsp;·&nbsp; Preview generated <script>document.write(new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}))</script></p>
-    <p class="source-note">Preview values are aligned to <code>GaiaNative/Theme</code> so the HTML surface matches the native token layer.</p>
+    <p class="source-note">Preview values are aligned to the repo token sources so the HTML surface stays in sync with the published design-system reference.</p>
   </div>
 
   <!-- ── Variables ───────────────────────────────────────────── -->
@@ -804,7 +804,7 @@ const TOKENS = {
     },
   semantic: [
     { name:'border-default',        hex:'#D8C9B8', desc:'Default border for cards and inputs' },
-    { name:'border-strong',         hex:'#E3E7DF', desc:'Stronger border aligned to GaiaColor.borderStrong' },
+    { name:'border-strong',         hex:'#E3E7DF', desc:'Stronger border token from the shared design-system source' },
     { name:'green-glow',            hex:'#7BB369', desc:'Accent glow token used in map pin and highlight treatments' },
     { name:'fill-vibrant-tertiary', hex:'#E6EDE3', desc:'Nav selection highlight' },
     { name:'surface-primary',       hex:'#FDFBF4', desc:'Page background' },
@@ -891,7 +891,7 @@ const TOKENS = {
     { name:'lg',        val:16  },
     { name:'xl',        val:24  },
     { name:'xxl',       val:48  },
-    { name:'full',      val:250 },
+    { name:'full',      val:999 },
     { name:'thumbnail', val:12  },
     { name:'card',      val:16  },
     { name:'storyCard', val:20  },
