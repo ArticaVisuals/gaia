@@ -1,15 +1,16 @@
 import SwiftUI
 
 enum GaiaColor {
+    // Source of truth: Figma global variables (file 4e4G3tnSR7AdPbf0jAYPP1)
     static let oliveGreen50 = Color(hex: 0xF2F4F0)
-    static let oliveGreen100 = Color(hex: 0xE3E7DF)
+    static let oliveGreen100 = Color(hex: 0xD8E0CD)
     static let oliveGreen200 = Color(hex: 0xADBA9F)
-    static let oliveGreen300 = Color(hex: 0xA3AE95)
-    static let oliveGreen400 = Color(hex: 0x8A9B7E)
+    static let oliveGreen300 = Color(hex: 0x93A481)
+    static let oliveGreen400 = Color(hex: 0x788E61)
     static let oliveGreen500 = Color(hex: 0x6B8352)
-    static let oliveGreen600 = Color(hex: 0x5B6850)
+    static let oliveGreen600 = Color(hex: 0x566843)
     static let oliveGreen700 = Color(hex: 0x49583A)
-    static let oliveGreen800 = Color(hex: 0x3D4535)
+    static let oliveGreen800 = Color(hex: 0x3B4630)
     static let oliveGreen900 = Color(hex: 0x282D22)
 
     static let grassGreen50 = Color(hex: 0xD0EBC7)
@@ -45,16 +46,17 @@ enum GaiaColor {
     static let asparagusGreen800 = Color(hex: 0x707053)
     static let asparagusGreen900 = Color(hex: 0x484837)
 
+    // Paper-white scale — Figma source of truth (primary/paper-white/*)
     static let paperWhite50 = Color(hex: 0xFEFDF9)
-    static let paperWhite100 = Color(hex: 0xFEFCF7)
-    static let paperWhite200 = Color(hex: 0xFDFBF4)
-    static let paperWhite300 = Color(hex: 0xFDFAF1)
-    static let paperWhite400 = Color(hex: 0xFCFAF1)
-    static let paperWhite500 = Color(hex: 0xFCFAF0)
-    static let paperWhite600 = Color(hex: 0xDDDBD3)
-    static let paperWhite700 = Color(hex: 0xBDBBB4)
-    static let paperWhite800 = Color(hex: 0x929189)
-    static let paperWhite900 = Color(hex: 0x5F5E5A)
+    static let paperWhite100 = Color(hex: 0xECEBE4)
+    static let paperWhite200 = Color(hex: 0xDEDCD3)
+    static let paperWhite300 = Color(hex: 0xD2CFC3)
+    static let paperWhite400 = Color(hex: 0xC5C2B4)
+    static let paperWhite500 = Color(hex: 0xB8B4A4)
+    static let paperWhite600 = Color(hex: 0xABA795)
+    static let paperWhite700 = Color(hex: 0x9E9985)
+    static let paperWhite800 = Color(hex: 0x928C76)
+    static let paperWhite900 = Color(hex: 0x807A61)
 
     static let inkBlack50 = Color(hex: 0xEDECEE)
     static let inkBlack100 = Color(hex: 0xD8D6DA)
@@ -113,7 +115,8 @@ enum GaiaColor {
 
     static let olive = oliveGreen500
     static let oliveDark = oliveGreen800
-    static let paper = paperWhite200
+    // Figma bg-default = paper-white/50. Previous cream alias #FDFBF4 was not in Figma.
+    static let paper = paperWhite50
     static let paperStrong = paperWhite50
     static let brown = broccoliBrown500
     static let grey = blackishGrey500
@@ -124,23 +127,26 @@ enum GaiaColor {
     static let overlay = Color.black.opacity(0.18)
     static let fillVibrantTertiary = Color(hex: 0xE6EDE3)
     static let projectCardOverlay = Color(hex: 0x294C13)
-    static let bgSubtle = paperWhite600
-    static let bgOverlay = paperWhite400
+    static let bgSubtle = paperWhite600            // Figma semantic/bg-subtle -> paper-white/600 (#ABA795)
+    static let bgOverlay = paperWhite50.opacity(0.82) // Figma alias; approximate as paper-white/50 translucent
 
-    static let surfacePrimary = paperWhite200
-    static let surfaceSheet = paperWhite100
+    static let surfacePrimary = paperWhite50       // Figma bg-default -> paper-white/50
+    static let surfaceSheet = paperWhite50
     static let surfaceCard = paperWhite50
     static let surfaceStory = broccoliBrown50
-    static let textPrimary = inkBlack500
-    static let textSecondary = blackishGrey300
-    static let textDisabled = blackishGrey200
+    static let textPrimary = inkBlack500            // Figma text-primary -> ink-black/500
+    static let textSecondary = blackishGrey300      // Figma text-secondary -> blackish-grey/300
+    static let textDisabled = blackishGrey200       // Figma text-disabled -> blackish-grey/200
     static let textWarmSecondary = broccoliBrown500
-    static let textSecondary2 = broccoliBrown500
-    static let textInverse = paperWhite50
+    static let textSecondary2 = broccoliBrown500    // Figma text-secondary-2 -> broccoli-brown/500
+    // Figma text-inverse -> paper-white/500 (#B8B4A4). Exact match to design system.
+    static let textInverse = paperWhite500
     static let textInverseSecondary = oliveGreen200
     static let brandPrimary = oliveGreen500
     static let brandSecondary = broccoliBrown500
     static let brandAccent = asparagusGreen500
+    static let splashBackground = Color(hex: 0x69785C)
+    static let surfaceControlSubtle = textDisabled.opacity(0.20)
     static let interactiveHover = oliveGreen600
     static let interactiveDisabled = oliveGreen200
     static let statusNeedsId = vermillion500

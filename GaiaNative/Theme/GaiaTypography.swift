@@ -44,19 +44,19 @@ enum GaiaTextStyle {
         case .heroMedium:       return (GaiaTypography.heroMedium,       -0.9184, GaiaTypography.serifLineSpacing(size: 58.775, weight: .medium, targetLineHeight: 58.775 * 1.1))
         case .heroFindExpanded: return (GaiaTypography.heroFindExpanded, -0.5,    GaiaTypography.serifLineSpacing(size: 40, weight: .medium, targetLineHeight: 40))
         case .heroFindCollapsed:return (GaiaTypography.heroFindCollapsed, -0.2,   GaiaTypography.serifLineSpacing(size: 24, weight: .medium, targetLineHeight: 40))
-        case .display:          return (GaiaTypography.display,          -0.5,  32 * 0.1)   // LH 1.1
-        case .displayMedium:    return (GaiaTypography.displayMedium,    -0.5,  0)           // LH 1.0
+        case .display:          return (GaiaTypography.display,          -0.5,  GaiaTypography.serifLineSpacing(size: 32, weight: .regular, targetLineHeight: 32 * 1.1))
+        case .displayMedium:    return (GaiaTypography.displayMedium,    -0.5,  GaiaTypography.serifLineSpacing(size: 32, weight: .medium, targetLineHeight: 32))
         case .display40Medium:  return (GaiaTypography.display40Medium,  -0.5,  0)           // LH 1.0
-        case .title1:           return (GaiaTypography.title1,           -0.3,  28 * 0.1)   // LH 1.1
-        case .title1Medium:     return (GaiaTypography.title1Medium,     -0.3,  28 * 0.1)   // LH 1.1
+        case .title1:           return (GaiaTypography.title1,           -0.3,  GaiaTypography.serifLineSpacing(size: 28, weight: .regular, targetLineHeight: 28 * 1.1))
+        case .title1Medium:     return (GaiaTypography.title1Medium,     -0.3,  GaiaTypography.serifLineSpacing(size: 28, weight: .medium, targetLineHeight: 28 * 1.1))
         case .title2:           return (GaiaTypography.title2,           -0.2,  GaiaTypography.serifLineSpacing(size: 24, weight: .regular, targetLineHeight: 24 * 1.1))
-        case .title2Medium:     return (GaiaTypography.title2Medium,     -0.2,  GaiaTypography.serifLineSpacing(size: 24, weight: .medium, targetLineHeight: 24 * 0.91))
-        case .title3:           return (GaiaTypography.titleRegular,      0,    20 * 0.3)   // LH 1.3
-        case .title3Medium:     return (GaiaTypography.title,             0,    GaiaTypography.serifLineSpacing(size: 20, weight: .medium, targetLineHeight: 20 * 1.1))
-        case .subheadSerif:     return (GaiaTypography.subheadSerif,      0,    16 * 0.3)   // LH 1.3
-        case .subheadSerifMedium: return (GaiaTypography.subheadSerifMedium, 0, 16 * 0.3)   // LH 1.3
-        case .bodySerif:        return (GaiaTypography.bodySerif,         0,    14 * 0.2)   // LH 1.2
-        case .bodySerifMedium:  return (GaiaTypography.bodySerifMedium,   0,    14 * 0.3)   // LH 1.3
+        case .title2Medium:     return (GaiaTypography.title2Medium,     -0.2,  GaiaTypography.serifLineSpacing(size: 24, weight: .medium, targetLineHeight: 24 * 1.1))
+        case .title3:           return (GaiaTypography.titleRegular,      -0.45, GaiaTypography.serifLineSpacing(size: 20, weight: .regular, targetLineHeight: 21))
+        case .title3Medium:     return (GaiaTypography.title,            -0.45, GaiaTypography.serifLineSpacing(size: 20, weight: .medium, targetLineHeight: 21))
+        case .subheadSerif:     return (GaiaTypography.subheadSerif,      0,    GaiaTypography.serifLineSpacing(size: 16, weight: .regular, targetLineHeight: 16 * 1.3))
+        case .subheadSerifMedium: return (GaiaTypography.subheadSerifMedium, 0, GaiaTypography.serifLineSpacing(size: 16, weight: .medium, targetLineHeight: 16 * 1.3))
+        case .bodySerif:        return (GaiaTypography.bodySerif,         0,    GaiaTypography.serifLineSpacing(size: 14, weight: .regular, targetLineHeight: 14 * 1.2))
+        case .bodySerifMedium:  return (GaiaTypography.bodySerifMedium,   0,    GaiaTypography.serifLineSpacing(size: 14, weight: .medium, targetLineHeight: 14 * 1.2))
         case .bodySerifTight:   return (GaiaTypography.bodySerif,        -0.31, GaiaTypography.serifLineSpacing(size: 14, weight: .regular, targetLineHeight: 14 * 1.19))
         case .statValue:        return (GaiaTypography.statValue,        -0.272, GaiaTypography.serifLineSpacing(size: 30.471, weight: .medium, targetLineHeight: 30.471 * 1.2))
         case .scientificLabel:  return (GaiaTypography.scientificLabel,   0.1,   GaiaTypography.customLineSpacing(
@@ -75,22 +75,22 @@ enum GaiaTextStyle {
         // ── Sans ───────────────────────────────────────
         case .titleSans:        return (GaiaTypography.titleSans,        -0.45, GaiaTypography.sansLineSpacing(size: 20, weight: .regular, targetLineHeight: 21))
         case .titleSansMedium:  return (GaiaTypography.titleSansMedium,  -0.45, GaiaTypography.sansLineSpacing(size: 20, weight: .medium, targetLineHeight: 21))
-        case .body:             return (GaiaTypography.body,              0,    17 * 0.3)   // LH 1.3
-        case .bodyMedium:       return (GaiaTypography.bodyMedium,        0,    17 * 0.3)   // LH 1.3
-        case .bodyBold:         return (GaiaTypography.bodyBold,          0,    17 * 0.3)   // LH 1.3
+        case .body:             return (GaiaTypography.body,              0,    GaiaTypography.sansLineSpacing(size: 17, weight: .regular, targetLineHeight: 17 * 1.3))
+        case .bodyMedium:       return (GaiaTypography.bodyMedium,        0,    GaiaTypography.sansLineSpacing(size: 17, weight: .medium, targetLineHeight: 17 * 1.3))
+        case .bodyBold:         return (GaiaTypography.bodyBold,          0,    GaiaTypography.sansLineSpacing(size: 17, weight: .bold, targetLineHeight: 17 * 1.3))
         case .callout:          return (GaiaTypography.callout,          -0.31, GaiaTypography.sansLineSpacing(size: 16, weight: .regular, targetLineHeight: 18.56))
         case .calloutMedium:    return (GaiaTypography.calloutMedium,    -0.31, GaiaTypography.sansLineSpacing(size: 16, weight: .medium, targetLineHeight: 18.56))
         case .calloutTight:     return (GaiaTypography.callout,          -0.31, GaiaTypography.sansLineSpacing(size: 16, weight: .regular, targetLineHeight: 16 * 1.1))
-        case .subheadline:      return (GaiaTypography.subheadline,       0,    15 * 0.3)   // LH 1.3
-        case .subheadlineMedium:return (GaiaTypography.subheadlineMedium, 0,    15 * 0.2)   // LH 1.2
-        case .subheadlineBold:  return (GaiaTypography.subheadlineBold,   0,    5)          // LH 20px
+        case .subheadline:      return (GaiaTypography.subheadline,       0,    GaiaTypography.sansLineSpacing(size: 15, weight: .regular, targetLineHeight: 15 * 1.3))
+        case .subheadlineMedium:return (GaiaTypography.subheadlineMedium, 0,    GaiaTypography.sansLineSpacing(size: 15, weight: .medium, targetLineHeight: 15 * 1.3))
+        case .subheadlineBold:  return (GaiaTypography.subheadlineBold,   0,    GaiaTypography.sansLineSpacing(size: 15, weight: .bold, targetLineHeight: 15 * 1.3))
         case .footnote:         return (GaiaTypography.footnote,         -0.08, GaiaTypography.sansLineSpacing(size: 13, weight: .regular, targetLineHeight: 15.6))
         case .footnoteMedium:   return (GaiaTypography.footnoteMedium,   -0.08, GaiaTypography.sansLineSpacing(size: 13, weight: .medium, targetLineHeight: 15.6))
         case .pill:             return (GaiaTypography.footnote,         -0.08, GaiaTypography.sansLineSpacing(size: 13, weight: .regular, targetLineHeight: 13 * 1.2))
-        case .caption:          return (GaiaTypography.caption,           0.25, 11 * 0.3)   // LH 1.3
-        case .captionMedium:    return (GaiaTypography.captionMedium,     0.25, 11 * 0.3)   // LH 1.3
-        case .caption2:         return (GaiaTypography.caption2,          0,    12 * 0.2)   // LH 1.2
-        case .caption2Medium:   return (GaiaTypography.caption2Medium,    0,    12 * 0.2)   // LH 1.2
+        case .caption:          return (GaiaTypography.caption,           0.25, GaiaTypography.sansLineSpacing(size: 11, weight: .regular, targetLineHeight: 11 * 1.3))
+        case .captionMedium:    return (GaiaTypography.captionMedium,     0.25, GaiaTypography.sansLineSpacing(size: 11, weight: .medium, targetLineHeight: 11 * 1.3))
+        case .caption2:         return (GaiaTypography.caption2,          0,    GaiaTypography.sansLineSpacing(size: 12, weight: .regular, targetLineHeight: 12 * 1.2))
+        case .caption2Medium:   return (GaiaTypography.caption2Medium,    0,    GaiaTypography.sansLineSpacing(size: 12, weight: .medium, targetLineHeight: 12 * 1.2))
         case .micro:            return (GaiaTypography.micro,             0.25, 10 * 0.3)   // LH 1.3
         case .nav:              return (GaiaTypography.nav,               0.25, 11 * 0.3)   // LH 1.3
         }

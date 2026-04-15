@@ -26,7 +26,7 @@ enum GaiaShadow {
     static let navYOffset: CGFloat = 8
 
     static let mediumColor = mdColor
-    static let cardColor = mdColor
+    static let cardColor = GaiaColor.textPrimary.opacity(0.10)
     static let cardRadius = mdRadius
     static let greenGlow = GaiaColor.greenGlow.opacity(0.45)
 }
