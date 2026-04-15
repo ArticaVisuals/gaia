@@ -1,5 +1,16 @@
 import Foundation
 
+private struct BundledContent {
+    let appCopy: AppCopy?
+    let species: [Species]?
+    let stories: [StoryCard]?
+    let profile: ProfileSummary?
+    let profileLog: ProfileLogContent?
+    let activityEvents: [ActivityEvent]?
+    let communityPosts: [CommunityPost]?
+    let observations: [Observation]?
+}
+
 struct ProfileLogContent: Codable, Hashable {
     let totalFindsLabel: String
     let listSections: [ProfileLogSection]
@@ -37,7 +48,8 @@ enum ProfileLogStatusKind: String, Codable, Hashable {
 
 @MainActor
 final class ContentStore: ObservableObject {
-    private let mapDataService = MapDataService()
+    private var bundledContentLoadTask: Task<Void, Never>?
+    private var hasLoadedBundledContent = false
 
     @Published var appCopy: AppCopy = .default
     @Published var species: [Species] = PreviewSpecies.all
@@ -62,24 +74,81 @@ final class ContentStore: ObservableObject {
     }
 
     func loadBundledContentIfAvailable() {
-        appCopy = load("app-copy", as: AppCopy.self) ?? appCopy
-        species = load("species", as: [Species].self) ?? species
-        stories = load("stories", as: [StoryCard].self) ?? stories
-        profile = load("profile", as: ProfileSummary.self) ?? profile
-        profileLog = load("profile-log", as: ProfileLogContent.self) ?? profileLog
-        activityEvents = load("activity", as: [ActivityEvent].self) ?? activityEvents
-        communityPosts = load("community", as: [CommunityPost].self) ?? communityPosts
-        let loadedObservations = load("map-observations", as: [Observation].self) ?? observations
-        observations = mapDataService.prototypeObservations(from: loadedObservations)
+        guard !hasLoadedBundledContent, bundledContentLoadTask == nil else {
+            return
+        }
+
+        bundledContentLoadTask = Task(priority: .userInitiated) { [weak self] in
+            let loadedContent = await Task.detached(priority: .userInitiated) {
+                Self.loadBundledContent()
+            }.value
+
+            await MainActor.run { [weak self] in
+                guard let self else { return }
+                self.applyBundledContent(loadedContent)
+                self.hasLoadedBundledContent = true
+                self.bundledContentLoadTask = nil
+            }
+        }
     }
 
-    private func load<T: Decodable>(_ name: String, as type: T.Type) -> T? {
+    private func applyBundledContent(_ content: BundledContent) {
+        if let appCopy = content.appCopy {
+            self.appCopy = appCopy
+        }
+
+        if let species = content.species {
+            self.species = species
+        }
+
+        if let stories = content.stories {
+            self.stories = stories
+        }
+
+        if let profile = content.profile {
+            self.profile = profile
+        }
+
+        if let profileLog = content.profileLog {
+            self.profileLog = profileLog
+        }
+
+        if let activityEvents = content.activityEvents {
+            self.activityEvents = activityEvents
+        }
+
+        if let communityPosts = content.communityPosts {
+            self.communityPosts = communityPosts
+        }
+
+        if let observations = content.observations {
+            self.observations = observations
+        }
+    }
+
+    nonisolated private static func loadBundledContent() -> BundledContent {
+        let rawObservations = load("map-observations", as: [Observation].self)
+        let mapDataService = MapDataService()
+
+        return BundledContent(
+            appCopy: load("app-copy", as: AppCopy.self),
+            species: load("species", as: [Species].self),
+            stories: load("stories", as: [StoryCard].self),
+            profile: load("profile", as: ProfileSummary.self),
+            profileLog: load("profile-log", as: ProfileLogContent.self),
+            activityEvents: load("activity", as: [ActivityEvent].self),
+            communityPosts: load("community", as: [CommunityPost].self),
+            observations: rawObservations.map { mapDataService.prototypeObservations(from: $0) }
+        )
+    }
+
+    nonisolated private static func load<T: Decodable>(_ name: String, as type: T.Type) -> T? {
         guard let url = Bundle.main.url(forResource: name, withExtension: "json", subdirectory: "Content") ?? Bundle.main.url(forResource: name, withExtension: "json") else {
             return nil
         }
 
         do {
-            let data = try Data(contentsOf: url)
+            let data = try Data(contentsOf: url, options: [.mappedIfSafe])
             return try JSONDecoder().decode(T.self, from: data)
         } catch {
             return nil
@@ -103,7 +172,7 @@ enum PreviewProfileLog {
                         metaLabel: "Eaton Canyon · 2:15 PM",
                         statusLabel: "Research Grade",
                         statusKind: .researchGrade,
-                        imageSource: "https://www.figma.com/api/mcp/asset/f99a6cfd-ae56-4e80-aac0-92c673a070b5"
+                        imageSource: "coast-live-oak-gallery-1"
                     ),
                     .init(
                         id: "unknown-moth",
@@ -112,7 +181,7 @@ enum PreviewProfileLog {
                         metaLabel: "Eaton Canyon · 2:08 PM",
                         statusLabel: "Needs ID",
                         statusKind: .needsID,
-                        imageSource: "https://www.figma.com/api/mcp/asset/3de8ff3b-8537-438e-9014-164c92cd7265"
+                        imageSource: "coast-live-oak-gallery-4"
                     )
                 ]
             ),
@@ -153,7 +222,7 @@ enum PreviewProfileLog {
                         metaLabel: "Rose Bowl Trail · 1:20 PM",
                         statusLabel: "Research Grade",
                         statusKind: .researchGrade,
-                        imageSource: "https://www.figma.com/api/mcp/asset/5480f314-a42a-4aff-b091-ade77472cf43"
+                        imageSource: "coast-live-oak-gallery-3"
                     ),
                     .init(
                         id: "california-poppy",
@@ -162,7 +231,7 @@ enum PreviewProfileLog {
                         metaLabel: "Eaton Canyon · 11:00 AM",
                         statusLabel: "Research Grade",
                         statusKind: .researchGrade,
-                        imageSource: "https://www.figma.com/api/mcp/asset/56a574ab-72a6-4985-a207-e84398659de6"
+                        imageSource: "observe-photo-highlight"
                     )
                 ]
             ),
@@ -193,15 +262,15 @@ enum PreviewProfileLog {
             )
         ],
         gridItems: [
-            .init(id: "cacti", title: "Cacti", imageSource: "https://www.figma.com/api/mcp/asset/2e4ece4a-e9f3-4a6a-b76c-2146c08e35e0"),
-            .init(id: "indian-cormorant", title: "Indian\nCormorant", imageSource: "https://www.figma.com/api/mcp/asset/f99a6cfd-ae56-4e80-aac0-92c673a070b5"),
-            .init(id: "european-roller", title: "European\nRoller", imageSource: "https://www.figma.com/api/mcp/asset/dfbddfc8-fc8f-458e-b30e-21497d574985"),
-            .init(id: "bindweed-tribe", title: "Bindweed\nTribe", imageSource: "https://www.figma.com/api/mcp/asset/f2391b2e-1a45-435b-acd7-1207dda76c0e"),
-            .init(id: "emperor-gum-moth", title: "Emperor\nGum Moth", imageSource: "https://www.figma.com/api/mcp/asset/3de8ff3b-8537-438e-9014-164c92cd7265"),
-            .init(id: "garden-orbweaver", title: "Garden\nOrbweaver", imageSource: "https://www.figma.com/api/mcp/asset/7911b149-22d8-416f-b72d-3bcd00c42a5b"),
-            .init(id: "southern-black-korhaan", title: "Southern Black\nKorhaan", imageSource: "https://www.figma.com/api/mcp/asset/5480f314-a42a-4aff-b091-ade77472cf43"),
-            .init(id: "phlogistus", title: "Phlogistus", imageSource: "https://www.figma.com/api/mcp/asset/0b80c8ea-d015-4df0-ac86-82f4da3979fe"),
-            .init(id: "spiny-starwort", title: "Spiny\nStarowort", imageSource: "https://www.figma.com/api/mcp/asset/56a574ab-72a6-4985-a207-e84398659de6")
+            .init(id: "cacti", title: "Cacti", imageSource: "coast-live-oak-hero"),
+            .init(id: "indian-cormorant", title: "Indian\nCormorant", imageSource: "coast-live-oak-gallery-1"),
+            .init(id: "european-roller", title: "European\nRoller", imageSource: "coast-live-oak-gallery-2"),
+            .init(id: "bindweed-tribe", title: "Bindweed\nTribe", imageSource: "coast-live-oak-gallery-3"),
+            .init(id: "emperor-gum-moth", title: "Emperor\nGum Moth", imageSource: "coast-live-oak-gallery-4"),
+            .init(id: "garden-orbweaver", title: "Garden\nOrbweaver", imageSource: "observe-photo-square"),
+            .init(id: "southern-black-korhaan", title: "Southern Black\nKorhaan", imageSource: "observe-photo-portrait"),
+            .init(id: "phlogistus", title: "Phlogistus", imageSource: "observe-photo-highlight"),
+            .init(id: "spiny-starwort", title: "Spiny\nStarowort", imageSource: "find-project-pollinator")
         ]
     )
 }

@@ -10,31 +10,31 @@
         "id": "ecosystem",
         "title": "An Ecosystem\nLives Here.",
         "body": "Over 270 species of birds, mammals, and insects depend on the Coast Live Oak for food and shelter. From acorn woodpeckers storing their harvest in its bark to the California oak moth whose caterpillars feed exclusively on its leaves.",
-        "imageAssetName": "story-keystone-page-image"
+        "imageAssetName": "story-keystone-page-figma"
       },
       {
         "id": "history",
         "title": "5,000 Years\nof History.",
-        "body": "Indigenous communities across California, from the Ohlone to the Chumash, relied on acorns as a dietary staple for millennia. A single mature oak can produce up to 20,000 acorns in a good mast year, each one a vital food source.",
-        "imageAssetName": "story-keystone-page-image"
+        "body": "Indigenous communities across California — from the Ohlone to the Chumash — relied on acorns as a dietary staple for millennia. A single mature oak can produce up to 20,000 acorns in a good mast year, each one a vital food source.",
+        "imageAssetName": "story-keystone-page-figma"
       },
       {
         "id": "disease",
         "title": "A Disease\nSpreads Fast.",
-        "body": "Sudden Oak Death, caused by Phytophthora ramorum, has killed millions of tanoaks and Coast Live Oaks. It spreads through wind-blown rain, infected soil, and nursery plants, often outpacing detection and removal efforts.",
-        "imageAssetName": "story-keystone-page-image"
+        "body": "Sudden Oak Death, caused by Phytophthora ramorum, has killed millions of tanoaks and Coast Live Oaks. It spreads through wind-blown rain, infected soil, and nursery plants — often outpacing detection and removal efforts.",
+        "imageAssetName": "story-keystone-page-figma"
       },
       {
         "id": "roots",
         "title": "Deep Roots,\nLong Memory.",
-        "body": "A mature Coast Live Oak can live over 250 years and extend roots for meters in every direction. Its deep taproot accesses groundwater during California's long summer droughts, making it remarkably resilient.",
-        "imageAssetName": "story-keystone-page-image"
+        "body": "A mature Coast Live Oak can live over 250 years and extend roots 30 meters in every direction. Its deep taproot accesses groundwater during California's long summer droughts, making it remarkably resilient.",
+        "imageAssetName": "story-keystone-page-figma"
       },
       {
         "id": "economy",
         "title": "The Acorn\nEconomy.",
-        "body": "When acorn crops fail in mast failure years, the ripple reaches deer, bear, woodpeckers, and jays all the way up the food chain. The oak is not just a tree. It is the engine of the entire woodland community.",
-        "imageAssetName": "story-keystone-page-image"
+        "body": "When acorn crops fail in mast failure years, the ripple reaches deer, bear, woodpeckers, and jays all the way up the food chain. The oak isn't just a tree. It's the engine of the entire woodland community.",
+        "imageAssetName": "story-keystone-page-figma"
       }
     ]
   }

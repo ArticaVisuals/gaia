@@ -1,5 +1,13 @@
 import SwiftUI
 
+private enum StoryDeckLayout {
+    static let titleTopPadding: CGFloat = 54
+    static let titleWidth: CGFloat = 333
+    static let titleTracking: CGFloat = -0.87
+    static let scientificTopSpacing: CGFloat = 12
+    static let deckTopSpacing: CGFloat = 20
+}
+
 struct StoryDeckScreen: View {
     let initialStoryID: String?
 
@@ -22,49 +30,57 @@ struct StoryDeckScreen: View {
 
     var body: some View {
         GeometryReader { proxy in
+            let deckWidth = min(proxy.size.width - 32, 364)
+            let titleFontSize = min(50, max(38, proxy.size.width * 0.11))
+
             ZStack(alignment: .top) {
                 storyBackground.ignoresSafeArea()
 
                 VStack(spacing: 0) {
-                    VStack(spacing: 32) {
-                        VStack(spacing: 16) {
-                            Text(speciesLabel)
-                                .gaiaFont(.caption)
-                                .foregroundStyle(GaiaColor.paperWhite500)
-                                .padding(.horizontal, 12)
-                                .frame(height: 20)
-                                .background(GaiaColor.broccoliBrown300)
-                                .clipShape(.capsule)
+                    VStack(spacing: StoryDeckLayout.scientificTopSpacing) {
+                        Text(speciesLabel)
+                            .font(.custom("Neue Haas Unica W1G", size: 10))
+                            .tracking(0.25)
+                            .foregroundStyle(GaiaColor.paperWhite500)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(
+                                Capsule(style: .continuous)
+                                    .fill(GaiaColor.broccoliBrown300)
+                            )
 
-                            VStack(spacing: -6) {
-                                Text("The Story of")
-                                    .font(.custom("NewSpirit-Medium", size: 51))
-                                    .minimumScaleFactor(0.88)
+                        VStack(spacing: 0) {
+                            Text("The Story of")
+                                .font(.custom("NewSpirit-Medium", size: titleFontSize))
+                                .tracking(StoryDeckLayout.titleTracking)
 
-                                (
-                                    Text("a ")
-                                        .font(.custom("NewSpirit-Medium", size: 51))
-                                    + Text("Keystone")
-                                        .font(.custom("NewSpirit-MediumItalic", size: 51))
-                                )
-                                .minimumScaleFactor(0.88)
-                            }
-                            .foregroundStyle(GaiaColor.oliveGreen500)
-                            .multilineTextAlignment(.center)
-                            .frame(maxWidth: 333)
-
-                            Text(story.summary)
-                                .gaiaFont(.subheadline)
-                                .foregroundStyle(GaiaColor.blackishGrey500)
-                                .multilineTextAlignment(.center)
-                                .fixedSize(horizontal: false, vertical: true)
-                                .frame(maxWidth: 333)
+                            (
+                                Text("a ")
+                                    .font(.custom("NewSpirit-Medium", size: titleFontSize))
+                                    .tracking(StoryDeckLayout.titleTracking)
+                                + Text("Keystone")
+                                    .font(.custom("NewSpirit-MediumItalic", size: titleFontSize))
+                                    .tracking(StoryDeckLayout.titleTracking)
+                            )
                         }
-                        .frame(maxWidth: .infinity)
+                        .foregroundStyle(GaiaColor.oliveGreen500)
+                        .multilineTextAlignment(.center)
+                        .frame(width: StoryDeckLayout.titleWidth)
 
-                        SwipeableStoryDeck(story: story, availableWidth: proxy.size.width - 40)
+                        Text(displaySummary)
+                            .font(.custom("Neue Haas Unica W1G", size: 13))
+                            .tracking(0.5)
+                            .lineSpacing(4)
+                            .foregroundStyle(GaiaColor.blackishGrey500)
+                            .multilineTextAlignment(.center)
+                            .lineLimit(2)
+                            .frame(width: StoryDeckLayout.titleWidth)
                     }
-                    .padding(.top, 64)
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, StoryDeckLayout.titleTopPadding)
+
+                    SwipeableStoryDeck(story: story, availableWidth: deckWidth)
+                        .padding(.top, StoryDeckLayout.deckTopSpacing)
 
                     Spacer(minLength: 0)
                 }
@@ -76,18 +92,22 @@ struct StoryDeckScreen: View {
                     Spacer()
                 }
                 .padding(.horizontal, GaiaSpacing.md)
-                .safeAreaPadding(.top, 8)
+                .safeAreaPadding(.top, GaiaSpacing.sm)
             }
         }
     }
 
+    private var displaySummary: String {
+        story.summary.replacingOccurrences(of: ". A disease", with: ".\nA disease")
+    }
+
     private var storyBackground: some View {
         ZStack {
-            GaiaColor.paperWhite50
+            Color(red: 252 / 255, green: 250 / 255, blue: 240 / 255)
             LinearGradient(
                 stops: [
-                    .init(color: GaiaColor.paperWhite500.opacity(0.40), location: 0.14),
-                    .init(color: GaiaColor.grassGreen500.opacity(0.28), location: 1.0)
+                    .init(color: Color(red: 252 / 255, green: 250 / 255, blue: 240 / 255).opacity(0.40), location: 0.13942),
+                    .init(color: Color(red: 122 / 255, green: 158 / 255, blue: 93 / 255).opacity(0.40), location: 1.0)
                 ],
                 startPoint: .top,
                 endPoint: .bottom
