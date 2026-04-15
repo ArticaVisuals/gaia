@@ -6,6 +6,7 @@ import UIKit
 struct GaiaNativeApp: App {
     @StateObject private var appState = AppState()
     @StateObject private var contentStore = ContentStore()
+    @State private var showsSplash = true
 
     init() {
         FontRegistrar.registerBundledFontsIfNeeded()
@@ -14,12 +15,26 @@ struct GaiaNativeApp: App {
 
     var body: some Scene {
         WindowGroup {
-            AppRootView()
-                .environmentObject(appState)
-                .environmentObject(contentStore)
-                .task {
-                    contentStore.loadBundledContentIfAvailable()
+            ZStack {
+                if showsSplash {
+                    GaiaColor.splashBackground
+                        .ignoresSafeArea()
                 }
+
+                AppRootView()
+                    .environmentObject(appState)
+                    .environmentObject(contentStore)
+                    .task {
+                        contentStore.loadBundledContentIfAvailable()
+                    }
+
+                if showsSplash {
+                    SplashScreenView {
+                        showsSplash = false
+                    }
+                    .ignoresSafeArea()
+                }
+            }
         }
     }
 }

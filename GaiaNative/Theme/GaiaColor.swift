@@ -141,6 +141,7 @@ enum GaiaColor {
     static let brandPrimary = oliveGreen500
     static let brandSecondary = broccoliBrown500
     static let brandAccent = asparagusGreen500
+    static let splashBackground = Color(hex: 0x69785C)
     static let interactiveHover = oliveGreen600
     static let interactiveDisabled = oliveGreen200
     static let statusNeedsId = vermillion500

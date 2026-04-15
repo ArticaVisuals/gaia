@@ -21,6 +21,7 @@
 		25DB2E0C8AA50A2FB9F4D45B /* GaiaBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28074E03C039B184F5071499 /* GaiaBadge.swift */; };
 		2690928805DC4860E70CD806 /* ProfileImpactTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44940F559F9B5CA70C3CA42B /* ProfileImpactTab.swift */; };
 		28317C1E6A80AC7FDCF3496E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EC919F4D5C11CEED3715ED65 /* Assets.xcassets */; };
+		2F4A6B8C0D1E2F3041526374 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3A4B5C6D7E8F901234567890 /* LaunchScreen.storyboard */; };
 		2BC6344D1A1E4D9B8E54E801 /* FindDetailsPrototypeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BC6344D1A1E4D9B8E54E802 /* FindDetailsPrototypeScreen.swift */; };
 		2BC6344D1A1E4D9B8E54E803 /* FindDetailsLegacyTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BC6344D1A1E4D9B8E54E804 /* FindDetailsLegacyTabView.swift */; };
 		2BC6344D1A1E4D9B8E54E805 /* FindDetailsLearnScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BC6344D1A1E4D9B8E54E806 /* FindDetailsLearnScreen.swift */; };
@@ -58,6 +59,8 @@
 		7683DFFD02AE08F612707BFD /* CameraPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 908766B172FE8957820D6F1B /* CameraPreviewView.swift */; };
 		7C1F0CB8BA3C2C5BBDBC41B3 /* GaiaSpacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20B9ECC43DD462DCED4B2B6A /* GaiaSpacing.swift */; };
 		7D4BAEEC87BF5AD7DB0A9BF1 /* AppRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BD446C59D0C73730E439C6E /* AppRootView.swift */; };
+		B2C3D4E5F6A7B8C9D0E1F2A3 /* SplashScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F2 /* SplashScreenView.swift */; };
+		D4E5F6A7B8C9D0E1F2A3B4C5 /* GaiaSplashScreen.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = C3D4E5F6A7B8C9D0E1F2A3B4 /* GaiaSplashScreen.mp4 */; };
 		7E3BCB247FC3F3A7F013173D /* AppCopy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9077E84A708E36557C59B298 /* AppCopy.swift */; };
 		7F28C11A7270D07E8893F948 /* PreviewActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5723A352DAB2A9FE2BB837F7 /* PreviewActivity.swift */; };
 		845567ECEFCC0C3619D35015 /* StatsCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D175DDFBFA7EC45D31883E0 /* StatsCard.swift */; };
@@ -145,6 +148,8 @@
 		474384ED9682C633E3840DF6 /* ExploreMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreMapView.swift; sourceTree = "<group>"; };
 		4908DF30B56F9D2888EDA36C /* GaiaDivider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaiaDivider.swift; sourceTree = "<group>"; };
 		4BD446C59D0C73730E439C6E /* AppRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRootView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6A7B8C9D0E1F2 /* SplashScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenView.swift; sourceTree = "<group>"; };
+		C3D4E5F6A7B8C9D0E1F2A3B4 /* GaiaSplashScreen.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = GaiaSplashScreen.mp4; sourceTree = "<group>"; };
 		4D6DF3EC06F477230FE809AE /* ExploreBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreBottomSheet.swift; sourceTree = "<group>"; };
 		4DEFCA0C9A4DF94E0AA2BD79 /* ProgressiveBlurImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressiveBlurImage.swift; sourceTree = "<group>"; };
 		4FDE1C4DD3009EBE75D338FC /* GlassCardBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassCardBackground.swift; sourceTree = "<group>"; };
@@ -208,6 +213,7 @@
 		E5D88BD85DEE8DF475A343C3 /* GaiaMotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaiaMotion.swift; sourceTree = "<group>"; };
 		E81E4B46008A4392C85C6C0E /* CameraService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraService.swift; sourceTree = "<group>"; };
 		EC919F4D5C11CEED3715ED65 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		3A4B5C6D7E8F901234567890 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F6A30B246BD2BE96AB2E2FE8 /* Icons */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Icons; path = GaiaNative/Resources/Icons; sourceTree = SOURCE_ROOT; };
 		F745800DE0CB2C42E869EEE8 /* PreviewProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewProfile.swift; sourceTree = "<group>"; };
 		FCFFDBD4F3C52CE19C95A739 /* GalleryRail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryRail.swift; sourceTree = "<group>"; };
@@ -475,6 +481,8 @@
 			isa = PBXGroup;
 			children = (
 				EC919F4D5C11CEED3715ED65 /* Assets.xcassets */,
+				C3D4E5F6A7B8C9D0E1F2A3B4 /* GaiaSplashScreen.mp4 */,
+				3A4B5C6D7E8F901234567890 /* LaunchScreen.storyboard */,
 			);
 			name = Resources;
 			path = GaiaNative/Resources;
@@ -514,6 +522,7 @@
 				513E882061E8A8190E3E5C51 /* AppRouter.swift */,
 				92AC85B3C084308B7FBBD040 /* AppState.swift */,
 				146524C2AC943E73407C2CA8 /* DeepLink.swift */,
+				A1B2C3D4E5F6A7B8C9D0E1F2 /* SplashScreenView.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -578,10 +587,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				28317C1E6A80AC7FDCF3496E /* Assets.xcassets in Resources */,
+				2F4A6B8C0D1E2F3041526374 /* LaunchScreen.storyboard in Resources */,
 				8A69F98BC3EF3490559AC1B4 /* Content in Resources */,
 				DCAD28D255178E69588C7783 /* Fonts in Resources */,
 				EFAF0B2F7CC86C344DCEA65C /* Icons in Resources */,
 				5B2B4845C15480D913931B44 /* assets in Resources */,
+				D4E5F6A7B8C9D0E1F2A3B4C5 /* GaiaSplashScreen.mp4 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -600,6 +611,7 @@
 				BBB190A1995C26393275BDC7 /* AnimationCoordinator.swift in Sources */,
 				7E3BCB247FC3F3A7F013173D /* AppCopy.swift in Sources */,
 				7D4BAEEC87BF5AD7DB0A9BF1 /* AppRootView.swift in Sources */,
+				B2C3D4E5F6A7B8C9D0E1F2A3 /* SplashScreenView.swift in Sources */,
 				5BC0A5166EF5CAADBFDADCC3 /* AppRouter.swift in Sources */,
 				E3C118E2CF86E0099D10690A /* AppState.swift in Sources */,
 				41F12A019F2AA6FAD5F51EDE /* AssetCatalog.swift in Sources */,
@@ -756,7 +768,8 @@
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Gaia uses the microphone to capture voice notes with observations.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Gaia uses your location to center the map and show nearby finds.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = NO;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MARKETING_VERSION = 1.0;
@@ -830,7 +843,8 @@
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Gaia uses the microphone to capture voice notes with observations.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Gaia uses your location to center the map and show nearby finds.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = NO;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MARKETING_VERSION = 1.0;
