@@ -76,7 +76,7 @@ struct LearnTabView: View {
 
     private func sectionTitle(_ title: String) -> some View {
         Text(title)
-            .gaiaFont(.title3)
+            .gaiaFont(.titleSans)
             .foregroundStyle(GaiaColor.inkBlack300)
     }
 }
@@ -91,19 +91,12 @@ private struct LearnMapCard: View {
     var body: some View {
         ZStack(alignment: .topTrailing) {
             Button(action: action) {
-                ExploreMapView(
-                    observations: observations,
-                    recenterRequestID: nil,
-                    onSelectObservation: nil,
-                    showsMarkers: true,
-                    initialZoomOverride: nil
-                )
-                .allowsHitTesting(false)
+                GaiaAssetImage(name: "learn-map-fallback", contentMode: .fill)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(GaiaColor.broccoliBrown50)
                 .contentShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
             }
-            .buttonStyle(.plain)
+            .buttonStyle(GaiaPressableCardStyle())
             .accessibilityLabel("Sightings map preview")
             .accessibilityHint("Opens the expanded map")
 
@@ -115,7 +108,7 @@ private struct LearnMapCard: View {
         .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
+                .stroke(GaiaColor.border, lineWidth: 0.5)
         )
         .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
     }

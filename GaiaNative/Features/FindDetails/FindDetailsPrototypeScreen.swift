@@ -15,7 +15,7 @@ private enum FindDetailsPrototypeLayout {
     static let tabHeaderHeight: CGFloat = 60
     static let expandedContentOffset: CGFloat = 488
     static let collapsedContentOffset: CGFloat = 265
-    static let contentTopPadding: CGFloat = 32
+    static let contentTopPadding: CGFloat = 16
 }
 
 private struct FindDetailsPrototypeMetrics {
@@ -95,11 +95,17 @@ struct FindDetailsPrototypeScreen: View {
                 let heroHeight = metrics.expandedHeroHeight + ((metrics.collapsedHeroHeight - metrics.expandedHeroHeight) * collapseProgress)
                 let heroImageHeight = metrics.expandedImageHeight + ((metrics.collapsedImageHeight - metrics.expandedImageHeight) * collapseProgress)
                 let panelTop = metrics.expandedPanelTop + ((metrics.collapsedPanelTop - metrics.expandedPanelTop) * collapseProgress)
+                let extraBottomRunway = max(
+                    metrics.collapsedContentOffset + GaiaSpacing.xxxl,
+                    proxy.size.height * 0.4
+                )
                 let contentBottomInset = max(
-                    metrics.collapsedContentOffset,
+                    extraBottomRunway,
                     GaiaSpacing.xxxl + GaiaSpacing.xxl + GaiaSpacing.sm
                 ) + deviceBottomSafeArea
-                let activityContentTopPadding = contentWidth * (8 / FindDetailsPrototypeLayout.designWidth)
+                // Figma leaves 32pt before the Activity stack; the tab content itself
+                // already contributes 12pt, so the outer prototype inset stays at 20pt.
+                let activityContentTopPadding = contentWidth * (20 / FindDetailsPrototypeLayout.designWidth)
                 let tabContentTopPadding = selectedTab == .activity
                     ? activityContentTopPadding
                     : metrics.contentTopPadding
@@ -236,12 +242,12 @@ struct FindDetailsPrototypeScreen: View {
             return 0
         }
         if launchArguments.contains("-gaiaFindDetailsPrototypeProjectsDeep") {
-            return -640
+            return -760
         }
         if launchArguments.contains("-gaiaFindDetailsPrototypeProjects") {
-            return -540
+            return -620
         }
-        return -360
+        return -420
     }
 
     private var screenshotContentBottomCompensation: CGFloat {

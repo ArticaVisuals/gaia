@@ -26,29 +26,11 @@ struct FindDetailsLegacyTabView: View {
             LegacyFindMapPreviewCard(observation: mapObservation, onExpandMap: onExpandMap)
 
             VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
-                sectionTitle("Condition")
+                Text("Condition")
+                    .gaiaFont(.titleSans)
+                    .foregroundStyle(GaiaColor.inkBlack300)
 
-                HStack(alignment: .top, spacing: GaiaSpacing.sm) {
-                    LegacyFindConditionCard(
-                        label: "Biome",
-                        title: "Riparian Edge",
-                        subtitle: "Perfumo Canyon"
-                    ) {
-                        GaiaAssetImage(name: "find-biome-riparian", contentMode: .fill)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    }
-                    .frame(maxWidth: .infinity)
-
-                    LegacyFindConditionCard(
-                        label: "Weather",
-                        title: "Partly Cloudy",
-                        subtitle: "July 10, 2025, 10:19 AM"
-                    ) {
-                        LegacyFindWeatherImage()
-                    }
-                    .frame(maxWidth: .infinity)
-                }
-                .frame(maxWidth: .infinity)
+                FindConditionCardsRow()
             }
 
             VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
@@ -360,98 +342,26 @@ private struct LegacyFindLocationDetails: View {
     }
 }
 
-private struct LegacyFindConditionCard<ImageContent: View>: View {
-    let label: String
-    let title: String
-    let subtitle: String
-    @ViewBuilder let imageContent: () -> ImageContent
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
-            imageContent()
-                .frame(maxWidth: .infinity)
-                .frame(height: 126)
-                .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
-                .overlay(
-                    RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
-                        .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
-                )
-                .clipped()
-
-            Text(label)
-                .gaiaFont(.caption)
-                .foregroundStyle(GaiaColor.broccoliBrown500)
-
-            HStack(alignment: .top, spacing: GaiaSpacing.sm) {
-                VStack(alignment: .leading, spacing: GaiaSpacing.xs) {
-                    Text(title)
-                        .gaiaFont(.body)
-                        .foregroundStyle(GaiaColor.textPrimary)
-                        .lineLimit(1)
-
-                    Text(subtitle)
-                        .gaiaFont(.caption)
-                        .foregroundStyle(GaiaColor.inkBlack200)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.9)
-                }
-
-                Spacer(minLength: GaiaSpacing.xs)
-
-                GaiaIcon(kind: .circleArrowRight, size: 16)
-                    .padding(.top, GaiaSpacing.xxs)
-            }
-        }
-        .padding(GaiaSpacing.cardInset)
-        .frame(maxWidth: .infinity, minHeight: 202, maxHeight: 202, alignment: .topLeading)
-        .background(
-            RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
-                .fill(GaiaColor.paperWhite50)
-                .overlay(
-                    RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
-                        .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
-                )
-        )
-        .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
-    }
-}
-
-private struct LegacyFindWeatherImage: View {
-    var body: some View {
-        GeometryReader { proxy in
-            ZStack(alignment: .topLeading) {
-                GaiaAssetImage(name: "find-weather-bg", contentMode: .fill)
-                    .frame(width: proxy.size.width * 1.7865, height: proxy.size.height * 2.2261)
-                    .offset(x: -(proxy.size.width * 0.0828), y: -(proxy.size.height * 0.4235))
-
-                Text("54º")
-                    .gaiaFont(.weatherValue)
-                    .foregroundStyle(GaiaColor.paperWhite500)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-            }
-        }
-    }
-}
-
 private struct LegacyFindDataQualityCard: View {
+    private let items: [(title: String, state: GaiaQualityCheckmarkState)] = [
+        ("Ungraded", .checked),
+        ("Casual Grade", .checked),
+        ("Research Grade", .unchecked)
+    ]
+
     var body: some View {
-        HStack(spacing: GaiaSpacing.lg) {
-            LegacyFindQualityItem(
-                title: "Ungraded",
-                state: .checked
-            )
-            LegacyFindQualityItem(
-                title: "Casual Grade",
-                state: .checked
-            )
-            LegacyFindQualityItem(
-                title: "Research Grade",
-                state: .unchecked
-            )
+        HStack(alignment: .top, spacing: GaiaSpacing.lg) {
+            ForEach(items, id: \.title) { item in
+                LegacyFindQualityItem(
+                    title: item.title,
+                    state: item.state
+                )
+                .frame(maxWidth: .infinity, alignment: .top)
+            }
         }
         .padding(.horizontal, GaiaSpacing.md)
         .padding(.vertical, GaiaSpacing.cardContentInsetWide)
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
                 .fill(GaiaColor.paperWhite50)
@@ -477,12 +387,15 @@ private struct LegacyFindQualityItem: View {
             GaiaQualityCheckmark(state: state)
 
             Text(title)
-                .gaiaFont(.caption)
+                .gaiaFont(.caption2)
                 .foregroundStyle(isActive ? GaiaColor.dataQualityActive : GaiaColor.blackishGrey200)
-                .lineLimit(1)
+                .lineLimit(2)
                 .minimumScaleFactor(0.9)
                 .multilineTextAlignment(.center)
         }
-        .frame(width: 91)
+        .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(title)
+        .accessibilityValue(isActive ? "Checked" : "Unchecked")
     }
 }
