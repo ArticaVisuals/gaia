@@ -25,14 +25,35 @@ struct ExploreMapView: View {
     var onSelectObservation: ((Observation) -> Void)? = nil
     var showsMarkers: Bool = true
     var initialZoomOverride: CGFloat? = nil
+    var prefersInitialUserLocation: Bool = false
 
-    @StateObject private var locationController = GaiaMapLocationController()
+    @StateObject private var locationController: GaiaMapLocationController
+
+    init(
+        observations: [Observation],
+        recenterRequestID: UUID?,
+        onSelectObservation: ((Observation) -> Void)? = nil,
+        showsMarkers: Bool = true,
+        initialZoomOverride: CGFloat? = nil,
+        prefersInitialUserLocation: Bool = false
+    ) {
+        self.observations = observations
+        self.recenterRequestID = recenterRequestID
+        self.onSelectObservation = onSelectObservation
+        self.showsMarkers = showsMarkers
+        self.initialZoomOverride = initialZoomOverride
+        self.prefersInitialUserLocation = prefersInitialUserLocation
+        _locationController = StateObject(
+            wrappedValue: GaiaMapLocationController(prefersInitialUserLocation: prefersInitialUserLocation)
+        )
+    }
 
     var body: some View {
         ExploreMapRepresentable(
             observations: observations,
             showsMarkers: showsMarkers,
             initialZoomOverride: initialZoomOverride,
+            prefersInitialUserLocation: prefersInitialUserLocation,
             onSelectObservation: onSelectObservation,
             locationController: locationController
         )
@@ -47,6 +68,7 @@ private struct ExploreMapRepresentable: UIViewRepresentable {
     let observations: [Observation]
     let showsMarkers: Bool
     let initialZoomOverride: CGFloat?
+    let prefersInitialUserLocation: Bool
     let onSelectObservation: ((Observation) -> Void)?
     @ObservedObject var locationController: GaiaMapLocationController
 
@@ -96,10 +118,18 @@ private struct ExploreMapRepresentable: UIViewRepresentable {
 
             let signature = Self.observationsSignature(parent.observations)
             if !hasAppliedInitialRegion {
-                let initialRegion = ExploreMapView.initialRegion(
-                    for: parent.observations,
-                    zoomOverride: parent.initialZoomOverride
-                )
+                let initialRegion = if parent.prefersInitialUserLocation,
+                                       let userRegion = ExploreMapView.userLocationRegion(
+                                           centeredAt: parent.locationController.centerCoordinate,
+                                           zoomOverride: parent.initialZoomOverride
+                                       ) {
+                    userRegion
+                } else {
+                    ExploreMapView.initialRegion(
+                        for: parent.observations,
+                        zoomOverride: parent.initialZoomOverride
+                    )
+                }
                 mapView.setRegion(initialRegion, animated: false)
                 hasAppliedInitialRegion = true
             } else if signature != lastObservationSignature, !parent.locationController.isFollowingUser {
@@ -211,7 +241,8 @@ private struct ExploreMapRepresentable: UIViewRepresentable {
         private func refreshVisibleAnnotationViews(in mapView: MKMapView) {
             let region = mapView.region
             let zoom = ExploreMapView.zoomLevel(for: region)
-            for annotation in mapView.annotations {
+            for annotationHashable in mapView.annotations(in: mapView.visibleMapRect) {
+                guard let annotation = annotationHashable.base as? MKAnnotation else { continue }
                 guard let view = mapView.view(for: annotation) as? GaiaHostedMarkerAnnotationView else { continue }
                 configure(view, for: annotation, zoom: zoom)
             }
@@ -219,43 +250,41 @@ private struct ExploreMapRepresentable: UIViewRepresentable {
 
         private func configure(_ view: GaiaHostedMarkerAnnotationView, for annotation: MKAnnotation, zoom: Double) {
             let showsBlankPin = zoom <= GaiaPinMapConfig.clusterBlankMaxZoom
-            let showsSinglePhoto = zoom >= GaiaPinMapConfig.singlePhotoMinZoom
             let markerScale = ExploreMapView.markerScale(for: zoom)
 
             if let observationAnnotation = annotation as? GaiaObservationAnnotation {
-                if showsSinglePhoto {
-                    let imageName = observationAnnotation.observation.thumbnailAssetName ?? "none"
-                    view.apply(
-                        content: AnyView(
-                            MarkerRenderContainer {
-                                MapAnnotationPhotoPin(imageName: observationAnnotation.observation.thumbnailAssetName)
-                            }
-                        ),
-                        renderKey: "single.photo.\(imageName)"
-                    )
-                } else if showsBlankPin {
-                    view.apply(
-                        content: AnyView(MarkerRenderContainer { MapAnnotationBlankPin() }),
-                        renderKey: "single.blank"
-                    )
+                if showsBlankPin {
+                    view.apply(renderKey: "single.blank") {
+                        MarkerRenderContainer { MapAnnotationBlankPin() }
+                    }
                 } else {
-                    view.apply(
-                        content: AnyView(MarkerRenderContainer { MapAnnotationClusterPin(count: 1) }),
-                        renderKey: "single.count.1"
-                    )
+                    let imageName = observationAnnotation.observation.thumbnailAssetName ?? "none"
+                    view.apply(renderKey: "single.photo.\(imageName)") {
+                        MarkerRenderContainer {
+                            MapAnnotationPhotoPin(imageName: observationAnnotation.observation.thumbnailAssetName)
+                        }
+                    }
                 }
             } else if let clusterAnnotation = annotation as? MKClusterAnnotation {
                 if showsBlankPin {
-                    view.apply(
-                        content: AnyView(MarkerRenderContainer { MapAnnotationBlankPin() }),
-                        renderKey: "cluster.blank"
-                    )
+                    view.apply(renderKey: "cluster.blank") {
+                        MarkerRenderContainer { MapAnnotationBlankPin() }
+                    }
                 } else {
                     let count = observationCount(in: clusterAnnotation)
-                    view.apply(
-                        content: AnyView(MarkerRenderContainer { MapAnnotationClusterPin(count: count) }),
-                        renderKey: "cluster.count.\(count)"
-                    )
+                    if count >= 2 {
+                        view.apply(renderKey: "cluster.count.\(count)") {
+                            MarkerRenderContainer { MapAnnotationClusterPin(count: count) }
+                        }
+                    } else {
+                        let representative = representativeObservation(in: clusterAnnotation)
+                        let imageName = representative?.thumbnailAssetName ?? "none"
+                        view.apply(renderKey: "cluster.photo.\(imageName)") {
+                            MarkerRenderContainer {
+                                MapAnnotationPhotoPin(imageName: representative?.thumbnailAssetName)
+                            }
+                        }
+                    }
                 }
             }
 
@@ -278,6 +307,22 @@ private struct ExploreMapRepresentable: UIViewRepresentable {
             }
 
             return 0
+        }
+
+        private func representativeObservation(in cluster: MKClusterAnnotation) -> Observation? {
+            cluster.memberAnnotations.lazy.compactMap(representativeObservation(for:)).first
+        }
+
+        private func representativeObservation(for annotation: MKAnnotation) -> Observation? {
+            if let observationAnnotation = annotation as? GaiaObservationAnnotation {
+                return observationAnnotation.observation
+            }
+
+            if let nestedCluster = annotation as? MKClusterAnnotation {
+                return representativeObservation(in: nestedCluster)
+            }
+
+            return nil
         }
 
         private static func observationsSignature(_ observations: [Observation]) -> Int {
@@ -335,7 +380,7 @@ private final class GaiaHostedMarkerAnnotationView: MKAnnotationView {
         transform = .identity
     }
 
-    func apply(content: AnyView, renderKey: String) {
+    func apply<Content: View>(renderKey: String, @ViewBuilder content: () -> Content) {
         let size = contentSize
         if bounds.size != size {
             bounds = CGRect(origin: .zero, size: size)
@@ -344,11 +389,11 @@ private final class GaiaHostedMarkerAnnotationView: MKAnnotationView {
         if let hostingController {
             guard currentRenderKey != renderKey else { return }
             currentRenderKey = renderKey
-            hostingController.rootView = content
+            hostingController.rootView = AnyView(content())
             return
         }
 
-        let hostingController = UIHostingController(rootView: content)
+        let hostingController = UIHostingController(rootView: AnyView(content()))
         hostingController.view.backgroundColor = .clear
         hostingController.view.translatesAutoresizingMaskIntoConstraints = false
         addSubview(hostingController.view)
@@ -446,6 +491,18 @@ private extension ExploreMapView {
         return MKCoordinateSpan(latitudeDelta: delta, longitudeDelta: delta)
     }
 
+    static func userLocationRegion(
+        centeredAt coordinate: CLLocationCoordinate2D?,
+        zoomOverride: CGFloat? = nil
+    ) -> MKCoordinateRegion? {
+        guard let coordinate else { return nil }
+
+        return MKCoordinateRegion(
+            center: coordinate,
+            span: span(for: Double(zoomOverride ?? GaiaPinMapConfig.recenterZoom))
+        )
+    }
+
     static func zoomLevel(for region: MKCoordinateRegion) -> Double {
         let safeDelta = max(visibleSpan(for: region), 0.000_001)
         return log2(360 / safeDelta)
@@ -522,15 +579,27 @@ private final class GaiaMapLocationController: NSObject, ObservableObject {
         }
     }
 
-    override init() {
+    init(prefersInitialUserLocation: Bool = false) {
         super.init()
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
+
+        if prefersInitialUserLocation {
+            requestInitialViewport()
+        }
     }
 
     func requestRecenter() {
         isFollowingUser = true
+        refreshCurrentLocation()
+    }
 
+    private func requestInitialViewport() {
+        isFollowingUser = true
+        refreshCurrentLocation()
+    }
+
+    private func refreshCurrentLocation() {
         switch locationManager.authorizationStatus {
         case .authorizedAlways, .authorizedWhenInUse:
             if let coordinate = locationManager.location?.coordinate {

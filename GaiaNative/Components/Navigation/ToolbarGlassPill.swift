@@ -48,9 +48,9 @@ private struct ToolbarGlassPillIconArtwork: View {
     var body: some View {
         switch icon {
         case .plus:
-            GaiaIcon(kind: .plus, size: 24)
+            GaiaIcon(kind: .plus, size: GaiaSpacing.iconLg)
         case .share:
-            GaiaIcon(kind: .share, size: 24)
+            GaiaIcon(kind: .share, size: GaiaSpacing.iconLg)
         case .gear:
             GaiaIcon(kind: .gear, size: 20)
         case .more:
@@ -65,7 +65,7 @@ private struct ToolbarGlassPillIconArtwork: View {
         case .close:
             GaiaIcon(kind: .close, size: 32)
         case .expand:
-            GaiaIcon(kind: .expand, size: 24)
+            GaiaIcon(kind: .expand, size: GaiaSpacing.iconLg)
         case .filter:
             GaiaIcon(kind: .filter, size: 32)
         case .grid:

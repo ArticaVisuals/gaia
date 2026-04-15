@@ -28,7 +28,7 @@ struct LearnSpeciesCard: View {
                     .frame(height: 34)
                     .background(GaiaColor.paperWhite50, in: Capsule())
             }
-            .buttonStyle(.plain)
+            .buttonStyle(GaiaPressableCardStyle())
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 24)

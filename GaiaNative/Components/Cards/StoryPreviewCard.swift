@@ -8,68 +8,85 @@ struct StoryPreviewCard: View {
     var body: some View {
         Button(action: action) {
             VStack(spacing: 0) {
-                ZStack {
-                    LinearGradient(
-                        stops: [
-                            .init(color: GaiaColor.siskin500.opacity(0.22), location: 0),
-                            .init(color: GaiaColor.paperWhite500.opacity(0.06), location: 0.52),
-                            .init(color: GaiaColor.paperWhite500.opacity(0), location: 1)
-                        ],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
+                storyImage
+                    .aspectRatio(2912.0 / 1632.0, contentMode: .fit)
+                    .clipped()
 
-                    GaiaAssetImage(name: story.imageAssetName, contentMode: .fill)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .clipped()
-                }
-                .aspectRatio(2912.0 / 1632.0, contentMode: .fit)
-                .clipped()
+                VStack(alignment: .leading, spacing: 16) {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text(story.eyebrow)
+                            .font(.custom("Neue Haas Unica W1G", size: 11))
+                            .foregroundStyle(GaiaColor.paperWhite50)
+                            .textCase(.uppercase)
 
-                VStack(alignment: .leading, spacing: 12) {
-                    Text(story.eyebrow)
-                        .gaiaFont(.caption)
-                        .foregroundStyle(GaiaColor.paperWhite50)
-                        .textCase(.uppercase)
-
-                    HStack(alignment: .top, spacing: 12) {
-                        VStack(alignment: .leading, spacing: 4) {
+                        HStack(alignment: .top, spacing: 12) {
                             Text(story.title)
-                                .gaiaFont(.displayMedium)
+                                .font(.custom("NewSpirit-Medium", size: 32))
+                                .tracking(-0.5)
                                 .foregroundStyle(GaiaColor.paperWhite50)
-                                .frame(maxWidth: 257, alignment: .leading)
-                                .multilineTextAlignment(.leading)
+                                .frame(maxWidth: .infinity, alignment: .leading)
                                 .fixedSize(horizontal: false, vertical: true)
 
-                            Text(story.summary)
-                                .gaiaFont(.caption)
-                                .foregroundStyle(GaiaColor.paperWhite500)
-                                .frame(maxWidth: 252, alignment: .leading)
-                                .fixedSize(horizontal: false, vertical: true)
+                            storyArrow
+                                .padding(.top, -4)
                         }
-
-                        ZStack {
-                            GaiaAssetImage(name: "learn-story-arrow-circle", contentMode: .fit)
-                                .frame(width: 40, height: 40)
-                            GaiaAssetImage(name: "learn-story-arrow", contentMode: .fit)
-                                .frame(width: 15.6, height: 20.1)
-                                .rotationEffect(.degrees(90))
-                        }
-                        .frame(width: 40, height: 40)
-                        .padding(.top, -4)
                     }
+
+                    Text(story.summary)
+                        .font(.custom("Neue Haas Unica W1G", size: 12))
+                        .foregroundStyle(GaiaColor.paperWhite100)
+                        .lineSpacing(2)
+                        .frame(maxWidth: 252, alignment: .leading)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 .padding(16)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(GaiaColor.broccoliBrown500)
+                .background(GaiaColor.broccoliBrown400)
             }
-            .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous))
             .overlay(
-                RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous)
                     .stroke(Color.black.opacity(0.1), lineWidth: 0.5)
             )
-            .shadow(color: GaiaColor.broccoliBrown500.opacity(0.55), radius: 20, x: 0, y: 4)
+            .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(GaiaPressableCardStyle())
+    }
+
+    private var storyImage: some View {
+        GeometryReader { proxy in
+            ZStack {
+                GaiaAssetImage(name: story.imageAssetName, contentMode: .fill)
+                    .frame(
+                        width: proxy.size.width,
+                        height: proxy.size.height * 1.20
+                    )
+                    .offset(y: -(proxy.size.height * 0.13))
+
+                LinearGradient(
+                    stops: [
+                        .init(color: GaiaColor.siskin500.opacity(0.5), location: 0),
+                        .init(color: GaiaColor.paperWhite50.opacity(0.82), location: 0.48),
+                        .init(color: GaiaColor.paperWhite50.opacity(0), location: 1)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            }
+            .frame(width: proxy.size.width, height: proxy.size.height)
+        }
+        .clipped()
+    }
+
+    private var storyArrow: some View {
+        ZStack {
+            GaiaAssetImage(name: "learn-story-arrow-circle", contentMode: .fit)
+                .frame(width: 40, height: 40)
+
+            GaiaAssetImage(name: "learn-story-arrow", contentMode: .fit)
+                .frame(width: 15.6, height: 20.1)
+                .rotationEffect(.degrees(90))
+        }
+        .frame(width: 40, height: 40)
     }
 }

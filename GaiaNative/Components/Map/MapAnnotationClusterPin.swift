@@ -8,7 +8,7 @@ struct MapAnnotationClusterPin: View {
 
     var body: some View {
         ZStack {
-            pinGlassBorder
+            MapAnnotationGlassShell(size: pinSize)
 
             Circle()
                 .fill(
@@ -30,23 +30,5 @@ struct MapAnnotationClusterPin: View {
         }
         .frame(width: pinSize, height: pinSize)
         .shadow(color: GaiaShadow.greenGlow, radius: 18, x: 0, y: 12)
-    }
-
-    @ViewBuilder
-    private var pinGlassBorder: some View {
-        if #available(iOS 26.0, *) {
-            Circle()
-                .fill(.clear)
-                .frame(width: pinSize, height: pinSize)
-                .glassEffect(.regular, in: .circle)
-        } else {
-            Circle()
-                .fill(.white.opacity(0.18))
-                .frame(width: pinSize, height: pinSize)
-                .overlay(
-                    Circle()
-                        .stroke(.white.opacity(0.56), lineWidth: 1.5)
-                )
-        }
     }
 }

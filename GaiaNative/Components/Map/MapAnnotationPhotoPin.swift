@@ -1,6 +1,33 @@
 // figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=624-2133
 import SwiftUI
 
+struct MapAnnotationGlassShell: View {
+    let size: CGFloat
+
+    var body: some View {
+        Group {
+            if #available(iOS 26.0, *) {
+                Color.clear
+                    .frame(width: size, height: size)
+                    .glassEffect(.regular, in: .circle)
+            } else {
+                Circle()
+                    .fill(.white.opacity(0.12))
+                    .background(GaiaMaterial.toolbar, in: Circle())
+                    .overlay(
+                        Circle()
+                            .fill(.white.opacity(0.08))
+                    )
+                    .overlay(
+                        Circle()
+                            .stroke(.white.opacity(0.22), lineWidth: 0.5)
+                    )
+                    .frame(width: size, height: size)
+            }
+        }
+    }
+}
+
 struct MapAnnotationPhotoPin: View {
     var imageName: String?
 
@@ -9,7 +36,7 @@ struct MapAnnotationPhotoPin: View {
 
     var body: some View {
         ZStack {
-            pinGlassBorder
+            MapAnnotationGlassShell(size: pinSize)
 
             if let imageName {
                 GaiaAssetImage(name: imageName)
@@ -37,24 +64,6 @@ struct MapAnnotationPhotoPin: View {
         .frame(width: pinSize, height: pinSize)
         .shadow(color: GaiaShadow.greenGlow, radius: 18, x: 0, y: 10)
     }
-
-    @ViewBuilder
-    private var pinGlassBorder: some View {
-        if #available(iOS 26.0, *) {
-            Circle()
-                .fill(.clear)
-                .frame(width: pinSize, height: pinSize)
-                .glassEffect(.regular, in: .circle)
-        } else {
-            Circle()
-                .fill(.white.opacity(0.65))
-                .frame(width: pinSize, height: pinSize)
-                .overlay(
-                    Circle()
-                        .stroke(.white.opacity(0.74), lineWidth: 2)
-                )
-        }
-    }
 }
 
 struct MapAnnotationBlankPin: View {
@@ -63,7 +72,7 @@ struct MapAnnotationBlankPin: View {
 
     var body: some View {
         ZStack {
-            pinGlassBorder
+            MapAnnotationGlassShell(size: pinSize)
 
             Circle()
                 .fill(
@@ -80,23 +89,5 @@ struct MapAnnotationBlankPin: View {
         }
         .frame(width: pinSize, height: pinSize)
         .shadow(color: GaiaShadow.greenGlow, radius: 18, x: 0, y: 12)
-    }
-
-    @ViewBuilder
-    private var pinGlassBorder: some View {
-        if #available(iOS 26.0, *) {
-            Circle()
-                .fill(.clear)
-                .frame(width: pinSize, height: pinSize)
-                .glassEffect(.regular, in: .circle)
-        } else {
-            Circle()
-                .fill(.white.opacity(0.18))
-                .frame(width: pinSize, height: pinSize)
-                .overlay(
-                    Circle()
-                        .stroke(.white.opacity(0.56), lineWidth: 1.5)
-                )
-        }
     }
 }

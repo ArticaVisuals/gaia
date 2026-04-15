@@ -34,6 +34,6 @@ struct FindCard: View {
             }
             .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous))
         }
-        .buttonStyle(.plain)
+        .buttonStyle(GaiaPressableCardStyle())
     }
 }

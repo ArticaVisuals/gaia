@@ -98,23 +98,37 @@ struct ToolbarGlassTextButton: View {
                 .fixedSize(horizontal: true, vertical: true)
                 .padding(.horizontal, 16)
                 .frame(height: 40)
-                .background(
+                .background(backgroundSurface)
+                .clipShape(Capsule())
+        }
+        .buttonStyle(GlassReactiveButtonStyle())
+        .accessibilityLabel(accessibilityLabel)
+    }
+
+    @ViewBuilder
+    private var backgroundSurface: some View {
+        if #available(iOS 26.0, *) {
+            GaiaMaterialBackground(
+                cornerRadius: GaiaRadius.full,
+                interactive: true,
+                showsShadow: showsShadow,
+                prominence: .prominent,
+                tint: GaiaColor.broccoliBrown500.opacity(0.28)
+            )
+        } else {
+            Capsule(style: .continuous)
+                .fill(GaiaColor.broccoliBrown500)
+                .overlay(
                     Capsule(style: .continuous)
-                        .fill(GaiaColor.broccoliBrown500)
-                        .overlay(
-                            Capsule(style: .continuous)
-                                .stroke(GaiaColor.broccoliBrown200, lineWidth: 1)
-                        )
-                        .shadow(
-                            color: showsShadow ? GaiaShadow.mdColor : .clear,
-                            radius: GaiaShadow.mdRadius,
-                            x: 0,
-                            y: GaiaShadow.mdYOffset
-                        )
+                        .stroke(GaiaColor.broccoliBrown200, lineWidth: 1)
+                )
+                .shadow(
+                    color: showsShadow ? GaiaShadow.mdColor : .clear,
+                    radius: GaiaShadow.mdRadius,
+                    x: 0,
+                    y: GaiaShadow.mdYOffset
                 )
         }
-        .buttonStyle(.plain)
-        .accessibilityLabel(accessibilityLabel)
     }
 }
 
@@ -251,27 +265,14 @@ struct ToolbarGlassLearnButton: View {
             }
             .padding(.horizontal, Layout.horizontalPadding)
             .padding(.vertical, Layout.verticalPadding)
-            .background {
-                let shape = Capsule(style: .continuous)
-
-                shape
-                    .fill(GaiaColor.broccoliBrown500)
-                    .overlay(
-                        shape
-                            .stroke(strokeGradient, lineWidth: Layout.borderWidth)
-                    )
-                    .shadow(
-                        color: showsShadow ? Layout.shadowColor : .clear,
-                        radius: GaiaShadow.mdRadius,
-                        x: 0,
-                        y: GaiaShadow.mdYOffset
-                    )
-            }
+            .background(backgroundSurface)
             .contentShape(Capsule())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(GlassReactiveButtonStyle())
         .accessibilityLabel(accessibilityLabel)
         .onAppear {
+            shimmerPhase = 0
+
             withAnimation(
                 .linear(duration: 6)
                     .repeatForever(autoreverses: false)
@@ -279,6 +280,23 @@ struct ToolbarGlassLearnButton: View {
                 shimmerPhase = 360
             }
         }
+    }
+
+    private var backgroundSurface: some View {
+        let shape = Capsule(style: .continuous)
+
+        return shape
+            .fill(GaiaColor.broccoliBrown500)
+            .overlay(
+                shape
+                    .stroke(strokeGradient, lineWidth: Layout.borderWidth)
+            )
+            .shadow(
+                color: showsShadow ? Layout.shadowColor : .clear,
+                radius: GaiaShadow.mdRadius,
+                x: 0,
+                y: GaiaShadow.mdYOffset
+            )
     }
 
     @ViewBuilder
@@ -314,11 +332,11 @@ private struct ToolbarGlassIconArtwork: View {
             case .close:
                 GaiaIcon(kind: .close, size: 32)
             case .plus:
-                GaiaIcon(kind: .plus, size: 24)
+                GaiaIcon(kind: .plus, size: GaiaSpacing.iconLg)
             case .share:
-                GaiaIcon(kind: .share, size: 24)
+                GaiaIcon(kind: .share, size: GaiaSpacing.iconLg)
             case .expand:
-                GaiaIcon(kind: .expand, size: 24)
+                GaiaIcon(kind: .expand, size: GaiaSpacing.iconLg)
             case .filter:
                 GaiaIcon(kind: .filter, size: 32)
             case .gear:

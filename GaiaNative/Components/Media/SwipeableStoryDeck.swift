@@ -13,7 +13,7 @@ struct SwipeableStoryDeck: View {
     private let throwDistance: CGFloat = 75
     private let throwMagnitude: CGFloat = 1000
     private let throwDuration: Double = 0.36
-    private let baseCardSize = CGSize(width: 333, height: 397)
+    private let baseCardSize = CGSize(width: 333, height: 432)
 
     private var pages: [StoryDeckPage] {
         story.pages.isEmpty ? PreviewStories.keystone.pages : story.pages
@@ -45,21 +45,32 @@ struct SwipeableStoryDeck: View {
     }
 
     var body: some View {
-        VStack(spacing: 18 * deckScale) {
+        VStack(spacing: 18) {
             deckArea
                 .frame(width: layout.stackWidth, height: layout.stackHeight)
 
             if activeIndex < pages.count {
                 HStack(spacing: 6) {
                     ForEach(pages.indices, id: \.self) { index in
-                        Capsule(style: .continuous)
-                            .fill(index == activeIndex ? GaiaColor.oliveGreen500 : GaiaColor.broccoliBrown200)
-                            .frame(width: index == activeIndex ? 20 : 6, height: 6)
+                        if index == activeIndex {
+                            RoundedRectangle(cornerRadius: 3, style: .continuous)
+                                .fill(GaiaColor.oliveGreen500)
+                                .frame(width: 20, height: 6)
+                        } else {
+                            Circle()
+                                .fill(GaiaColor.broccoliBrown200)
+                                .frame(width: 6, height: 6)
+                        }
                     }
                 }
+                .frame(height: 48)
                 .animation(.spring(response: 0.36, dampingFraction: 0.85), value: activeIndex)
             } else {
                 VStack(spacing: 14) {
+                    Text("🌿")
+                        .font(.system(size: 44))
+                        .accessibilityHidden(true)
+
                     Text("You've read\nevery card.")
                         .font(.custom("NewSpirit-Medium", size: 30))
                         .foregroundStyle(GaiaColor.oliveGreen500)
@@ -125,7 +136,7 @@ struct SwipeableStoryDeck: View {
             .blur(radius: blurAmount)
             .overlay {
                 if position != .front {
-                    RoundedRectangle(cornerRadius: 16 * deckScale, style: .continuous)
+                    RoundedRectangle(cornerRadius: GaiaRadius.card * deckScale, style: .continuous)
                         .fill(GaiaColor.broccoliBrown200.opacity(tintOpacity))
                 }
             }
@@ -198,41 +209,81 @@ private struct StoryLearningCard: View {
     let page: StoryDeckPage
     let scale: CGFloat
 
+    private var titleFontSize: CGFloat { 28 * scale }
+    private var bodyFontSize: CGFloat { 12.5 * scale }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 18 * scale) {
             Text(page.title)
-                .font(.custom("NewSpirit-Medium", size: 32 * scale))
+                .font(.custom("NewSpirit-Medium", size: titleFontSize))
+                .tracking(-0.5 * scale)
                 .foregroundStyle(GaiaColor.broccoliBrown500)
-                .lineSpacing(-3 * scale)
+                .lineSpacing(-0.56 * scale)
                 .multilineTextAlignment(.leading)
+                .fixedSize(horizontal: false, vertical: true)
 
-            VStack(alignment: .leading, spacing: 12 * scale) {
-                GaiaAssetImage(name: page.imageAssetName, contentMode: .fill)
-                    .frame(height: 183 * scale)
+            VStack(alignment: .leading, spacing: 10 * scale) {
+                StoryDeckMediaImage(source: page.imageAssetName)
+                    .frame(height: 163 * scale)
                     .frame(maxWidth: .infinity)
                     .clipShape(RoundedRectangle(cornerRadius: 8 * scale, style: .continuous))
                     .overlay(
                         RoundedRectangle(cornerRadius: 8 * scale, style: .continuous)
-                            .stroke(GaiaColor.broccoliBrown200, lineWidth: max(0.5, scale))
+                            .stroke(StoryLearningCardTheme.borderColor, lineWidth: max(0.7, 1 * scale))
                     )
 
                 Text(page.body)
-                    .font(.custom("NewSpirit-Regular", size: 14 * scale))
+                    .font(.custom("Neue Haas Unica W1G", size: bodyFontSize))
+                    .tracking(0.4 * scale)
                     .foregroundStyle(GaiaColor.blackishGrey500)
-                    .lineSpacing(2 * scale)
+                    .lineSpacing(4 * scale)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
         .padding(16 * scale)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(GaiaColor.paperWhite500)
-        .clipShape(RoundedRectangle(cornerRadius: 16 * scale, style: .continuous))
+        .background(GaiaColor.paperWhite50)
+        .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.card * scale, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 16 * scale, style: .continuous)
-                .stroke(GaiaColor.broccoliBrown200, lineWidth: max(0.75, scale))
+            RoundedRectangle(cornerRadius: GaiaRadius.card * scale, style: .continuous)
+                .stroke(StoryLearningCardTheme.borderColor, lineWidth: max(0.7, 1 * scale))
         )
-        .shadow(color: GaiaShadow.lgColor, radius: 40 * scale, x: 0, y: 8 * scale)
+        .shadow(color: StoryLearningCardTheme.shadowColor, radius: 32.542 * scale, x: 0, y: 6.508 * scale)
     }
+}
+
+private struct StoryDeckMediaImage: View {
+    let source: String
+
+    var body: some View {
+        if let url = URL(string: source), source.hasPrefix("http") {
+            AsyncImage(url: url, transaction: .init(animation: .easeInOut(duration: 0.2))) { phase in
+                switch phase {
+                case let .success(image):
+                    image
+                        .resizable()
+                        .scaledToFill()
+                default:
+                    placeholder
+                }
+            }
+        } else {
+            GaiaAssetImage(name: source, contentMode: .fill)
+        }
+    }
+
+    private var placeholder: some View {
+        LinearGradient(
+            colors: [GaiaColor.asparagusGreen50, GaiaColor.paperWhite50],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+    }
+}
+
+private enum StoryLearningCardTheme {
+    static let borderColor = GaiaColor.broccoliBrown200
+    static let shadowColor = Color(red: 155.0 / 255.0, green: 133.0 / 255.0, blue: 107.0 / 255.0).opacity(0.24)
 }
 
 private enum StoryDeckPosition {
@@ -245,22 +296,22 @@ private struct StoryDeckLayout {
     let scale: CGFloat
 
     var stackWidth: CGFloat { 364 * scale }
-    var stackHeight: CGFloat { 438 * scale }
+    var stackHeight: CGFloat { 473 * scale }
 
     func transform(for position: StoryDeckPosition, progress: CGFloat) -> StoryDeckTransform {
         switch position {
         case .front:
-            return transformedPosition(x: 0, y: 18, scale: 1)
+            return transformedPosition(x: 0, y: 41, scale: 1)
         case .mid:
             return interpolatedTransform(
-                from: transformedPosition(x: 14.72, y: -3.84, scale: 303.559 / 333),
-                to: transformedPosition(x: 0, y: 18, scale: 1),
+                from: transformedPosition(x: 15, y: 19, scale: 303.0 / 333.0),
+                to: transformedPosition(x: 0, y: 41, scale: 1),
                 progress: progress
             )
         case .back:
             return interpolatedTransform(
-                from: transformedPosition(x: 31.05, y: -23, scale: 270.902 / 333),
-                to: transformedPosition(x: 14.72, y: -3.84, scale: 303.559 / 333),
+                from: transformedPosition(x: 31, y: 0, scale: 271.0 / 333.0),
+                to: transformedPosition(x: 15, y: 19, scale: 303.0 / 333.0),
                 progress: progress
             )
         }
@@ -271,9 +322,9 @@ private struct StoryDeckLayout {
         case .front:
             return 0
         case .mid:
-            return 0.8 * scale
+            return 1.0 * scale
         case .back:
-            return 2.2 * scale
+            return 2.5 * scale
         }
     }
 

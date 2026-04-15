@@ -1,4 +1,7 @@
 import SwiftUI
+#if os(iOS)
+import UIKit
+#endif
 
 struct GaiaAssetImage: View {
     let name: String
@@ -7,25 +10,95 @@ struct GaiaAssetImage: View {
 
     var body: some View {
         Group {
+            #if os(iOS)
+            if let image = GaiaAssetImageCache.shared.image(named: name) {
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: contentMode)
+            } else {
+                fallback
+            }
+            #else
             if let image = AssetCatalog.image(named: name) {
                 image
                     .resizable()
                     .aspectRatio(contentMode: contentMode)
             } else {
-                ZStack {
-                    LinearGradient(
-                        colors: [GaiaColor.paperWhite100, GaiaColor.oliveGreen100],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                    Image(systemName: "photo")
-                        .font(GaiaTypography.titleSansMedium)
-                        .foregroundStyle(fallbackTint)
-                }
+                fallback
             }
+            #endif
+        }
+    }
+
+    private var fallback: some View {
+        ZStack {
+            LinearGradient(
+                colors: [GaiaColor.paperWhite100, GaiaColor.oliveGreen100],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            Image(systemName: "photo")
+                .font(GaiaTypography.titleSansMedium)
+                .foregroundStyle(fallbackTint)
         }
     }
 }
+
+#if os(iOS)
+private final class GaiaAssetImageCache {
+    static let shared = GaiaAssetImageCache()
+
+    private let cache = NSCache<NSString, UIImage>()
+
+    private init() {
+        cache.countLimit = 64
+    }
+
+    func image(named name: String) -> Image? {
+        guard let uiImage = uiImage(named: name) else {
+            return nil
+        }
+
+        return Image(uiImage: uiImage)
+    }
+
+    private func uiImage(named name: String) -> UIImage? {
+        let path = AssetCatalog.resolvedPath(for: name)
+
+        if let cached = cache.object(forKey: path as NSString) {
+            return cached
+        }
+
+        let loadedImage = loadImage(for: path)
+        if let loadedImage {
+            cache.setObject(loadedImage, forKey: path as NSString)
+        }
+        return loadedImage
+    }
+
+    private func loadImage(for path: String) -> UIImage? {
+        if let image = UIImage(named: path) {
+            return image
+        }
+
+        if let direct = Bundle.main.resourceURL?.appendingPathComponent(path),
+           let image = UIImage(contentsOfFile: direct.path) {
+            return image
+        }
+
+        let nsPath = path as NSString
+        let base = nsPath.deletingPathExtension
+        let ext = nsPath.pathExtension
+        if !ext.isEmpty,
+           let url = Bundle.main.url(forResource: base, withExtension: ext),
+           let image = UIImage(contentsOfFile: url.path) {
+            return image
+        }
+
+        return nil
+    }
+}
+#endif
 
 struct GaiaCategoryBadgeIcon: View {
     var width: CGFloat = 53.324
@@ -47,19 +120,74 @@ struct GaiaQualityCheckmark: View {
     let state: GaiaQualityCheckmarkState
     var size: CGFloat = 40
 
-    var body: some View {
-        GaiaAssetImage(name: assetName, contentMode: .fit)
-            .frame(width: size, height: size)
-            .accessibilityHidden(true)
+    private enum Palette {
+        static let active = Color(.sRGB, red: 103 / 255, green: 118 / 255, blue: 91 / 255)
+        static let inactive = GaiaColor.blackishGrey200
+        static let cutout = GaiaColor.paperWhite50
+        static let inactiveLineWidth: CGFloat = 2.228
     }
 
-    private var assetName: String {
-        switch state {
-        case .checked:
-            return "quality-checkmark-checked"
-        case .unchecked:
-            return "quality-checkmark-unchecked"
+    var body: some View {
+        ZStack {
+            switch state {
+            case .checked:
+                Circle()
+                    .fill(Palette.active)
+
+                GaiaQualityCheckmarkGlyph()
+                    .fill(Palette.cutout, style: FillStyle())
+                    .padding(size * (8.384 / 40))
+            case .unchecked:
+                Circle()
+                    .stroke(
+                        Palette.inactive,
+                        lineWidth: size * (Palette.inactiveLineWidth / 40)
+                    )
+                    .padding(size * (1.114 / 40))
+            }
         }
+        .frame(width: size, height: size)
+        .accessibilityHidden(true)
+    }
+}
+
+private struct GaiaQualityCheckmarkGlyph: Shape {
+    func path(in rect: CGRect) -> Path {
+        func point(_ x: CGFloat, _ y: CGFloat) -> CGPoint {
+            CGPoint(
+                x: rect.minX + (x / 23.239) * rect.width,
+                y: rect.minY + (y / 19.903) * rect.height
+            )
+        }
+
+        var path = Path()
+        path.move(to: point(20.417, 1.207))
+        path.addCurve(
+            to: point(22.239, 1.207),
+            control1: point(20.92, 0.704),
+            control2: point(21.736, 0.704)
+        )
+        path.addCurve(
+            to: point(22.239, 3.029),
+            control1: point(22.742, 1.71),
+            control2: point(22.742, 2.526)
+        )
+        path.addLine(to: point(7.578, 17.69))
+        path.addLine(to: point(0, 10.112))
+        path.addCurve(
+            to: point(0, 8.29),
+            control1: point(-0.503, 9.609),
+            control2: point(-0.503, 8.794)
+        )
+        path.addCurve(
+            to: point(1.822, 8.29),
+            control1: point(0.503, 7.787),
+            control2: point(1.319, 7.787)
+        )
+        path.addLine(to: point(7.578, 14.046))
+        path.addLine(to: point(20.417, 1.207))
+        path.closeSubpath()
+        return path
     }
 }
 

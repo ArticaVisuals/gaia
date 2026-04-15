@@ -9,7 +9,12 @@ struct GaiaSurfaceCard<Content: View>: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
-                    .fill(GaiaColor.surfaceCard)
+                    .fill(GaiaColor.paperWhite50)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
+                            .strokeBorder(GaiaColor.border, lineWidth: 0.5)
+                    )
+                    .shadow(color: GaiaShadow.cardColor, radius: GaiaShadow.cardRadius, x: 0, y: GaiaShadow.mdYOffset)
             )
     }
 }
@@ -26,9 +31,9 @@ struct GaiaDataCard<Content: View>: View {
                     .fill(GaiaColor.paperWhite50)
                     .overlay(
                         RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
-                            .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
+                            .strokeBorder(GaiaColor.border, lineWidth: 0.5)
                     )
-                    .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
+                    .shadow(color: GaiaShadow.cardColor, radius: GaiaShadow.cardRadius, x: 0, y: GaiaShadow.mdYOffset)
             )
     }
 }
@@ -45,7 +50,7 @@ struct GaiaStoryCardSurface<Content: View>: View {
                     .fill(GaiaColor.surfaceStory)
                     .overlay(
                         RoundedRectangle(cornerRadius: GaiaRadius.storyCard, style: .continuous)
-                            .stroke(GaiaColor.broccoliBrown100, lineWidth: 1)
+                            .strokeBorder(GaiaColor.broccoliBrown100, lineWidth: 1)
                     )
                     .shadow(color: GaiaShadow.storyColor, radius: GaiaShadow.storyRadius, x: 0, y: GaiaShadow.storyYOffset)
             )
@@ -67,11 +72,12 @@ struct GaiaActionCard<Content: View>: View {
         }
         .background(
             RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
-                .fill(Color.white)
+                .fill(GaiaColor.paperWhite50)
                 .overlay(
                     RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
-                        .stroke(GaiaColor.oliveGreen100, lineWidth: 1)
+                        .strokeBorder(GaiaColor.borderStrong, lineWidth: 1)
                 )
+                .shadow(color: GaiaShadow.cardColor, radius: GaiaShadow.cardRadius, x: 0, y: GaiaShadow.mdYOffset)
         )
         .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous))
     }
