@@ -354,7 +354,7 @@ private struct ExploreSheetProjectCard: View {
             .shadow(color: GaiaColor.broccoliBrown500.opacity(0.16), radius: 20, x: 0, y: 4)
             .contentShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
         }
-        .buttonStyle(.plain)
+        .buttonStyle(GaiaPressableCardStyle())
         .accessibilityLabel("\(project.title), \(project.tag) project, \(project.countLabel) finds")
         .accessibilityHint("Opens the project details page")
     }
@@ -438,7 +438,7 @@ private struct ExploreSheetFindGridCard: View {
             .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
             .contentShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
         }
-        .buttonStyle(.plain)
+        .buttonStyle(GaiaPressableCardStyle())
     }
 }
 
@@ -475,7 +475,7 @@ private struct ExploreSheetFindListRow: View {
                     .stroke(GaiaColor.broccoliBrown100, lineWidth: 0.5)
             )
         }
-        .buttonStyle(.plain)
+        .buttonStyle(GaiaPressableCardStyle())
     }
 }
 

@@ -4,7 +4,6 @@ import SwiftUI
 struct ExploreScreen: View {
     @EnvironmentObject private var appState: AppState
     @EnvironmentObject private var contentStore: ContentStore
-    @State private var sheetSnapshot = ExploreSheetSnapshot()
     @State private var searchQuery = ""
     @State private var recenterRequestID: UUID?
     @FocusState private var isSearchFocused: Bool
@@ -22,7 +21,8 @@ struct ExploreScreen: View {
                 recenterRequestID: recenterRequestID,
                 onSelectObservation: { observation in
                     appState.openFindDetails(speciesID: observation.speciesID, tab: .learn)
-                }
+                },
+                prefersInitialUserLocation: true
             )
             .ignoresSafeArea()
             .overlay(alignment: .bottom) {
@@ -39,10 +39,6 @@ struct ExploreScreen: View {
                     onLocate: {
                         recenterRequestID = UUID()
                         isSearchFocused = false
-                    },
-                    onProgressChange: { _ in },
-                    onPositionChange: { snapshot in
-                        sheetSnapshot = snapshot
                     }
                 )
                 .frame(width: viewportWidth, height: viewportHeight, alignment: .bottom)
@@ -128,20 +124,9 @@ private struct ExploreSheetMetrics {
         return max(0, min(1, (collapsedOffset - offset) / range))
     }
 
-    func fullExpansionProgress(for offset: CGFloat) -> CGFloat {
-        let range = max(1, midOffset - fullOffset)
-        return max(0, min(1, (midOffset - offset) / range))
-    }
-
     func topPosition(for offset: CGFloat) -> CGFloat {
         headerHeight + offset
     }
-}
-
-private struct ExploreSheetSnapshot {
-    var fullHeight: CGFloat = 0
-    var liveOffset: CGFloat = 0
-    var midOffset: CGFloat = 0
 }
 
 private struct ExploreDraggableSheet: View {
@@ -151,8 +136,6 @@ private struct ExploreDraggableSheet: View {
     let onSelectFind: (Species) -> Void
     let onSelectProject: (ProjectSelection) -> Void
     let onLocate: () -> Void
-    let onProgressChange: (CGFloat) -> Void
-    let onPositionChange: (ExploreSheetSnapshot) -> Void
 
     @State private var detent: ExploreSheetDetent
     @State private var dragTranslation: CGFloat = 0
@@ -163,9 +146,7 @@ private struct ExploreDraggableSheet: View {
         topInset: CGFloat,
         onSelectFind: @escaping (Species) -> Void,
         onSelectProject: @escaping (ProjectSelection) -> Void,
-        onLocate: @escaping () -> Void,
-        onProgressChange: @escaping (CGFloat) -> Void,
-        onPositionChange: @escaping (ExploreSheetSnapshot) -> Void
+        onLocate: @escaping () -> Void
     ) {
         self.species = species
         self.nearbyFindCount = nearbyFindCount
@@ -173,8 +154,6 @@ private struct ExploreDraggableSheet: View {
         self.onSelectFind = onSelectFind
         self.onSelectProject = onSelectProject
         self.onLocate = onLocate
-        self.onProgressChange = onProgressChange
-        self.onPositionChange = onPositionChange
         _detent = State(initialValue: Self.launchDetent)
     }
 
@@ -185,7 +164,6 @@ private struct ExploreDraggableSheet: View {
             let viewportWidth = min(containerWidth, UIScreen.main.bounds.width)
             let liveOffset = metrics.clampedOffset(metrics.offset(for: detent) + dragTranslation)
             let contentReveal = metrics.contentReveal(for: liveOffset)
-            let fullExpansion = metrics.fullExpansionProgress(for: liveOffset)
             let contentOpacity = max(0, min(1, (contentReveal - 0.12) / 0.88))
             let peekOpacity = max(0, 1 - contentReveal * 1.35)
             let collapsedLift = (1 - contentReveal) * 14
@@ -269,26 +247,6 @@ private struct ExploreDraggableSheet: View {
             .ignoresSafeArea(edges: .bottom)
             .animation(GaiaMotion.softSpring, value: detent)
             .animation(.interactiveSpring(response: 0.28, dampingFraction: 0.88), value: dragTranslation)
-            .onAppear {
-                onProgressChange(fullExpansion)
-                onPositionChange(
-                    ExploreSheetSnapshot(
-                        fullHeight: metrics.fullHeight,
-                        liveOffset: liveOffset,
-                        midOffset: metrics.midOffset
-                    )
-                )
-            }
-            .onChange(of: liveOffset) { _, newValue in
-                onProgressChange(fullExpansion)
-                onPositionChange(
-                    ExploreSheetSnapshot(
-                        fullHeight: metrics.fullHeight,
-                        liveOffset: newValue,
-                        midOffset: metrics.midOffset
-                    )
-                )
-            }
         }
     }
 
