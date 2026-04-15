@@ -3,22 +3,29 @@ import UIKit
 
 private enum ProjectDetailLayout {
     static let heroHeight: CGFloat = 262
-    static let sectionSpacing = GaiaSpacing.xl
+    static let sectionSpacing = GaiaSpacing.lg
     static let sectionHeaderSpacing = GaiaSpacing.md
-    static let actionRowSpacing = GaiaSpacing.sm
+    static let actionRowSpacing = GaiaSpacing.cardInset
     static let actionSectionSpacing = GaiaSpacing.lg
-    static let cardCornerRadius = GaiaRadius.lg
+    static let cardCornerRadius: CGFloat = 12.203
     static let heroCornerRadius = GaiaRadius.lg
-    static let thumbnailCornerRadius = GaiaRadius.thumbnail
-    static let recentFindCardMinWidth: CGFloat = 156
-    static let recentFindCardHeight: CGFloat = 138
-    static let recentFindImageHeight: CGFloat = 57
-    static let updateThumbWidth: CGFloat = 82
-    static let updateThumbHeight: CGFloat = 57
-    static let updateCardHeight: CGFloat = 112
+    static let thumbnailCornerRadius: CGFloat = 12.203
+    static let recentFindGridSpacing: CGFloat = 10
+    static let recentFindBorderWidth: CGFloat = 0.763
+    static let recentFindCardHeight: CGFloat = 180.005
+    static let recentFindImageHeight: CGFloat = 88.557
+    static let recentFindBlurRadius: CGFloat = 3.8
+    static let recentFindShadowRadius: CGFloat = 6.102
+    static let recentFindShadowYOffset: CGFloat = 4
+    static let recentFindTitleInset: CGFloat = 13
+    static let recentFindTitleBottomInset: CGFloat = 14
+    static let updateThumbSize: CGFloat = 88.557
+    static let updateCardHeight: CGFloat = 112.557
     static let observerRowSpacing = GaiaSpacing.pillHorizontal
     static let observerAvatarSize = GaiaSpacing.iconXl
     static let observerAvatarOverlap = GaiaSpacing.md
+    static let founderAvatarScale: CGFloat = 2.18
+    static let founderAvatarOffsetY: CGFloat = -14
 }
 
 struct ProjectDetailScreen: View {
@@ -47,7 +54,7 @@ struct ProjectDetailScreen: View {
 
                         VStack(alignment: .leading, spacing: ProjectDetailLayout.sectionSpacing) {
                             ProjectActionsSection(content: content)
-                            ProjectRecentFindsSection(items: content.recentFinds)
+                            ProjectRecentFindsSection(items: content.recentFinds, location: content.location)
                             ProjectObserversSection(content: content)
                             ProjectUpdatesSection(updates: content.updates)
                         }
@@ -139,11 +146,11 @@ private struct ProjectDetailContent {
 
     private static let recentFinds: [RecentFind] = [
         .init(id: "cacti", title: "Cacti", imageName: "project-detail-recent-cacti"),
-        .init(id: "indian-cormorant", title: "Indian\nCormorant", imageName: "project-detail-recent-indian-cormorant"),
-        .init(id: "european-roller", title: "European\nRoller", imageName: "project-detail-recent-european-roller"),
-        .init(id: "bindweed-tribe", title: "Bindweed\nTribe", imageName: "project-detail-recent-bindweed-tribe"),
-        .init(id: "emperor-gum-moth", title: "Emperor Gum\nMoth", imageName: "project-detail-recent-emperor-gum-moth"),
-        .init(id: "garden-orbweaver", title: "Garden\nOrbweaver", imageName: "project-detail-recent-garden-orbweaver")
+        .init(id: "indian-cormorant", title: "Indian Cormorant", imageName: "project-detail-recent-indian-cormorant"),
+        .init(id: "european-roller", title: "European Roller", imageName: "project-detail-recent-european-roller"),
+        .init(id: "bindweed-tribe", title: "Bindweed Tribe", imageName: "project-detail-recent-bindweed-tribe"),
+        .init(id: "emperor-gum-moth", title: "Emperor Gum Moth", imageName: "project-detail-recent-emperor-gum-moth"),
+        .init(id: "garden-orbweaver", title: "Garden Orbweaver", imageName: "project-detail-recent-garden-orbweaver")
     ]
 
     private static let updates: [UpdateItem] = [
@@ -226,7 +233,7 @@ private struct ProjectHeroSection: View {
             ProjectMediaImage(source: content.heroImageName, contentMode: .fill)
                 .frame(maxWidth: .infinity)
                 .frame(height: ProjectDetailLayout.heroHeight)
-                .blur(radius: 11.55)
+                .blur(radius: 9.5)
                 .mask(
                     LinearGradient(
                         stops: [
@@ -241,7 +248,7 @@ private struct ProjectHeroSection: View {
                 )
 
             LinearGradient(
-                colors: [Color.clear, Color.black.opacity(0.25)],
+                colors: [Color.clear, Color.black.opacity(0.22)],
                 startPoint: .top,
                 endPoint: .bottom
             )
@@ -263,7 +270,7 @@ private struct ProjectHeroSection: View {
                 }
             }
             .padding(.leading, GaiaSpacing.detailInset)
-            .padding(.bottom, GaiaSpacing.pillHorizontal)
+            .padding(.bottom, GaiaSpacing.detailInset)
         }
         .clipShape(
             UnevenRoundedRectangle(
@@ -320,7 +327,7 @@ private struct ProjectActionButton: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .gaiaFont(.body)
+                .gaiaFont(.subheadline)
                 .foregroundStyle(style == .filled ? GaiaColor.paperWhite50 : GaiaColor.oliveGreen500)
                 .frame(maxWidth: .infinity)
                 .frame(height: 50)
@@ -339,7 +346,7 @@ private struct ProjectActionButton: View {
                 .fill(GaiaColor.oliveGreen300)
         case .outlined:
             Capsule(style: .continuous)
-                .stroke(GaiaColor.oliveGreen500, lineWidth: 1)
+                .stroke(GaiaColor.oliveGreen200, lineWidth: 1)
                 .background(
                     Capsule(style: .continuous)
                         .fill(Color.clear)
@@ -353,13 +360,13 @@ private struct ProjectActionStatusPill: View {
 
     var body: some View {
         Text(title)
-            .gaiaFont(.body)
+            .gaiaFont(.subheadline)
             .foregroundStyle(GaiaColor.oliveGreen500)
             .frame(maxWidth: .infinity)
             .frame(height: 50)
             .background(
                 Capsule(style: .continuous)
-                    .stroke(GaiaColor.oliveGreen500, lineWidth: 1)
+                    .stroke(GaiaColor.oliveGreen200, lineWidth: 1)
             )
             .accessibilityLabel(title)
     }
@@ -394,7 +401,7 @@ private struct ProjectStatsCard: View {
                 .fill(GaiaColor.paperWhite50)
                 .overlay(
                     RoundedRectangle(cornerRadius: ProjectDetailLayout.cardCornerRadius, style: .continuous)
-                        .stroke(GaiaColor.border, lineWidth: 1)
+                        .stroke(GaiaColor.border, lineWidth: ProjectDetailLayout.recentFindBorderWidth)
                 )
         )
     }
@@ -405,13 +412,12 @@ private struct ProjectStatsCard: View {
                 .gaiaFont(.caption2)
                 .foregroundStyle(GaiaColor.oliveGreen300)
 
-            ProjectMediaImage(source: content.founderImageName, contentMode: .fill)
-                .frame(width: 48, height: 48)
-                .clipShape(Circle())
-                .overlay(
-                    Circle()
-                        .stroke(Color.black.opacity(0.1), lineWidth: 0.5)
-                )
+            ProjectCroppedCircleImage(
+                source: content.founderImageName,
+                size: 48,
+                scale: ProjectDetailLayout.founderAvatarScale,
+                offsetY: ProjectDetailLayout.founderAvatarOffsetY
+            )
         }
         .frame(maxWidth: .infinity)
     }
@@ -419,7 +425,7 @@ private struct ProjectStatsCard: View {
     private var divider: some View {
         Rectangle()
             .fill(GaiaColor.border)
-            .frame(width: 1)
+            .frame(width: 0.5)
             .frame(maxHeight: .infinity)
     }
 
@@ -494,7 +500,7 @@ private struct ProjectSectionHeader: View {
     var body: some View {
         HStack(alignment: .bottom, spacing: GaiaSpacing.sm) {
             Text(title)
-                .gaiaFont(.titleSansMedium)
+                .gaiaFont(.titleSans)
                 .foregroundStyle(GaiaColor.inkBlack300)
 
             Spacer(minLength: 0)
@@ -511,19 +517,22 @@ private struct ProjectSectionHeader: View {
 
 private struct ProjectRecentFindsSection: View {
     let items: [ProjectDetailContent.RecentFind]
+    let location: String
 
     private let columns: [GridItem] = [
-        GridItem(.flexible(minimum: ProjectDetailLayout.recentFindCardMinWidth), spacing: GaiaSpacing.sm),
-        GridItem(.flexible(minimum: ProjectDetailLayout.recentFindCardMinWidth), spacing: GaiaSpacing.sm)
+        GridItem(.flexible(), spacing: ProjectDetailLayout.recentFindGridSpacing),
+        GridItem(.flexible(), spacing: ProjectDetailLayout.recentFindGridSpacing)
     ]
 
     var body: some View {
         VStack(alignment: .leading, spacing: ProjectDetailLayout.sectionHeaderSpacing) {
             ProjectSectionHeader(title: "Recent Finds", actionTitle: "See all")
 
-            LazyVGrid(columns: columns, alignment: .leading, spacing: GaiaSpacing.sm) {
+            LazyVGrid(columns: columns, alignment: .leading, spacing: ProjectDetailLayout.recentFindGridSpacing) {
                 ForEach(items) { item in
-                    ProjectRecentFindCard(item: item, location: "Arroyo Seco")
+                    ProjectRecentFindCard(item: item, location: location) {
+                        // TODO: Wire project recent find navigation.
+                    }
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -534,46 +543,56 @@ private struct ProjectRecentFindsSection: View {
 private struct ProjectRecentFindCard: View {
     let item: ProjectDetailContent.RecentFind
     let location: String
+    let action: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
-            ProjectMediaImage(source: item.imageName, contentMode: .fill)
-                .frame(maxWidth: .infinity)
-                .frame(height: ProjectDetailLayout.recentFindImageHeight)
-                .clipShape(RoundedRectangle(cornerRadius: ProjectDetailLayout.thumbnailCornerRadius, style: .continuous))
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 0) {
+                ProjectMediaImage(source: item.imageName, contentMode: .fill)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: ProjectDetailLayout.recentFindImageHeight)
+                    .clipped()
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text(item.title)
-                    .gaiaFont(.titleSansMedium)
-                    .foregroundStyle(GaiaColor.inkBlack300)
-                    .lineLimit(2)
-                    .fixedSize(horizontal: false, vertical: true)
+                VStack(alignment: .leading, spacing: GaiaSpacing.xs) {
+                    Text(item.title)
+                        .gaiaFont(.titleSans)
+                        .foregroundStyle(GaiaColor.textPrimary)
+                        .lineLimit(2)
 
-                Text("Recent find")
-                    .gaiaFont(.caption2)
-                    .foregroundStyle(GaiaColor.broccoliBrown500)
+                    Text("Recent find")
+                        .gaiaFont(.caption2)
+                        .foregroundStyle(GaiaColor.oliveGreen500)
+
+                    HStack(spacing: GaiaSpacing.xs) {
+                        GaiaIcon(kind: .pin, size: 16, tint: GaiaColor.oliveGreen500)
+                            .frame(width: 16, height: 16)
+
+                        Text(location)
+                            .gaiaFont(.caption2)
+                            .foregroundStyle(GaiaColor.inkBlack300)
+                            .lineLimit(1)
+                    }
+                }
+                .padding(.horizontal, GaiaSpacing.cardInset)
+                .padding(.top, GaiaSpacing.sm)
+                .padding(.bottom, GaiaSpacing.cardInset)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             }
-
-            HStack(spacing: GaiaSpacing.xs) {
-                GaiaIcon(kind: .pin, size: 16, tint: GaiaColor.oliveGreen500)
-                Text(location)
-                    .gaiaFont(.caption2)
-                    .foregroundStyle(GaiaColor.inkBlack300)
-                Spacer(minLength: 0)
-                projectCardArrow(size: 24)
-            }
+            .frame(maxWidth: .infinity)
+            .frame(height: ProjectDetailLayout.recentFindCardHeight)
+            .clipShape(RoundedRectangle(cornerRadius: ProjectDetailLayout.thumbnailCornerRadius, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: ProjectDetailLayout.thumbnailCornerRadius, style: .continuous)
+                    .stroke(GaiaColor.border, lineWidth: ProjectDetailLayout.recentFindBorderWidth)
+            )
+            .shadow(
+                color: GaiaShadow.smallColor,
+                radius: ProjectDetailLayout.recentFindShadowRadius,
+                x: 0,
+                y: ProjectDetailLayout.recentFindShadowYOffset
+            )
         }
-        .padding(GaiaSpacing.cardInset)
-        .frame(maxWidth: .infinity, minHeight: ProjectDetailLayout.recentFindCardHeight, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
-                .fill(GaiaColor.paperWhite50)
-                .overlay(
-                    RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
-                        .stroke(GaiaColor.border, lineWidth: 1)
-                )
-        )
-        .shadow(color: GaiaShadow.smallColor, radius: 20, x: 0, y: 6)
+        .buttonStyle(GaiaPressableCardStyle())
     }
 }
 
@@ -627,7 +646,7 @@ private struct ProjectObserversSection: View {
                     .fill(GaiaColor.paperWhite50)
                     .overlay(
                         RoundedRectangle(cornerRadius: ProjectDetailLayout.cardCornerRadius, style: .continuous)
-                            .stroke(GaiaColor.border, lineWidth: 1)
+                            .stroke(GaiaColor.border, lineWidth: ProjectDetailLayout.recentFindBorderWidth)
                     )
             )
         }
@@ -654,21 +673,21 @@ private struct ProjectUpdateCard: View {
     var body: some View {
         HStack(spacing: GaiaSpacing.md) {
             ProjectMediaImage(source: update.imageName, contentMode: .fill)
-                .frame(width: ProjectDetailLayout.updateThumbWidth, height: ProjectDetailLayout.updateThumbHeight)
+                .frame(width: ProjectDetailLayout.updateThumbSize, height: ProjectDetailLayout.updateThumbSize)
                 .clipShape(RoundedRectangle(cornerRadius: ProjectDetailLayout.thumbnailCornerRadius, style: .continuous))
 
-            VStack(alignment: .leading, spacing: GaiaSpacing.xs) {
+            VStack(alignment: .leading, spacing: GaiaSpacing.inset12) {
                 VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
                     Text(update.title)
-                        .gaiaFont(.title3)
+                        .gaiaFont(.body)
                         .foregroundStyle(GaiaColor.textPrimary)
-                        .lineLimit(2)
-                        .fixedSize(horizontal: false, vertical: true)
+                        .lineLimit(1)
 
                     Text(update.subtitle)
                         .gaiaFont(.caption2)
                         .foregroundStyle(GaiaColor.inkBlack300)
                         .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
 
                 Text(update.timeLabel)
@@ -677,8 +696,6 @@ private struct ProjectUpdateCard: View {
                     .lineLimit(1)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-
-            projectCardArrow(size: 32)
         }
         .padding(GaiaSpacing.inset12)
         .frame(maxWidth: .infinity, minHeight: ProjectDetailLayout.updateCardHeight, alignment: .leading)
@@ -687,22 +704,38 @@ private struct ProjectUpdateCard: View {
                 .fill(GaiaColor.paperWhite50)
                 .overlay(
                     RoundedRectangle(cornerRadius: ProjectDetailLayout.cardCornerRadius, style: .continuous)
-                        .stroke(GaiaColor.borderStrong, lineWidth: 1)
+                        .stroke(GaiaColor.borderStrong, lineWidth: ProjectDetailLayout.recentFindBorderWidth)
                 )
         )
     }
-}
-
-private func projectCardArrow(size: CGFloat) -> some View {
-    GaiaIcon(kind: .circleArrowRight, size: size, tint: GaiaColor.oliveGreen500)
-        .frame(width: size, height: size)
-        .accessibilityHidden(true)
 }
 
 private struct ProjectLocationPinIcon: View {
     var body: some View {
         GaiaIcon(kind: .pin, size: 20, tint: GaiaColor.paperWhite50)
             .frame(width: 17, height: 20)
+    }
+}
+
+private struct ProjectCroppedCircleImage: View {
+    let source: String
+    let size: CGFloat
+    var scale: CGFloat = 1
+    var offsetY: CGFloat = 0
+
+    var body: some View {
+        ZStack {
+            ProjectMediaImage(source: source, contentMode: .fill)
+                .frame(width: size, height: size)
+                .scaleEffect(scale)
+                .offset(y: offsetY)
+        }
+        .frame(width: size, height: size)
+        .clipShape(Circle())
+        .overlay(
+            Circle()
+                .stroke(Color.black.opacity(0.1), lineWidth: 0.5)
+        )
     }
 }
 
