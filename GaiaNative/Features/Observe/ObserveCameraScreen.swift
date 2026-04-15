@@ -2,6 +2,7 @@ import SwiftUI
 import AVFoundation
 #if os(iOS)
 import UIKit
+import ImageIO
 import PhotosUI
 #endif
 
@@ -207,7 +208,7 @@ struct ObserveCameraScreen: View {
         do {
             guard
                 let imageData = try await selectedPhotoItem.loadTransferable(type: Data.self),
-                let image = UIImage(data: imageData)
+                let image = await downsampledThumbnailImage(from: imageData, targetSize: CGSize(width: 64, height: 64))
             else {
                 self.selectedPhotoItem = nil
                 return
@@ -222,6 +223,36 @@ struct ObserveCameraScreen: View {
 
         self.selectedPhotoItem = nil
     }
+
+    #if os(iOS)
+    private func downsampledThumbnailImage(from data: Data, targetSize: CGSize) async -> UIImage? {
+        let scale = UIScreen.main.scale
+        let maximumPixelSize = max(targetSize.width, targetSize.height) * scale
+
+        return await Task.detached(priority: .userInitiated) {
+            let sourceOptions: [CFString: Any] = [
+                kCGImageSourceShouldCache: false
+            ]
+
+            guard let source = CGImageSourceCreateWithData(data as CFData, sourceOptions as CFDictionary) else {
+                return nil
+            }
+
+            let thumbnailOptions: [CFString: Any] = [
+                kCGImageSourceCreateThumbnailFromImageAlways: true,
+                kCGImageSourceCreateThumbnailWithTransform: true,
+                kCGImageSourceShouldCacheImmediately: true,
+                kCGImageSourceThumbnailMaxPixelSize: maximumPixelSize
+            ]
+
+            guard let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, thumbnailOptions as CFDictionary) else {
+                return nil
+            }
+
+            return UIImage(cgImage: cgImage)
+        }.value
+    }
+    #endif
 }
 
 private struct ObserveCameraTopBar: View {
@@ -398,7 +429,7 @@ private struct ObserveThumbnailButton: View {
     var body: some View {
         Button(action: action) {
             ZStack {
-                GaiaMaterialBackground(cornerRadius: 26)
+                GaiaMaterialBackground(cornerRadius: 26, interactive: true)
 
                 if let thumbnailImage {
                     Image(uiImage: thumbnailImage)
@@ -416,7 +447,7 @@ private struct ObserveThumbnailButton: View {
             }
             .frame(width: 52, height: 52)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(GlassReactiveButtonStyle())
         .accessibilityLabel("Choose photo from library")
         .accessibilityHint("Opens your photo library to upload an image")
     }
@@ -760,7 +791,7 @@ private struct ObserveCameraStatusOverlay: View {
 
             Text(message)
                 .gaiaFont(.subheadline)
-                .foregroundStyle(GaiaColor.paperWhite100)
+                .foregroundStyle(GaiaColor.textInverse)
                 .multilineTextAlignment(.center)
         }
         .padding(.horizontal, GaiaSpacing.xl)
