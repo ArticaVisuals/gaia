@@ -7,6 +7,7 @@ struct ProfileScreen: View {
     @EnvironmentObject private var appState: AppState
     @EnvironmentObject private var contentStore: ContentStore
     @StateObject private var viewModel = ProfileViewModel()
+    @State private var showsLaunchBioCalendar = false
 
     var body: some View {
         GeometryReader { proxy in
@@ -35,13 +36,24 @@ struct ProfileScreen: View {
                 .padding(.leading, proxy.safeAreaInsets.leading)
             }
         }
-        .background(GaiaColor.surfacePrimary)
+        .background(GaiaColor.paperWhite50)
         .onAppear {
-            let initialTab = forcedTab ?? appState.selectedProfileTab
+            let initialTab = shouldAutoOpenBioCalendar ? .impact : (forcedTab ?? appState.selectedProfileTab)
             viewModel.selectedTab = initialTab
+
+            if shouldAutoOpenBioCalendar, !showsLaunchBioCalendar {
+                DispatchQueue.main.async {
+                    showsLaunchBioCalendar = true
+                }
+            }
         }
         .onChange(of: viewModel.selectedTab) { _, newValue in
             appState.selectedProfileTab = newValue
+        }
+        .fullScreenCover(isPresented: $showsLaunchBioCalendar) {
+            ProfileBioCalendarScreen {
+                showsLaunchBioCalendar = false
+            }
         }
     }
 
@@ -77,6 +89,10 @@ struct ProfileScreen: View {
         case .community:
             ProfileCommunityTab(posts: contentStore.communityPosts)
         }
+    }
+
+    private var shouldAutoOpenBioCalendar: Bool {
+        ProcessInfo.processInfo.arguments.contains("-gaiaProfileBioCalendar")
     }
 }
 

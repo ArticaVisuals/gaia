@@ -61,6 +61,14 @@ private struct CommunityMetric: Identifiable {
     let value: String
 }
 
+private struct ProfileCommunityProject: Identifiable {
+    let selection: ProjectSelection
+    let subtitle: String
+    let location: String
+
+    var id: String { selection.id }
+}
+
 struct ProfileCommunityTab: View {
     let posts: [CommunityPost]
 
@@ -71,20 +79,28 @@ struct ProfileCommunityTab: View {
     @EnvironmentObject private var appState: AppState
     @State private var showsPeopleScreen = false
 
-    private let projects: [ProjectSelection] = [
+    private let projects: [ProfileCommunityProject] = [
         .init(
-            id: "project-creek-1",
-            title: "Creek Recovery",
-            tag: "Wetland",
-            countLabel: "12",
-            imageName: "find-project-creek"
+            selection: .init(
+                id: "project-creek-1",
+                title: "Creek Recovery",
+                tag: "Wetland",
+                countLabel: "12",
+                imageName: "find-project-creek"
+            ),
+            subtitle: "2 days to go",
+            location: "Arroyo Seco"
         ),
         .init(
-            id: "project-creek-2",
-            title: "Creek Recovery",
-            tag: "Wetland",
-            countLabel: "12",
-            imageName: "find-project-creek"
+            selection: .init(
+                id: "project-creek-2",
+                title: "Creek Recovery",
+                tag: "Wetland",
+                countLabel: "12",
+                imageName: "find-project-creek"
+            ),
+            subtitle: "2 days to go",
+            location: "Arroyo Seco"
         )
     ]
 
@@ -93,7 +109,7 @@ struct ProfileCommunityTab: View {
             id: "maya-chen",
             name: "Maya Chen",
             subtitle: "Pollinator Corridor (Member)",
-            avatarImageName: "find-avatar-alice",
+            avatarImageName: "profile-avatar-maya",
             group: .following,
             followState: .following
         ),
@@ -101,7 +117,7 @@ struct ProfileCommunityTab: View {
             id: "rafael-gomez",
             name: "Rafael Gomez",
             subtitle: "Creek Recovery: (Project Lead)",
-            avatarImageName: "find-avatar-alice",
+            avatarImageName: "profile-avatar-lena",
             group: .suggested,
             followState: .follow
         ),
@@ -109,7 +125,7 @@ struct ProfileCommunityTab: View {
             id: "noah-patel",
             name: "Noah Patel",
             subtitle: "Mutual",
-            avatarImageName: "find-avatar-alice",
+            avatarImageName: "profile-avatar-noah",
             group: .suggested,
             followState: .follow
         )
@@ -215,7 +231,7 @@ struct ProfileCommunityTab: View {
             LazyVGrid(columns: projectColumns, spacing: GaiaSpacing.sm) {
                 ForEach(projects, id: \.id) { project in
                     Button {
-                        appState.openProjectDetail(project)
+                        appState.openProjectDetail(project.selection)
                     } label: {
                         projectCard(project)
                     }
@@ -226,77 +242,57 @@ struct ProfileCommunityTab: View {
         .padding(.top, GaiaSpacing.lg)
     }
 
-    private func projectCard(_ project: ProjectSelection) -> some View {
-        ZStack(alignment: .topLeading) {
-            GaiaAssetImage(name: project.imageName, contentMode: .fill)
+    private func projectCard(_ project: ProfileCommunityProject) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            GaiaAssetImage(name: project.selection.imageName, contentMode: .fill)
                 .frame(maxWidth: .infinity)
-                .frame(height: 133)
-
-            GaiaAssetImage(name: project.imageName, contentMode: .fill)
-                .frame(maxWidth: .infinity)
-                .frame(height: 133)
-                .blur(radius: 1.4)
-                .mask(
-                    LinearGradient(
-                        stops: [
-                            .init(color: .clear, location: 0.417),
-                            .init(color: .black, location: 1)
-                        ],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
+                .frame(height: 56)
+                .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                        .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
                 )
 
-            LinearGradient(
-                stops: [
-                    .init(color: Color(red: 70 / 255, green: 76 / 255, blue: 19 / 255, opacity: 0), location: 0.417),
-                    .init(color: Color(red: 41 / 255, green: 76 / 255, blue: 19 / 255, opacity: 0.85), location: 1)
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
+            VStack(alignment: .leading, spacing: 3) {
+                Text(project.selection.title)
+                    .gaiaFont(.subheadline)
+                    .foregroundStyle(GaiaColor.inkBlack500)
+                    .lineLimit(1)
 
-            VStack(alignment: .leading, spacing: 0) {
-                Text(project.tag)
-                    .gaiaFont(.caption)
-                    .foregroundStyle(GaiaColor.paperWhite50)
-                    .padding(.horizontal, 10)
-                    .frame(height: 20)
-                    .background(Color.black.opacity(0.5), in: Capsule())
-                    .overlay(
-                        Capsule()
-                            .stroke(GaiaColor.blackishGrey200, lineWidth: 0.5)
-                    )
-                    .padding(12)
+                Text(project.subtitle)
+                    .gaiaFont(.footnote)
+                    .foregroundStyle(GaiaColor.inkBlack200)
+                    .lineLimit(1)
 
-                Spacer(minLength: 0)
+                HStack(spacing: 6) {
+                    HStack(spacing: 0) {
+                        GaiaIcon(kind: .pin, size: 11, tint: GaiaColor.broccoliBrown500)
+                            .frame(width: 11, height: 13)
 
-                VStack(alignment: .leading, spacing: GaiaSpacing.xs) {
-                    Text(project.title)
-                        .gaiaFont(.subheadSerif)
-                        .foregroundStyle(GaiaColor.paperWhite50)
-                        .lineLimit(1)
-
-                    HStack(spacing: GaiaSpacing.xxs) {
-                        GaiaIcon(kind: .observe(selected: true), size: 14, tint: GaiaColor.paperWhite50)
-                            .frame(width: 14, height: 10)
-
-                        Text(project.countLabel)
-                            .font(.custom("Neue Haas Unica W1G", size: 10))
-                            .foregroundStyle(GaiaColor.paperWhite50)
+                        Text(project.location)
+                            .gaiaFont(.footnote)
+                            .foregroundStyle(GaiaColor.broccoliBrown500)
+                            .lineLimit(1)
                     }
+
+                    Spacer(minLength: 0)
+
+                    GaiaIcon(kind: .circleArrowRight, size: 16)
+                        .frame(width: 16, height: 16)
                 }
-                .padding(12)
             }
         }
-        .frame(maxWidth: .infinity)
-        .frame(height: 133)
-        .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
-        .overlay(
+        .padding(10)
+        .frame(maxWidth: .infinity, minHeight: 129, alignment: .topLeading)
+        .background(
             RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
-                .stroke(GaiaColor.blackishGrey200, lineWidth: 0.5)
+                .fill(GaiaColor.paperWhite50)
+                .overlay(
+                    RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                        .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
+                )
+                .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
         )
-        .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
         .contentShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
     }
 
@@ -1038,7 +1034,9 @@ private struct MayaProfileDetailScreen: View {
 
             LazyVGrid(columns: columns, alignment: .leading, spacing: GaiaSpacing.sm) {
                 ForEach(recentFinds) { find in
-                    mayaRecentFindCard(find, sideLength: cardWidth)
+                    mayaRecentFindCard(find, sideLength: cardWidth) {
+                        // TODO: Wire profile recent find navigation.
+                    }
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -1204,34 +1202,37 @@ private struct MayaProfileDetailScreen: View {
         .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
     }
 
-    private func mayaRecentFindCard(_ item: MayaRecentFind, sideLength: CGFloat) -> some View {
-        ZStack(alignment: .bottomLeading) {
-            GaiaAssetImage(name: item.imageName, contentMode: .fill)
-                .frame(width: sideLength, height: sideLength)
+    private func mayaRecentFindCard(_ item: MayaRecentFind, sideLength: CGFloat, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            ZStack(alignment: .bottomLeading) {
+                GaiaAssetImage(name: item.imageName, contentMode: .fill)
+                    .frame(width: sideLength, height: sideLength)
 
-            LinearGradient(
-                stops: [
-                    .init(color: Color.black.opacity(0), location: 0),
-                    .init(color: Color.black.opacity(0.56), location: 1)
-                ],
-                startPoint: .top,
-                endPoint: .bottom
+                LinearGradient(
+                    stops: [
+                        .init(color: Color.black.opacity(0), location: 0),
+                        .init(color: Color.black.opacity(0.56), location: 1)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+
+                Text(item.title)
+                    .gaiaFont(.bodySerif)
+                    .foregroundStyle(GaiaColor.paperWhite50)
+                    .lineLimit(2)
+                    .frame(width: max(sideLength - (GaiaSpacing.sm * 2), 0), alignment: .leading)
+                    .padding(.leading, GaiaSpacing.sm)
+                    .padding(.bottom, 8)
+            }
+            .frame(width: sideLength, height: sideLength)
+            .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                    .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
             )
-
-            Text(item.title)
-                .gaiaFont(.bodySerif)
-                .foregroundStyle(GaiaColor.paperWhite50)
-                .lineLimit(2)
-                .frame(width: max(sideLength - (GaiaSpacing.sm * 2), 0), alignment: .leading)
-                .padding(.leading, GaiaSpacing.sm)
-                .padding(.bottom, 8)
         }
-        .frame(width: sideLength, height: sideLength)
-        .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
-                .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
-        )
+        .buttonStyle(GaiaPressableCardStyle())
     }
 }
 
