@@ -4,16 +4,16 @@ import SwiftUI
 struct ActivityScreen: View {
     @EnvironmentObject private var contentStore: ContentStore
     @State private var selectedFilter: ActivityFilter = .all
+    private let visibleFilters: [ActivityFilter] = [.all, .needsID, .comments]
     private let bottomContentInset = GaiaSpacing.step120 + GaiaSpacing.md + GaiaSpacing.xs
 
     var body: some View {
         VStack(spacing: 0) {
             ActivityTopBar(
                 title: "Activity",
-                filters: ActivityFilter.allCases.map(\.rawValue),
-                selectedFilter: selectedFilter.rawValue
-            ) { selected in
-                guard let filter = ActivityFilter(rawValue: selected) else { return }
+                filters: visibleFilters,
+                selectedFilter: selectedFilter
+            ) { filter in
                 selectedFilter = filter
             }
 
@@ -39,6 +39,11 @@ struct ActivityScreen: View {
         switch selectedFilter {
         case .all:
             return contentStore.activityEvents
+        case .needsID:
+            return contentStore.activityEvents.filter { event in
+                let categories = event.categoryIDs ?? []
+                return categories.contains("needs-id") || categories.contains("verified")
+            }
         default:
             return contentStore.activityEvents.filter { event in
                 (event.categoryIDs ?? []).contains(selectedFilter.categoryID)
@@ -47,39 +52,19 @@ struct ActivityScreen: View {
     }
 
     private var groupedEvents: [ActivityEventGroup] {
-        var groups: [ActivityEventGroup] = []
+        var orderedTitles: [String] = []
+        var groupedEventsByTitle: [String: [ActivityEvent]] = [:]
 
         for event in filteredEvents {
             let label = event.groupLabel ?? "Activity"
-            if let index = groups.firstIndex(where: { $0.title == label }) {
-                groups[index].events.append(event)
-            } else {
-                groups.append(ActivityEventGroup(title: label, events: [event]))
+            if groupedEventsByTitle[label] == nil {
+                orderedTitles.append(label)
             }
+            groupedEventsByTitle[label, default: []].append(event)
         }
 
-        return groups
-    }
-}
-
-private enum ActivityFilter: String, CaseIterable, Identifiable {
-    case all = "All"
-    case needsID = "Needs ID"
-    case verified = "Verified"
-    case comments = "Comments"
-
-    var id: String { rawValue }
-
-    var categoryID: String {
-        switch self {
-        case .all:
-            return "all"
-        case .needsID:
-            return "needs-id"
-        case .verified:
-            return "verified"
-        case .comments:
-            return "comments"
+        return orderedTitles.compactMap { title in
+            groupedEventsByTitle[title].map { ActivityEventGroup(title: title, events: $0) }
         }
     }
 }
@@ -106,14 +91,16 @@ private struct ActivityDaySection: View {
                 .padding(.bottom, GaiaSpacing.space4)
 
             Rectangle()
-                .fill(GaiaColor.broccoliBrown200)
+                .fill(GaiaColor.border)
                 .frame(height: dividerHeight)
 
             ForEach(group.events) { event in
-                ActivityNotificationItem(event: event)
+                ActivityNotificationItem(event: event) {
+                    // TODO: Wire activity notification navigation.
+                }
 
                 Rectangle()
-                    .fill(GaiaColor.broccoliBrown200)
+                    .fill(GaiaColor.border)
                     .frame(height: dividerHeight)
             }
         }
@@ -129,9 +116,9 @@ private struct ActivityEmptyState: View {
                 .gaiaFont(.title3Medium)
                 .foregroundStyle(GaiaColor.inkBlack300)
 
-            Text(emptyMessage)
-                .gaiaFont(.subheadline)
-                .foregroundStyle(GaiaColor.blackishGrey500)
+                    Text(emptyMessage)
+                        .font(.custom("Neue Haas Unica W1G", size: 15))
+                        .foregroundStyle(GaiaColor.blackishGrey500)
         }
         .padding(.horizontal, GaiaSpacing.md)
         .padding(.top, GaiaSpacing.xl)
@@ -143,7 +130,7 @@ private struct ActivityEmptyState: View {
         case .comments:
             return "No comments yet"
         case .needsID:
-            return "Nothing needs review"
+            return "No identification updates yet"
         case .verified:
             return "No verified updates yet"
         case .all:
@@ -156,7 +143,7 @@ private struct ActivityEmptyState: View {
         case .comments:
             return "Comments from the community will appear here."
         case .needsID:
-            return "Items waiting on more detail or identification will show up here."
+            return "Community agreements, research-grade changes, and finds that need more detail will appear here."
         case .verified:
             return "Verified finds and community confirmations will appear here."
         case .all:
