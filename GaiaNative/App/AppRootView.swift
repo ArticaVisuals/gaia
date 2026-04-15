@@ -13,31 +13,19 @@ struct AppRootView: View {
         TabView(selection: selection) {
             ForEach(AppSection.allCases) { section in
                 AppRouter(section: section)
-                    .toolbar(.hidden, for: .tabBar)
                     .tag(section)
                     .tabItem {
-                        Image(section.tabAssetName)
-                            .renderingMode(.original)
-                        Text(section.title)
+                        AppTabItemLabel(
+                            section: section,
+                            isSelected: appState.selectedSection == section
+                        )
                     }
             }
-        }
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            BottomNavBar(selection: selection)
-                .padding(.horizontal, GaiaSpacing.lg)
-                .padding(.top, GaiaSpacing.md)
-                .padding(.bottom, GaiaSpacing.sm)
-                .background(Color.clear)
         }
         .tint(GaiaColor.olive)
         .preferredColorScheme(.light)
         .fullScreenCover(isPresented: $appState.showsFindDetailsPrototype) {
             FindDetailsPrototypeScreen(species: selectedSpecies)
-                .environmentObject(appState)
-                .environmentObject(contentStore)
-        }
-        .fullScreenCover(isPresented: $appState.showsFindDetails) {
-            FindDetailsScreen(species: selectedSpecies)
                 .environmentObject(appState)
                 .environmentObject(contentStore)
         }
@@ -63,18 +51,40 @@ struct AppRootView: View {
 }
 
 private extension AppSection {
-    var tabAssetName: String {
+    func tabAssetName(isSelected: Bool) -> String {
         switch self {
         case .explore:
-            return "gaia-tab-explore-selected-32"
+            return isSelected ? "gaia-tab-explore-selected-32" : "gaia-tab-explore-deselected-32"
         case .log:
-            return "gaia-tab-log-selected-32"
+            return isSelected ? "gaia-tab-log-selected-32" : "gaia-tab-log-deselected-32"
         case .observe:
-            return "gaia-tab-observe-selected-32"
+            return isSelected ? "gaia-tab-observe-selected-32" : "gaia-tab-observe-deselected-32"
         case .activity:
-            return "gaia-tab-activity-selected-32"
+            return isSelected ? "gaia-tab-activity-selected-32" : "gaia-tab-activity-deselected-32"
         case .profile:
-            return "gaia-tab-profile-selected-32"
+            return isSelected ? "gaia-tab-profile-selected-32" : "gaia-tab-profile-deselected-32"
+        }
+    }
+}
+
+private struct AppTabItemLabel: View {
+    let section: AppSection
+    let isSelected: Bool
+
+    private var titleColor: Color {
+        isSelected ? GaiaColor.olive : GaiaColor.oliveGreen200
+    }
+
+    var body: some View {
+        Label {
+            Text(section.title)
+                .foregroundStyle(titleColor)
+        } icon: {
+            Image(section.tabAssetName(isSelected: isSelected))
+                .renderingMode(.original)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 24, height: 24)
         }
     }
 }

@@ -1,3 +1,4 @@
+import AVFoundation
 import CoreText
 import SwiftUI
 import UIKit
@@ -6,20 +7,51 @@ import UIKit
 struct GaiaNativeApp: App {
     @StateObject private var appState = AppState()
     @StateObject private var contentStore = ContentStore()
+    @State private var showsSplash = true
 
     init() {
         FontRegistrar.registerBundledFontsIfNeeded()
         TabBarAppearanceConfigurator.configure()
+        AppAudioSessionConfigurator.configureForPassivePlayback()
     }
 
     var body: some Scene {
         WindowGroup {
-            AppRootView()
-                .environmentObject(appState)
-                .environmentObject(contentStore)
-                .task {
-                    contentStore.loadBundledContentIfAvailable()
+            ZStack {
+                if showsSplash {
+                    GaiaColor.splashBackground
+                        .ignoresSafeArea()
                 }
+
+                AppRootView()
+                    .environmentObject(appState)
+                    .environmentObject(contentStore)
+
+                if showsSplash {
+                    SplashScreenView {
+                        showsSplash = false
+                    }
+                    .ignoresSafeArea()
+                }
+            }
+        }
+    }
+}
+
+enum AppAudioSessionConfigurator {
+    private static var hasConfigured = false
+
+    static func configureForPassivePlayback() {
+        guard !hasConfigured else { return }
+        hasConfigured = true
+
+        do {
+            // Keep silent launch video from interrupting any audio the user is already playing.
+            try AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default)
+        } catch {
+            #if DEBUG
+            print("Failed to configure passive audio session: \(error)")
+            #endif
         }
     }
 }
@@ -31,100 +63,54 @@ enum TabBarAppearanceConfigurator {
         guard !hasConfigured else { return }
         hasConfigured = true
 
-        let olive500 = UIColor(GaiaColor.oliveGreen500)
-        let paperBase = UIColor(GaiaColor.paperWhite50).withAlphaComponent(0.96)
-        let borderColor = UIColor(GaiaColor.border).withAlphaComponent(0.72)
-        let selectedColor = olive500
-        let deselectedColor = olive500
-        let titleFont = tabTitleFont()
         let tabBar = UITabBar.appearance()
-        let tabBarItem = UITabBarItem.appearance()
-        let appearance = UITabBarAppearance()
+        let selectedColor = UIColor(GaiaColor.oliveGreen500)
+        let deselectedColor = UIColor(GaiaColor.oliveGreen200)
 
-        appearance.configureWithOpaqueBackground()
-        appearance.backgroundEffect = nil
-        appearance.backgroundColor = paperBase
-        appearance.shadowColor = borderColor
+        if #available(iOS 26.0, *) {
+            tabBar.tintColor = selectedColor
+            tabBar.unselectedItemTintColor = deselectedColor
+            tabBar.isTranslucent = true
+            return
+        }
+
+        let appearance = UITabBarAppearance()
+        appearance.configureWithTransparentBackground()
+        appearance.backgroundEffect = UIBlurEffect(style: .systemUltraThinMaterialLight)
+        appearance.backgroundColor = UIColor.white.withAlphaComponent(0.46)
+        appearance.shadowColor = .clear
         configure(
             itemAppearance: appearance.stackedLayoutAppearance,
             selectedColor: selectedColor,
-            deselectedColor: deselectedColor,
-            titleFont: titleFont
+            deselectedColor: deselectedColor
         )
         configure(
             itemAppearance: appearance.inlineLayoutAppearance,
             selectedColor: selectedColor,
-            deselectedColor: deselectedColor,
-            titleFont: titleFont
+            deselectedColor: deselectedColor
         )
         configure(
             itemAppearance: appearance.compactInlineLayoutAppearance,
             selectedColor: selectedColor,
-            deselectedColor: deselectedColor,
-            titleFont: titleFont
+            deselectedColor: deselectedColor
         )
 
         tabBar.standardAppearance = appearance
         tabBar.scrollEdgeAppearance = appearance
         tabBar.tintColor = selectedColor
         tabBar.unselectedItemTintColor = deselectedColor
-        tabBar.isTranslucent = false
-        tabBar.isHidden = true
-
-        // Keep the tab label color consistent across selection states.
-        let titleAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: olive500,
-            .font: titleFont
-        ]
-        tabBarItem.setTitleTextAttributes(titleAttributes, for: .normal)
-        tabBarItem.setTitleTextAttributes(titleAttributes, for: .selected)
-        tabBarItem.setTitleTextAttributes(titleAttributes, for: .disabled)
-        tabBarItem.setTitleTextAttributes(titleAttributes, for: .focused)
+        tabBar.isTranslucent = true
     }
 
     private static func configure(
         itemAppearance: UITabBarItemAppearance,
         selectedColor: UIColor,
-        deselectedColor: UIColor,
-        titleFont: UIFont
+        deselectedColor: UIColor
     ) {
-        let normalAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: deselectedColor,
-            .font: titleFont
-        ]
-        let selectedAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: selectedColor,
-            .font: titleFont
-        ]
-
-        apply(color: deselectedColor, attributes: normalAttributes, to: itemAppearance.normal)
-        apply(color: selectedColor, attributes: selectedAttributes, to: itemAppearance.selected)
-        apply(color: deselectedColor, attributes: normalAttributes, to: itemAppearance.disabled)
-        apply(color: deselectedColor, attributes: normalAttributes, to: itemAppearance.focused)
-    }
-
-    private static func apply(
-        color: UIColor,
-        attributes: [NSAttributedString.Key: Any],
-        to stateAppearance: UITabBarItemStateAppearance
-    ) {
-        stateAppearance.iconColor = color
-        stateAppearance.titleTextAttributes = attributes
-    }
-
-    private static func tabTitleFont() -> UIFont {
-        let candidates = [
-            "Neue Haas Unica W1G",
-            "NeueHaasUnica-Regular",
-            "Neue Haas Unica",
-            "NeueHaasUnica"
-        ]
-
-        if let font = candidates.lazy.compactMap({ UIFont(name: $0, size: 10) }).first {
-            return font
-        }
-
-        return .systemFont(ofSize: 10, weight: .regular)
+        itemAppearance.normal.iconColor = deselectedColor
+        itemAppearance.normal.titleTextAttributes = [.foregroundColor: deselectedColor]
+        itemAppearance.selected.iconColor = selectedColor
+        itemAppearance.selected.titleTextAttributes = [.foregroundColor: selectedColor]
     }
 }
 

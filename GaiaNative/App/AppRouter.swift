@@ -44,7 +44,17 @@ struct AppRouter: View {
         case .activity:
             ActivityScreen()
         case .profile:
-            ProfileScreen(forcedTab: .impact)
+            ProfileScreen(forcedTab: profileLaunchTab())
         }
+    }
+
+    private func profileLaunchTab() -> ProfileTab? {
+        let arguments = ProcessInfo.processInfo.arguments
+        guard let flagIndex = arguments.firstIndex(of: "-gaiaProfileTab"),
+              arguments.indices.contains(flagIndex + 1) else {
+            return nil
+        }
+
+        return ProfileTab(rawValue: arguments[flagIndex + 1].capitalized)
     }
 }
