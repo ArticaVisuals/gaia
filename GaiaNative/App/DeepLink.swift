@@ -12,7 +12,7 @@ enum DeepLink {
         case "find":
             let components = url.pathComponents.filter { $0 != "/" }
             guard let speciesID = components.first else { return nil }
-            let tab = FindDetailsTab(rawValue: components.dropFirst().first?.capitalized ?? "Learn") ?? .learn
+            let tab = FindDetailsTab(rawValue: components.dropFirst().first?.capitalized ?? "Find") ?? .find
             self = .findDetails(speciesID: speciesID, tab: tab)
         default:
             return nil

@@ -569,7 +569,14 @@ private struct ProfileLogGrid: View {
 private struct ProfileLogGridCard: View {
     let item: ProfileLogGridItem
 
-    private let cardRadius: CGFloat = 12.203
+    private enum Layout {
+        static let cardRadius: CGFloat = 12.203
+        static let blurRadius: CGFloat = 5.263
+        static let titleHorizontalInset: CGFloat = 13
+        static let titleBottomInset: CGFloat = 15
+        static let cardHeight: CGFloat = 180
+    }
+
     private var displayTitle: String {
         item.title.replacingOccurrences(of: "\\n", with: "\n")
     }
@@ -584,7 +591,7 @@ private struct ProfileLogGridCard: View {
                 ProfileLogMedia(source: item.imageSource)
                     .frame(width: proxy.size.width, height: proxy.size.height)
                     .clipped()
-                    .blur(radius: 5.263)
+                    .blur(radius: Layout.blurRadius)
                     .mask(
                         LinearGradient(
                             stops: [
@@ -608,26 +615,25 @@ private struct ProfileLogGridCard: View {
                 )
 
                 Text(displayTitle)
-                    .font(.custom("Neue Haas Unica", size: 20))
-                    .tracking(-0.45)
+                    .gaiaFont(.titleSans)
                     .foregroundStyle(GaiaColor.paperWhite50)
                     .multilineTextAlignment(.leading)
                     .lineLimit(2)
                     .truncationMode(.tail)
-                    .padding(.horizontal, 12.97)
-                    .padding(.bottom, 15.42)
+                    .padding(.horizontal, Layout.titleHorizontalInset)
+                    .padding(.bottom, Layout.titleBottomInset)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
             }
         }
-        .frame(height: 180)
+        .frame(height: Layout.cardHeight)
         .background(GaiaColor.surfaceCard)
-        .clipShape(RoundedRectangle(cornerRadius: cardRadius, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: Layout.cardRadius, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: cardRadius, style: .continuous)
+            RoundedRectangle(cornerRadius: Layout.cardRadius, style: .continuous)
                 .stroke(GaiaColor.blackishGrey200, lineWidth: 0.763)
         )
         .shadow(color: GaiaColor.broccoliBrown500.opacity(0.09), radius: 12, x: 0, y: 6)
-        .contentShape(RoundedRectangle(cornerRadius: cardRadius, style: .continuous))
+        .contentShape(RoundedRectangle(cornerRadius: Layout.cardRadius, style: .continuous))
     }
 }
 

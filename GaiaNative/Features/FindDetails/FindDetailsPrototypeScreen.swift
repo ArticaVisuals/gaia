@@ -1,3 +1,4 @@
+// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=1609-176524 (Find Expanded), 1377-100096 (Find Contracted), 1377-100167 (Activity Contracted)
 import SwiftUI
 import UIKit
 
@@ -191,7 +192,7 @@ struct FindDetailsPrototypeScreen: View {
         .statusBarHidden(true)
         .onAppear {
             scrollOffset = 0
-            selectedTab = prototypeSelection(for: appState.selectedFindTab)
+            selectedTab = appState.selectedFindTab
             appState.selectedFindTab = selectedTab
             showsLearnScreen = launchArguments.contains("-gaiaFindDetailsPrototypeLearn")
         }
@@ -201,9 +202,8 @@ struct FindDetailsPrototypeScreen: View {
             }
         }
         .onChange(of: appState.selectedFindTab) { _, newValue in
-            let normalizedSelection = prototypeSelection(for: newValue)
-            if selectedTab != normalizedSelection {
-                selectedTab = normalizedSelection
+            if selectedTab != newValue {
+                selectedTab = newValue
             }
         }
         .fullScreenCover(isPresented: $showsExpandedMap) {
@@ -288,8 +288,6 @@ struct FindDetailsPrototypeScreen: View {
             )
         case .activity:
             ActivityTabView(species: species)
-        case .learn:
-            EmptyView()
         }
     }
 
@@ -323,7 +321,7 @@ struct FindDetailsPrototypeScreen: View {
     }
 
     private func findMapObservation(usesCollapsedContentLayout: Bool) -> Observation {
-        Observation(
+        return Observation(
             id: "\(species.id)-prototype-find-preview",
             speciesID: species.id,
             latitude: FindMapReference.latitude,
@@ -331,15 +329,6 @@ struct FindDetailsPrototypeScreen: View {
             thumbnailAssetName: species.galleryAssetNames.first
                 ?? contentStore.observations.first(where: { $0.speciesID == species.id })?.thumbnailAssetName
         )
-    }
-
-    private func prototypeSelection(for tab: FindDetailsTab) -> FindDetailsTab {
-        switch tab {
-        case .activity:
-            return .activity
-        case .find, .learn:
-            return .find
-        }
     }
 
     private func collapsedHeaderSpacer(

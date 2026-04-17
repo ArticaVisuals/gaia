@@ -1,4 +1,4 @@
-// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=870-13599
+// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=1711-180800 (Profile Pictures), 870-13599 (Profile Pictures)
 import SwiftUI
 
 struct GaiaProfileAvatar: View {
@@ -28,13 +28,7 @@ struct GaiaProfileAvatar: View {
                 .fill(backgroundColor)
                 .frame(width: size, height: size)
 
-            if let image = AssetCatalog.image(named: imageName) {
-                image
-                    .resizable()
-                    .interpolation(.high)
-                    .scaledToFill()
-                    .frame(width: size, height: size)
-            }
+            avatarImage
         }
         .frame(width: size, height: size)
         .clipShape(Circle())
@@ -42,5 +36,16 @@ struct GaiaProfileAvatar: View {
             Circle()
                 .stroke(strokeColor, lineWidth: borderWidth)
         )
+    }
+
+    @ViewBuilder
+    private var avatarImage: some View {
+        if let image = AssetCatalog.image(named: imageName) {
+            image
+                .resizable()
+                .interpolation(.high)
+                .scaledToFill()
+                .frame(width: size, height: size)
+        }
     }
 }

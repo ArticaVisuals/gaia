@@ -1,17 +1,22 @@
-// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=917-10873
+// figma: https://www.figma.com/design/X0NcuRE0WKmsqR36cvlcij/Write-Test-Pro?node-id=16-2465 (Log Details 1), 16-2491 (Log Details 2), 16-2502 (Log Details 3)
 import SwiftUI
 
 private enum ObserveDetailsLayout {
     static let toolbarButtonSize: CGFloat = 48
-    static let photoCardHeight: CGFloat = 112
-    static let highlightCardWidth: CGFloat = 181
-    static let squareCardWidth: CGFloat = 112
-    static let portraitCardWidth: CGFloat = 84
-    static let addCardWidth: CGFloat = 60
+    static let photoCardHeight: CGFloat = 138
+    static let highlightCardWidth: CGFloat = 223
+    static let squareCardWidth: CGFloat = 138
+    static let portraitCardWidth: CGFloat = 104
+    static let addCardWidth: CGFloat = 74
+    static let photoCardCornerRadius: CGFloat = 9.867
     static let notesHeight: CGFloat = 125
     static let mapHeight: CGFloat = 214
-    static let mapCardHeight: CGFloat = 441
     static let actionButtonHeight: CGFloat = 50
+    static let contentCardWidth: CGFloat = 181
+    static let mapRowHeight: CGFloat = 58
+    static let suggestionHeroHeight: CGFloat = 228.95
+    static let suggestionRowHeight: CGFloat = 104
+    static let suggestionThumbSize: CGFloat = 76
 }
 
 struct ObserveDetailsScreen: View {
@@ -20,14 +25,9 @@ struct ObserveDetailsScreen: View {
 
     @State private var notesText = ""
     @State private var showsExpandedMap = false
-
-    private let draftObservation = Observation(
-        id: "observe-draft-1",
-        speciesID: "observe-draft",
-        latitude: 34.14,
-        longitude: -118.14,
-        thumbnailAssetName: "observe-photo-highlight"
-    )
+    @State private var showsSuggestionPicker = false
+    @State private var selectedSuggestion = ObserveSpeciesSuggestion.leatherback
+    @State private var hasConfirmedSuggestion = false
 
     var body: some View {
         GeometryReader { proxy in
@@ -42,11 +42,14 @@ struct ObserveDetailsScreen: View {
 
                 ScrollView(showsIndicators: false) {
                     VStack(alignment: .leading, spacing: GaiaSpacing.xl) {
-                        ObserveDetailsPhotoStrip()
+                        ObserveDetailsPhotoStrip(assets: currentAssets)
 
                         VStack(alignment: .leading, spacing: GaiaSpacing.md) {
                             ObserveDetailsSectionTitle(title: "Identification")
-                            ObserveIdentificationCard()
+                            ObserveIdentificationCard(
+                                thumbnailAssetName: currentAssets.identificationThumbnailName,
+                                onTap: { showsSuggestionPicker = true }
+                            )
                         }
 
                         VStack(alignment: .leading, spacing: GaiaSpacing.md) {
@@ -58,7 +61,6 @@ struct ObserveDetailsScreen: View {
                             observation: draftObservation,
                             onExpandMap: { showsExpandedMap = true }
                         )
-                            .frame(height: ObserveDetailsLayout.mapCardHeight)
 
                         VStack(alignment: .leading, spacing: GaiaSpacing.md) {
                             ObserveDetailsSectionTitle(title: "Details")
@@ -66,22 +68,20 @@ struct ObserveDetailsScreen: View {
                         }
 
                         VStack(alignment: .leading, spacing: GaiaSpacing.md) {
-                            Text("Condition")
-                                .gaiaFont(.title3)
-                                .foregroundStyle(GaiaColor.oliveGreen500)
+                            ObserveDetailsSectionTitle(title: "Condition")
 
                             HStack(spacing: GaiaSpacing.sm) {
                                 ObserveConditionCard(
+                                    kind: .biome,
                                     label: "Biome",
-                                    title: "Riparian Edge",
-                                    subtitle: "Perfumo Canyon",
-                                    showsActionIcon: false
+                                    title: "Tropical Marine",
+                                    subtitle: "Hawai'i North Shore"
                                 )
                                 ObserveConditionCard(
+                                    kind: .weather,
                                     label: "Weather",
                                     title: "Partly Cloudy",
-                                    subtitle: "Mar 22, 2026 · 10:53 PM PT",
-                                    showsActionIcon: true
+                                    subtitle: "July 10, 2025, 10:19 AM"
                                 )
                             }
                         }
@@ -97,19 +97,35 @@ struct ObserveDetailsScreen: View {
 
                 VStack(spacing: 0) {
                     ObserveDetailsToolbar(
+                        title: "Details",
                         topPadding: toolbarTopPadding,
                         onBack: onBack,
-                        onSave: onContinue
+                        onSave: onContinue,
+                        isSaveEnabled: hasConfirmedSuggestion
                     )
 
                     Spacer(minLength: 0)
 
                     ObserveBottomActionBar(
                         bottomInset: bottomSafeInset,
+                        isEnabled: hasConfirmedSuggestion,
                         action: onContinue
                     )
                 }
             }
+        }
+        .fullScreenCover(isPresented: $showsSuggestionPicker) {
+            ObserveIdentificationSuggestionsScreen(
+                selectedSuggestion: selectedSuggestion,
+                onBack: {
+                    showsSuggestionPicker = false
+                },
+                onSelectSuggestion: { suggestion in
+                    selectedSuggestion = suggestion
+                    hasConfirmedSuggestion = true
+                    showsSuggestionPicker = false
+                }
+            )
         }
         .fullScreenCover(isPresented: $showsExpandedMap) {
             ObserveMapExpandedScreen(observation: draftObservation) {
@@ -117,6 +133,20 @@ struct ObserveDetailsScreen: View {
             }
         }
         .ignoresSafeArea(.keyboard, edges: .bottom)
+    }
+
+    private var currentAssets: ObserveDetailsAssetSet {
+        hasConfirmedSuggestion ? .postselect : .preselect
+    }
+
+    private var draftObservation: Observation {
+        Observation(
+            id: "observe-draft-1",
+            speciesID: "observe-draft",
+            latitude: 21.619013,
+            longitude: -158.0852312,
+            thumbnailAssetName: currentAssets.highlightImageName
+        )
     }
 
     private var windowSafeBottomInset: CGFloat {
@@ -129,26 +159,30 @@ struct ObserveDetailsScreen: View {
 }
 
 private struct ObserveDetailsToolbar: View {
+    let title: String
     let topPadding: CGFloat
     let onBack: () -> Void
-    let onSave: () -> Void
+    let onSave: (() -> Void)?
+    let isSaveEnabled: Bool
 
     var body: some View {
         HStack(spacing: 10) {
             ToolbarGlassButton(icon: .back, accessibilityLabel: "Back", action: onBack)
 
-            Text("Details")
+            Text(title)
                 .gaiaFont(.title1Medium)
                 .foregroundStyle(GaiaColor.oliveGreen500)
                 .frame(maxWidth: .infinity)
 
-            Button(action: onSave) {
+            Button(action: { onSave?() }) {
                 Text("Save")
                     .gaiaFont(.footnote)
                     .foregroundStyle(GaiaColor.broccoliBrown400)
                     .frame(width: 48, alignment: .trailing)
             }
+            .disabled(onSave == nil || !isSaveEnabled)
             .buttonStyle(.plain)
+            .opacity(onSave == nil || isSaveEnabled ? 1 : 0.85)
         }
         .padding(.horizontal, GaiaSpacing.md)
         .padding(.top, topPadding)
@@ -161,6 +195,7 @@ private struct ObserveDetailsToolbar: View {
 
 private struct ObserveBottomActionBar: View {
     let bottomInset: CGFloat
+    let isEnabled: Bool
     let action: () -> Void
 
     var body: some View {
@@ -168,50 +203,74 @@ private struct ObserveBottomActionBar: View {
             Button(action: action) {
                 Text("Save Find")
                     .gaiaFont(.body)
-                    .foregroundStyle(GaiaColor.paperWhite50)
+                    .foregroundStyle(isEnabled ? GaiaColor.paperWhite50 : GaiaColor.blackishGrey200)
                     .frame(maxWidth: .infinity)
                     .frame(height: 50)
                     .background(
                         Capsule(style: .continuous)
-                            .fill(GaiaColor.oliveGreen500)
+                            .fill(isEnabled ? GaiaColor.oliveGreen500 : GaiaColor.blackishGrey200.opacity(0.2))
                     )
             }
+            .disabled(!isEnabled)
             .buttonStyle(.plain)
             .padding(.horizontal, GaiaSpacing.md + 4)
             .padding(.top, GaiaSpacing.md)
             .padding(.bottom, max(GaiaSpacing.md, bottomInset))
         }
         .frame(maxWidth: .infinity)
-        .background(Color.white)
+        .background(GaiaColor.paperWhite50)
         .shadow(color: GaiaShadow.lgColor, radius: GaiaShadow.lgRadius, x: 0, y: GaiaShadow.lgYOffset)
     }
 }
 
+private struct ObserveDetailsAssetSet {
+    let highlightImageName: String
+    let squareImageName: String
+    let portraitImageName: String
+    let identificationThumbnailName: String
+
+    static let preselect = ObserveDetailsAssetSet(
+        highlightImageName: "observe-details-preselect-highlight",
+        squareImageName: "observe-details-preselect-square",
+        portraitImageName: "observe-details-preselect-portrait",
+        identificationThumbnailName: "observe-details-preselect-identification"
+    )
+
+    static let postselect = ObserveDetailsAssetSet(
+        highlightImageName: "observe-details-postselect-highlight",
+        squareImageName: "observe-details-postselect-square",
+        portraitImageName: "observe-details-postselect-portrait",
+        identificationThumbnailName: "observe-details-postselect-identification"
+    )
+}
+
 private struct ObserveDetailsPhotoStrip: View {
+    let assets: ObserveDetailsAssetSet
+
     var body: some View {
         HStack(spacing: GaiaSpacing.sm) {
             ObserveCapturedPhotoCard(
-                imageName: "observe-photo-highlight",
+                imageName: assets.highlightImageName,
                 width: ObserveDetailsLayout.highlightCardWidth,
                 isHighlight: true
             )
 
             ObserveCapturedPhotoCard(
-                imageName: "observe-photo-square",
+                imageName: assets.squareImageName,
                 width: ObserveDetailsLayout.squareCardWidth
             )
 
             ObserveCapturedPhotoCard(
-                imageName: "observe-photo-portrait",
+                imageName: assets.portraitImageName,
                 width: ObserveDetailsLayout.portraitCardWidth
             )
 
             Button(action: {}) {
                 ZStack {
-                    RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                    RoundedRectangle(cornerRadius: ObserveDetailsLayout.photoCardCornerRadius, style: .continuous)
                         .fill(Color.clear)
                         .overlay(
-                            RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                            RoundedRectangle(cornerRadius: ObserveDetailsLayout.photoCardCornerRadius, style: .continuous)
                                 .stroke(GaiaColor.inkBlack300, lineWidth: 1)
                         )
 
@@ -236,9 +295,9 @@ private struct ObserveCapturedPhotoCard: View {
         ZStack(alignment: .topTrailing) {
             GaiaAssetImage(name: imageName)
                 .frame(width: width, height: ObserveDetailsLayout.photoCardHeight)
-                .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: ObserveDetailsLayout.photoCardCornerRadius, style: .continuous))
                 .overlay(
-                    RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                    RoundedRectangle(cornerRadius: ObserveDetailsLayout.photoCardCornerRadius, style: .continuous)
                         .stroke(GaiaColor.broccoliBrown200, lineWidth: 1)
                 )
 
@@ -277,16 +336,19 @@ private struct ObserveDetailsSectionTitle: View {
 
     var body: some View {
         Text(title)
-            .gaiaFont(.title3)
+            .gaiaFont(.titleSans)
             .foregroundStyle(GaiaColor.inkBlack300)
     }
 }
 
 private struct ObserveIdentificationCard: View {
+    let thumbnailAssetName: String
+    let onTap: () -> Void
+
     var body: some View {
-        Button(action: {}) {
+        Button(action: onTap) {
             HStack(spacing: GaiaSpacing.md - 4) {
-                GaiaAssetImage(name: "observe-suggestion-top")
+                GaiaAssetImage(name: thumbnailAssetName)
                     .frame(width: 82, height: 82)
                     .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
                     .overlay(
@@ -295,38 +357,205 @@ private struct ObserveIdentificationCard: View {
                     )
 
                 VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
-                    Text("Coast Live Oak")
-                        .gaiaFont(.title3Medium)
-                        .foregroundStyle(GaiaColor.paperWhite400)
-                        .lineLimit(1)
+                    Text("Coast\nLive Oak")
+                        .gaiaFont(.title2Medium)
+                        .foregroundStyle(GaiaColor.oliveGreen500)
+                        .lineLimit(2)
                         .minimumScaleFactor(0.9)
 
                     Text("Quercus agrifolia (94%)")
                         .gaiaFont(.footnote)
-                        .foregroundStyle(GaiaColor.oliveGreen200)
+                        .foregroundStyle(GaiaColor.textSecondary)
                         .lineLimit(1)
                         .minimumScaleFactor(0.85)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 25, weight: .light))
-                    .foregroundStyle(GaiaColor.paperWhite50.opacity(0.85))
+                GaiaIcon(kind: .circleArrowRight, size: 32)
+                    .frame(width: 32, height: 32)
             }
             .padding(GaiaSpacing.md - 4)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
-                RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
-                    .fill(GaiaColor.oliveGreen400)
+                RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous)
+                    .fill(GaiaColor.paperWhite50)
                     .overlay(
-                        RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                        RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous)
                             .stroke(GaiaColor.broccoliBrown200, lineWidth: 1)
                     )
             )
-            .shadow(color: GaiaShadow.lgColor, radius: GaiaShadow.lgRadius, x: 0, y: GaiaShadow.lgYOffset)
+            .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
         }
         .buttonStyle(.plain)
+        .accessibilityLabel("Coast Live Oak, Quercus agrifolia, 94 percent match")
+        .accessibilityHint("Opens top suggestions")
     }
+}
+
+private struct ObserveIdentificationSuggestionsScreen: View {
+    let selectedSuggestion: ObserveSpeciesSuggestion
+    let onBack: () -> Void
+    let onSelectSuggestion: (ObserveSpeciesSuggestion) -> Void
+
+    var body: some View {
+        GeometryReader { proxy in
+            let toolbarTopPadding = min(max(19, proxy.safeAreaInsets.top + 4), 51)
+            let topBarHeight = toolbarTopPadding + ObserveDetailsLayout.toolbarButtonSize + GaiaSpacing.md
+            let contentWidth = max(0, proxy.size.width - (GaiaSpacing.md * 2))
+
+            ZStack(alignment: .top) {
+                GaiaColor.paperWhite50.ignoresSafeArea()
+
+                ScrollView(showsIndicators: false) {
+                    VStack(alignment: .leading, spacing: GaiaSpacing.xl) {
+                        GaiaAssetImage(name: ObserveDetailsAssetSet.preselect.highlightImageName, contentMode: .fill)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: ObserveDetailsLayout.suggestionHeroHeight)
+                            .clipShape(
+                                RoundedRectangle(
+                                    cornerRadius: ObserveDetailsLayout.photoCardCornerRadius,
+                                    style: .continuous
+                                )
+                            )
+                            .overlay(
+                                RoundedRectangle(
+                                    cornerRadius: ObserveDetailsLayout.photoCardCornerRadius,
+                                    style: .continuous
+                                )
+                                .stroke(GaiaColor.broccoliBrown200, lineWidth: 1)
+                            )
+
+                        VStack(alignment: .leading, spacing: GaiaSpacing.md) {
+                            ObserveDetailsSectionTitle(title: "Top Suggestions")
+
+                            VStack(spacing: 0) {
+                                ForEach(ObserveSpeciesSuggestion.allSuggestions) { suggestion in
+                                    ObserveSuggestionRow(
+                                        suggestion: suggestion,
+                                        isSelected: suggestion.id == selectedSuggestion.id,
+                                        action: { onSelectSuggestion(suggestion) }
+                                    )
+                                }
+                            }
+                            .overlay(alignment: .top) {
+                                Rectangle()
+                                    .fill(GaiaColor.broccoliBrown200)
+                                    .frame(height: 0.5)
+                            }
+                        }
+                    }
+                    .frame(width: contentWidth, alignment: .leading)
+                    .padding(.horizontal, GaiaSpacing.md)
+                    .padding(.top, 24)
+                    .padding(.bottom, GaiaSpacing.xxxl)
+                }
+                .scrollDismissesKeyboard(.interactively)
+                .padding(.top, topBarHeight)
+
+                VStack(spacing: 0) {
+                    ObserveDetailsToolbar(
+                        title: "Details",
+                        topPadding: toolbarTopPadding,
+                        onBack: onBack,
+                        onSave: {},
+                        isSaveEnabled: false
+                    )
+
+                    Spacer(minLength: 0)
+                }
+            }
+        }
+        .ignoresSafeArea(.keyboard, edges: .bottom)
+    }
+}
+
+private struct ObserveSuggestionRow: View {
+    let suggestion: ObserveSpeciesSuggestion
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 14) {
+                GaiaAssetImage(name: suggestion.imageName)
+                    .frame(width: ObserveDetailsLayout.suggestionThumbSize, height: ObserveDetailsLayout.suggestionThumbSize)
+                    .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
+
+                VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(suggestion.commonName)
+                            .gaiaFont(.titleSans)
+                            .foregroundStyle(GaiaColor.textPrimary)
+                            .lineLimit(2)
+
+                        Text(suggestion.scientificName)
+                            .gaiaFont(.footnote)
+                            .italic()
+                            .foregroundStyle(GaiaColor.broccoliBrown500)
+                            .lineLimit(1)
+                    }
+
+                    Text(suggestion.metaLabel)
+                        .gaiaFont(.caption2)
+                        .foregroundStyle(GaiaColor.blackishGrey200)
+                        .lineLimit(1)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                GaiaIcon(kind: .circleArrowRight, size: 32)
+                    .frame(width: 32, height: 32)
+            }
+            .padding(.horizontal, GaiaSpacing.md)
+            .padding(.vertical, 14)
+            .frame(maxWidth: .infinity, minHeight: ObserveDetailsLayout.suggestionRowHeight, alignment: .leading)
+            .background(GaiaColor.paperWhite50)
+            .overlay(alignment: .bottom) {
+                Rectangle()
+                    .fill(GaiaColor.broccoliBrown200)
+                    .frame(height: 0.5)
+            }
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("\(suggestion.commonName), \(suggestion.scientificName)")
+    }
+}
+
+private struct ObserveSpeciesSuggestion: Identifiable, Hashable {
+    let id: String
+    let commonName: String
+    let scientificName: String
+    let metaLabel: String
+    let imageName: String
+
+    static let leatherback = ObserveSpeciesSuggestion(
+        id: "leatherback",
+        commonName: "Leatherback Sea Turtle",
+        scientificName: "Dermochelys coriacea",
+        metaLabel: "Visually Similar / Expected Nearby",
+        imageName: "observe-suggestion-top"
+    )
+
+    static let loggerhead = ObserveSpeciesSuggestion(
+        id: "loggerhead",
+        commonName: "Loggerhead Sea Turtle",
+        scientificName: "Caretta caretta",
+        metaLabel: "Visually Similar / Expected Nearby",
+        imageName: "observe-suggestion-secondary-1"
+    )
+
+    static let flatback = ObserveSpeciesSuggestion(
+        id: "flatback",
+        commonName: "Flatback Sea Turtle",
+        scientificName: "Natator depressus",
+        metaLabel: "Visually Similar / Expected Nearby",
+        imageName: "observe-suggestion-secondary-2"
+    )
+
+    static let allSuggestions: [ObserveSpeciesSuggestion] = [
+        .leatherback,
+        .loggerhead,
+        .flatback
+    ]
 }
 
 private struct ObserveNotesField: View {
@@ -335,10 +564,10 @@ private struct ObserveNotesField: View {
 
     var body: some View {
         ZStack(alignment: .topLeading) {
-            RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
-                .fill(Color.white)
+            RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous)
+                .fill(GaiaColor.paperWhite50)
                 .overlay(
-                    RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                    RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous)
                         .stroke(GaiaColor.broccoliBrown200, lineWidth: 1)
                 )
 
@@ -362,7 +591,7 @@ private struct ObserveNotesField: View {
                     .allowsHitTesting(false)
             }
         }
-        .contentShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
+        .contentShape(RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous))
         .onTapGesture {
             isFocused = true
         }
@@ -419,10 +648,10 @@ private struct ObserveMapDataCard: View {
         .padding(.bottom, GaiaSpacing.md - 4)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
-                .fill(Color.white)
+            RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous)
+                .fill(GaiaColor.paperWhite50)
                 .overlay(
-                    RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                    RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous)
                         .stroke(GaiaColor.broccoliBrown200, lineWidth: 1)
                 )
         )
@@ -439,14 +668,14 @@ private struct ObserveMapLocationRow: View {
                         .frame(width: 10, height: 21)
                         .opacity(0.48)
 
-                    Text("E Del Mar, Pasadena, California")
+                    Text("Pohaku Loa Way, Haleiwa, Hawaii")
                         .gaiaFont(.subheadline)
                         .foregroundStyle(GaiaColor.blackishGrey700)
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
                 }
 
-                Text("34.14, -118.14 · 9m accuracy")
+                Text("21.619013, -158.0852312 · 9m accuracy")
                     .gaiaFont(.caption)
                     .foregroundStyle(GaiaColor.blackishGrey200)
                     .lineLimit(1)
@@ -456,7 +685,7 @@ private struct ObserveMapLocationRow: View {
 
             ObserveRowChevron()
         }
-        .frame(height: 71)
+        .frame(height: ObserveDetailsLayout.mapRowHeight)
     }
 }
 
@@ -474,7 +703,7 @@ private struct ObserveSimpleMapRow: View {
             Spacer(minLength: GaiaSpacing.sm)
             ObserveRowChevron()
         }
-        .frame(height: 71)
+        .frame(height: ObserveDetailsLayout.mapRowHeight)
     }
 }
 
@@ -509,7 +738,7 @@ private struct ObserveGeoPrivacyRow: View {
 
             ObserveRowChevron()
         }
-        .frame(height: 71)
+        .frame(height: ObserveDetailsLayout.mapRowHeight)
     }
 }
 
@@ -546,26 +775,24 @@ private struct ObserveMetadataCard: View {
     var body: some View {
         VStack(spacing: 0) {
             ObserveMetadataRow(
-                icon: "leaf.fill",
                 title: "Captured",
                 value: "N/A",
-                valueStyle: .pill
+                valueStyle: .pillDisabled
             )
             ObserveMapRowDivider()
             ObserveMetadataRow(
-                icon: "folder.fill",
                 title: "Projects",
-                value: "None",
-                valueStyle: .plain
+                value: "N/A",
+                valueStyle: .pillDisabled
             )
         }
         .padding(.horizontal, GaiaSpacing.md - 4)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
-                .fill(Color.white)
+            RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous)
+                .fill(GaiaColor.paperWhite50)
                 .overlay(
-                    RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                    RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous)
                         .stroke(GaiaColor.broccoliBrown200, lineWidth: 1)
                 )
         )
@@ -575,25 +802,18 @@ private struct ObserveMetadataCard: View {
 
 private struct ObserveMetadataRow: View {
     enum ValueStyle {
-        case pill
-        case plain
+        case pillDisabled
     }
 
-    let icon: String
     let title: String
     let value: String
     let valueStyle: ValueStyle
 
     var body: some View {
         HStack(spacing: GaiaSpacing.md - 4) {
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
+            Circle()
                 .fill(Color(hex: 0xF3F0E6))
                 .frame(width: 24, height: 24)
-                .overlay(
-                    Image(systemName: icon)
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundStyle(GaiaColor.broccoliBrown500)
-                )
 
             Text(title)
                 .gaiaFont(.subheadline)
@@ -602,40 +822,39 @@ private struct ObserveMetadataRow: View {
             Spacer(minLength: GaiaSpacing.sm)
 
             switch valueStyle {
-            case .pill:
+            case .pillDisabled:
                 Text(value)
                     .gaiaFont(.body)
-                    .foregroundStyle(GaiaColor.oliveGreen500)
+                    .foregroundStyle(GaiaColor.blackishGrey200)
                     .padding(.horizontal, GaiaSpacing.md)
-                    .frame(height: 32)
+                    .frame(height: 34)
                     .background(
                         Capsule(style: .continuous)
-                            .fill(GaiaColor.paperWhite50)
-                            .overlay(
-                                Capsule(style: .continuous)
-                                    .stroke(GaiaColor.oliveGreen500, lineWidth: 0.8)
-                            )
+                            .fill(GaiaColor.blackishGrey200.opacity(0.2))
                     )
-            case .plain:
-                Text(value)
-                    .gaiaFont(.body)
-                    .foregroundStyle(GaiaColor.broccoliBrown500)
             }
 
             ObserveRowChevron()
         }
-        .frame(height: 71)
+        .frame(height: ObserveDetailsLayout.mapRowHeight)
     }
 }
 
 private struct ObserveConditionCard: View {
+    enum Kind {
+        case biome
+        case weather
+    }
+
+    let kind: Kind
     let label: String
     let title: String
     let subtitle: String
-    let showsActionIcon: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
+            ObserveConditionHero(kind: kind)
+
             Text(label)
                 .gaiaFont(.caption)
                 .foregroundStyle(GaiaColor.broccoliBrown500)
@@ -655,23 +874,74 @@ private struct ObserveConditionCard: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding(GaiaSpacing.md - 4)
-        .padding(.bottom, showsActionIcon ? GaiaSpacing.md : GaiaSpacing.md - 4)
+        .frame(width: ObserveDetailsLayout.contentCardWidth, alignment: .leading)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
-                .fill(Color.white)
+            RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous)
+                .fill(GaiaColor.paperWhite50)
                 .overlay(
-                    RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                    RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous)
                         .stroke(GaiaColor.broccoliBrown200, lineWidth: 1)
                 )
         )
         .overlay(alignment: .bottomTrailing) {
-            if showsActionIcon {
-                GaiaIcon(kind: .circleArrowRight, size: 16)
-                    .padding(GaiaSpacing.md - 4)
-                    .accessibilityHidden(true)
+            GaiaIcon(kind: .circleArrowRight, size: 20)
+                .padding(GaiaSpacing.md - 4)
+                .accessibilityHidden(true)
+        }
+    }
+}
+
+private struct ObserveConditionHero: View {
+    let kind: ObserveConditionCard.Kind
+
+    var body: some View {
+        ZStack(alignment: .leading) {
+            switch kind {
+            case .biome:
+                LinearGradient(
+                    colors: [
+                        Color(hex: 0xE8DDC3),
+                        Color(hex: 0xA1B39A),
+                        Color(hex: 0x6C8264)
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .overlay(
+                    RadialGradient(
+                        colors: [Color.white.opacity(0.35), .clear],
+                        center: .topLeading,
+                        startRadius: 10,
+                        endRadius: 80
+                    )
+                )
+            case .weather:
+                LinearGradient(
+                    colors: [
+                        Color(hex: 0x245A8C),
+                        Color(hex: 0x5D84B0)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        Text("54º")
+                            .gaiaFont(.weatherValue)
+                            .foregroundStyle(GaiaColor.paperWhite50)
+                            .padding(.trailing, GaiaSpacing.sm)
+                    }
+                }
+                .padding(.bottom, 4)
             }
         }
+        .frame(height: 126)
+        .frame(maxWidth: .infinity)
+        .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
     }
 }
 

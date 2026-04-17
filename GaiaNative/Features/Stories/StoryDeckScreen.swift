@@ -1,13 +1,17 @@
 import SwiftUI
 
 private enum StoryDeckLayout {
-    static let titleTopPadding: CGFloat = 54
-    static let titleWidth: CGFloat = 333
+    static let contentWidth: CGFloat = 353
+    static let titleTopPadding: CGFloat = 42
+    static let scientificLabelWidth: CGFloat = 159
+    static let scientificLabelHeight: CGFloat = 32
     static let titleTracking: CGFloat = -0.87
-    static let scientificTopSpacing: CGFloat = 12
-    static let deckTopSpacing: CGFloat = 20
+    static let titleLineSpacing: CGFloat = -15.85
+    static let scientificTopSpacing: CGFloat = 16
+    static let deckTopSpacing: CGFloat = 48
 }
 
+// figma: https://www.figma.com/design/X0NcuRE0WKmsqR36cvlcij/Write-Test-Pro?node-id=22-1756
 struct StoryDeckScreen: View {
     let initialStoryID: String?
 
@@ -30,57 +34,42 @@ struct StoryDeckScreen: View {
 
     var body: some View {
         GeometryReader { proxy in
-            let deckWidth = min(proxy.size.width - 32, 364)
-            let titleFontSize = min(50, max(38, proxy.size.width * 0.11))
+            let contentWidth = min(proxy.size.width - 49, StoryDeckLayout.contentWidth)
+            let contentScale = max(0.9, min(1, contentWidth / StoryDeckLayout.contentWidth))
+            let titleFontSize = 56 * contentScale
 
             ZStack(alignment: .top) {
                 storyBackground.ignoresSafeArea()
 
                 VStack(spacing: 0) {
-                    VStack(spacing: StoryDeckLayout.scientificTopSpacing) {
-                        Text(speciesLabel)
-                            .font(.custom("Neue Haas Unica W1G", size: 10))
-                            .tracking(0.25)
-                            .foregroundStyle(GaiaColor.paperWhite500)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(
-                                Capsule(style: .continuous)
-                                    .fill(GaiaColor.broccoliBrown300)
-                            )
+                    VStack(spacing: StoryDeckLayout.deckTopSpacing * contentScale) {
+                        VStack(spacing: StoryDeckLayout.scientificTopSpacing * contentScale) {
+                            scientificNamePill(scale: contentScale)
 
-                        VStack(spacing: 0) {
-                            Text("The Story of")
-                                .font(.custom("NewSpirit-Medium", size: titleFontSize))
-                                .tracking(StoryDeckLayout.titleTracking)
-
-                            (
-                                Text("a ")
+                            VStack(spacing: StoryDeckLayout.titleLineSpacing * contentScale) {
+                                Text("The Story of")
                                     .font(.custom("NewSpirit-Medium", size: titleFontSize))
-                                    .tracking(StoryDeckLayout.titleTracking)
-                                + Text("Keystone")
-                                    .font(.custom("NewSpirit-MediumItalic", size: titleFontSize))
-                                    .tracking(StoryDeckLayout.titleTracking)
-                            )
-                        }
-                        .foregroundStyle(GaiaColor.oliveGreen500)
-                        .multilineTextAlignment(.center)
-                        .frame(width: StoryDeckLayout.titleWidth)
+                                    .tracking(StoryDeckLayout.titleTracking * contentScale)
 
-                        Text(displaySummary)
-                            .font(.custom("Neue Haas Unica W1G", size: 13))
-                            .tracking(0.5)
-                            .lineSpacing(4)
-                            .foregroundStyle(GaiaColor.blackishGrey500)
+                                (
+                                    Text("a ")
+                                        .font(.custom("NewSpirit-Medium", size: titleFontSize))
+                                        .tracking(StoryDeckLayout.titleTracking * contentScale)
+                                    + Text("Keystone")
+                                        .font(.custom("NewSpirit-MediumItalic", size: titleFontSize))
+                                        .tracking(StoryDeckLayout.titleTracking * contentScale)
+                                )
+                            }
+                            .foregroundStyle(GaiaColor.oliveGreen500)
                             .multilineTextAlignment(.center)
-                            .lineLimit(2)
-                            .frame(width: StoryDeckLayout.titleWidth)
+                            .frame(width: contentWidth)
+                        }
+                        .frame(width: contentWidth)
+                        .padding(.top, StoryDeckLayout.titleTopPadding * contentScale)
+
+                        SwipeableStoryDeck(story: story, availableWidth: contentWidth)
                     }
                     .frame(maxWidth: .infinity)
-                    .padding(.top, StoryDeckLayout.titleTopPadding)
-
-                    SwipeableStoryDeck(story: story, availableWidth: deckWidth)
-                        .padding(.top, StoryDeckLayout.deckTopSpacing)
 
                     Spacer(minLength: 0)
                 }
@@ -95,10 +84,7 @@ struct StoryDeckScreen: View {
                 .safeAreaPadding(.top, GaiaSpacing.sm)
             }
         }
-    }
-
-    private var displaySummary: String {
-        story.summary.replacingOccurrences(of: ". A disease", with: ".\nA disease")
+        .statusBarHidden(true)
     }
 
     private var storyBackground: some View {
@@ -113,5 +99,24 @@ struct StoryDeckScreen: View {
                 endPoint: .bottom
             )
         }
+    }
+
+    private func scientificNamePill(scale: CGFloat) -> some View {
+        Text(speciesLabel)
+            .gaiaFont(.scientificLabel)
+            .foregroundStyle(GaiaColor.paperWhite50)
+            .multilineTextAlignment(.center)
+            .frame(
+                width: StoryDeckLayout.scientificLabelWidth * scale,
+                height: StoryDeckLayout.scientificLabelHeight * scale
+            )
+            .background(
+                Capsule(style: .continuous)
+                    .fill(GaiaColor.broccoliBrown300)
+                    .overlay(
+                        Capsule(style: .continuous)
+                            .stroke(GaiaColor.broccoliBrown200, lineWidth: 1)
+                    )
+            )
     }
 }

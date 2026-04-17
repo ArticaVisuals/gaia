@@ -10,6 +10,34 @@ struct AppRootView: View {
             set: { appState.select(section: $0) }
         )
 
+        tabs(selection: selection)
+            .preferredColorScheme(.light)
+            .fullScreenCover(isPresented: $appState.showsFindDetailsPrototype) {
+                FindDetailsPrototypeScreen(species: selectedSpecies)
+                    .environmentObject(appState)
+                    .environmentObject(contentStore)
+            }
+            .fullScreenCover(isPresented: $appState.showsStoryDeck) {
+                StoryDeckScreen(initialStoryID: appState.selectedStoryID)
+                    .environmentObject(appState)
+                    .environmentObject(contentStore)
+            }
+            .fullScreenCover(isPresented: $appState.showsProjectDetail) {
+                ProjectDetailScreen(project: appState.selectedProject)
+                    .environmentObject(appState)
+            }
+    }
+
+    private var selectedSpecies: Species {
+        guard let selectedSpeciesID = appState.selectedSpeciesID,
+              let species = contentStore.species.first(where: { $0.id == selectedSpeciesID }) else {
+            return contentStore.primarySpecies
+        }
+
+        return species
+    }
+
+    private func tabs(selection: Binding<AppSection>) -> some View {
         TabView(selection: selection) {
             ForEach(AppSection.allCases) { section in
                 AppRouter(section: section)
@@ -23,47 +51,6 @@ struct AppRootView: View {
             }
         }
         .tint(GaiaColor.olive)
-        .preferredColorScheme(.light)
-        .fullScreenCover(isPresented: $appState.showsFindDetailsPrototype) {
-            FindDetailsPrototypeScreen(species: selectedSpecies)
-                .environmentObject(appState)
-                .environmentObject(contentStore)
-        }
-        .fullScreenCover(isPresented: $appState.showsStoryDeck) {
-            StoryDeckScreen(initialStoryID: appState.selectedStoryID)
-                .environmentObject(appState)
-                .environmentObject(contentStore)
-        }
-        .fullScreenCover(isPresented: $appState.showsProjectDetail) {
-            ProjectDetailScreen(project: appState.selectedProject)
-                .environmentObject(appState)
-        }
-    }
-
-    private var selectedSpecies: Species {
-        guard let selectedSpeciesID = appState.selectedSpeciesID,
-              let species = contentStore.species.first(where: { $0.id == selectedSpeciesID }) else {
-            return contentStore.primarySpecies
-        }
-
-        return species
-    }
-}
-
-private extension AppSection {
-    func tabAssetName(isSelected: Bool) -> String {
-        switch self {
-        case .explore:
-            return isSelected ? "gaia-tab-explore-selected-32" : "gaia-tab-explore-deselected-32"
-        case .log:
-            return isSelected ? "gaia-tab-log-selected-32" : "gaia-tab-log-deselected-32"
-        case .observe:
-            return isSelected ? "gaia-tab-observe-selected-32" : "gaia-tab-observe-deselected-32"
-        case .activity:
-            return isSelected ? "gaia-tab-activity-selected-32" : "gaia-tab-activity-deselected-32"
-        case .profile:
-            return isSelected ? "gaia-tab-profile-selected-32" : "gaia-tab-profile-deselected-32"
-        }
     }
 }
 

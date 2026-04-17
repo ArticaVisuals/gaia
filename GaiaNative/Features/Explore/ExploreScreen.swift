@@ -1,4 +1,4 @@
-// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=289-2158
+// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=1711-187852 (Map Folded), 289-2158 (Map Panel Closed)
 import SwiftUI
 
 struct ExploreScreen: View {
@@ -20,7 +20,7 @@ struct ExploreScreen: View {
                 observations: contentStore.observations,
                 recenterRequestID: recenterRequestID,
                 onSelectObservation: { observation in
-                    appState.openFindDetails(speciesID: observation.speciesID, tab: .learn)
+                    appState.openFindDetails(speciesID: observation.speciesID)
                 },
                 prefersInitialUserLocation: true
             )
@@ -31,7 +31,7 @@ struct ExploreScreen: View {
                     nearbyFindCount: max(12, contentStore.observations.count),
                     topInset: searchBarTopInset,
                     onSelectFind: { species in
-                        appState.openFindDetails(speciesID: species.id, tab: .learn)
+                        appState.openFindDetails(speciesID: species.id)
                     },
                     onSelectProject: { project in
                         appState.openProjectDetail(project)

@@ -18,6 +18,7 @@ Do not translate HTML/CSS literally into SwiftUI unless explicitly asked.
 - For SwiftUI implementation, review, refactoring, state management, view composition, and performance-sensitive UI work, use the `swiftui-expert` skill.
 - Start by inspecting existing nearby files, shared components, tokens, routing, and state patterns before creating new code.
 - For any Figma-driven task, default to Figma MCP reads for exact measurements, spacing, typography, radii, shadows, and asset references before relying on screenshots.
+- Do not fetch, request, or rely on Figma thumbnails or oEmbed thumbnail images for this repo. They are not a useful design reference here and waste time and tokens.
 - If a full-frame MCP read is too large or hits token limits, split the audit into smaller node-level MCP reads instead of falling back to screenshot-only guessing.
 - For larger or ambiguous UI tasks, make a short plan first before editing files.
 - Prefer the smallest set of focused edits over broad rewrites.

@@ -15,14 +15,13 @@ struct StoryPreviewCard: View {
                 VStack(alignment: .leading, spacing: 16) {
                     VStack(alignment: .leading, spacing: 12) {
                         Text(story.eyebrow)
-                            .font(.custom("Neue Haas Unica W1G", size: 11))
+                            .gaiaFont(.caption)
                             .foregroundStyle(GaiaColor.paperWhite50)
                             .textCase(.uppercase)
 
                         HStack(alignment: .top, spacing: 12) {
                             Text(story.title)
-                                .font(.custom("NewSpirit-Medium", size: 32))
-                                .tracking(-0.5)
+                                .gaiaFont(.displayMedium)
                                 .foregroundStyle(GaiaColor.paperWhite50)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .fixedSize(horizontal: false, vertical: true)
@@ -33,13 +32,12 @@ struct StoryPreviewCard: View {
                     }
 
                     Text(story.summary)
-                        .font(.custom("Neue Haas Unica W1G", size: 12))
+                        .gaiaFont(.caption2)
                         .foregroundStyle(GaiaColor.paperWhite100)
-                        .lineSpacing(2)
                         .frame(maxWidth: 252, alignment: .leading)
                         .fixedSize(horizontal: false, vertical: true)
                 }
-                .padding(16)
+                .padding(GaiaSpacing.md)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(GaiaColor.broccoliBrown400)
             }

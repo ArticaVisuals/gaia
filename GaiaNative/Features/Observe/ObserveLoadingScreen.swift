@@ -1,3 +1,4 @@
+// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=1950-268578 (Loading)
 import SwiftUI
 
 private enum ObserveLoadingLayout {
@@ -62,12 +63,7 @@ struct ObserveLoadingScreen: View {
 
     var body: some View {
         ZStack {
-            LinearGradient(
-                colors: [GaiaColor.paperWhite100, GaiaColor.oliveGreen200],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            GaiaColor.paperWhite50.ignoresSafeArea()
 
             VStack(spacing: ObserveLoadingLayout.contentSpacing) {
                 ObserveLoadingCardStack(cards: cards)
@@ -77,7 +73,7 @@ struct ObserveLoadingScreen: View {
 
                 Text("Identifying Species...")
                     .gaiaFont(.title3Medium)
-                    .foregroundStyle(GaiaColor.oliveGreen500)
+                    .foregroundStyle(GaiaColor.textPrimary)
                     .multilineTextAlignment(.center)
             }
         }
@@ -193,7 +189,7 @@ private struct ObserveLoadingDots: View {
         HStack(spacing: ObserveLoadingLayout.dotsSpacing) {
             ForEach(0..<3, id: \.self) { index in
                 Circle()
-                    .fill(GaiaColor.oliveGreen500)
+                    .fill(GaiaColor.broccoliBrown500.opacity(0.82))
                     .frame(width: ObserveLoadingLayout.dotSize, height: ObserveLoadingLayout.dotSize)
                     .scaleEffect(isAnimating ? 1 : ObserveLoadingLayout.dotScaleMin)
                     .opacity(isAnimating ? 1 : ObserveLoadingLayout.dotOpacityMin)

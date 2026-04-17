@@ -1,4 +1,4 @@
-// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=793-16557
+// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=1711-181330 (Profile Impact), 1711-182099 (Bio Calendar Full View), 1711-187857 (Profile Medals)
 import SwiftUI
 
 private struct ImpactGoal: Identifiable {
@@ -7,7 +7,9 @@ private struct ImpactGoal: Identifiable {
     let progressLabel: String
     let progress: CGFloat
     let accent: Color
+    let trackColor: Color
     let titleColor: Color
+    let pillFill: Color
     let pillStroke: Color
 }
 
@@ -28,16 +30,24 @@ private struct ImpactMedal: Identifiable {
     let id: String
     let title: String
     let count: Int
-    let icon: String
-    let tint: Color
     let badgeImageName: String
+    let isEarned: Bool
+
+    var titleColor: Color {
+        isEarned ? GaiaColor.broccoliBrown400 : GaiaColor.blackishGrey200
+    }
+
+    var countFillColor: Color {
+        isEarned ? GaiaColor.oliveGreen500 : GaiaColor.blackishGrey200
+    }
 }
 
-private struct ImpactTreeSlice: Identifiable {
+private struct ImpactTreeRow: Identifiable {
     let id: String
     let title: String
-    let value: Double
-    let color: Color
+    let count: Int
+    let progress: CGFloat
+    let titleWidth: CGFloat
 }
 
 struct ProfileImpactTab: View {
@@ -48,25 +58,39 @@ struct ProfileImpactTab: View {
     @State private var showsMedalsDetail = false
     @State private var showsBioCalendarDetail = false
 
+    private let warmCardShadow = Color(red: 128.0 / 255.0, green: 105.0 / 255.0, blue: 38.0 / 255.0).opacity(0.09)
+
     private let goals: [ImpactGoal] = [
         .init(
             id: "urban-fungi",
-            title: "Urban Fungi\nChallenge",
+            title: "Urban Fungi Challenge",
             progressLabel: "2 of 5 finds",
-            progress: 155 / 338,
-            accent: GaiaColor.oliveGreen500,
-            titleColor: GaiaColor.oliveGreen500,
-            pillStroke: GaiaColor.oliveGreen500
+            progress: 155.0 / 338.0,
+            accent: GaiaColor.oliveGreen400,
+            trackColor: GaiaColor.oliveGreen100,
+            titleColor: GaiaColor.oliveGreen400,
+            pillFill: GaiaColor.oliveGreen100,
+            pillStroke: GaiaColor.borderStrong
         ),
         .init(
-            id: "id-support",
-            title: "ID Support Goal",
-            progressLabel: "3 of 5 contributions",
-            progress: 220 / 338,
-            accent: GaiaColor.broccoliBrown500,
-            titleColor: GaiaColor.broccoliBrown500,
-            pillStroke: GaiaColor.broccoliBrown500
+            id: "friendly-helper",
+            title: "Friendly Helper",
+            progressLabel: "2 of 5 finds",
+            progress: 155.0 / 338.0,
+            accent: GaiaColor.broccoliBrown400,
+            trackColor: GaiaColor.broccoliBrown100,
+            titleColor: GaiaColor.broccoliBrown400,
+            pillFill: GaiaColor.broccoliBrown100,
+            pillStroke: GaiaColor.broccoliBrown200
         )
+    ]
+
+    private let treeRows: [ImpactTreeRow] = [
+        .init(id: "plants", title: "Plants", count: 28, progress: 99.333 / 123.495, titleWidth: 89.45),
+        .init(id: "birds", title: "Birds", count: 15, progress: 76.96 / 123.495, titleWidth: 89.45),
+        .init(id: "insects", title: "Insects", count: 12, progress: 58.168 / 123.495, titleWidth: 89.45),
+        .init(id: "mammals", title: "Mammals", count: 5, progress: 40.27 / 123.495, titleWidth: 93.339),
+        .init(id: "fungi", title: "Fungi", count: 3, progress: 27.742 / 123.495, titleWidth: 89.45)
     ]
 
     private let monthBars: [ImpactMonthBar] = [
@@ -83,41 +107,36 @@ struct ProfileImpactTab: View {
             id: "plant",
             title: "Plant",
             count: 12,
-            icon: "leaf.fill",
-            tint: GaiaColor.broccoliBrown400,
-            badgeImageName: "gaia-profile-impact-medal-plant"
+            badgeImageName: "gaia-profile-impact-medal-plant",
+            isEarned: true
         ),
         .init(
             id: "mammal",
             title: "Mammal",
             count: 10,
-            icon: "pawprint.fill",
-            tint: GaiaColor.broccoliBrown400,
-            badgeImageName: "gaia-profile-impact-medal-mammal"
+            badgeImageName: "gaia-profile-impact-medal-mammal",
+            isEarned: true
         ),
         .init(
             id: "fungus",
-            title: "Fungus",
+            title: "Fungi",
             count: 4,
-            icon: "tree.fill",
-            tint: GaiaColor.broccoliBrown400,
-            badgeImageName: "gaia-profile-impact-medal-fungus"
+            badgeImageName: "gaia-profile-impact-medal-fungus",
+            isEarned: true
         ),
         .init(
             id: "insect",
             title: "Insect",
             count: 3,
-            icon: "ladybug.fill",
-            tint: GaiaColor.broccoliBrown400,
-            badgeImageName: "gaia-profile-impact-medal-insect"
+            badgeImageName: "gaia-profile-impact-medal-insect",
+            isEarned: true
         ),
         .init(
             id: "reptile",
             title: "Reptile",
             count: 2,
-            icon: "tortoise.fill",
-            tint: GaiaColor.broccoliBrown400,
-            badgeImageName: "gaia-profile-impact-medal-reptile"
+            badgeImageName: "gaia-profile-impact-medal-reptile",
+            isEarned: false
         )
     ]
 
@@ -130,15 +149,9 @@ struct ProfileImpactTab: View {
         2, 4, 0, 0, 0, 4, 4, 4, 0, 4
     ]
 
-    private let treeSlices: [ImpactTreeSlice] = [
-        .init(id: "mammal", title: "Mammal", value: 22, color: GaiaColor.vermillion500),
-        .init(id: "insect", title: "Insect", value: 16, color: GaiaColor.indigoBlue500),
-        .init(id: "reptile", title: "Reptile", value: 5, color: GaiaColor.siskin500),
-        .init(id: "plant", title: "Plant", value: 20, color: GaiaColor.grassGreen500)
-    ]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: GaiaSpacing.md) {
+        VStack(alignment: .leading, spacing: GaiaSpacing.lg) {
             VStack(alignment: .leading, spacing: GaiaSpacing.md) {
                 levelProgressCard
                 monthlySummaryCard
@@ -148,8 +161,8 @@ struct ProfileImpactTab: View {
             VStack(alignment: .leading, spacing: GaiaSpacing.md) {
                 goalsSection
                 bioCalendarCard
-                treeOfLifeCard
                 findMapSection
+                treeOfLifeCard
                 medalsSection
             }
         }
@@ -172,89 +185,94 @@ struct ProfileImpactTab: View {
     }
 
     private var levelProgressCard: some View {
-        VStack(alignment: .leading, spacing: 18) {
+        VStack(alignment: .leading, spacing: 19.489) {
             HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 6) {
+                VStack(alignment: .leading, spacing: 11.255) {
                     Text("CURRENT LEVEL")
-                        .gaiaFont(.caption2)
-                        .foregroundStyle(GaiaColor.paperWhite200)
+                        .font(.custom("NeueHaasUnica-Regular", size: 11))
+                        .foregroundStyle(GaiaColor.oliveGreen100)
 
                     Text("3")
-                        .font(.custom("NewSpirit-Medium", size: 48))
-                        .tracking(-0.5)
+                        .font(.custom("NewSpirit-Regular", size: 45.019))
+                        .tracking(-0.4689)
                         .foregroundStyle(GaiaColor.paperWhite50)
                 }
 
                 Spacer(minLength: 0)
 
-                VStack(alignment: .trailing, spacing: 6) {
+                VStack(alignment: .trailing, spacing: 3.752) {
                     Text("NEXT")
-                        .gaiaFont(.caption2)
-                        .foregroundStyle(GaiaColor.paperWhite200)
+                        .font(.custom("NeueHaasUnica-Regular", size: 11))
+                        .foregroundStyle(GaiaColor.oliveGreen100)
 
                     Text("4")
-                        .gaiaFont(.title2Medium)
-                        .foregroundStyle(GaiaColor.paperWhite200)
+                        .font(.custom("NewSpirit-Regular", size: 24))
+                        .tracking(-0.2)
+                        .foregroundStyle(GaiaColor.oliveGreen100)
                 }
             }
 
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 11.255) {
                 GeometryReader { proxy in
                     Capsule(style: .continuous)
-                        .fill(GaiaColor.paperWhite50.opacity(0.28))
+                        .fill(GaiaColor.oliveGreen400)
                         .overlay(alignment: .leading) {
                             Capsule(style: .continuous)
                                 .fill(GaiaColor.paperWhite50)
-                                .frame(width: proxy.size.width * 0.65)
+                                .frame(width: proxy.size.width * CGFloat(193.205 / 340.0))
                         }
                 }
-                .frame(height: 6)
+                .frame(height: 7.503)
 
                 HStack(alignment: .center) {
                     Text("12 finds to level 4")
-                        .gaiaFont(.caption2)
-                        .foregroundStyle(GaiaColor.paperWhite200)
+                        .font(.custom("NeueHaasUnica-Regular", size: 11))
+                        .foregroundStyle(GaiaColor.oliveGreen100)
 
                     Spacer(minLength: 0)
 
-                    Text("65% there")
-                        .font(.custom("Neue Haas Unica W1G", size: 11))
-                        .foregroundStyle(GaiaColor.paperWhite200)
-                        .padding(.horizontal, 10)
-                        .frame(height: 22)
-                        .background(GaiaColor.paperWhite50.opacity(0.16), in: Capsule(style: .continuous))
+                    Text("55% there")
+                        .font(.custom("NeueHaasUnica-Regular", size: 11))
+                        .foregroundStyle(GaiaColor.oliveGreen100)
                 }
             }
         }
-        .padding(16)
+        .padding(15.006)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
-                .fill(GaiaColor.oliveGreen400)
+            RoundedRectangle(cornerRadius: 14.668, style: .continuous)
+                .fill(GaiaColor.oliveGreen300)
                 .overlay(
-                    RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
-                        .stroke(GaiaColor.oliveGreen200, lineWidth: 0.5)
+                    RoundedRectangle(cornerRadius: 14.668, style: .continuous)
+                        .stroke(GaiaColor.oliveGreen200, lineWidth: 1)
                 )
-                .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
+                .shadow(color: warmCardShadow, radius: 18.758, x: 0, y: 3.752)
         )
     }
 
     private var monthlySummaryCard: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("MARCH 2026")
-                .gaiaFont(.caption)
-                .foregroundStyle(GaiaColor.broccoliBrown500)
+        HStack(alignment: .bottom, spacing: GaiaSpacing.md) {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("MARCH 2026")
+                    .gaiaFont(.caption)
+                    .foregroundStyle(GaiaColor.broccoliBrown500)
 
-            (
-                Text("You discovered ")
-                + Text("3 new species").foregroundStyle(GaiaColor.oliveGreen500)
-                + Text(" and made ")
-                + Text("4 contributions").foregroundStyle(GaiaColor.broccoliBrown500)
-                + Text(" this month.")
-            )
-            .gaiaFont(.title2)
-            .foregroundStyle(GaiaColor.inkBlack300)
-            .fixedSize(horizontal: false, vertical: true)
+                (
+                    Text("You discovered ")
+                    + Text("13 new species").foregroundStyle(GaiaColor.oliveGreen500)
+                    + Text(" and made ")
+                    + Text("4 contributions").foregroundStyle(GaiaColor.broccoliBrown500)
+                    + Text(" this month.")
+                )
+                .gaiaFont(.title2)
+                .foregroundStyle(GaiaColor.inkBlack300)
+                .fixedSize(horizontal: false, vertical: true)
+            }
+
+            Spacer(minLength: 0)
+
+            GaiaIcon(kind: .circleArrowRight, size: 32)
+                .frame(width: 32, height: 32)
         }
         .padding(24)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -265,51 +283,51 @@ struct ProfileImpactTab: View {
                     RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
                         .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
                 )
-                .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
         )
     }
 
     private var statsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Stats")
-                .gaiaFont(.subheadSerif)
+                .gaiaFont(.titleSans)
                 .foregroundStyle(GaiaColor.inkBlack300)
 
             HStack(spacing: 0) {
                 ForEach(Array(impactStats.enumerated()), id: \.element.id) { index, stat in
-                    VStack(alignment: .leading, spacing: 6) {
+                    VStack(spacing: 12) {
                         Text(stat.title)
                             .gaiaFont(.caption2)
-                            .foregroundStyle(GaiaColor.broccoliBrown500)
+                            .foregroundStyle(GaiaColor.textSecondary)
 
                         Text(stat.value)
-                            .font(.custom("NewSpirit-Medium", size: 40))
+                            .font(.custom("NewSpirit-Medium", size: 32))
                             .tracking(-0.5)
-                            .foregroundStyle(GaiaColor.oliveGreen500)
+                            .foregroundStyle(GaiaColor.oliveGreen400)
                             .lineLimit(1)
                             .minimumScaleFactor(0.85)
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 14)
+                    .frame(width: 89, alignment: .center)
+                    .padding(.vertical, 8)
 
                     if index < impactStats.count - 1 {
                         Rectangle()
                             .fill(GaiaColor.border)
-                            .frame(width: 0.5, height: 52)
+                            .frame(width: 0.5, height: 53)
                     }
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .frame(maxWidth: .infinity, minHeight: 101, alignment: .center)
             .background(
                 RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
                     .fill(GaiaColor.paperWhite50)
                     .overlay(
                         RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
-                            .stroke(GaiaColor.border, lineWidth: 0.5)
+                            .stroke(GaiaColor.border, lineWidth: 1)
                     )
-                    .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
             )
+            .shadow(color: warmCardShadow, radius: 20, x: 0, y: 4)
         }
     }
 
@@ -317,12 +335,12 @@ struct ProfileImpactTab: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text("Goals")
-                    .gaiaFont(.title2)
+                    .gaiaFont(.titleSans)
                     .foregroundStyle(GaiaColor.inkBlack300)
                 Spacer(minLength: 0)
                 Text("2 active")
                     .gaiaFont(.caption2)
-                    .foregroundStyle(GaiaColor.inkBlack300)
+                    .foregroundStyle(GaiaColor.oliveGreen400)
             }
 
             VStack(spacing: 12) {
@@ -334,217 +352,250 @@ struct ProfileImpactTab: View {
     }
 
     private func goalCard(_ goal: ImpactGoal) -> some View {
-        GaiaDataCard {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack(alignment: .top, spacing: GaiaSpacing.sm) {
-                    Text(goal.title)
-                        .gaiaFont(.title3)
-                        .foregroundStyle(goal.titleColor)
-                        .lineLimit(2)
-                        .minimumScaleFactor(0.9)
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .top, spacing: GaiaSpacing.sm) {
+                Text(goal.title)
+                    .gaiaFont(.titleSans)
+                    .foregroundStyle(goal.titleColor)
+                    .frame(width: 133.652, alignment: .leading)
+                    .fixedSize(horizontal: false, vertical: true)
 
-                    Spacer(minLength: 0)
-
-                    Text(goal.progressLabel)
-                        .gaiaFont(.caption)
-                        .foregroundStyle(goal.pillStroke)
-                        .padding(.horizontal, 10)
-                        .frame(height: 24)
-                        .overlay(
-                            Capsule(style: .continuous)
-                                .stroke(goal.pillStroke, lineWidth: 0.5)
-                        )
-                }
-
-                GeometryReader { proxy in
-                    ZStack(alignment: .leading) {
-                        Capsule(style: .continuous)
-                            .fill(GaiaColor.blackishGrey50)
-                        Capsule(style: .continuous)
-                            .fill(goal.accent)
-                            .frame(width: proxy.size.width * goal.progress)
-                    }
-                }
-                .frame(height: 6)
-            }
-        }
-    }
-
-    private var bioCalendarCard: some View {
-        Button {
-            showsBioCalendarDetail = true
-        } label: {
-            profileSoftCard {
-                VStack(alignment: .leading, spacing: 20) {
-                    HStack(alignment: .bottom) {
-                        Text("Bio Calendar")
-                            .gaiaFont(.title2)
-                            .foregroundStyle(GaiaColor.inkBlack300)
-                        Spacer(minLength: 0)
-                        Text("Last 60 days")
-                            .gaiaFont(.caption2)
-                            .foregroundStyle(GaiaColor.inkBlack300)
-                    }
-
-                    GeometryReader { proxy in
-                        let spacing: CGFloat = 4
-                        let side = (proxy.size.width - (spacing * 9)) / 10
-                        let cellRadius: CGFloat = 3
-
-                        LazyVGrid(
-                            columns: Array(repeating: GridItem(.fixed(side), spacing: spacing), count: 10),
-                            alignment: .leading,
-                            spacing: spacing
-                        ) {
-                            ForEach(Array(calendarLevels.enumerated()), id: \.offset) { _, level in
-                                RoundedRectangle(cornerRadius: cellRadius, style: .continuous)
-                                    .fill(calendarColor(for: level))
-                                    .frame(width: side, height: side)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: cellRadius, style: .continuous)
-                                            .stroke(GaiaColor.border, lineWidth: 0.5)
-                                    )
-                            }
-                        }
-                    }
-                    .frame(height: 206)
-
-                    HStack {
-                        Text("41 active days")
-                            .gaiaFont(.caption2)
-                            .foregroundStyle(GaiaColor.oliveGreen500)
-
-                        Spacer(minLength: 0)
-
-                        HStack(spacing: GaiaSpacing.sm) {
-                            Text("1")
-                                .gaiaFont(.caption)
-                                .foregroundStyle(GaiaColor.inkBlack300)
-                            HStack(spacing: 4) {
-                                legendSwatch(level: 0)
-                                legendSwatch(level: 1)
-                                legendSwatch(level: 2)
-                                legendSwatch(level: 4)
-                            }
-                            Text("4+")
-                                .gaiaFont(.caption)
-                                .foregroundStyle(GaiaColor.inkBlack300)
-                        }
-                    }
-                }
-            }
-        }
-        .buttonStyle(.plain)
-    }
-
-    private var treeOfLifeCard: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            HStack(alignment: .bottom) {
-                Text("Tree of Life")
-                    .gaiaFont(.title2)
-                    .foregroundStyle(GaiaColor.inkBlack300)
                 Spacer(minLength: 0)
-                Text("4 kingdoms")
-                    .gaiaFont(.caption2)
-                    .foregroundStyle(GaiaColor.inkBlack300)
+
+                Text(goal.progressLabel)
+                    .font(.custom("NeueHaasUnica-Regular", size: 11.72))
+                    .foregroundStyle(goal.pillStroke)
+                    .padding(.horizontal, 10.651)
+                    .frame(height: 21.302)
+                    .background(goal.pillFill, in: Capsule(style: .continuous))
+                    .overlay(
+                        Capsule(style: .continuous)
+                            .stroke(goal.pillStroke, lineWidth: 0.533)
+                    )
             }
 
-            HStack(spacing: GaiaSpacing.xl) {
-                treeOfLifeChart
-                VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
-                    ForEach(treeSlices) { slice in
-                        HStack(spacing: GaiaSpacing.xs + GaiaSpacing.xxs) {
-                            RoundedRectangle(cornerRadius: GaiaRadius.sm, style: .continuous)
-                                .fill(slice.color)
-                                .frame(width: 14, height: 14)
-                            Text(slice.title)
-                                .gaiaFont(.caption2)
-                                .foregroundStyle(GaiaColor.inkBlack300)
-                        }
-                    }
+            GeometryReader { proxy in
+                ZStack(alignment: .leading) {
+                    Capsule(style: .continuous)
+                        .fill(goal.trackColor)
+                    Capsule(style: .continuous)
+                        .fill(goal.accent)
+                        .frame(width: proxy.size.width * goal.progress)
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .center)
-            .padding(.horizontal, GaiaSpacing.xs)
+            .frame(height: 6)
         }
-        .padding(.horizontal, GaiaSpacing.md)
-        .padding(.top, GaiaSpacing.md)
-        .padding(.bottom, GaiaSpacing.lg)
+        .padding(GaiaSpacing.md)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
                 .fill(GaiaColor.paperWhite50)
                 .overlay(
                     RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
-                        .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
+                        .stroke(GaiaColor.border, lineWidth: 0.976)
                 )
-                .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
         )
     }
 
-    private var treeOfLifeChart: some View {
-        return ZStack {
-            Image("gaia-profile-impact-tree-insect")
-                .resizable()
-                .renderingMode(.original)
-                .scaledToFit()
-                .frame(width: 108.11, height: 56.27)
-                .rotationEffect(.degrees(-157.04))
-                .position(x: 82.54, y: 46.99)
+    private var bioCalendarCard: some View {
+        Button {
+            showsBioCalendarDetail = true
+        } label: {
+            VStack(alignment: .leading, spacing: 20.003) {
+                HStack(alignment: .bottom) {
+                    Text("Bio Calendar")
+                        .gaiaFont(.titleSans)
+                        .foregroundStyle(GaiaColor.inkBlack300)
+                    Spacer(minLength: 0)
+                    Text("Last 60 days")
+                        .gaiaFont(.caption2)
+                        .foregroundStyle(GaiaColor.oliveGreen400)
+                }
 
-            Image("gaia-profile-impact-tree-mammal")
-                .resizable()
-                .renderingMode(.original)
-                .scaledToFit()
-                .frame(width: 59.23, height: 56.27)
-                .position(x: 100.26, y: 101.91)
+                GeometryReader { proxy in
+                    let columnSpacing: CGFloat = 3.783868
+                    let rowSpacing: CGFloat = 4.729836
+                    let side = (proxy.size.width - (columnSpacing * 9)) / 10
+                    let cellRadius: CGFloat = 3.784
 
-            Image("gaia-profile-impact-tree-reptile")
-                .resizable()
-                .renderingMode(.original)
-                .scaledToFit()
-                .frame(width: 76.01, height: 16.48)
-                .rotationEffect(.degrees(72.95))
-                .position(x: 28.21, y: 89.56)
+                    LazyVGrid(
+                        columns: Array(repeating: GridItem(.fixed(side), spacing: columnSpacing), count: 10),
+                        alignment: .leading,
+                        spacing: rowSpacing
+                    ) {
+                        ForEach(Array(calendarLevels.enumerated()), id: \.offset) { _, level in
+                            RoundedRectangle(cornerRadius: cellRadius, style: .continuous)
+                                .fill(calendarColor(for: level))
+                                .frame(width: side, height: side)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: cellRadius, style: .continuous)
+                                        .stroke(GaiaColor.border, lineWidth: 0.5)
+                                )
+                        }
+                    }
+                }
+                .frame(height: 206)
 
-            Image("gaia-profile-impact-tree-plant")
-                .resizable()
-                .renderingMode(.original)
-                .scaledToFit()
-                .frame(width: 20.49, height: 13.07)
-                .rotationEffect(.degrees(47.98))
-                .position(x: 58.97, y: 126.73)
+                HStack {
+                    Text("41 active days")
+                        .gaiaFont(.caption2)
+                        .foregroundStyle(GaiaColor.oliveGreen500)
 
-            Circle()
-                .fill(GaiaColor.surfaceCard)
-                .frame(width: 74, height: 74)
+                    Spacer(minLength: 0)
 
-                VStack(spacing: 0) {
-                    Text("63")
-                        .gaiaFont(.displayMedium)
-                        .foregroundStyle(GaiaColor.inkBlack500)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.8)
-                Text("species")
-                    .gaiaFont(.caption)
+                    HStack(spacing: GaiaSpacing.sm) {
+                        Text("1")
+                            .gaiaFont(.caption)
+                            .foregroundStyle(GaiaColor.inkBlack300)
+                        HStack(spacing: 4.001) {
+                            legendSwatch(level: 0)
+                            legendSwatch(level: 1)
+                            legendSwatch(level: 2)
+                            legendSwatch(level: 4)
+                        }
+                        Text("4+")
+                            .gaiaFont(.caption)
+                            .foregroundStyle(GaiaColor.inkBlack300)
+                    }
+                }
+            }
+            .padding(16.003)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(
+                RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
+                    .fill(GaiaColor.paperWhite50)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
+                            .stroke(GaiaColor.border, lineWidth: 0.976)
+                    )
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var treeOfLifeCard: some View {
+        VStack(alignment: .leading, spacing: 21.477) {
+            HStack(alignment: .bottom) {
+                Text("Tree of Life")
+                    .gaiaFont(.titleSans)
                     .foregroundStyle(GaiaColor.inkBlack300)
-                    .offset(y: -2)
+                Spacer(minLength: 0)
+                Text("4 kingdoms")
+                    .gaiaFont(.caption)
+                    .foregroundStyle(GaiaColor.oliveGreen400)
+            }
+
+            VStack(alignment: .leading, spacing: 14.318) {
+                treeAllRow
+                VStack(alignment: .leading, spacing: 7.159) {
+                    ForEach(treeRows) { row in
+                        treeChildRow(row)
+                    }
+                }
             }
         }
-        .frame(width: 147, height: 147)
-        .clipped()
+        .padding(.horizontal, 19.446)
+        .padding(.vertical, 23.335)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 15.557, style: .continuous)
+                .fill(GaiaColor.paperWhite50)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 15.557, style: .continuous)
+                        .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.972)
+                )
+        )
+    }
+
+    private var treeAllRow: some View {
+        HStack(spacing: 17.898) {
+            Text("All")
+                .gaiaFont(.titleSans)
+                .foregroundStyle(GaiaColor.oliveGreen500)
+                .frame(width: 105.597, alignment: .leading)
+
+            GeometryReader { proxy in
+                ZStack(alignment: .leading) {
+                    Capsule(style: .continuous)
+                        .fill(GaiaColor.oliveGreen100)
+                    Capsule(style: .continuous)
+                        .fill(GaiaColor.oliveGreen400)
+                        .frame(width: proxy.size.width * CGFloat(93.0 / 141.392))
+                }
+            }
+            .frame(width: 141.392, height: 5.369)
+
+            Text("63")
+                .gaiaFont(.titleSans)
+                .foregroundStyle(GaiaColor.oliveGreen500)
+                .frame(minWidth: 20, alignment: .trailing)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 20)
+        .frame(maxWidth: .infinity)
+        .background(
+            RoundedRectangle(cornerRadius: 7.159, style: .continuous)
+                .fill(GaiaColor.oliveGreen50)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 7.159, style: .continuous)
+                        .stroke(GaiaColor.borderStrong, lineWidth: 0.895)
+                )
+        )
+    }
+
+    private func treeChildRow(_ row: ImpactTreeRow) -> some View {
+        HStack(alignment: .center, spacing: 0) {
+            TreeBranchConnector()
+                .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.447)
+                .frame(width: 42.955, height: 42.955)
+
+            HStack(spacing: 7.159) {
+                Text(row.title)
+                    .gaiaFont(.titleSans)
+                    .foregroundStyle(GaiaColor.textSecondary)
+                    .frame(width: row.titleWidth, alignment: .leading)
+
+                ZStack(alignment: .leading) {
+                    Capsule(style: .continuous)
+                        .fill(GaiaColor.broccoliBrown100)
+                    Capsule(style: .continuous)
+                        .fill(GaiaColor.broccoliBrown500)
+                        .frame(width: 123.495 * row.progress)
+                }
+                .frame(width: 123.495, height: 5.369)
+
+                Text("\(row.count)")
+                    .gaiaFont(.titleSans)
+                    .foregroundStyle(GaiaColor.broccoliBrown500)
+                    .frame(width: 23, alignment: .trailing)
+            }
+            .padding(.horizontal, 14.318)
+            .padding(.top, 16)
+            .padding(.bottom, 14.318)
+            .frame(maxWidth: .infinity)
+            .background(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(GaiaColor.paperWhite50)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.447)
+                    )
+            )
+        }
     }
 
     private var findMapSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text("Find Map")
-                    .gaiaFont(.title2)
+                    .gaiaFont(.titleSans)
                     .foregroundStyle(GaiaColor.inkBlack300)
+
                 Spacer(minLength: 0)
+
                 Text(profileFindsLabel)
                     .gaiaFont(.caption2)
-                    .foregroundStyle(GaiaColor.inkBlack300)
+                    .foregroundStyle(GaiaColor.oliveGreen400)
             }
 
             ZStack(alignment: .topTrailing) {
@@ -553,30 +604,38 @@ struct ProfileImpactTab: View {
                     .frame(maxWidth: .infinity)
                     .clipped()
 
-                GlassCircleButton(size: 44, action: {
+                GlassCircleButton(size: 40.001) {
                     showsExpandedMap = true
-                }) {
-                    ProfileImpactExpandIcon()
+                } label: {
+                    GaiaIcon(kind: .expand, size: 26.667, tint: GaiaColor.inkBlack900)
                 }
-                .padding(GaiaSpacing.md)
+                .padding(11.222)
+                .accessibilityLabel("Expand map")
             }
             .frame(maxWidth: .infinity)
             .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
-                    .stroke(GaiaColor.border, lineWidth: 0.5)
+                    .stroke(GaiaColor.border, lineWidth: 1)
             )
-            .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
         }
     }
 
     private var medalsSection: some View {
-        VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
-            HStack {
-                Text("Medals")
-                    .gaiaFont(.title2)
-                    .foregroundStyle(GaiaColor.inkBlack300)
+        VStack(alignment: .leading, spacing: GaiaSpacing.lg) {
+            Text("Medals")
+                .gaiaFont(.titleSans)
+                .foregroundStyle(GaiaColor.inkBlack300)
 
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(spacing: GaiaSpacing.space4) {
+                    ForEach(medals) { medal in
+                        medalSummaryItem(medal)
+                    }
+                }
+            }
+
+            HStack {
                 Spacer(minLength: 0)
 
                 Button {
@@ -584,53 +643,48 @@ struct ProfileImpactTab: View {
                 } label: {
                     Text("View all")
                         .gaiaFont(.caption2)
-                        .foregroundStyle(GaiaColor.inkBlack200)
+                        .foregroundStyle(GaiaColor.textSecondary)
                 }
                 .buttonStyle(.plain)
             }
-
-            HStack(spacing: 0) {
-                ForEach(Array(medals.enumerated()), id: \.element.id) { index, medal in
-                    if index > 0 {
-                        Spacer(minLength: 0)
-                    }
-                    medalBadge(medal)
-                }
-            }
-            .frame(maxWidth: .infinity)
         }
     }
 
-    private func medalBadge(_ medal: ImpactMedal) -> some View {
+    private func medalSummaryItem(_ medal: ImpactMedal) -> some View {
         VStack(spacing: GaiaSpacing.xs) {
             ZStack(alignment: .bottomTrailing) {
-                GaiaAssetImage(name: medal.badgeImageName, contentMode: .fit)
-                    .frame(width: 59.81, height: 58.96)
+                MedalBadgeImage(
+                    name: medal.badgeImageName,
+                    width: 64,
+                    height: 63.088,
+                    fallbackTint: medal.titleColor
+                )
 
                 Text("\(medal.count)")
-                    .gaiaFont(.micro)
+                    .gaiaFont(.captionMono)
                     .foregroundStyle(GaiaColor.paperWhite50)
-                    .frame(width: 16.45, height: 16.45)
-                    .background(Circle().fill(GaiaColor.oliveGreen500))
+                    .frame(width: 19, height: 18)
+                    .background(medal.countFillColor, in: Capsule(style: .continuous))
                     .overlay(
-                        Circle()
-                            .stroke(GaiaColor.paperWhite200, lineWidth: 2)
+                        Capsule(style: .continuous)
+                            .stroke(GaiaColor.paperWhite50, lineWidth: 2)
                     )
-                    .offset(x: 2, y: 2)
             }
-            .frame(width: 59.81, height: 58.96)
+            .frame(width: 64, height: 63.088)
 
             Text(medal.title)
-                .gaiaFont(.micro)
-                .foregroundStyle(
-                    medal.id == "plant"
-                        ? GaiaColor.broccoliBrown500
-                        : GaiaColor.broccoliBrown200
-                )
+                .gaiaFont(.caption)
+                .foregroundStyle(medal.titleColor)
                 .lineLimit(1)
-                .minimumScaleFactor(0.8)
+                .minimumScaleFactor(0.85)
         }
-        .frame(width: 59.81)
+        .frame(width: 64, alignment: .center)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(medal.title), \(medalCountLabel(for: medal.count))")
+    }
+
+    private func medalCountLabel(for count: Int) -> String {
+        "\(count) \(count == 1 ? "find" : "finds")"
     }
 
     private var monthToMonthCard: some View {
@@ -735,12 +789,12 @@ struct ProfileImpactTab: View {
     }
 
     private func legendSwatch(level: Int) -> some View {
-        RoundedRectangle(cornerRadius: GaiaRadius.sm, style: .continuous)
+        RoundedRectangle(cornerRadius: 1.867, style: .continuous)
             .fill(calendarColor(for: level))
             .frame(width: 15, height: 15)
             .overlay(
-                RoundedRectangle(cornerRadius: GaiaRadius.sm, style: .continuous)
-                    .stroke(GaiaColor.paperWhite600, lineWidth: 0.25)
+                RoundedRectangle(cornerRadius: 1.867, style: .continuous)
+                    .stroke(GaiaColor.paperWhite600, lineWidth: 0.247)
             )
     }
 
@@ -769,45 +823,23 @@ struct ProfileImpactTab: View {
                 RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
                     .fill(GaiaColor.paperWhite50)
                     .overlay(
-                    RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
-                        .stroke(GaiaColor.border, lineWidth: 0.5)
+                        RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
+                            .stroke(GaiaColor.border, lineWidth: 0.5)
                     )
-                    .shadow(color: GaiaShadow.smColor, radius: GaiaShadow.smRadius, x: 0, y: GaiaShadow.smYOffset)
             )
     }
 }
 
-private struct ProfileImpactExpandIcon: View {
-    var body: some View {
-        GeometryReader { proxy in
-            let canvas = min(proxy.size.width, proxy.size.height)
-            let slot = canvas * (1 - 0.3674)
-            let arrowWidth = canvas * (20.359 / 24)
-            let arrowHeight = canvas * (21.148 / 24)
-
-            ZStack {
-                Image("gaia-profile-impact-expand-a-24")
-                    .resizable()
-                    .renderingMode(.original)
-                    .scaledToFit()
-                    .frame(width: arrowWidth, height: arrowHeight)
-                    .rotationEffect(.degrees(-135))
-                    .frame(width: slot, height: slot)
-                    .position(x: slot * 0.5, y: canvas - (slot * 0.5))
-
-                Image("gaia-profile-impact-expand-b-24")
-                    .resizable()
-                    .renderingMode(.original)
-                    .scaledToFit()
-                    .frame(width: arrowWidth, height: arrowHeight)
-                    .rotationEffect(.degrees(45))
-                    .frame(width: slot, height: slot)
-                    .position(x: canvas - (slot * 0.5), y: slot * 0.5)
-            }
-            .frame(width: canvas, height: canvas)
-        }
-        .frame(width: 24, height: 24)
-        .accessibilityHidden(true)
+private struct TreeBranchConnector: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        // Vertical segment from top to mid
+        let verticalX = rect.minX + 8
+        path.move(to: CGPoint(x: verticalX, y: rect.minY))
+        path.addLine(to: CGPoint(x: verticalX, y: rect.midY))
+        // Horizontal segment from vertical into the card
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.midY))
+        return path
     }
 }
 
@@ -815,24 +847,15 @@ private struct ProfileMedalsDetailScreen: View {
     let onClose: () -> Void
 
     private let categoryBadges: [CategoryMedalBadge] = [
-        .init(id: "fungus", title: "Fungus", findsText: "10 finds", imageName: "gaia-profile-medal-category-fungus"),
-        .init(id: "fish", title: "Fish", findsText: "10 finds", imageName: "gaia-profile-medal-category-fish"),
-        .init(id: "insect", title: "Insect", findsText: "10 finds", imageName: "gaia-profile-medal-category-insect"),
-        .init(id: "mammal", title: "Mammal", findsText: "10 finds", imageName: "gaia-profile-medal-category-mammal"),
-        .init(id: "mollusk", title: "Mollusk", findsText: "10 finds", imageName: "gaia-profile-medal-category-mollusk"),
-        .init(id: "plant", title: "Plant", findsText: "10 finds", imageName: "gaia-profile-medal-category-plant"),
-        .init(id: "bird", title: "Bird", findsText: "10 finds", imageName: "gaia-profile-medal-category-bird"),
-        .init(id: "reptile", title: "Reptile", findsText: "10 finds", imageName: "gaia-profile-medal-category-reptile"),
-        .init(id: "amphibian", title: "Amphibian", findsText: "10 finds", imageName: "gaia-profile-medal-category-amphibian")
-    ]
-
-    private let regionalBadges: [RegionalMedalBadge] = [
-        .init(id: "alpine-observer", title: "Alpine\nObserver", isEarned: true),
-        .init(id: "night-watcher", title: "Night\nWatcher", isEarned: true),
-        .init(id: "coastal-sentinel-earned", title: "Coastal\nSentinel", isEarned: true),
-        .init(id: "coastal-sentinel-locked-a", title: "Coastal\nSentinel", isEarned: false),
-        .init(id: "coastal-sentinel-locked-b", title: "Coastal\nSentinel", isEarned: false),
-        .init(id: "coastal-sentinel-locked-c", title: "Coastal\nSentinel", isEarned: false)
+        .init(id: "fungus", title: "Fungus", findsText: "62 finds", imageName: "gaia-profile-medal-category-fungus"),
+        .init(id: "fish", title: "Fish", findsText: "43 finds", imageName: "gaia-profile-medal-category-fish"),
+        .init(id: "insect", title: "Insect", findsText: "98 finds", imageName: "gaia-profile-medal-category-insect"),
+        .init(id: "mammal", title: "Mammal", findsText: "12 finds", imageName: "gaia-profile-medal-category-mammal"),
+        .init(id: "mollusk", title: "Mollusk", findsText: "15 finds", imageName: "gaia-profile-medal-category-mollusk"),
+        .init(id: "plant", title: "Plant", findsText: "45 finds", imageName: "gaia-profile-medal-category-plant"),
+        .init(id: "bird", title: "Bird", findsText: "87 finds", imageName: "gaia-profile-medal-category-bird"),
+        .init(id: "reptile", title: "Reptile", findsText: "13 finds", imageName: "gaia-profile-medal-category-reptile"),
+        .init(id: "amphibian", title: "Amphibian", findsText: "65 finds", imageName: "gaia-profile-medal-category-amphibian")
     ]
 
     private let badgeColumns: [GridItem] = Array(
@@ -843,18 +866,13 @@ private struct ProfileMedalsDetailScreen: View {
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: GaiaSpacing.lg) {
-                recentlyEarnedCard
+                medalSection(title: "Recently Earned") {
+                    recentlyEarnedCard
+                }
                 medalSection(title: "Category") {
                     LazyVGrid(columns: badgeColumns, alignment: .leading, spacing: GaiaSpacing.sm) {
                         ForEach(categoryBadges) { badge in
                             categoryBadgeCard(badge)
-                        }
-                    }
-                }
-                medalSection(title: "Regional") {
-                    LazyVGrid(columns: badgeColumns, alignment: .leading, spacing: GaiaSpacing.sm) {
-                        ForEach(regionalBadges) { badge in
-                            regionalBadgeCard(badge)
                         }
                     }
                 }
@@ -912,36 +930,27 @@ private struct ProfileMedalsDetailScreen: View {
                 .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
-                Text("RECENTLY EARNED")
+                Text("Mammal Scout")
+                    .gaiaFont(.title1)
+                    .foregroundStyle(GaiaColor.blackishGrey500)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+
+                Text("Logged 10+ mammal species in your region")
                     .gaiaFont(.caption)
-                    .foregroundStyle(GaiaColor.oliveGreen200)
-
-                VStack(alignment: .leading, spacing: GaiaSpacing.xs) {
-                    Text("Mammal Scout")
-                        .gaiaFont(.title1Medium)
-                        .foregroundStyle(GaiaColor.paperWhite50)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.8)
-
-                    VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
-                        Text("Earned March 22, 2026")
-                            .gaiaFont(.caption)
-                            .foregroundStyle(GaiaColor.textInverseSecondary)
-
-                        Text("Logged 10+ mammal species in your region")
-                            .gaiaFont(.caption)
-                            .foregroundStyle(GaiaColor.textInverseSecondary)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                }
+                    .foregroundStyle(GaiaColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
         }
         .padding(GaiaSpacing.md)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
-                .fill(GaiaColor.oliveGreen500)
-                .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
+                .fill(GaiaColor.paperWhite50)
+                .overlay(
+                    RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                        .stroke(GaiaColor.border, lineWidth: 0.5)
+                )
         )
     }
 
@@ -959,12 +968,12 @@ private struct ProfileMedalsDetailScreen: View {
     private func categoryBadgeCard(_ badge: CategoryMedalBadge) -> some View {
         badgeCardContainer {
             VStack(spacing: GaiaSpacing.xs) {
-                Image(badge.imageName)
-                    .resizable()
-                    .renderingMode(.original)
-                    .scaledToFit()
-                    .frame(width: 82.98, height: 82.98)
-                    .accessibilityHidden(true)
+                MedalBadgeImage(
+                    name: badge.imageName,
+                    width: 82.98,
+                    height: 82.98,
+                    fallbackTint: GaiaColor.broccoliBrown400
+                )
 
                 Text(badge.title)
                     .gaiaFont(.bodySerif)
@@ -974,32 +983,6 @@ private struct ProfileMedalsDetailScreen: View {
                 Text(badge.findsText)
                     .gaiaFont(.caption)
                     .foregroundStyle(GaiaColor.blackishGrey200)
-                    .multilineTextAlignment(.center)
-            }
-            .frame(maxWidth: .infinity)
-        }
-    }
-
-    private func regionalBadgeCard(_ badge: RegionalMedalBadge) -> some View {
-        badgeCardContainer {
-            VStack(spacing: GaiaSpacing.xs) {
-                if badge.isEarned {
-                    Circle()
-                        .stroke(GaiaColor.broccoliBrown500, lineWidth: 5)
-                        .frame(width: 83, height: 83)
-                } else {
-                    Circle()
-                        .fill(GaiaColor.blackishGrey200)
-                        .frame(width: 83, height: 83)
-                }
-
-                Text(badge.title)
-                    .gaiaFont(.bodySerif)
-                    .foregroundStyle(
-                        badge.isEarned
-                            ? GaiaColor.broccoliBrown500
-                            : GaiaColor.blackishGrey200
-                    )
                     .multilineTextAlignment(.center)
             }
             .frame(maxWidth: .infinity)
@@ -1020,6 +1003,19 @@ private struct ProfileMedalsDetailScreen: View {
                     )
                     .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
             )
+    }
+}
+
+private struct MedalBadgeImage: View {
+    let name: String
+    let width: CGFloat
+    let height: CGFloat
+    var fallbackTint: Color
+
+    var body: some View {
+        GaiaAssetImage(name: name, contentMode: .fit, fallbackTint: fallbackTint)
+            .frame(width: width, height: height)
+            .accessibilityHidden(true)
     }
 }
 
@@ -1438,10 +1434,4 @@ private struct CategoryMedalBadge: Identifiable {
     let title: String
     let findsText: String
     let imageName: String
-}
-
-private struct RegionalMedalBadge: Identifiable {
-    let id: String
-    let title: String
-    let isEarned: Bool
 }

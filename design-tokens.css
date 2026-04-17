@@ -9,12 +9,12 @@
   /* ── Colors: Olive Green ─────────────────────────────────── */
   --olive-50:  #f2f4f0;
   --olive-100: #e3e7df;
-  --olive-200: #c8cfbf;
+  --olive-200: #adba9f;
   --olive-300: #a3ae95;
   --olive-400: #8a9b7e;
-  --olive-500: #67765b;
+  --olive-500: #6b8352;
   --olive-600: #5b6850;
-  --olive-700: #4f5a45;
+  --olive-700: #49583a;
   --olive-800: #3d4535;
   --olive-900: #282d22;
   --olive:     var(--olive-500);
@@ -147,7 +147,7 @@
 
   /* ── Colors: Semantic ────────────────────────────────────── */
   --text-primary:       var(--ink-500);
-  --text-secondary:     var(--grey-500);
+  --text-secondary:     var(--grey-300);
   --text-secondary-2:   var(--brown-500);
   --text-warm-secondary: var(--brown-500);
   --text-disabled:      var(--grey-200);
@@ -156,7 +156,7 @@
   --text-inverse-secondary: var(--olive-200);
 
   --border-default:     var(--brown-200);
-  --border-strong:      var(--olive-100);
+  --border-strong:      var(--olive-200);
 
   --bg-default:         #fcfcf7;
   --bg-subtle:          var(--cream-600);
@@ -167,17 +167,17 @@
   --brand-secondary:    var(--brown-500);
   --brand-accent:       var(--asparagus-500);
 
-  --status-verified:    #5c9f3a;
-  --status-needs-id:    #c5943a;
+  --status-verified:    var(--olive-500);
+  --status-needs-id:    var(--verm-500);
   --status-draft:       #7d7981;
 
-  --interactive-primary:  #67765b;
-  --interactive-hover:    #5b6850;
-  --interactive-pressed:  #4f5a45;
-  --interactive-disabled: #c8c7bf;
+  --interactive-primary:  var(--olive-500);
+  --interactive-hover:    var(--olive-600);
+  --interactive-pressed:  var(--olive-700);
+  --interactive-disabled: var(--olive-200);
 
-  --pin-identified:     #577050;
-  --pin-needs-id:       #546f3a;
+  --pin-identified:     var(--olive-500);
+  --pin-needs-id:       var(--verm-500);
   --pin-community:      #4f638d;
 
   --overlay-dark:       rgba(0,0,0,0.5);
@@ -229,13 +229,13 @@
   --space-6:  20px;
   --space-7:  24px;
   --space-8:  32px;
-  --space-9:  36px;
+  --space-9:  40px;
   --space-10: 48px;
-  --space-11: 44px;
-  --space-12: 48px;
-  --space-14: 56px;
-  --space-16: 64px;
-  --space-20: 80px;
+  --space-11: 56px;
+  --space-12: 64px;
+  --space-14: 80px;
+  --space-16: 96px;
+  --space-20: 120px;
 
   /* ── Radius ──────────────────────────────────────────────── */
   --radius-sm:   4px;
@@ -243,7 +243,7 @@
   --radius-lg:   16px;
   --radius-xl:   24px;
   --radius-xxl:  48px;
-  --radius-full: 250px;
+  --radius-full: 999px;
 
   /* ── Icon Sizes ──────────────────────────────────────────── */
   --icon-sm: 16px;

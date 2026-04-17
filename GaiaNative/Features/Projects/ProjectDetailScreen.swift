@@ -1,3 +1,4 @@
+// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=1418-114481 (Project Details)
 import SwiftUI
 import UIKit
 
@@ -54,7 +55,7 @@ struct ProjectDetailScreen: View {
 
                         VStack(alignment: .leading, spacing: ProjectDetailLayout.sectionSpacing) {
                             ProjectActionsSection(content: content)
-                            ProjectRecentFindsSection(items: content.recentFinds, location: content.location)
+                            ProjectRecentFindsSection(items: content.recentFinds)
                             ProjectObserversSection(content: content)
                             ProjectUpdatesSection(updates: content.updates)
                         }
@@ -301,7 +302,7 @@ private struct ProjectActionsSection: View {
     var body: some View {
         VStack(spacing: ProjectDetailLayout.actionSectionSpacing) {
             HStack(spacing: ProjectDetailLayout.actionRowSpacing) {
-                ProjectActionButton(title: "Add Find", style: .filled) {
+                ProjectActionButton(title: "Play", style: .filled) {
                     appState.closeProjectDetail()
                     appState.select(section: .observe)
                 }
@@ -517,7 +518,6 @@ private struct ProjectSectionHeader: View {
 
 private struct ProjectRecentFindsSection: View {
     let items: [ProjectDetailContent.RecentFind]
-    let location: String
 
     private let columns: [GridItem] = [
         GridItem(.flexible(), spacing: ProjectDetailLayout.recentFindGridSpacing),
@@ -526,11 +526,11 @@ private struct ProjectRecentFindsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: ProjectDetailLayout.sectionHeaderSpacing) {
-            ProjectSectionHeader(title: "Recent Finds", actionTitle: "See all")
+            ProjectSectionHeader(title: "Recent Finds", actionTitle: "View all")
 
             LazyVGrid(columns: columns, alignment: .leading, spacing: ProjectDetailLayout.recentFindGridSpacing) {
                 ForEach(items) { item in
-                    ProjectRecentFindCard(item: item, location: location) {
+                    ProjectRecentFindCard(item: item) {
                         // TODO: Wire project recent find navigation.
                     }
                 }
@@ -542,41 +542,31 @@ private struct ProjectRecentFindsSection: View {
 
 private struct ProjectRecentFindCard: View {
     let item: ProjectDetailContent.RecentFind
-    let location: String
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            VStack(alignment: .leading, spacing: 0) {
+            ZStack(alignment: .bottomLeading) {
                 ProjectMediaImage(source: item.imageName, contentMode: .fill)
                     .frame(maxWidth: .infinity)
-                    .frame(height: ProjectDetailLayout.recentFindImageHeight)
+                    .frame(height: ProjectDetailLayout.recentFindCardHeight)
                     .clipped()
 
-                VStack(alignment: .leading, spacing: GaiaSpacing.xs) {
-                    Text(item.title)
-                        .gaiaFont(.titleSans)
-                        .foregroundStyle(GaiaColor.textPrimary)
-                        .lineLimit(2)
+                LinearGradient(
+                    colors: [Color.clear, Color.black.opacity(0.42)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .frame(height: ProjectDetailLayout.recentFindCardHeight * 0.56)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
 
-                    Text("Recent find")
-                        .gaiaFont(.caption2)
-                        .foregroundStyle(GaiaColor.oliveGreen500)
-
-                    HStack(spacing: GaiaSpacing.xs) {
-                        GaiaIcon(kind: .pin, size: 16, tint: GaiaColor.oliveGreen500)
-                            .frame(width: 16, height: 16)
-
-                        Text(location)
-                            .gaiaFont(.caption2)
-                            .foregroundStyle(GaiaColor.inkBlack300)
-                            .lineLimit(1)
-                    }
-                }
-                .padding(.horizontal, GaiaSpacing.cardInset)
-                .padding(.top, GaiaSpacing.sm)
-                .padding(.bottom, GaiaSpacing.cardInset)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                Text(item.title)
+                    .gaiaFont(.titleSans)
+                    .foregroundStyle(GaiaColor.paperWhite50)
+                    .lineLimit(2)
+                    .shadow(color: Color.black.opacity(0.2), radius: 8, x: 0, y: 1)
+                    .padding(.horizontal, ProjectDetailLayout.recentFindTitleInset)
+                    .padding(.bottom, ProjectDetailLayout.recentFindTitleBottomInset)
             }
             .frame(maxWidth: .infinity)
             .frame(height: ProjectDetailLayout.recentFindCardHeight)
@@ -593,6 +583,7 @@ private struct ProjectRecentFindCard: View {
             )
         }
         .buttonStyle(GaiaPressableCardStyle())
+        .accessibilityLabel(item.title)
     }
 }
 
@@ -601,7 +592,7 @@ private struct ProjectObserversSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: ProjectDetailLayout.sectionHeaderSpacing) {
-            ProjectSectionHeader(title: "Observers", actionTitle: "See all")
+            ProjectSectionHeader(title: "Observers", actionTitle: "View all")
 
             VStack(alignment: .leading, spacing: ProjectDetailLayout.observerRowSpacing) {
                 HStack(spacing: -ProjectDetailLayout.observerAvatarOverlap) {
@@ -658,7 +649,7 @@ private struct ProjectUpdatesSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: GaiaSpacing.inset12) {
-            ProjectSectionHeader(title: "Updates", actionTitle: "See all")
+            ProjectSectionHeader(title: "Updates", actionTitle: "View all")
 
             ForEach(updates) { update in
                 ProjectUpdateCard(update: update)

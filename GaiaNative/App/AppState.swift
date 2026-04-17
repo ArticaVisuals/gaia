@@ -3,7 +3,6 @@ import Foundation
 enum FindDetailsTab: String, CaseIterable, Identifiable, Codable {
     case find = "Find"
     case activity = "Activity"
-    case learn = "Learn"
 
     var id: String { rawValue }
 }
@@ -70,21 +69,13 @@ final class AppState: ObservableObject {
         }
     }
 
-    func openSampleFind(tab: FindDetailsTab = .find) {
-        openFindDetailsPrototype(speciesID: nil, tab: tab)
-    }
-
-    func openSampleFindPrototype(tab: FindDetailsTab = .find) {
-        openFindDetailsPrototype(speciesID: nil, tab: tab)
-    }
-
     func openFindDetails(speciesID: String?, tab: FindDetailsTab = .find) {
         openFindDetailsPrototype(speciesID: speciesID, tab: tab)
     }
 
     func openFindDetailsPrototype(speciesID: String?, tab: FindDetailsTab = .find) {
         selectedSpeciesID = speciesID
-        selectedFindTab = Self.prototypeTab(for: tab)
+        selectedFindTab = tab
         showsFindDetailsPrototype = true
     }
 
@@ -140,7 +131,7 @@ final class AppState: ObservableObject {
         if let tabIndex = arguments.firstIndex(of: "-gaiaFindTab"),
            arguments.indices.contains(tabIndex + 1),
            let launchTab = FindDetailsTab(rawValue: arguments[tabIndex + 1].capitalized) {
-            tab = prototypeTab(for: launchTab)
+            tab = launchTab
         } else {
             tab = .find
         }
@@ -204,15 +195,6 @@ final class AppState: ObservableObject {
                 countLabel: "",
                 imageName: "find-project-pollinator"
             )
-        }
-    }
-
-    private static func prototypeTab(for tab: FindDetailsTab) -> FindDetailsTab {
-        switch tab {
-        case .activity:
-            return .activity
-        case .find, .learn:
-            return .find
         }
     }
 }

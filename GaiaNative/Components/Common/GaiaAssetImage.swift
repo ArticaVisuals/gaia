@@ -293,13 +293,15 @@ enum GaiaIconKind {
                         assetPath: "Icons/System/expand-24-a.png",
                         slotInsets: .css(36.74, 36.74, 0, 0),
                         intrinsicSize: CGSize(width: 20.359, height: 21.148),
-                        rotation: .degrees(-135)
+                        rotation: .degrees(-135),
+                        offset: CGSize(width: -1.2, height: 1.2)
                     ),
                     .slotted(
                         assetPath: "Icons/System/expand-24-b.png",
                         slotInsets: .css(0, 0, 36.74, 36.74),
                         intrinsicSize: CGSize(width: 20.359, height: 21.148),
-                        rotation: .degrees(45)
+                        rotation: .degrees(45),
+                        offset: CGSize(width: 1.2, height: -1.2)
                     )
                 ]
             )
@@ -592,23 +594,33 @@ private struct GaiaIconLayer {
     let slotInsets: GaiaIconInsets?
     let intrinsicSize: CGSize?
     let rotation: Angle
+    let offset: CGSize
 
     static func direct(assetPath: String, insets: GaiaIconInsets) -> GaiaIconLayer {
-        GaiaIconLayer(assetPath: assetPath, insets: insets, slotInsets: nil, intrinsicSize: nil, rotation: .zero)
+        GaiaIconLayer(
+            assetPath: assetPath,
+            insets: insets,
+            slotInsets: nil,
+            intrinsicSize: nil,
+            rotation: .zero,
+            offset: .zero
+        )
     }
 
     static func slotted(
         assetPath: String,
         slotInsets: GaiaIconInsets,
         intrinsicSize: CGSize,
-        rotation: Angle = .zero
+        rotation: Angle = .zero,
+        offset: CGSize = .zero
     ) -> GaiaIconLayer {
         GaiaIconLayer(
             assetPath: assetPath,
             insets: nil,
             slotInsets: slotInsets,
             intrinsicSize: intrinsicSize,
-            rotation: rotation
+            rotation: rotation,
+            offset: offset
         )
     }
 }
@@ -647,7 +659,10 @@ private struct GaiaIconLayerView: View {
                         .rotationEffect(layer.rotation)
                 }
                 .frame(width: slotFrame.width, height: slotFrame.height)
-                .position(x: slotFrame.midX, y: slotFrame.midY)
+                .position(
+                    x: slotFrame.midX + (layer.offset.width * scale),
+                    y: slotFrame.midY + (layer.offset.height * scale)
+                )
             }
         }
         .frame(width: canvasSize, height: canvasSize)

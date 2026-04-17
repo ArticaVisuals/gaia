@@ -1,3 +1,4 @@
+// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=1711-181330 (Profile Impact Shell), 1609-176893 (Profile Community Shell)
 import SwiftUI
 import UIKit
 
@@ -15,25 +16,22 @@ struct ProfileScreen: View {
             let contentWidth = min(safeAreaWidth, UIScreen.main.bounds.width)
 
             ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading, spacing: GaiaSpacing.md) {
-                    profileTopActions
-                        .padding(.horizontal, GaiaSpacing.md)
-                        .padding(.top, GaiaSpacing.xs)
-
+                VStack(alignment: .leading, spacing: 16) {
                     ProfileHeaderCard(profile: contentStore.profile)
 
-                    DraggableTabSwitch(
-                        tabs: ProfileTab.allCases,
-                        selection: $viewModel.selectedTab,
-                        tabWidth: 125,
-                        title: { $0.rawValue }
-                    )
+                    ProfileUnderlineTabs(selection: $viewModel.selectedTab)
 
                     tabContent(for: viewModel.selectedTab)
                         .padding(.bottom, 120)
                 }
                 .frame(width: contentWidth, alignment: .leading)
                 .padding(.leading, proxy.safeAreaInsets.leading)
+            }
+            .safeAreaInset(edge: .top, spacing: 0) {
+                profileTopChrome(
+                    contentWidth: contentWidth,
+                    leadingInset: proxy.safeAreaInsets.leading
+                )
             }
         }
         .background(GaiaColor.paperWhite50)
@@ -62,23 +60,29 @@ struct ProfileScreen: View {
         HStack(spacing: GaiaSpacing.sm) {
             Spacer(minLength: 0)
 
-            GlassCircleButton(size: 48, action: {}) {
-                Image("gaia-icon-gear-20")
-                    .renderingMode(.template)
-                    .resizable()
-                    .scaledToFit()
-                    .foregroundStyle(GaiaColor.inkBlack900)
-                    .frame(width: 20, height: 20)
-            }
-            .accessibilityLabel("Settings")
+            ToolbarGlassButton(
+                icon: .gear,
+                accessibilityLabel: "Settings",
+                action: {}
+            )
 
-            GlassCircleButton(size: 48, action: {}) {
-                Image(systemName: "ellipsis")
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(GaiaColor.inkBlack900)
-            }
-            .accessibilityLabel("More")
+            ToolbarGlassButton(
+                icon: .more,
+                accessibilityLabel: "More",
+                action: {}
+            )
         }
+    }
+
+    @ViewBuilder
+    private func profileTopChrome(contentWidth: CGFloat, leadingInset: CGFloat) -> some View {
+        profileTopActions
+            .padding(.horizontal, GaiaSpacing.md)
+            .padding(.top, GaiaSpacing.sm)
+            .padding(.bottom, GaiaSpacing.md)
+            .frame(width: contentWidth, alignment: .trailing)
+            .padding(.leading, leadingInset)
+            .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     @ViewBuilder
@@ -93,6 +97,53 @@ struct ProfileScreen: View {
 
     private var shouldAutoOpenBioCalendar: Bool {
         ProcessInfo.processInfo.arguments.contains("-gaiaProfileBioCalendar")
+    }
+}
+
+private struct ProfileUnderlineTabs: View {
+    @Binding var selection: ProfileTab
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            Rectangle()
+                .fill(GaiaColor.blackishGrey200)
+                .frame(height: 1)
+
+            HStack(spacing: 0) {
+                ForEach(ProfileTab.allCases, id: \.self) { tab in
+                    tabButton(for: tab)
+                        .frame(maxWidth: .infinity)
+                }
+            }
+        }
+        .frame(height: 44)
+    }
+
+    @ViewBuilder
+    private func tabButton(for tab: ProfileTab) -> some View {
+        let isSelected = selection == tab
+        Button {
+            selection = tab
+        } label: {
+            ZStack(alignment: .bottom) {
+                Text(tab.rawValue)
+                    .gaiaFont(.body)
+                    .foregroundStyle(
+                        isSelected
+                            ? GaiaColor.oliveGreen500
+                            : GaiaColor.blackishGrey200
+                    )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+                if isSelected {
+                    Rectangle()
+                        .fill(GaiaColor.oliveGreen500)
+                        .frame(height: 3)
+                }
+            }
+            .frame(height: 44)
+        }
+        .buttonStyle(.plain)
     }
 }
 

@@ -12,9 +12,11 @@
   --ink-700:   #1b181b;
   --olive-50:  #f2f4f0;
   --olive-100: #e3e7df;
-  --olive-200: #c8cfbf;
+  --olive-200: #adba9f;
   --olive-400: #8a9b7e;
-  --olive:     #67765b;
+  --olive:     #6b8352;
+  --olive-600: #5b6850;
+  --olive-800: #3d4535;
   --paper-50:  #fefdf9;
   --paper:     #fdfbf4;
   --cream-300: #fbf7eb;
@@ -28,6 +30,7 @@
   --grey-50:   #ededee;
   --grey-100:  #d9d9db;
   --grey:      #5b5c61;
+  --grey-300:  #848589;
   --verm:      #b5493a;
   --water:     #4F638D;
 
@@ -590,7 +593,7 @@ section[id] { scroll-margin-top: 50px; }
   <div class="ds-header">
     <h1>Design System</h1>
     <p>Gaia Prototype &nbsp;·&nbsp; Preview generated <script>document.write(new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}))</script></p>
-    <p class="source-note">Preview values are aligned to the repo token sources so the HTML surface stays in sync with the published design-system reference.</p>
+    <p class="source-note">Preview values are aligned to <code>GaiaColor</code>, <code>GaiaSpacing</code>, <code>GaiaRadius</code>, <code>GaiaShadow</code>, and <code>GaiaTypography</code> so this HTML stays in sync with the SwiftUI source of truth.</p>
   </div>
 
   <!-- ── Variables ───────────────────────────────────────────── -->
@@ -733,9 +736,9 @@ const TOKENS = {
     swatches: {
       'og-swatches': [
       { name:'50',  hex:'#f2f4f0' }, { name:'100', hex:'#e3e7df' },
-      { name:'200', hex:'#c8cfbf' }, { name:'300', hex:'#a3ae95' },
-      { name:'400', hex:'#8a9b7e' }, { name:'500', hex:'#67765b' },
-      { name:'600', hex:'#5b6850' }, { name:'700', hex:'#4f5a45' },
+      { name:'200', hex:'#adba9f' }, { name:'300', hex:'#a3ae95' },
+      { name:'400', hex:'#8a9b7e' }, { name:'500', hex:'#6b8352' },
+      { name:'600', hex:'#5b6850' }, { name:'700', hex:'#49583a' },
       { name:'800', hex:'#3d4535' }, { name:'900', hex:'#282d22' },
       ],
       'pw-swatches': [
@@ -753,7 +756,8 @@ const TOKENS = {
       { name:'800', hex:'#5A4C3E' }, { name:'900', hex:'#3B3129' },
       ],
       'grass-swatches': [
-      { name:'100', hex:'#b0d1a5' }, { name:'200', hex:'#a3ca96' },
+      { name:'50',  hex:'#d0ebc7' }, { name:'100', hex:'#b0d1a5' },
+      { name:'200', hex:'#a3ca96' },
       { name:'300', hex:'#95c287' }, { name:'400', hex:'#88bb78' },
       { name:'500', hex:'#7bb369' }, { name:'600', hex:'#6fa15f' },
       { name:'700', hex:'#628f54' }, { name:'800', hex:'#567d4a' },
@@ -804,24 +808,38 @@ const TOKENS = {
     },
   semantic: [
     { name:'border-default',        hex:'#D8C9B8', desc:'Default border for cards and inputs' },
-    { name:'border-strong',         hex:'#E3E7DF', desc:'Stronger border token from the shared design-system source' },
+    { name:'border-strong',         hex:'#ADBA9F', desc:'Stronger border token from the shared design-system source' },
     { name:'green-glow',            hex:'#7BB369', desc:'Accent glow token used in map pin and highlight treatments' },
     { name:'fill-vibrant-tertiary', hex:'#E6EDE3', desc:'Nav selection highlight' },
+    { name:'project-card-overlay',  hex:'#294C13', desc:'Dark project image overlay used to preserve text contrast' },
+    { name:'bg-subtle',             hex:'#DDDBD3', desc:'Muted background surface alias' },
+    { name:'bg-overlay',            hex:'#FCFAF1', desc:'Overlay paper tint used behind translucent content' },
     { name:'surface-primary',       hex:'#FDFBF4', desc:'Page background' },
     { name:'surface-sheet',         hex:'#FEFCF7', desc:'Bottom sheet background' },
     { name:'surface-card',          hex:'#FEFDF9', desc:'Card or elevated surface' },
     { name:'surface-story',         hex:'#F6F2EE', desc:'Story-specific warm surface' },
     { name:'text-primary',          hex:'#252024', desc:'Primary text' },
-    { name:'text-secondary',        hex:'#5B5C61', desc:'Secondary text from Figma Components page' },
+    { name:'text-secondary',        hex:'#848589', desc:'Secondary text token used in SwiftUI text hierarchy' },
+    { name:'text-secondary-2',      hex:'#9B856B', desc:'Warm secondary text alias preserved in SwiftUI' },
     { name:'text-warm-secondary',   hex:'#9B856B', desc:'Warm secondary text used in Gaia detail flows' },
     { name:'text-disabled',         hex:'#B1B2B5', desc:'Disabled text from Figma Components page' },
-    { name:'brand-primary',         hex:'#67765B', desc:'Primary brand foreground or fill' },
+    { name:'brand-primary',         hex:'#6B8352', desc:'Primary brand foreground or fill' },
     { name:'brand-secondary',       hex:'#9B856B', desc:'Warm brand accent alias' },
     { name:'brand-accent',          hex:'#C2C190', desc:'Asparagus accent alias' },
+    { name:'splash-background',     hex:'#69785C', desc:'Launch screen background token' },
+    { name:'interactive-hover',     hex:'#5B6850', desc:'Pressed or emphasized olive interaction state' },
+    { name:'interactive-disabled',  hex:'#ADBA9F', desc:'Disabled interactive olive state' },
     { name:'overlay',               hex:'#000000', desc:'Overlay tint used at 18% opacity' },
     { name:'text-on-fill',          hex:'#FEFDF9', desc:'Text on filled backgrounds' },
     { name:'text-inverse',          hex:'#FCFAF0', desc:'Inverse text from Figma Components page' },
-    { name:'text-inverse-secondary',hex:'#C8CFBF', desc:'Secondary inverse text from Figma Components page' },
+    { name:'text-inverse-secondary',hex:'#ADBA9F', desc:'Secondary inverse text from the current Swift token alias' },
+    { name:'status-needs-id',       hex:'#B5493A', desc:'Needs identification state' },
+    { name:'status-verified',       hex:'#6B8352', desc:'Verified state' },
+    { name:'status-draft',          hex:'#848589', desc:'Draft or inactive state' },
+    { name:'pin-identified',        hex:'#6B8352', desc:'Map pin for identified observation' },
+    { name:'pin-needs-id',          hex:'#B5493A', desc:'Map pin for needs-id observation' },
+    { name:'pin-community',         hex:'#4F638D', desc:'Map pin for community observation' },
+    { name:'data-quality-active',   hex:'#6B8352', desc:'Active data-quality treatment' },
   ],
   typography: {
     serif: [
@@ -838,8 +856,8 @@ const TOKENS = {
       { name:'bodySerifMedium',    family:'New Spirit',     size:14, weight:500, lh:'18.2px', ls:'0px' },
     ],
     sans: [
-      { name:'titleSans',          family:'Neue Haas Unica', size:20, weight:400, lh:'25px',  ls:'-0.45px' },
-      { name:'titleSansMedium',    family:'Neue Haas Unica', size:20, weight:500, lh:'25px',  ls:'-0.45px' },
+      { name:'titleSans',          family:'Neue Haas Unica', size:20, weight:400, lh:'21px',  ls:'-0.45px' },
+      { name:'titleSansMedium',    family:'Neue Haas Unica', size:20, weight:500, lh:'21px',  ls:'-0.45px' },
       { name:'body',               family:'Neue Haas Unica', size:17, weight:400, lh:'22.1px',ls:'0px' },
       { name:'bodyMedium',         family:'Neue Haas Unica', size:17, weight:500, lh:'22.1px',ls:'0px' },
       { name:'bodyBold',           family:'Neue Haas Unica', size:17, weight:700, lh:'22.1px',ls:'0px' },
@@ -848,8 +866,8 @@ const TOKENS = {
       { name:'subheadline',        family:'Neue Haas Unica', size:15, weight:400, lh:'19.5px',ls:'0px' },
       { name:'subheadlineMedium',  family:'Neue Haas Unica', size:15, weight:500, lh:'18px',  ls:'0px' },
       { name:'subheadlineBold',    family:'Neue Haas Unica', size:15, weight:800, lh:'20px',  ls:'0px' },
-      { name:'footnote',           family:'Neue Haas Unica', size:13, weight:400, lh:'18px',  ls:'-0.08px' },
-      { name:'footnoteMedium',     family:'Neue Haas Unica', size:13, weight:500, lh:'18px',  ls:'-0.08px' },
+      { name:'footnote',           family:'Neue Haas Unica', size:13, weight:400, lh:'15.6px',ls:'-0.08px' },
+      { name:'footnoteMedium',     family:'Neue Haas Unica', size:13, weight:500, lh:'15.6px',ls:'-0.08px' },
       { name:'caption',            family:'Neue Haas Unica', size:11, weight:400, lh:'14.3px',ls:'0.25px' },
       { name:'captionMedium',      family:'Neue Haas Unica', size:11, weight:500, lh:'14.3px',ls:'0.25px' },
       { name:'caption2',           family:'Neue Haas Unica', size:12, weight:400, lh:'14.4px',ls:'0px' },
@@ -876,14 +894,27 @@ const TOKENS = {
       css:'0px 8px 40px rgba(0,0,0,0.12)' },
   ],
   spacing: [
-    { name:'xxs',  val:2  },
-    { name:'xs',   val:4  },
-    { name:'sm',   val:8  },
-    { name:'md',   val:16 },
-    { name:'lg',   val:24 },
-    { name:'xl',   val:32 },
-    { name:'xxl',  val:48 },
-    { name:'xxxl', val:64 },
+    { name:'xxs / space1',          val:2   },
+    { name:'xs / space2 / gap4',    val:4   },
+    { name:'iconGapTight',          val:5   },
+    { name:'sm / space3 / gap8',    val:8   },
+    { name:'pillHorizontal',        val:10  },
+    { name:'cardInset / space4',    val:12  },
+    { name:'buttonHorizontalLarge', val:14  },
+    { name:'detailInset',           val:15  },
+    { name:'md / space5 / gap16',   val:16  },
+    { name:'cardContentInsetWide',  val:20  },
+    { name:'lg / space7 / gap24',   val:24  },
+    { name:'headerCompactBottom',   val:28  },
+    { name:'xl / space8',           val:32  },
+    { name:'insetXl / step40',      val:40  },
+    { name:'touchMinimum',          val:44  },
+    { name:'xxl / space10',         val:48  },
+    { name:'step56',                val:56  },
+    { name:'xxxl / space12',        val:64  },
+    { name:'step80 / space14',      val:80  },
+    { name:'step96 / space16',      val:96  },
+    { name:'step120 / space20',     val:120 },
   ],
   radii: [
     { name:'sm',        val:4   },
@@ -903,12 +934,13 @@ const TOKENS = {
     { group:'Brand & identity', name:'Wordmark', variants:'primary logotype', kind:'wordmark' },
     { group:'Brand & identity', name:'Combomark', variants:'icon + wordmark lockup', kind:'combomark' },
 
-    { group:'Controls', name:'Toolbars', variants:'glass / compact action bars', kind:'toolbar' },
+    { group:'Controls', name:'Toolbar Glass', variants:'pill and circle button treatments', kind:'toolbar' },
     { group:'Controls', name:'Tab Switch', variants:'draggable segmented states', kind:'tab-switch' },
-    { group:'Controls', name:'Buttons', variants:'primary / secondary / destructive', kind:'button-set' },
-    { group:'Controls', name:'Single Button', variants:'single CTA button', kind:'single-button' },
-    { group:'Controls', name:'Bottom Button', variants:'sheet CTA / bottom action', kind:'bottom-button' },
+    { group:'Controls', name:'Glass Buttons', variants:'primary / secondary / destructive', kind:'button-set' },
+    { group:'Controls', name:'Pill Button', variants:'single CTA button', kind:'single-button' },
+    { group:'Controls', name:'Bottom CTA', variants:'sheet CTA / bottom action', kind:'bottom-button' },
     { group:'Controls', name:'Search Bar', variants:'search / filter / idle states', kind:'search-bar' },
+    { group:'Controls', name:'Bottom Nav Bar', variants:'custom tab shell + active tab icon', kind:'toolbar' },
     { group:'Controls', name:'Icons', variants:'app icon set + utility glyphs', kind:'icon-grid' },
 
     { group:'Status & utilities', name:'Badges', variants:'animal / utility / count states', kind:'badge-set' },
@@ -916,6 +948,7 @@ const TOKENS = {
     { group:'Status & utilities', name:'Leaderboard States', variants:'rank / empty / active', kind:'status-pill' },
     { group:'Status & utilities', name:'Activity Bar', variants:'timeline / activity meter', kind:'activity-bar' },
     { group:'Status & utilities', name:'Day Divider', variants:'date separator', kind:'divider' },
+    { group:'Status & utilities', name:'Section Header', variants:'eyebrow + title + supporting copy', kind:'section-header' },
     { group:'Status & utilities', name:'Log List', variants:'feed rows / compact logs', kind:'log-list' },
     { group:'Status & utilities', name:'Find View Mode', variants:'map / list toggle', kind:'tab-switch' },
     { group:'Status & utilities', name:'Grid', variants:'layout grid / dense card grid', kind:'grid' },
@@ -947,6 +980,7 @@ const TOKENS = {
     { group:'Card families', name:'Project Updates', variants:'update feed', kind:'activity-card' },
     { group:'Card families', name:'Organism Card', variants:'species / organism chip', kind:'card-chip' },
     { group:'Card families', name:'Surface Card', variants:'paper white surface + border + shadow', kind:'surface-card' },
+    { group:'Card families', name:'Splash Screen', variants:'branded launch gradient + mark', kind:'splash-screen' },
   ],
 };
 
@@ -1231,6 +1265,13 @@ function renderComponentPreview(kind, label) {
       wrap.appendChild(row);
       return wrap;
     }
+    case 'section-header': {
+      const header = document.createElement('div');
+      header.className = 'preview-section-header';
+      header.innerHTML = '<span class="eyebrow">Today</span><span class="title">Native section heading</span><span class="meta">Serif title paired with quieter supporting metadata.</span>';
+      wrap.appendChild(header);
+      return wrap;
+    }
     case 'divider': {
       const line = document.createElement('div');
       line.style.width = '100%';
@@ -1320,6 +1361,20 @@ function renderComponentPreview(kind, label) {
           <div class="title">${label}</div>
           <div class="meta">${kind.replace(/-/g, ' ')}</div>
           <div class="copy">Rounded surface, warm border, and more deliberate hierarchy matching the expanded Figma card families.</div>
+        </div>`;
+      wrap.appendChild(shell);
+      return wrap;
+    }
+    case 'splash-screen': {
+      const shell = document.createElement('div');
+      shell.className = 'preview-shell dark';
+      shell.innerHTML = `
+        <div class="preview-stack" style="align-items:center;gap:10px;padding:16px 8px">
+          <div class="preview-brand-mark" style="width:40px;height:40px;border-radius:14px;background:linear-gradient(180deg, rgba(194,193,144,0.36), rgba(255,255,255,0.14));"></div>
+          <div class="preview-brand-type" style="align-items:center">
+            <div class="wordmark">Gaia</div>
+            <div class="sub">silent branded launch flow</div>
+          </div>
         </div>`;
       wrap.appendChild(shell);
       return wrap;

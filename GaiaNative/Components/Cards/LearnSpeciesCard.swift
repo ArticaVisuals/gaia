@@ -3,6 +3,7 @@ import SwiftUI
 
 struct LearnSpeciesCard: View {
     let species: Species
+    @State private var isExpanded = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -13,25 +14,25 @@ struct LearnSpeciesCard: View {
                     .multilineTextAlignment(.leading)
                     .fixedSize(horizontal: false, vertical: true)
 
-                Text(species.summary)
-                    .gaiaFont(.subheadline)
-                    .foregroundStyle(GaiaColor.textInverseSecondary)
-                    .frame(maxWidth: 305, alignment: .leading)
-                    .fixedSize(horizontal: false, vertical: true)
+                descriptionText
             }
 
-            Button(action: {}) {
-                Text("Read More")
-                    .gaiaFont(.subheadline)
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    isExpanded.toggle()
+                }
+            } label: {
+                Text(isExpanded ? "Read Less" : "Read More")
+                    .gaiaFont(.pill)
                     .foregroundStyle(GaiaColor.olive)
-                    .padding(.horizontal, 14)
-                    .frame(height: 34)
+                    .padding(.horizontal, GaiaSpacing.pillHorizontal)
+                    .frame(height: 28)
                     .background(GaiaColor.paperWhite50, in: Capsule())
             }
             .buttonStyle(GaiaPressableCardStyle())
         }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 24)
+        .padding(.horizontal, GaiaSpacing.lg)
+        .padding(.vertical, GaiaSpacing.cardContentInsetWide)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
@@ -42,5 +43,22 @@ struct LearnSpeciesCard: View {
                 )
                 .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
         )
+    }
+
+    @ViewBuilder
+    private var descriptionText: some View {
+        let text = Text(species.summary)
+            .gaiaFont(.caption2)
+            .foregroundStyle(GaiaColor.paperWhite50)
+            .frame(maxWidth: 274, alignment: .leading)
+            .fixedSize(horizontal: false, vertical: true)
+
+        if isExpanded {
+            text
+        } else {
+            text
+                .frame(height: 51, alignment: .topLeading)
+                .clipped()
+        }
     }
 }

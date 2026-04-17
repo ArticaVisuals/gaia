@@ -1,104 +1,343 @@
+// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=1377-100167 (Find Details Activity Contracted)
 import SwiftUI
 
 struct ActivityTabView: View {
     let species: Species
     let bottomInset: CGFloat
     let showsFooter: Bool
-    private let collapsedCommentCount = 2
 
-    init(species: Species, bottomInset: CGFloat = GaiaSpacing.cardInset, showsFooter: Bool = true) {
+    init(species: Species, bottomInset: CGFloat = 64, showsFooter: Bool = true) {
         self.species = species
         self.bottomInset = bottomInset
         self.showsFooter = showsFooter
     }
 
-    @State private var showsAllComments = false
-
-    private let comments: [FindDetailComment] = [
-        .init(
-            id: "comment-1",
-            author: "Liam Poplawski",
-            timestamp: "2h ago",
-            body: "Great find. Leaf margins and acorn shape strongly match Coast Live Oak.",
-            avatarImageName: "profile-avatar-maya"
-        ),
-        .init(
-            id: "comment-2",
-            author: "Sarah Pinkham",
-            timestamp: "1h ago",
-            body: "I've been seeing a lot of these nearby! I agree with the identification :)",
-            avatarImageName: "profile-avatar-lena"
-        ),
-        .init(
-            id: "comment-3",
-            author: "Maya Chen",
-            timestamp: "6h ago",
-            body: "The acorn cap texture also lines up with Coast Live Oak.",
-            avatarImageName: "find-avatar-alice"
-        )
-    ]
-
-    private var visibleComments: [FindDetailComment] {
-        showsAllComments ? comments : Array(comments.prefix(collapsedCommentCount))
-    }
-
-    private var showsReadMore: Bool {
-        !showsAllComments && comments.count > visibleComments.count
-    }
-
-    private var suggestion: FindDetailSuggestion {
-        FindDetailSuggestion(
-            author: "Noah Erdos",
-            timestamp: "5h ago",
-            scientificName: species.scientificName,
-            subtitle: "Original suggested ID",
-            avatarImageName: "profile-avatar-noah",
-            imageName: "activity-suggestion-thumb"
-        )
+    private var visibleEvents: [ActivityEvent] {
+        [
+            ActivityEvent(
+                id: "find-details-suggestion",
+                groupLabel: nil,
+                title: "Noah Erdos",
+                subtitle: species.scientificName,
+                timestampLabel: "5h ago",
+                actionLabel: "suggested an ID",
+                categoryIDs: nil,
+                thumbnailAssetName: "activity-suggestion-thumb"
+            ),
+            ActivityEvent(
+                id: "find-details-comment-liam",
+                groupLabel: nil,
+                title: "Liam Poplawski",
+                subtitle: "Great find. Leaf margins and acorn shape strongly match Coast Live Oak.",
+                timestampLabel: "2h ago",
+                actionLabel: "commented",
+                categoryIDs: nil
+            ),
+            ActivityEvent(
+                id: "find-details-comment-sarah",
+                groupLabel: nil,
+                title: "Sarah Pinkham",
+                subtitle: "I've been seeing a lot of these nearby! I agree with the identification :)",
+                timestampLabel: "1h ago",
+                actionLabel: "commented",
+                categoryIDs: nil
+            )
+        ]
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: showsFooter ? GaiaSpacing.lg : GaiaSpacing.md) {
-            VStack(alignment: .leading, spacing: GaiaSpacing.md) {
-                ActivitySuggestionCard(suggestion: suggestion)
-
-                ActivityCommentThread(
-                    comments: visibleComments,
-                    showsReadMore: showsReadMore,
-                    onReadMore: {
-                        HapticsService.selectionChanged()
-                        withAnimation(GaiaMotion.spring) {
-                            showsAllComments = true
-                        }
-                    }
-                )
-            }
+        VStack(alignment: .leading, spacing: ActivityMetrics.sectionGap) {
+            ActivityThreadSection(events: visibleEvents)
 
             if showsFooter {
                 ActivityFooterBar()
             }
         }
+        .padding(.top, ActivityMetrics.cardPadding)
         .padding(.horizontal, GaiaSpacing.md)
-        .padding(.top, GaiaSpacing.cardInset)
         .padding(.bottom, bottomInset)
     }
 }
 
-private struct FindDetailSuggestion {
-    let author: String
-    let timestamp: String
-    let scientificName: String
-    let subtitle: String
-    let avatarImageName: String
-    let imageName: String
+private struct ActivityThreadSection: View {
+    let events: [ActivityEvent]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: ActivityMetrics.cardGap) {
+            if let featuredEvent = events.first {
+                ActivitySuggestionCard(
+                    event: featuredEvent,
+                    avatarImageName: activityAvatarImageName(for: featuredEvent)
+                )
+            }
+
+            if events.count > 1 {
+                ActivityCommentRail(events: Array(events.dropFirst()))
+            }
+        }
+    }
 }
 
-private struct FindDetailComment: Identifiable {
-    let id: String
+private func activityAvatarImageName(for event: ActivityEvent) -> String {
+    switch event.title {
+    case "Noah Erdos":
+        return "profile-avatar-noah"
+    case "Liam Poplawski":
+        return "profile-avatar-maya"
+    case "Sarah Pinkham":
+        return "profile-avatar-lena"
+    default:
+        return "find-avatar-alice"
+    }
+}
+
+private enum ActivityMetrics {
+    static let sectionGap: CGFloat = 24
+    static let cardGap: CGFloat = 16
+    static let cardPadding: CGFloat = 12
+    static let headerGap: CGFloat = 8
+    static let authorActionGap: CGFloat = 4
+    static let contentGap: CGFloat = 16
+    static let pillGap: CGFloat = 10
+    static let pillHeight: CGFloat = 34
+    static let pillHorizontalPadding: CGFloat = 14
+    static let timestampWidth: CGFloat = 77
+    static let avatarSize: CGFloat = 48
+    static let borderWidth: CGFloat = 1
+    static let dividerWidth: CGFloat = 0.5
+    static let readMoreStemHeight: CGFloat = 15
+    static let footerGap: CGFloat = 12
+}
+
+private struct ActivityCardHeader: View {
     let author: String
+    let actionText: String
     let timestamp: String
-    let body: String
     let avatarImageName: String
+    let actionTextStyle: GaiaTextStyle
+
+    var body: some View {
+        HStack(alignment: .top, spacing: ActivityMetrics.headerGap) {
+            FindProfilePicture(size: .large, imageName: avatarImageName)
+
+            HStack(alignment: .top, spacing: ActivityMetrics.headerGap) {
+                HStack(alignment: .lastTextBaseline, spacing: ActivityMetrics.authorActionGap) {
+                    Text(author)
+                        .gaiaFont(.callout)
+                        .foregroundStyle(GaiaColor.olive)
+                        .lineLimit(1)
+
+                    Text(actionText)
+                        .gaiaFont(actionTextStyle)
+                        .foregroundStyle(GaiaColor.broccoliBrown500)
+                        .lineLimit(1)
+                }
+                .frame(
+                    maxWidth: .infinity,
+                    minHeight: ActivityMetrics.avatarSize,
+                    alignment: .bottomLeading
+                )
+
+                Text(timestamp)
+                    .gaiaFont(.caption)
+                    .foregroundStyle(GaiaColor.inkBlack200)
+                    .monospacedDigit()
+                    .lineLimit(1)
+                    .frame(
+                        width: ActivityMetrics.timestampWidth,
+                        height: ActivityMetrics.avatarSize,
+                        alignment: .topTrailing
+                    )
+                    .multilineTextAlignment(.trailing)
+            }
+        }
+        .padding(ActivityMetrics.cardPadding)
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(GaiaColor.border)
+                .frame(height: ActivityMetrics.dividerWidth)
+        }
+    }
+}
+
+private struct ActivitySuggestionCard: View {
+    let event: ActivityEvent
+    let avatarImageName: String
+
+    var body: some View {
+        ActivityHighlightedCardShell {
+            VStack(alignment: .leading, spacing: ActivityMetrics.cardPadding) {
+                ActivityCardHeader(
+                    author: event.title,
+                    actionText: event.actionLabel ?? "suggested an ID",
+                    timestamp: event.timestampLabel,
+                    avatarImageName: avatarImageName,
+                    actionTextStyle: .caption2
+                )
+
+                ActivitySuggestionBody(
+                    scientificName: event.subtitle,
+                    thumbnailAssetName: event.thumbnailAssetName
+                )
+
+                HStack(spacing: ActivityMetrics.pillGap) {
+                    ActivityOutlinedPill(title: "Agree")
+                    ActivityOutlinedPill(title: "Comment")
+                }
+                .frame(maxWidth: .infinity, alignment: .trailing)
+                .padding(.horizontal, ActivityMetrics.cardPadding)
+                .padding(.bottom, ActivityMetrics.cardPadding)
+            }
+        }
+    }
+}
+
+private struct ActivitySuggestionBody: View {
+    let scientificName: String
+    let thumbnailAssetName: String?
+
+    var body: some View {
+        HStack(alignment: .center, spacing: ActivityMetrics.contentGap) {
+            ActivitySuggestionThumbnail(assetName: thumbnailAssetName)
+
+            VStack(alignment: .leading, spacing: ActivityMetrics.headerGap) {
+                Text(scientificName)
+                    .gaiaFont(.title3)
+                    .foregroundStyle(GaiaColor.oliveGreen500)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.9)
+
+                Text("Original suggested ID")
+                    .gaiaFont(.caption2)
+                    .foregroundStyle(GaiaColor.inkBlack300)
+                    .lineLimit(1)
+            }
+
+            Spacer(minLength: 0)
+        }
+        .frame(maxWidth: 283, alignment: .leading)
+        .padding(.horizontal, ActivityMetrics.cardPadding)
+    }
+}
+
+private struct ActivitySuggestionThumbnail: View {
+    let assetName: String?
+    private let size = CGSize(width: 104, height: 64)
+
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: GaiaRadius.sm, style: .continuous)
+                .fill(GaiaColor.blackishGrey100)
+
+            if let assetName {
+                GaiaAssetImage(name: assetName, contentMode: .fill)
+                    .frame(width: size.width, height: size.height)
+                    .clipped()
+            }
+        }
+        .frame(width: size.width, height: size.height)
+        .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.sm, style: .continuous))
+    }
+}
+
+private struct ActivityCommentRail: View {
+    let events: [ActivityEvent]
+
+    var body: some View {
+        HStack(alignment: .top, spacing: ActivityMetrics.cardGap) {
+            ActivityThreadRule()
+
+            VStack(alignment: .leading, spacing: ActivityMetrics.cardGap) {
+                ForEach(events) { event in
+                    ActivityCommentCard(
+                        event: event,
+                        avatarImageName: activityAvatarImageName(for: event)
+                    )
+                }
+
+                ActivityReadMoreRow()
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+}
+
+private struct ActivityCommentCard: View {
+    let event: ActivityEvent
+    let avatarImageName: String
+
+    var body: some View {
+        ActivityCardBackground(cornerRadius: GaiaRadius.card) {
+            VStack(alignment: .leading, spacing: ActivityMetrics.cardPadding) {
+                ActivityCardHeader(
+                    author: event.title,
+                    actionText: event.actionLabel ?? "commented",
+                    timestamp: event.timestampLabel,
+                    avatarImageName: avatarImageName,
+                    actionTextStyle: .caption2
+                )
+
+                Text(event.subtitle)
+                    .gaiaFont(.subheadline)
+                    .foregroundStyle(GaiaColor.blackishGrey300)
+                    .multilineTextAlignment(.leading)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, ActivityMetrics.cardPadding)
+                    .padding(.bottom, ActivityMetrics.cardPadding)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+private struct ActivityReadMoreRow: View {
+    var body: some View {
+        HStack(spacing: ActivityMetrics.cardGap) {
+            Rectangle()
+                .fill(GaiaColor.border)
+                .frame(width: ActivityMetrics.dividerWidth, height: ActivityMetrics.readMoreStemHeight)
+                .accessibilityHidden(true)
+
+            Text("Read more")
+                .gaiaFont(.subheadline)
+                .foregroundStyle(GaiaColor.oliveGreen500)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+        }
+    }
+}
+
+private struct ActivityThreadRule: View {
+    var body: some View {
+        Rectangle()
+            .fill(GaiaColor.border)
+            .frame(width: ActivityMetrics.dividerWidth)
+            .frame(maxHeight: .infinity, alignment: .top)
+            .accessibilityHidden(true)
+    }
+}
+
+private struct ActivityOutlinedPill: View {
+    let title: String
+    var action: () -> Void = {}
+
+    var body: some View {
+        Button {
+            HapticsService.selectionChanged()
+            action()
+        } label: {
+            Text(title)
+                .gaiaFont(.subheadline)
+                .foregroundStyle(GaiaColor.oliveGreen400)
+                .padding(.horizontal, ActivityMetrics.pillHorizontalPadding)
+                .frame(height: ActivityMetrics.pillHeight)
+                .overlay(
+                    Capsule()
+                        .stroke(GaiaColor.oliveGreen400, lineWidth: 1)
+                )
+        }
+        .buttonStyle(.plain)
+    }
 }
 
 private struct ActivityPrimaryButton: View {
@@ -128,204 +367,32 @@ private struct ActivityPrimaryButton: View {
     }
 }
 
-private struct ActivitySuggestionCard: View {
-    let suggestion: FindDetailSuggestion
-
-    var body: some View {
-        ActivityHighlightedCardShell {
-            VStack(alignment: .leading, spacing: 0) {
-                ActivityCardHeader(
-                    author: suggestion.author,
-                    actionText: "suggested an ID",
-                    timestamp: suggestion.timestamp,
-                    avatarImageName: suggestion.avatarImageName,
-                    actionTextStyle: .caption2
-                )
-
-                VStack(alignment: .leading, spacing: GaiaSpacing.cardInset) {
-                    HStack(spacing: GaiaSpacing.md) {
-                        GaiaAssetImage(name: suggestion.imageName, contentMode: .fill)
-                            .frame(width: 104, height: 64)
-                            .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.sm, style: .continuous))
-
-                        VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
-                            Text(suggestion.scientificName)
-                                .gaiaFont(.title3)
-                                .foregroundStyle(GaiaColor.olive)
-                            Text(suggestion.subtitle)
-                                .gaiaFont(.caption2Medium)
-                                .foregroundStyle(GaiaColor.inkBlack300)
-                        }
-
-                        Spacer(minLength: 0)
-                    }
-
-                    HStack(spacing: GaiaSpacing.pillHorizontal) {
-                        Spacer(minLength: 0)
-                        ActivityOutlinedPill(title: "Agree")
-                        ActivityOutlinedPill(title: "Comment")
-                    }
-                }
-                .padding(GaiaSpacing.cardInset)
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-}
-
-private struct ActivityCommentThread: View {
-    let comments: [FindDetailComment]
-    let showsReadMore: Bool
-    let onReadMore: () -> Void
-
-    var body: some View {
-        HStack(alignment: .top, spacing: GaiaSpacing.md) {
-            Rectangle()
-                .fill(GaiaColor.broccoliBrown200)
-                .frame(width: 0.5)
-
-            VStack(alignment: .leading, spacing: GaiaSpacing.md) {
-                ForEach(comments) { comment in
-                    ActivityCommentCard(comment: comment)
-                }
-                if showsReadMore {
-                    Button {
-                        onReadMore()
-                    } label: {
-                        HStack {
-                            Spacer()
-                            Text("Read more")
-                                .gaiaFont(.subheadline)
-                                .foregroundStyle(GaiaColor.olive)
-                        }
-                        .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-}
-
-private struct ActivityCommentCard: View {
-    let comment: FindDetailComment
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            ActivityCardHeader(
-                author: comment.author,
-                actionText: "commented",
-                timestamp: comment.timestamp,
-                avatarImageName: comment.avatarImageName,
-                actionTextStyle: .caption2
-            )
-
-            Text(comment.body)
-                .gaiaFont(.subheadline)
-                .foregroundStyle(GaiaColor.blackishGrey300)
-                .padding(GaiaSpacing.cardInset)
-                .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .background(ActivityCardBackground(cornerRadius: GaiaRadius.lg))
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-}
-
-private struct ActivityCardHeader: View {
-    let author: String
-    let actionText: String
-    let timestamp: String
-    let avatarImageName: String
-    let actionTextStyle: GaiaTextStyle
-
-    private let avatarDimension: CGFloat = 48
-
-    var body: some View {
-        HStack(alignment: .center, spacing: GaiaSpacing.sm) {
-            FindProfilePicture(size: .large, imageName: avatarImageName)
-
-            HStack(alignment: .center, spacing: GaiaSpacing.sm) {
-                HStack(alignment: .firstTextBaseline, spacing: GaiaSpacing.xs) {
-                    Text(author)
-                        .gaiaFont(.callout)
-                        .foregroundStyle(GaiaColor.olive)
-                        .lineLimit(1)
-
-                    Text(actionText)
-                        .gaiaFont(actionTextStyle)
-                        .foregroundStyle(GaiaColor.broccoliBrown500)
-                        .lineLimit(1)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-
-                Text(timestamp)
-                    .gaiaFont(.caption)
-                    .foregroundStyle(GaiaColor.inkBlack200)
-                    .monospacedDigit()
-                    .lineLimit(1)
-                    .fixedSize(horizontal: true, vertical: false)
-                    .frame(
-                        minWidth: 77,
-                        maxWidth: 77,
-                        minHeight: avatarDimension,
-                        alignment: .center
-                    )
-                    .multilineTextAlignment(.trailing)
-            }
-        }
-        .padding(GaiaSpacing.cardInset)
-        .overlay(alignment: .bottom) {
-            Divider()
-                .overlay(GaiaColor.broccoliBrown200)
-        }
-    }
-}
-
-private struct ActivityOutlinedPill: View {
-    let title: String
-    var action: () -> Void = {}
-
-    var body: some View {
-        Button {
-            HapticsService.selectionChanged()
-            action()
-        } label: {
-            Text(title)
-                .gaiaFont(.subheadline)
-                .foregroundStyle(GaiaColor.olive)
-                .padding(.horizontal, GaiaSpacing.buttonHorizontalLarge)
-                .frame(height: 34)
-                .overlay(
-                    Capsule()
-                        .stroke(GaiaColor.olive, lineWidth: 1)
-                )
-        }
-        .buttonStyle(.plain)
-    }
-}
-
 struct ActivityFooterBar: View {
     var body: some View {
-        HStack(spacing: GaiaSpacing.cardInset) {
+        HStack(spacing: ActivityMetrics.footerGap) {
             ActivityPrimaryButton(title: "Suggest ID")
             ActivityPrimaryButton(title: "Comment")
         }
     }
 }
 
-private struct ActivityCardBackground: View {
+private struct ActivityCardBackground<Content: View>: View {
     let cornerRadius: CGFloat
+    @ViewBuilder let content: () -> Content
 
     var body: some View {
         let cardShape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
 
-        cardShape
-            .fill(GaiaColor.paperWhite50)
-            .overlay {
+        content()
+            .background(
                 cardShape
-                    .strokeBorder(GaiaColor.broccoliBrown200, lineWidth: 0.5)
-            }
+                    .fill(GaiaColor.paperWhite50)
+                    .overlay {
+                        cardShape
+                            .strokeBorder(GaiaColor.border, lineWidth: ActivityMetrics.borderWidth)
+                    }
+            )
+            .clipShape(cardShape)
     }
 }
 
@@ -333,21 +400,24 @@ private struct ActivityHighlightedCardShell<Content: View>: View {
     @ViewBuilder let content: () -> Content
 
     var body: some View {
+        let outerShape = RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous)
+        let innerShape = RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+
         content()
             .background(
-                RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+                innerShape
                     .fill(GaiaColor.paperWhite50)
             )
-            .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
+            .clipShape(innerShape)
             .background(
-                RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous)
+                outerShape
                     .fill(GaiaColor.oliveGreen500)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous)
-                    .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
+                outerShape
+                    .strokeBorder(GaiaColor.border, lineWidth: ActivityMetrics.borderWidth)
             )
-            .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous))
+            .clipShape(outerShape)
     }
 }
 

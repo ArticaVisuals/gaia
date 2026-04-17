@@ -1,3 +1,4 @@
+// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=1950-268596 (Camera)
 import SwiftUI
 import AVFoundation
 #if os(iOS)
@@ -41,15 +42,17 @@ struct ObserveCameraScreen: View {
                 )
                 .ignoresSafeArea()
 
-                ObserveViewfinderBrackets()
-                    .frame(width: viewportWidth, height: viewportHeight)
-                    .allowsHitTesting(false)
-
                 ObserveCameraTopBar(
                     sideInset: sideInset,
                     topInset: proxy.safeAreaInsets.top + 16,
                     onClose: onClose
                 )
+
+                ObserveCameraMatchCard()
+                    .frame(width: min(330, viewportWidth - (sideInset * 2)))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                    .padding(.top, proxy.safeAreaInsets.top + 82)
+                    .allowsHitTesting(false)
 
                 ObserveCameraControls(
                     selectedZoom: selectedZoom,
@@ -120,32 +123,7 @@ struct ObserveCameraScreen: View {
             CameraPreviewView(session: cameraService.session)
                 .ignoresSafeArea()
         } else {
-            ZStack {
-                LinearGradient(
-                    colors: [
-                        GaiaColor.paperWhite50,
-                        GaiaColor.oliveGreen100.opacity(0.82),
-                        GaiaColor.oliveGreen700.opacity(0.92)
-                    ],
-                    startPoint: .topTrailing,
-                    endPoint: .bottomLeading
-                )
-                .overlay(
-                    RadialGradient(
-                        colors: [Color.white.opacity(0.7), Color.clear],
-                        center: .topTrailing,
-                        startRadius: 12,
-                        endRadius: 280
-                    )
-                )
-                .overlay(
-                    LinearGradient(
-                        colors: [Color.clear, Color.black.opacity(0.38)],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                )
-            }
+            GaiaAssetImage(name: "observe-camera-background", contentMode: .fill)
             .ignoresSafeArea()
         }
     }
@@ -253,6 +231,36 @@ struct ObserveCameraScreen: View {
         }.value
     }
     #endif
+}
+
+private struct ObserveCameraMatchCard: View {
+    var body: some View {
+        HStack(alignment: .top, spacing: GaiaSpacing.md - 4) {
+            VStack(alignment: .leading, spacing: GaiaSpacing.xxs) {
+                Text("Green Sea Turtle")
+                    .gaiaFont(.title1)
+                    .foregroundStyle(GaiaColor.textPrimary)
+                    .lineLimit(2)
+
+                Text("Chelonia mydas")
+                    .gaiaFont(.caption)
+                    .foregroundStyle(GaiaColor.inkBlack300)
+                    .lineLimit(1)
+            }
+
+            Spacer(minLength: GaiaSpacing.md)
+
+            Text("94% Match")
+                .gaiaFont(.caption)
+                .foregroundStyle(GaiaColor.inkBlack300)
+        }
+        .padding(.horizontal, GaiaSpacing.md)
+        .padding(.vertical, GaiaSpacing.sm + 2)
+        .background(
+            GaiaMaterialBackground(cornerRadius: GaiaRadius.lg, showsShadow: true)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous))
+    }
 }
 
 private struct ObserveCameraTopBar: View {

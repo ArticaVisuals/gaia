@@ -62,7 +62,8 @@ struct GaiaMaterialBackground: View {
         var glass = Glass.regular
 
         if let tint {
-            glass = glass.tint(tint)
+            let resolvedTint = prominence == .prominent ? tint.opacity(1) : tint
+            glass = glass.tint(resolvedTint)
         }
 
         if interactive {

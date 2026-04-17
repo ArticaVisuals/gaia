@@ -1019,6 +1019,18 @@ body.nav-page-exit {
   display: flex; flex-direction: column; gap: 16px;
   padding: 16px; background: var(--paper-50);
 }
+.fd-activity-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 32px 16px 64px;
+  background: var(--paper-50);
+}
+.fd-activity-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
 
 /* ── Find tab ──────────────────────────────── */
 .fd-find-panel { background: var(--paper-50); }
@@ -1436,8 +1448,8 @@ body.nav-page-exit {
 }
 .fd-btn-primary {
   flex: 1; padding: 14px 20px;
-  background: var(--olive); color: var(--paper-50);
-  border: none; border-radius: 1000px; cursor: pointer;
+  background: #93a481; color: var(--paper-50);
+  border: 1px solid #adba9f; border-radius: 1000px; cursor: pointer;
   font-family: var(--font-sans); font-size: 17px; line-height: 1.3;
   text-align: center;
 }
@@ -1453,41 +1465,41 @@ body.nav-page-exit {
 .fd-activity-card {
   background: var(--paper-50);
   border: 0.5px solid var(--brown-200);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-small);
   overflow: hidden;
 }
 .fd-activity-header {
   display: flex; align-items: center; gap: 8px;
   padding: 12px;
-  border-bottom: 0.5px solid var(--brown-100);
+  border-bottom: 0.5px solid var(--brown-200);
 }
 .fd-activity-avatar {
   width: 48px; height: 48px; border-radius: 50%;
-  border: 0.5px solid var(--olive-100); object-fit: cover; flex-shrink: 0;
+  border: 0.5px solid rgba(0,0,0,0.10); object-fit: cover; flex-shrink: 0;
 }
 .fd-activity-meta {
   flex: 1; display: flex; align-items: center; gap: 8px;
 }
 .fd-activity-info { flex: 1; display: flex; align-items: baseline; gap: 4px; flex-wrap: wrap; }
 .fd-activity-name {
-  font-family: var(--font-serif); font-size: 16px; color: var(--olive);
-  line-height: 1.3; white-space: nowrap;
+  font-family: var(--font-sans); font-size: 16px; color: var(--olive);
+  line-height: 1.16; letter-spacing: -0.31px; white-space: nowrap;
 }
 .fd-activity-action {
-  font-family: var(--font-sans); font-size: 10px; color: var(--brown-500);
-  letter-spacing: 0.25px;
+  font-family: var(--font-sans); font-size: 12px; color: var(--brown-500);
+  line-height: 1.2;
 }
 .fd-activity-time {
-  font-family: var(--font-sans); font-size: 10px; color: #b0adb3;
-  letter-spacing: 0.25px; text-align: right; white-space: nowrap;
+  font-family: var(--font-sans); font-size: 11px; color: #b0adb3;
+  letter-spacing: 0.25px; line-height: 1.3; text-align: right; white-space: nowrap;
 }
 .fd-activity-body { padding: 12px; }
 .fd-activity-suggestion {
   display: flex; align-items: center; gap: 16px;
 }
 .fd-activity-thumb {
-  width: 66px; height: 66px; border-radius: var(--radius-sm);
+  width: 104px; height: 64px; border-radius: var(--radius-sm);
   object-fit: cover; flex-shrink: 0;
 }
 .fd-activity-id-name {
@@ -1499,21 +1511,37 @@ body.nav-page-exit {
   letter-spacing: 0.2px;
 }
 .fd-activity-comment {
-  font-family: var(--font-sans); font-size: 11px; color: #848589;
-  letter-spacing: 0.1px; line-height: 1.3;
+  font-family: var(--font-sans); font-size: 15px; color: #848589;
+  letter-spacing: 0; line-height: 1.3;
 }
 .fd-activity-actions {
   display: flex; gap: 10px; justify-content: flex-end; padding: 0 12px 12px;
+}
+.fd-activity-actions .fd-btn-outline {
+  letter-spacing: 0;
 }
 /* Thread connector line */
 .fd-thread {
   display: flex; gap: 16px; align-items: stretch;
 }
 .fd-thread-line {
-  width: 0.5px; background: var(--brown-200); flex-shrink: 0; margin-left: 8px;
+  width: 0.5px; background: var(--brown-200); flex-shrink: 0;
 }
 .fd-thread-cards {
   display: flex; flex-direction: column; gap: 16px; flex: 1;
+}
+.fd-thread-readmore {
+  display: block;
+  background: none;
+  border: none;
+  color: var(--olive);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  letter-spacing: 0;
+  line-height: 1.3;
+  padding: 0;
+  text-align: right;
 }
 
 /* ── LEARN TAB ──────────────────────────────────────────── */
@@ -3515,7 +3543,6 @@ body.nav-page-exit {
         <div class="gaia-tab-switch__indicator" aria-hidden="true"></div>
         <button class="fd-tab gaia-tab-switch__tab active" data-fd-tab="find">Find</button>
         <button class="fd-tab gaia-tab-switch__tab" data-fd-tab="activity">Activity</button>
-        <button class="fd-tab gaia-tab-switch__tab" data-fd-tab="learn">Learn</button>
       </div>
 
       <!-- ═══ FIND TAB ═══════════════════════════════════════════ -->
@@ -3667,134 +3694,79 @@ body.nav-page-exit {
 
       <!-- ═══ ACTIVITY TAB ═══════════════════════════════════════ -->
       <div class="fd-panel" data-fd-panel="activity">
-      <div class="fd-content">
-        <!-- Top Contributors -->
-        <div class="fd-card">
-          <div class="fd-card-title">Top Contributors</div>
-          <div class="fd-contrib-row">
-            <div class="fd-contrib-left">
-              <span class="fd-contrib-rank">1</span>
-              <div class="fd-contrib-user">
-                <div class="fd-contrib-avatar"><img class="fd-contrib-avatar-img fd-contrib-avatar-img--alice" src="https://www.figma.com/api/mcp/asset/c228b073-32c4-460d-99ea-d0c32aacadad" alt=""></div>
-                <span class="fd-contrib-name">Alice Edwards</span>
-              </div>
-            </div>
-            <div class="fd-contrib-right">
-              <span class="fd-contrib-count">6</span>
-              <img class="fd-contrib-icon" src="https://www.figma.com/api/mcp/asset/de985c1f-b7ac-41b1-924c-47695b32b271" alt="">
-            </div>
-          </div>
-          <div class="fd-contrib-row">
-            <div class="fd-contrib-left">
-              <span class="fd-contrib-rank">2</span>
-              <div class="fd-contrib-user">
-                <div class="fd-contrib-avatar"><img class="fd-contrib-avatar-img fd-contrib-avatar-img--maya" src="https://www.figma.com/api/mcp/asset/254025d8-ccc5-42c0-acde-e09e66d9010c" alt=""></div>
-                <span class="fd-contrib-name">Maya Chen</span>
-              </div>
-            </div>
-            <div class="fd-contrib-right">
-              <span class="fd-contrib-count">3</span>
-              <img class="fd-contrib-icon" src="https://www.figma.com/api/mcp/asset/de985c1f-b7ac-41b1-924c-47695b32b271" alt="">
-            </div>
-          </div>
-          <div class="fd-contrib-row">
-            <div class="fd-contrib-left">
-              <span class="fd-contrib-rank">3</span>
-              <div class="fd-contrib-user">
-                <div class="fd-contrib-avatar"><img class="fd-contrib-avatar-img fd-contrib-avatar-img--jules" src="https://www.figma.com/api/mcp/asset/4f0f6c5d-2488-4a13-a427-aae284a52a41" alt=""></div>
-                <span class="fd-contrib-name">Jules Kim</span>
-              </div>
-            </div>
-            <div class="fd-contrib-right">
-              <span class="fd-contrib-count">1</span>
-              <img class="fd-contrib-icon" src="https://www.figma.com/api/mcp/asset/de985c1f-b7ac-41b1-924c-47695b32b271" alt="">
-            </div>
-          </div>
-        </div>
-
-        <!-- Action buttons -->
-        <div class="fd-actions">
-          <button class="fd-btn-primary">Suggest ID</button>
-          <button class="fd-btn-primary">Comment</button>
-        </div>
-
-        <!-- Alice suggested an ID -->
-        <div class="fd-activity-card">
-          <div class="fd-activity-header">
-            <img class="fd-activity-avatar" src="https://www.figma.com/api/mcp/asset/c228b073-32c4-460d-99ea-d0c32aacadad" alt="">
-            <div class="fd-activity-meta">
-              <div class="fd-activity-info">
-                <span class="fd-activity-name">Alice Edwards</span>
-                <span class="fd-activity-action">suggested an ID</span>
-              </div>
-              <span class="fd-activity-time">2h ago</span>
-            </div>
-          </div>
-          <div class="fd-activity-body">
-            <div class="fd-activity-suggestion">
-              <img class="fd-activity-thumb" src="https://www.figma.com/api/mcp/asset/05d7069e-201f-4c1c-b190-20655344ad29" alt="">
-              <div>
-                <div class="fd-activity-id-name">Quercus agrifolia</div>
-                <div class="fd-activity-id-note">Original suggested ID</div>
-              </div>
-            </div>
-          </div>
-          <div class="fd-activity-actions">
-            <button class="fd-btn-outline">Agree</button>
-            <button class="fd-btn-outline">Comment</button>
-          </div>
-        </div>
-
-        <!-- Thread: Maya + Jules commented -->
-        <div class="fd-thread">
-          <div class="fd-thread-line"></div>
-          <div class="fd-thread-cards">
-            <!-- Maya commented -->
+        <div class="fd-activity-layout">
+          <div class="fd-activity-stack">
             <div class="fd-activity-card">
               <div class="fd-activity-header">
-                <img class="fd-activity-avatar" src="https://www.figma.com/api/mcp/asset/254025d8-ccc5-42c0-acde-e09e66d9010c" alt="">
+                <img class="fd-activity-avatar" src="assets/profile/all-people/avatar-noah.png" alt="Noah Erdos">
                 <div class="fd-activity-meta">
                   <div class="fd-activity-info">
-                    <span class="fd-activity-name">Maya Chen</span>
-                    <span class="fd-activity-action">commented</span>
-                  </div>
-                  <span class="fd-activity-time">4h ago</span>
-                </div>
-              </div>
-              <div class="fd-activity-body">
-                <p class="fd-activity-comment">Great find. Leaf margins and acorn shape strongly match Coast Live Oak.</p>
-              </div>
-            </div>
-            <!-- Jules commented -->
-            <div class="fd-activity-card">
-              <div class="fd-activity-header">
-                <img class="fd-activity-avatar" src="https://www.figma.com/api/mcp/asset/4f0f6c5d-2488-4a13-a427-aae284a52a41" alt="">
-                <div class="fd-activity-meta">
-                  <div class="fd-activity-info">
-                    <span class="fd-activity-name">Jules Kim</span>
-                    <span class="fd-activity-action">commented</span>
+                    <span class="fd-activity-name">Noah Erdos</span>
+                    <span class="fd-activity-action">suggested an ID</span>
                   </div>
                   <span class="fd-activity-time">5h ago</span>
                 </div>
               </div>
               <div class="fd-activity-body">
-                <p class="fd-activity-comment">Noted nearby seedlings as well. Added supporting photo to thread.</p>
+                <div class="fd-activity-suggestion">
+                  <img class="fd-activity-thumb" src="assets/find-details/activity-tab-final/suggestion-thumb.png" alt="Coast Live Oak suggestion">
+                  <div>
+                    <div class="fd-activity-id-name">Quercus agrifolia</div>
+                    <div class="fd-activity-id-note">Original suggested ID</div>
+                  </div>
+                </div>
+              </div>
+              <div class="fd-activity-actions">
+                <button class="fd-btn-outline">Agree</button>
+                <button class="fd-btn-outline">Comment</button>
+              </div>
+            </div>
+
+            <div class="fd-thread">
+              <div class="fd-thread-line"></div>
+              <div class="fd-thread-cards">
+                <div class="fd-activity-card">
+                  <div class="fd-activity-header">
+                    <img class="fd-activity-avatar" src="assets/profile/all-people/avatar-maya.png" alt="Liam Poplawski">
+                    <div class="fd-activity-meta">
+                      <div class="fd-activity-info">
+                        <span class="fd-activity-name">Liam Poplawski</span>
+                        <span class="fd-activity-action">commented</span>
+                      </div>
+                      <span class="fd-activity-time">2h ago</span>
+                    </div>
+                  </div>
+                  <div class="fd-activity-body">
+                    <p class="fd-activity-comment">Great find. Leaf margins and acorn shape strongly match Coast Live Oak.</p>
+                  </div>
+                </div>
+
+                <div class="fd-activity-card">
+                  <div class="fd-activity-header">
+                    <img class="fd-activity-avatar" src="assets/profile/all-people/avatar-lena.png" alt="Sarah Pinkham">
+                    <div class="fd-activity-meta">
+                      <div class="fd-activity-info">
+                        <span class="fd-activity-name">Sarah Pinkham</span>
+                        <span class="fd-activity-action">commented</span>
+                      </div>
+                      <span class="fd-activity-time">1h ago</span>
+                    </div>
+                  </div>
+                  <div class="fd-activity-body">
+                    <p class="fd-activity-comment">I've been seeing a lot of these nearby! I agree with the identification :)</p>
+                  </div>
+                </div>
+
+                <button class="fd-thread-readmore">Read more</button>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Safety & Moderation -->
-        <div class="fd-card">
-          <div class="fd-card-title">Safety + Moderation</div>
-          <div style="display:flex;gap:12px;margin-top:4px;">
-            <button class="fd-btn-outline">Report Issue</button>
+          <div class="fd-actions">
+            <button class="fd-btn-primary">Suggest ID</button>
+            <button class="fd-btn-primary">Comment</button>
           </div>
         </div>
-
-        <!-- Bottom spacer for nav bar -->
-
-      </div>
       </div><!-- /fd-panel activity -->
 
       <!-- ═══ LEARN TAB ═══════════════════════════════════════ -->

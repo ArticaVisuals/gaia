@@ -23,20 +23,19 @@
 		28317C1E6A80AC7FDCF3496E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EC919F4D5C11CEED3715ED65 /* Assets.xcassets */; };
 		2F4A6B8C0D1E2F3041526374 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3A4B5C6D7E8F901234567890 /* LaunchScreen.storyboard */; };
 		2BC6344D1A1E4D9B8E54E801 /* FindDetailsPrototypeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BC6344D1A1E4D9B8E54E802 /* FindDetailsPrototypeScreen.swift */; };
-		2BC6344D1A1E4D9B8E54E803 /* FindDetailsLegacyTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BC6344D1A1E4D9B8E54E804 /* FindDetailsLegacyTabView.swift */; };
 		2BC6344D1A1E4D9B8E54E805 /* FindDetailsLearnScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BC6344D1A1E4D9B8E54E806 /* FindDetailsLearnScreen.swift */; };
 		2BC6344D1A1E4D9B8E54E807 /* FindDetailsLearnFoundInMapArtwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BC6344D1A1E4D9B8E54E808 /* FindDetailsLearnFoundInMapArtwork.swift */; };
 		2A71395633CE89E8E0747B06 /* FindCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F20CB050256AA9670C4A3E9 /* FindCard.swift */; };
 		2BFFDF418B96C3C878FA39D2 /* GaiaDivider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4908DF30B56F9D2888EDA36C /* GaiaDivider.swift */; };
 		37DBEF790BACD986F2F554A9 /* GaiaAssetImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3771245A136A07017697132A /* GaiaAssetImage.swift */; };
 		3C765E638800300869488342 /* ExploreBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6DF3EC06F477230FE809AE /* ExploreBottomSheet.swift */; };
-		3E485D3200C073439ECC9F75 /* FindDetailsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F8E223E3FFF9D8CE4CE78E /* FindDetailsScreen.swift */; };
 		3F57F46D353F47C028A3B80B /* ActivityViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE44E4B2B4055BA89D58E91A /* ActivityViewModel.swift */; };
 		41398D188AB1B3E91750C634 /* ExploreScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A83366EDC64D8617F1948136 /* ExploreScreen.swift */; };
 		4A2E2D5D7B4F40F0A8D1A9B2 /* ProjectDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F1E7C4B1E0D4F4A9B2C3D4E /* ProjectDetailScreen.swift */; };
 		41F12A019F2AA6FAD5F51EDE /* AssetCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7E24A836A41B1EBBFE1111F /* AssetCatalog.swift */; };
 		4368DA818879429FF437B94A /* ObserveShareScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89962408889C538DE020C9EC /* ObserveShareScreen.swift */; };
 		43C4C5F11FD5C7ADF288D67C /* GaiaColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A2A5FD14BE53F99202C384 /* GaiaColor.swift */; };
+		46F3A0B4C9D144B59D0A31E8 /* GaiaProjectSummaryCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71C984B3B9AA4C4E8A5D61F4 /* GaiaProjectSummaryCard.swift */; };
 		9A1B2C3D4E5F60718293A4B5 /* GaiaPressableCardStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F60718293A4B5 /* GaiaPressableCardStyle.swift */; };
 		49E43F7C7862270839A15192 /* LearnMapExpandedScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96603E9BD3CA66779600FB2E /* LearnMapExpandedScreen.swift */; };
 		568E3C8E056FBB2133E168FA /* PreviewProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F745800DE0CB2C42E869EEE8 /* PreviewProfile.swift */; };
@@ -69,7 +68,6 @@
 		8D89DC4884B8E2759D35C772 /* CameraService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E81E4B46008A4392C85C6C0E /* CameraService.swift */; };
 		8DBB253433B9E4372F71859F /* ImpactSummaryCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31438D127669C89572CEE389 /* ImpactSummaryCard.swift */; };
 		8F599AF5DFAF8B820DCE15D9 /* ObserveLoadingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C7FD39876C97FE2AE248FAD /* ObserveLoadingScreen.swift */; };
-		9143011B9773EE317A1DC5D5 /* BottomNavBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 128C750EF810DF7DB55D895C /* BottomNavBar.swift */; };
 		9403865E789DC3EF680E8F19 /* MapAnnotationClusterPin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E731FBE3E0B780147C9F043 /* MapAnnotationClusterPin.swift */; };
 		95FE0B57F80CB1D817BAE07F /* ExpandMapButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73C6D2FD6D15954142B8CD7 /* ExpandMapButton.swift */; };
 		966800EABEF9690F921538E8 /* SwipeableStoryDeck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B09BE352ACB224203FE7AD1 /* SwipeableStoryDeck.swift */; };
@@ -79,7 +77,6 @@
 		9DF69059AD40A6A00A55B568 /* GaiaAsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0936210E15DA895926002A94 /* GaiaAsyncImage.swift */; };
 		B1476856282321E55D9D3268 /* ExploreMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 474384ED9682C633E3840DF6 /* ExploreMapView.swift */; };
 		B190469C455A82D5271F9274 /* ImpactMapExpandedScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7943D60FFDCAB74CE34FDCC5 /* ImpactMapExpandedScreen.swift */; };
-		B3CD2642A022FEFF29531B97 /* FindDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5935E3D649A9470881E239D0 /* FindDetailsViewModel.swift */; };
 		B592CBEAEFBDD0337C9AAB08 /* Observation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00668D51194DE7E7756461C6 /* Observation.swift */; };
 		B72843185C017FAB71ABB12D /* MapAnnotationPhotoPin.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8653282960E7D3E444C5F93 /* MapAnnotationPhotoPin.swift */; };
 		B876F29B5E330385DB546A3F /* GaiaShadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BA52F8FCB51A37ACAC45681 /* GaiaShadow.swift */; };
@@ -89,7 +86,6 @@
 		BF7F22B769777BA684702726 /* HeroCarousel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A346E794FCAC0D6E082458D /* HeroCarousel.swift */; };
 		C360877A9AC7C2FF5CD461EE /* MapboxMaps in Frameworks */ = {isa = PBXBuildFile; productRef = F35852E7C67E2600F54B271C /* MapboxMaps */; };
 		C399176BFB12FF720B7B31A8 /* ProfileScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65E65A51075095419291E921 /* ProfileScreen.swift */; };
-		C4F28BBADBD876A16607D880 /* LearnTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D9D76AB88DCDA2E4EAAE901 /* LearnTabView.swift */; };
 		C5992085057A9286A2BF7712 /* GaiaMaterial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6715EF68DE19A34067992A4B /* GaiaMaterial.swift */; };
 		CBBFD16B2093D881DF92F55C /* PreviewStories.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD6F75AE68AC4A07C71DA3EA /* PreviewStories.swift */; };
 		CCA4A80CD2577968A6DBF2ED /* GlassPillButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22FE1E8C3DBDE3F10B761CCD /* GlassPillButton.swift */; };
@@ -116,11 +112,9 @@
 
 /* Begin PBXFileReference section */
 		00668D51194DE7E7756461C6 /* Observation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Observation.swift; sourceTree = "<group>"; };
-		03F8E223E3FFF9D8CE4CE78E /* FindDetailsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindDetailsScreen.swift; sourceTree = "<group>"; };
 		07C1014FFD074B9B7F391996 /* Species.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Species.swift; sourceTree = "<group>"; };
 		0936210E15DA895926002A94 /* GaiaAsyncImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaiaAsyncImage.swift; sourceTree = "<group>"; };
 		10B9C6679E3F4845C332D40C /* ObserveCameraScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObserveCameraScreen.swift; sourceTree = "<group>"; };
-		128C750EF810DF7DB55D895C /* BottomNavBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomNavBar.swift; sourceTree = "<group>"; };
 		13124E13356C5E5C3E2DF08D /* GaiaPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaiaPill.swift; sourceTree = "<group>"; };
 		141B70A1432B81AED463BD52 /* GaiaNativeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaiaNativeApp.swift; sourceTree = "<group>"; };
 		146524C2AC943E73407C2CA8 /* DeepLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLink.swift; sourceTree = "<group>"; };
@@ -135,7 +129,6 @@
 		27DFF6D5DEA020C081FA395E /* ActivityScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityScreen.swift; sourceTree = "<group>"; };
 		28074E03C039B184F5071499 /* GaiaBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaiaBadge.swift; sourceTree = "<group>"; };
 		2BC6344D1A1E4D9B8E54E802 /* FindDetailsPrototypeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindDetailsPrototypeScreen.swift; sourceTree = "<group>"; };
-		2BC6344D1A1E4D9B8E54E804 /* FindDetailsLegacyTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindDetailsLegacyTabView.swift; sourceTree = "<group>"; };
 		2BC6344D1A1E4D9B8E54E806 /* FindDetailsLearnScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindDetailsLearnScreen.swift; sourceTree = "<group>"; };
 		2BC6344D1A1E4D9B8E54E808 /* FindDetailsLearnFoundInMapArtwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindDetailsLearnFoundInMapArtwork.swift; sourceTree = "<group>"; };
 		2EC6A2980D5E316464B705FC /* AnimationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationCoordinator.swift; sourceTree = "<group>"; };
@@ -146,6 +139,7 @@
 		41BC95568CDC1A443634978C /* HapticsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticsService.swift; sourceTree = "<group>"; };
 		44940F559F9B5CA70C3CA42B /* ProfileImpactTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileImpactTab.swift; sourceTree = "<group>"; };
 		45C5FEAF025A451CD8A13BA9 /* GaiaCardSurfaces.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaiaCardSurfaces.swift; sourceTree = "<group>"; };
+		71C984B3B9AA4C4E8A5D61F4 /* GaiaProjectSummaryCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaiaProjectSummaryCard.swift; sourceTree = "<group>"; };
 		474384ED9682C633E3840DF6 /* ExploreMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreMapView.swift; sourceTree = "<group>"; };
 		4908DF30B56F9D2888EDA36C /* GaiaDivider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaiaDivider.swift; sourceTree = "<group>"; };
 		4BD446C59D0C73730E439C6E /* AppRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRootView.swift; sourceTree = "<group>"; };
@@ -162,7 +156,6 @@
 		5723A352DAB2A9FE2BB837F7 /* PreviewActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewActivity.swift; sourceTree = "<group>"; };
 		57D8CA1369BB83BC58B17FCB /* StoryDeckScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryDeckScreen.swift; sourceTree = "<group>"; };
 		58135D266CB1039B4C6C08C4 /* ObserveFlowScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObserveFlowScreen.swift; sourceTree = "<group>"; };
-		5935E3D649A9470881E239D0 /* FindDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindDetailsViewModel.swift; sourceTree = "<group>"; };
 		5F1C156F7C96E4F7187CC851 /* GaiaMaterialBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaiaMaterialBackground.swift; sourceTree = "<group>"; };
 		65E65A51075095419291E921 /* ProfileScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileScreen.swift; sourceTree = "<group>"; };
 		6715EF68DE19A34067992A4B /* GaiaMaterial.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaiaMaterial.swift; sourceTree = "<group>"; };
@@ -180,7 +173,6 @@
 		8A1B2C3D4E5F60718293A4B5 /* GaiaPressableCardStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaiaPressableCardStyle.swift; sourceTree = "<group>"; };
 		8B09BE352ACB224203FE7AD1 /* SwipeableStoryDeck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeableStoryDeck.swift; sourceTree = "<group>"; };
 		8BA52F8FCB51A37ACAC45681 /* GaiaShadow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaiaShadow.swift; sourceTree = "<group>"; };
-		8D9D76AB88DCDA2E4EAAE901 /* LearnTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnTabView.swift; sourceTree = "<group>"; };
 		8FA4E0BC8A4F2683BFE1A0B7 /* ProfileCommunityTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileCommunityTab.swift; sourceTree = "<group>"; };
 		8F1E7C4B1E0D4F4A9B2C3D4E /* ProjectDetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectDetailScreen.swift; sourceTree = "<group>"; };
 		9077E84A708E36557C59B298 /* AppCopy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCopy.swift; sourceTree = "<group>"; };
@@ -287,7 +279,6 @@
 		170C8E54D7709DB5237F5DE7 /* Navigation */ = {
 			isa = PBXGroup;
 			children = (
-				128C750EF810DF7DB55D895C /* BottomNavBar.swift */,
 				A6F21E03D471FF7175973D56 /* DraggableTabSwitch.swift */,
 				2435EF09C2AD4967C594E35E /* ToolbarGlassButton.swift */,
 				CD5C92AD3B2E2513234DBBF7 /* ToolbarGlassPill.swift */,
@@ -363,13 +354,9 @@
 				51F60AA112B2EC6350829FD9 /* ActivityTabView.swift */,
 				2BC6344D1A1E4D9B8E54E808 /* FindDetailsLearnFoundInMapArtwork.swift */,
 				2BC6344D1A1E4D9B8E54E806 /* FindDetailsLearnScreen.swift */,
-				2BC6344D1A1E4D9B8E54E804 /* FindDetailsLegacyTabView.swift */,
 				2BC6344D1A1E4D9B8E54E802 /* FindDetailsPrototypeScreen.swift */,
-				03F8E223E3FFF9D8CE4CE78E /* FindDetailsScreen.swift */,
-				5935E3D649A9470881E239D0 /* FindDetailsViewModel.swift */,
 				A34808BB5A98003FE03CE01E /* FindTabView.swift */,
 				96603E9BD3CA66779600FB2E /* LearnMapExpandedScreen.swift */,
-				8D9D76AB88DCDA2E4EAAE901 /* LearnTabView.swift */,
 			);
 			path = FindDetails;
 			sourceTree = "<group>";
@@ -420,6 +407,7 @@
 				385D8878F5D62218D412C462 /* ActivityCard.swift */,
 				6F20CB050256AA9670C4A3E9 /* FindCard.swift */,
 				45C5FEAF025A451CD8A13BA9 /* GaiaCardSurfaces.swift */,
+				71C984B3B9AA4C4E8A5D61F4 /* GaiaProjectSummaryCard.swift */,
 				8A1B2C3D4E5F60718293A4B5 /* GaiaPressableCardStyle.swift */,
 				31438D127669C89572CEE389 /* ImpactSummaryCard.swift */,
 				C6F358B40558E1CCF4EDCBF8 /* LearnSpeciesCard.swift */,
@@ -618,7 +606,6 @@
 				5BC0A5166EF5CAADBFDADCC3 /* AppRouter.swift in Sources */,
 				E3C118E2CF86E0099D10690A /* AppState.swift in Sources */,
 				41F12A019F2AA6FAD5F51EDE /* AssetCatalog.swift in Sources */,
-				9143011B9773EE317A1DC5D5 /* BottomNavBar.swift in Sources */,
 				7683DFFD02AE08F612707BFD /* CameraPreviewView.swift in Sources */,
 				8D89DC4884B8E2759D35C772 /* CameraService.swift in Sources */,
 				CD7C44DFD8E5266341E66C59 /* ComingSoonView.swift in Sources */,
@@ -634,16 +621,14 @@
 				2A71395633CE89E8E0747B06 /* FindCard.swift in Sources */,
 				2BC6344D1A1E4D9B8E54E807 /* FindDetailsLearnFoundInMapArtwork.swift in Sources */,
 				2BC6344D1A1E4D9B8E54E805 /* FindDetailsLearnScreen.swift in Sources */,
-				2BC6344D1A1E4D9B8E54E803 /* FindDetailsLegacyTabView.swift in Sources */,
 				2BC6344D1A1E4D9B8E54E801 /* FindDetailsPrototypeScreen.swift in Sources */,
-				3E485D3200C073439ECC9F75 /* FindDetailsScreen.swift in Sources */,
-				B3CD2642A022FEFF29531B97 /* FindDetailsViewModel.swift in Sources */,
 				5DE4FB4D3DF4295B250BE973 /* FindTabView.swift in Sources */,
 				37DBEF790BACD986F2F554A9 /* GaiaAssetImage.swift in Sources */,
 				9DF69059AD40A6A00A55B568 /* GaiaAsyncImage.swift in Sources */,
 				25DB2E0C8AA50A2FB9F4D45B /* GaiaBadge.swift in Sources */,
 				58C1A97E4D7B43F0A6219B55 /* GaiaProfileAvatar.swift in Sources */,
 				E5090830A81B3ABDD643EF81 /* GaiaCardSurfaces.swift in Sources */,
+				46F3A0B4C9D144B59D0A31E8 /* GaiaProjectSummaryCard.swift in Sources */,
 				43C4C5F11FD5C7ADF288D67C /* GaiaColor.swift in Sources */,
 				9A1B2C3D4E5F60718293A4B5 /* GaiaPressableCardStyle.swift in Sources */,
 				2BFFDF418B96C3C878FA39D2 /* GaiaDivider.swift in Sources */,
@@ -668,7 +653,6 @@
 				8DBB253433B9E4372F71859F /* ImpactSummaryCard.swift in Sources */,
 				49E43F7C7862270839A15192 /* LearnMapExpandedScreen.swift in Sources */,
 				E3F594AE2CD9F088CCD8760D /* LearnSpeciesCard.swift in Sources */,
-				C4F28BBADBD876A16607D880 /* LearnTabView.swift in Sources */,
 				D49F9CDC13BB447F37C2FE4E /* LoadingView.swift in Sources */,
 				9403865E789DC3EF680E8F19 /* MapAnnotationClusterPin.swift in Sources */,
 				B72843185C017FAB71ABB12D /* MapAnnotationPhotoPin.swift in Sources */,

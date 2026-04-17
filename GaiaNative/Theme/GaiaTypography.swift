@@ -10,6 +10,7 @@ enum GaiaTextStyle {
     case heroFindCollapsed
     case display, displayMedium
     case display40Medium
+    case display48Medium
     case title1, title1Medium
     case title2, title2Medium
     case title3, title3Medium          // serif 20px
@@ -17,6 +18,7 @@ enum GaiaTextStyle {
     case bodySerif, bodySerifMedium, bodySerifTight
     case statValue
     case scientificLabel
+    case captionMono
     case weatherValue
 
     // Sans (Neue Haas Unica)
@@ -47,6 +49,7 @@ enum GaiaTextStyle {
         case .display:          return (GaiaTypography.display,          -0.5,  GaiaTypography.serifLineSpacing(size: 32, weight: .regular, targetLineHeight: 32 * 1.1))
         case .displayMedium:    return (GaiaTypography.displayMedium,    -0.5,  GaiaTypography.serifLineSpacing(size: 32, weight: .medium, targetLineHeight: 32))
         case .display40Medium:  return (GaiaTypography.display40Medium,  -0.5,  0)           // LH 1.0
+        case .display48Medium:  return (GaiaTypography.display48Medium,  -0.5,  0)           // LH 1.0
         case .title1:           return (GaiaTypography.title1,           -0.3,  GaiaTypography.serifLineSpacing(size: 28, weight: .regular, targetLineHeight: 28 * 1.1))
         case .title1Medium:     return (GaiaTypography.title1Medium,     -0.3,  GaiaTypography.serifLineSpacing(size: 28, weight: .medium, targetLineHeight: 28 * 1.1))
         case .title2:           return (GaiaTypography.title2,           -0.2,  GaiaTypography.serifLineSpacing(size: 24, weight: .regular, targetLineHeight: 24 * 1.1))
@@ -69,6 +72,17 @@ enum GaiaTextStyle {
             size: 12,
             fallback: .monospacedSystemFont(ofSize: 12, weight: .regular),
             targetLineHeight: 15.6
+        ))
+        case .captionMono:      return (GaiaTypography.captionMono,       0,     GaiaTypography.customLineSpacing(
+            candidates: [
+                "BasierCircleMono-Regular",
+                "Basier Circle Mono",
+                "BasierCircleMono",
+                "Basier Circle Mono Regular"
+            ],
+            size: 11,
+            fallback: .monospacedSystemFont(ofSize: 11, weight: .regular),
+            targetLineHeight: 14.3
         ))
         case .weatherValue:     return (GaiaTypography.weatherValue,     -1.0865, 0)
 
@@ -124,6 +138,7 @@ enum GaiaTypography {
     static let display = serif(size: 32, weight: .regular, fallbackStyle: .largeTitle)
     static let displayMedium = serif(size: 32, weight: .medium, fallbackStyle: .largeTitle)
     static let display40Medium = serif(size: 40, weight: .medium, fallbackStyle: .largeTitle)
+    static let display48Medium = serif(size: 48, weight: .medium, fallbackStyle: .largeTitle)
     static let title1 = serif(size: 28, weight: .regular, fallbackStyle: .title)
     static let title1Medium = serif(size: 28, weight: .medium, fallbackStyle: .title)
     static let title2 = serif(size: 24, weight: .regular, fallbackStyle: .title2)
@@ -135,6 +150,7 @@ enum GaiaTypography {
     static let bodySerif = serif(size: 14, weight: .regular, fallbackStyle: .body)
     static let bodySerifMedium = serif(size: 14, weight: .medium, fallbackStyle: .body)
     static let statValue = serif(size: 30.471, weight: .medium, fallbackStyle: .title)
+    static let learnStatStatus = serif(size: 21.765, weight: .bold, fallbackStyle: .title3)
     static let scientificLabel = customFont(
         candidates: [
             "BasierCircleMono-Regular",
@@ -144,6 +160,16 @@ enum GaiaTypography {
         ],
         size: 12,
         fallback: .system(size: 12, weight: .regular, design: .monospaced)
+    )
+    static let captionMono = customFont(
+        candidates: [
+            "BasierCircleMono-Regular",
+            "Basier Circle Mono",
+            "BasierCircleMono",
+            "Basier Circle Mono Regular"
+        ],
+        size: 11,
+        fallback: .system(size: 11, weight: .regular, design: .monospaced)
     )
     static let weatherValue = serif(size: 69.537, weight: .regular, fallbackStyle: .largeTitle)
 

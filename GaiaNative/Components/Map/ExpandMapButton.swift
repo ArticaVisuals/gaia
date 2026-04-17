@@ -6,7 +6,7 @@ struct ExpandMapButton: View {
 
     private enum Layout {
         static let buttonSize: CGFloat = 40
-        static let iconSize: CGFloat = 26.667
+        static let iconSize: CGFloat = 24
     }
 
     var body: some View {

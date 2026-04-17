@@ -214,37 +214,14 @@ struct ToolbarGlassLearnButton: View {
     var showsShadow: Bool = true
     let action: () -> Void
 
-    @State private var shimmerPhase: CGFloat = 0
-
     private enum Layout {
         static let horizontalPadding: CGFloat = 20
         static let verticalPadding: CGFloat = 14
         static let contentSpacing: CGFloat = 8
-        static let borderWidth: CGFloat = 1.0
         static let arrowAssetWidth: CGFloat = 15.59
         static let arrowAssetHeight: CGFloat = 20.103
         static let arrowWidth: CGFloat = 20.103
         static let arrowHeight: CGFloat = 15.59
-        static let shadowColor = GaiaColor.broccoliBrown500
-
-        // Closest available Gaia tokens to the Figma glass stroke gradient.
-        static let strokeHighlight = GaiaColor.broccoliBrown200
-        static let strokeShadow = GaiaColor.broccoliBrown600
-    }
-
-    /// Stroke gradient that matches Figma: bright -> dark -> bright, rotated by shimmerPhase
-    private var strokeGradient: AngularGradient {
-        AngularGradient(
-            stops: [
-                .init(color: Layout.strokeHighlight, location: 0.0),
-                .init(color: Layout.strokeShadow, location: 0.275),
-                .init(color: Layout.strokeHighlight, location: 0.5),
-                .init(color: Layout.strokeShadow, location: 0.775),
-                .init(color: Layout.strokeHighlight, location: 1.0)
-            ],
-            center: .center,
-            angle: .degrees(shimmerPhase)
-        )
     }
 
     var body: some View {
@@ -270,33 +247,34 @@ struct ToolbarGlassLearnButton: View {
         }
         .buttonStyle(GlassReactiveButtonStyle())
         .accessibilityLabel(accessibilityLabel)
-        .onAppear {
-            shimmerPhase = 0
-
-            withAnimation(
-                .linear(duration: 6)
-                    .repeatForever(autoreverses: false)
-            ) {
-                shimmerPhase = 360
-            }
-        }
     }
 
+    @ViewBuilder
     private var backgroundSurface: some View {
-        let shape = Capsule(style: .continuous)
+        if #available(iOS 26.0, *) {
+            GaiaMaterialBackground(
+                cornerRadius: GaiaRadius.full,
+                interactive: true,
+                showsShadow: showsShadow,
+                prominence: .prominent,
+                tint: GaiaColor.broccoliBrown500.opacity(0.34)
+            )
+        } else {
+            let shape = Capsule(style: .continuous)
 
-        return shape
-            .fill(GaiaColor.broccoliBrown500)
-            .overlay(
-                shape
-                    .stroke(strokeGradient, lineWidth: Layout.borderWidth)
-            )
-            .shadow(
-                color: showsShadow ? Layout.shadowColor : .clear,
-                radius: GaiaShadow.mdRadius,
-                x: 0,
-                y: GaiaShadow.mdYOffset
-            )
+            shape
+                .fill(GaiaColor.broccoliBrown500)
+                .overlay(
+                    shape
+                        .stroke(GaiaColor.broccoliBrown200, lineWidth: 1)
+                )
+                .shadow(
+                    color: showsShadow ? GaiaShadow.mdColor : .clear,
+                    radius: GaiaShadow.mdRadius,
+                    x: 0,
+                    y: GaiaShadow.mdYOffset
+                )
+        }
     }
 
     @ViewBuilder
