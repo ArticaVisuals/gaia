@@ -208,7 +208,7 @@
 		E81E4B46008A4392C85C6C0E /* CameraService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraService.swift; sourceTree = "<group>"; };
 		EC919F4D5C11CEED3715ED65 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3A4B5C6D7E8F901234567890 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
-		F6A30B246BD2BE96AB2E2FE8 /* Icons */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Icons; path = GaiaNative/Resources/Icons; sourceTree = SOURCE_ROOT; };
+		F6A30B246BD2BE96AB2E2FE8 /* Icons */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Icons; path = assets/icons; sourceTree = SOURCE_ROOT; };
 		F745800DE0CB2C42E869EEE8 /* PreviewProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewProfile.swift; sourceTree = "<group>"; };
 		FCFFDBD4F3C52CE19C95A739 /* GalleryRail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryRail.swift; sourceTree = "<group>"; };
 		FE44E4B2B4055BA89D58E91A /* ActivityViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityViewModel.swift; sourceTree = "<group>"; };
