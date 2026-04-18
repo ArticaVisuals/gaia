@@ -1,16 +1,9 @@
 import SwiftUI
 
-enum GaiaGlassProminence {
-    case regular
-    case prominent
-}
-
 struct GaiaMaterialBackground: View {
     var cornerRadius: CGFloat = GaiaRadius.full
     var interactive: Bool = false
     var showsShadow: Bool = true
-    var prominence: GaiaGlassProminence = .regular
-    var tint: Color? = nil
 
     var body: some View {
         let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
@@ -33,11 +26,6 @@ struct GaiaMaterialBackground: View {
             )
             .clipShape(shape)
 
-            if let tint {
-                shape
-                    .fill(tint.opacity(interactive ? 0.22 : 0.14))
-            }
-
             shape
                 .stroke(.white.opacity(0.22), lineWidth: 0.5)
         }
@@ -45,7 +33,13 @@ struct GaiaMaterialBackground: View {
 
         Group {
             if #available(iOS 26.0, *) {
-                liquidGlassLayer(shape: shape)
+                if interactive {
+                    Color.clear
+                        .glassEffect(.regular.interactive(), in: shape)
+                } else {
+                    Color.clear
+                        .glassEffect(.regular, in: shape)
+                }
             } else {
                 if showsShadow {
                     fallbackMaterial
@@ -55,22 +49,5 @@ struct GaiaMaterialBackground: View {
                 }
             }
         }
-    }
-
-    @available(iOS 26.0, *)
-    private func liquidGlassLayer<S: Shape>(shape: S) -> some View {
-        var glass = Glass.regular
-
-        if let tint {
-            let resolvedTint = prominence == .prominent ? tint.opacity(1) : tint
-            glass = glass.tint(resolvedTint)
-        }
-
-        if interactive {
-            glass = glass.interactive()
-        }
-
-        return Color.clear
-            .glassEffect(glass, in: shape)
     }
 }

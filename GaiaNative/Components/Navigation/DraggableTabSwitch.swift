@@ -1,6 +1,123 @@
 // figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=451-3049 (3-tab), 758-9254 (2-tab)
 import SwiftUI
 
+struct DraggableIconTabSwitch<T: Identifiable & Hashable, Icon: View>: View {
+    let tabs: [T]
+    @Binding var selection: T
+    let tabWidth: CGFloat
+    let controlHeight: CGFloat
+    let allowsDragSelection: Bool
+    let accessibilityLabel: (T) -> String
+    let icon: (T, Bool) -> Icon
+    @State private var dragX: CGFloat?
+
+    init(
+        tabs: [T],
+        selection: Binding<T>,
+        tabWidth: CGFloat = 40,
+        controlHeight: CGFloat = 40,
+        allowsDragSelection: Bool = true,
+        accessibilityLabel: @escaping (T) -> String,
+        @ViewBuilder icon: @escaping (T, Bool) -> Icon
+    ) {
+        self.tabs = tabs
+        self._selection = selection
+        self.tabWidth = tabWidth
+        self.controlHeight = controlHeight
+        self.allowsDragSelection = allowsDragSelection
+        self.accessibilityLabel = accessibilityLabel
+        self.icon = icon
+    }
+
+    var body: some View {
+        let tabCount = CGFloat(max(tabs.count, 1))
+        let trackWidth = tabWidth * tabCount
+
+        ZStack(alignment: .leading) {
+            Capsule(style: .continuous)
+                .fill(GaiaColor.paperWhite50)
+
+            Capsule(style: .continuous)
+                .stroke(GaiaColor.blackishGrey200, lineWidth: 0.5)
+
+            RoundedRectangle(cornerRadius: max((controlHeight / 2) - 2, 0), style: .continuous)
+                .fill(GaiaColor.brandPrimary)
+                .frame(width: tabWidth - 4, height: controlHeight - 4)
+                .offset(x: indicatorOffset(width: tabWidth, trackWidth: trackWidth) + 2)
+                .animation(
+                    GaiaMotion.spring,
+                    value: indicatorOffset(width: tabWidth, trackWidth: trackWidth)
+                )
+
+            HStack(spacing: 0) {
+                ForEach(tabs) { tab in
+                    Button {
+                        updateSelection(tab)
+                    } label: {
+                        icon(tab, selection == tab)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .frame(width: tabWidth, height: controlHeight)
+                    .accessibilityLabel(accessibilityLabel(tab))
+                    .accessibilityAddTraits(selection == tab ? .isSelected : [])
+                }
+            }
+        }
+        .frame(width: trackWidth, height: controlHeight)
+        .contentShape(Capsule(style: .continuous))
+        .highPriorityGesture(
+            tabDragGesture(width: tabWidth, trackWidth: trackWidth),
+            including: allowsDragSelection ? .gesture : .subviews
+        )
+    }
+
+    private var selectedIndex: Int {
+        tabs.firstIndex(of: selection) ?? 0
+    }
+
+    private func indicatorOffset(width: CGFloat, trackWidth: CGFloat) -> CGFloat {
+        let maxOffset = max(0, trackWidth - width)
+        if let dragX {
+            return max(0, min(dragX - (width / 2), maxOffset))
+        }
+        return CGFloat(selectedIndex) * width
+    }
+
+    private func tabDragGesture(width: CGFloat, trackWidth: CGFloat) -> some Gesture {
+        DragGesture(minimumDistance: 4, coordinateSpace: .local)
+            .onChanged { value in
+                let location = max(0, min(trackWidth - 1, value.location.x))
+                dragX = location
+                let index = Int(location / width)
+                guard tabs.indices.contains(index) else { return }
+                updateSelection(tabs[index], animated: false, triggersHaptics: false)
+            }
+            .onEnded { value in
+                let location = max(0, min(trackWidth - 1, value.location.x))
+                dragX = nil
+                let index = Int(location / width)
+                guard tabs.indices.contains(index) else { return }
+                updateSelection(tabs[index], animated: true, triggersHaptics: false)
+            }
+    }
+
+    private func updateSelection(_ tab: T, animated: Bool = true, triggersHaptics: Bool = true) {
+        guard selection != tab else { return }
+        if triggersHaptics {
+            HapticsService.selectionChanged()
+        }
+        if animated {
+            withAnimation(GaiaMotion.spring) {
+                selection = tab
+            }
+        } else {
+            selection = tab
+        }
+    }
+}
+
 struct DraggableTabSwitch<T: Identifiable & Hashable>: View {
     let tabs: [T]
     @Binding var selection: T

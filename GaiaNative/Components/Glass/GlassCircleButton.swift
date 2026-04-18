@@ -4,11 +4,8 @@ import SwiftUI
 struct GlassReactiveButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .scaleEffect(configuration.isPressed ? 0.93 : 1)
-            .offset(y: configuration.isPressed ? 0.75 : 0)
-            .brightness(configuration.isPressed ? -0.02 : 0)
-            .saturation(configuration.isPressed ? 1.06 : 1)
-            .animation(.interactiveSpring(response: 0.2, dampingFraction: 0.7), value: configuration.isPressed)
+            .scaleEffect(configuration.isPressed ? 0.965 : 1)
+            .animation(.interactiveSpring(response: 0.22, dampingFraction: 0.8), value: configuration.isPressed)
     }
 }
 

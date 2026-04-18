@@ -64,6 +64,47 @@ struct ExploreMapView: View {
     }
 }
 
+struct SightingsMapPreviewCard: View {
+    let observations: [Observation]
+    let onExpandMap: () -> Void
+
+    private let cornerRadius = GaiaRadius.md
+    private let cardHeight: CGFloat = 214
+
+    var body: some View {
+        ZStack(alignment: .topTrailing) {
+            Button(action: onExpandMap) {
+                ExploreMapView(
+                    observations: observations,
+                    recenterRequestID: nil,
+                    onSelectObservation: nil,
+                    showsMarkers: true,
+                    initialZoomOverride: nil,
+                    prefersInitialUserLocation: false
+                )
+                .allowsHitTesting(false)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(GaiaColor.broccoliBrown50)
+                .contentShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Sightings map preview")
+            .accessibilityHint("Opens the expanded map")
+
+            ExpandMapButton(action: onExpandMap)
+                .padding(12)
+        }
+        .frame(height: cardHeight)
+        .frame(maxWidth: .infinity)
+        .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
+        )
+        .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
+    }
+}
+
 private struct ExploreMapRepresentable: UIViewRepresentable {
     let observations: [Observation]
     let showsMarkers: Bool

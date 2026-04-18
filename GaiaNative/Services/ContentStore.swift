@@ -42,6 +42,8 @@ struct ProfileLogGridItem: Identifiable, Codable, Hashable {
 
 enum ProfileLogStatusKind: String, Codable, Hashable {
     case researchGrade
+    case casualGrade
+    case ungraded
     case needsID
     case draft
 }

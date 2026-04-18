@@ -1,10 +1,12 @@
 import SwiftUI
 
 private enum FindTabLayout {
-    static let contentTopInset: CGFloat = GaiaSpacing.md
+    static let contentTopInset: CGFloat = GaiaSpacing.xl
+    static let foundInBottomSpacing: CGFloat = GaiaSpacing.xxxl
     static let sectionSpacing: CGFloat = GaiaSpacing.xl
     static let sectionContentSpacing: CGFloat = GaiaSpacing.cardInset
     static let sectionHorizontalInset: CGFloat = GaiaSpacing.md
+    static let pageBottomPadding: CGFloat = 205
 
     static let mapCardContentInset: CGFloat = GaiaSpacing.cardInset
     static let mapPreviewHeight: CGFloat = 181
@@ -19,11 +21,11 @@ private enum FindTabLayout {
     static let conditionAccessoryFrame: CGFloat = 20
     static let conditionAccessorySize: CGFloat = 16
 
-    static let dataQualityCardVerticalInset: CGFloat = GaiaSpacing.md
+    static let dataQualityCardVerticalInset: CGFloat = GaiaSpacing.cardContentInsetWide
     static let dataQualityCardHorizontalInset: CGFloat = GaiaSpacing.md
     static let dataQualityItemsSpacing: CGFloat = 0
     static let dataQualityItemWidth: CGFloat = 91
-    static let dataQualityBadgeSize: CGFloat = GaiaSpacing.iconXl
+    static let dataQualityBadgeSize: CGFloat = 40.002
 
     static let projectsSpacing: CGFloat = GaiaSpacing.cardInset
     static let projectCardHeight: CGFloat = 81
@@ -49,23 +51,21 @@ struct FindTabView: View {
     let onOpenProject: (ProjectSelection) -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: FindTabLayout.sectionSpacing) {
+        VStack(alignment: .leading, spacing: 0) {
             FindTabSection(title: "Found in") {
                 FindFoundInCard(onExpandMap: onExpandMap)
             }
+            .padding(.bottom, FindTabLayout.foundInBottomSpacing)
 
-            VStack(alignment: .leading, spacing: FindTabLayout.sectionContentSpacing) {
-                Text("Photos")
-                    .gaiaFont(.titleSans)
-                    .foregroundStyle(GaiaColor.inkBlack300)
-                    .padding(.horizontal, FindTabLayout.sectionHorizontalInset)
-
+            FindTabSection(title: "Photos", titleOpacity: 0) {
                 GalleryRail(imageNames: photoAssetNames)
             }
+            .padding(.bottom, FindTabLayout.sectionSpacing)
 
             FindTabSection(title: "Condition") {
                 FindConditionCardsRow()
             }
+            .padding(.bottom, FindTabLayout.sectionSpacing)
 
             FindTabSection(title: "Data Quality") {
                 VStack(alignment: .leading, spacing: FindTabLayout.sectionContentSpacing) {
@@ -73,6 +73,7 @@ struct FindTabView: View {
                     FindSectionTrailingLink(title: "Learn more", color: GaiaColor.textSecondary)
                 }
             }
+            .padding(.bottom, FindTabLayout.sectionSpacing)
 
             FindTabSection(title: "Participating Projects") {
                 VStack(alignment: .leading, spacing: FindTabLayout.projectsSpacing) {
@@ -115,6 +116,10 @@ struct FindTabView: View {
                     FindSectionTrailingLink(title: "Show all", color: GaiaColor.olive)
                 }
             }
+
+            Color.clear
+                .frame(height: FindTabLayout.pageBottomPadding)
+                .accessibilityHidden(true)
         }
         .padding(.top, FindTabLayout.contentTopInset)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -124,6 +129,7 @@ struct FindTabView: View {
 
 private struct FindTabSection<Content: View>: View {
     let title: String
+    var titleOpacity: Double = 1
     @ViewBuilder let content: () -> Content
 
     var body: some View {
@@ -131,6 +137,8 @@ private struct FindTabSection<Content: View>: View {
             Text(title)
                 .gaiaFont(.titleSans)
                 .foregroundStyle(GaiaColor.inkBlack300)
+                .opacity(titleOpacity)
+                .accessibilityHidden(titleOpacity == 0)
                 .padding(.horizontal, FindTabLayout.sectionHorizontalInset)
 
             content()
@@ -439,7 +447,15 @@ private struct FindDataQualityItem: View {
 
     var body: some View {
         VStack(spacing: GaiaSpacing.sm) {
-            GaiaQualityCheckmark(state: item.state, size: FindTabLayout.dataQualityBadgeSize)
+            GaiaAssetImage(
+                name: item.state == .checked ? "find-dq-checked" : "find-dq-unchecked",
+                contentMode: .fit
+            )
+            .frame(
+                width: FindTabLayout.dataQualityBadgeSize,
+                height: FindTabLayout.dataQualityBadgeSize
+            )
+            .accessibilityHidden(true)
 
             Text(item.title)
                 .gaiaFont(.caption)

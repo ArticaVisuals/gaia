@@ -3,57 +3,39 @@ import SwiftUI
 struct GalleryRail: View {
     let imageNames: [String]
 
-    private let itemWidths: [CGFloat] = [181, 112, 84, 181, 182]
-    private let itemHeight: CGFloat = 112
+    private enum Layout {
+        static let itemWidths: [CGFloat] = [223, 138, 104]
+        static let itemHeight: CGFloat = 138
+        static let itemSpacing: CGFloat = 8
+        static let horizontalInset: CGFloat = GaiaSpacing.md
+        static let cornerRadius: CGFloat = 9.867
+        static let borderWidth: CGFloat = 1.233
+    }
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: GaiaSpacing.sm) {
+            HStack(spacing: Layout.itemSpacing) {
                 ForEach(Array(imageNames.enumerated()), id: \.offset) { index, imageName in
-                    galleryImage(name: imageName, index: index, width: itemWidths[safe: index] ?? 112)
+                    galleryImage(
+                        name: imageName,
+                        width: Layout.itemWidths[safe: index] ?? Layout.itemWidths.last ?? 104
+                    )
                 }
             }
-            .padding(.horizontal, GaiaSpacing.md)
+            .padding(.horizontal, Layout.horizontalInset)
         }
     }
 
-    @ViewBuilder
-    private func galleryImage(name: String, index: Int, width: CGFloat) -> some View {
-        let shape = RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+    private func galleryImage(name: String, width: CGFloat) -> some View {
+        let shape = RoundedRectangle(cornerRadius: Layout.cornerRadius, style: .continuous)
 
-        GeometryReader { proxy in
-            galleryImageContent(name: name, index: index, size: proxy.size)
-        }
-            .frame(width: width, height: itemHeight)
+        return GaiaAssetImage(name: name, contentMode: .fill)
+            .frame(width: width, height: Layout.itemHeight)
             .clipShape(shape)
             .overlay(
                 shape
-                    .stroke(GaiaColor.broccoliBrown200, lineWidth: 0.5)
+                    .stroke(GaiaColor.broccoliBrown200, lineWidth: Layout.borderWidth)
             )
-            .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
-    }
-
-    @ViewBuilder
-    private func galleryImageContent(name: String, index: Int, size: CGSize) -> some View {
-        switch index {
-        case 0:
-            GaiaAssetImage(name: name, contentMode: .fill)
-                .frame(
-                    width: size.width * 1.0221,
-                    height: size.height * 1.2375
-                )
-                .offset(
-                    x: -(size.width * 0.011),
-                    y: -(size.height * 0.1187)
-                )
-        case 2:
-            GaiaAssetImage(name: name, contentMode: .fill)
-                .frame(width: size.width * 2.43, height: size.height)
-                .offset(x: -(size.width * 0.86))
-        default:
-            GaiaAssetImage(name: name, contentMode: .fill)
-                .frame(width: size.width, height: size.height)
-        }
     }
 }
 

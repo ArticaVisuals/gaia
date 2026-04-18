@@ -58,6 +58,7 @@ struct FindDetailsPrototypeScreen: View {
     @State private var scrollOffset: CGFloat = 0
     @State private var showsExpandedMap = false
     @State private var showsLearnScreen = false
+    @State private var pendingStoryDeckID: String?
 
     private let mapDataService = MapDataService()
 
@@ -96,14 +97,7 @@ struct FindDetailsPrototypeScreen: View {
                 let heroHeight = metrics.expandedHeroHeight + ((metrics.collapsedHeroHeight - metrics.expandedHeroHeight) * collapseProgress)
                 let heroImageHeight = metrics.expandedImageHeight + ((metrics.collapsedImageHeight - metrics.expandedImageHeight) * collapseProgress)
                 let panelTop = metrics.expandedPanelTop + ((metrics.collapsedPanelTop - metrics.expandedPanelTop) * collapseProgress)
-                let extraBottomRunway = max(
-                    metrics.collapsedContentOffset + GaiaSpacing.xxxl,
-                    proxy.size.height * 0.4
-                )
-                let contentBottomInset = max(
-                    extraBottomRunway,
-                    GaiaSpacing.xxxl + GaiaSpacing.xxl + GaiaSpacing.sm
-                ) + deviceBottomSafeArea
+                let contentBottomInset = deviceBottomSafeArea
                 // Figma leaves 32pt before the Activity stack; the tab content itself
                 // already contributes 12pt, so the outer prototype inset stays at 20pt.
                 let activityContentTopPadding = contentWidth * (20 / FindDetailsPrototypeLayout.designWidth)
@@ -211,15 +205,18 @@ struct FindDetailsPrototypeScreen: View {
                 showsExpandedMap = false
             }
         }
-        .fullScreenCover(isPresented: $showsLearnScreen) {
+        .fullScreenCover(
+            isPresented: $showsLearnScreen,
+            onDismiss: presentPendingStoryDeck
+        ) {
             FindDetailsLearnScreen(
                 species: species,
                 observations: speciesObservations,
                 stories: contentStore.stories,
                 dismiss: { showsLearnScreen = false },
                 onOpenStory: { story in
+                    pendingStoryDeckID = story.id
                     showsLearnScreen = false
-                    appState.openStoryDeck(story.id, speciesID: species.id)
                 }
             )
         }
@@ -252,6 +249,12 @@ struct FindDetailsPrototypeScreen: View {
 
     private var screenshotContentBottomCompensation: CGFloat {
         max(0, -screenshotContentShift)
+    }
+
+    private func presentPendingStoryDeck() {
+        guard let pendingStoryDeckID else { return }
+        self.pendingStoryDeckID = nil
+        appState.openStoryDeck(pendingStoryDeckID, speciesID: species.id)
     }
 
     private func screenshotCollapseOffset(

@@ -26,17 +26,23 @@ struct GaiaSurfaceCard<Content: View>: View {
 }
 
 struct GaiaDataCard<Content: View>: View {
+    var cornerRadius: CGFloat
     @ViewBuilder let content: () -> Content
+
+    init(cornerRadius: CGFloat = GaiaRadius.card, @ViewBuilder content: @escaping () -> Content) {
+        self.cornerRadius = cornerRadius
+        self.content = content
+    }
 
     var body: some View {
         content()
             .padding(GaiaSpacing.md)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
-                RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                     .fill(GaiaColor.paperWhite50)
                     .overlay(
-                        RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
+                        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                             .strokeBorder(GaiaColor.border, lineWidth: 0.5)
                     )
                     .shadow(color: GaiaShadow.cardColor, radius: GaiaShadow.cardRadius, x: 0, y: GaiaShadow.mdYOffset)

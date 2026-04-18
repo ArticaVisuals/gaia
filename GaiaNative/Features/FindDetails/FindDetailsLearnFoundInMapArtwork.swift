@@ -81,15 +81,15 @@ struct FindDetailsLearnFoundInMapArtwork: View {
 
             ZStack {
                 RoundedRectangle(cornerRadius: 0, style: .continuous)
-                    .fill(GaiaColor.oliveGreen50)
+                    .fill(Color(red: 0.946, green: 0.949, blue: 0.917))
 
                 backgroundWash
                 stateBoundary(in: size)
 
                 ForEach(labels) { label in
                     Text(label.title)
-                        .font(GaiaTypography.captionMedium)
-                        .foregroundStyle(GaiaColor.oliveGreen700.opacity(0.78))
+                        .font(.system(size: 7.5, weight: .medium, design: .default))
+                        .foregroundStyle(Color(red: 0.50, green: 0.52, blue: 0.39).opacity(0.78))
                         .position(x: size.width * label.x, y: size.height * label.y)
                 }
 
@@ -109,8 +109,8 @@ struct FindDetailsLearnFoundInMapArtwork: View {
         ZStack {
             LinearGradient(
                 colors: [
-                    GaiaColor.oliveGreen50.opacity(0.97),
-                    GaiaColor.oliveGreen50.opacity(0.89)
+                    Color(red: 0.952, green: 0.955, blue: 0.925),
+                    Color(red: 0.939, green: 0.944, blue: 0.905)
                 ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
@@ -130,7 +130,7 @@ struct FindDetailsLearnFoundInMapArtwork: View {
                 )
                 path.closeSubpath()
             }
-            .fill(GaiaColor.paperStrong.opacity(0.48))
+            .fill(Color.white.opacity(0.48))
 
             Path { path in
                 path.move(to: CGPoint(x: -10, y: 12))
@@ -151,7 +151,7 @@ struct FindDetailsLearnFoundInMapArtwork: View {
                 )
                 path.closeSubpath()
             }
-            .fill(GaiaColor.paperStrong.opacity(0.22))
+            .fill(Color.white.opacity(0.22))
         }
     }
 
@@ -174,6 +174,6 @@ struct FindDetailsLearnFoundInMapArtwork: View {
                 control2: CGPoint(x: size.width * 0.534, y: size.height * 0.97)
             )
         }
-        .stroke(GaiaColor.paperStrong.opacity(0.52), lineWidth: 1.1)
+        .stroke(Color.white.opacity(0.52), lineWidth: 1.1)
     }
 }

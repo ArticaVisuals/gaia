@@ -6,10 +6,10 @@ struct GlassPillButton<Content: View>: View {
     @ViewBuilder let content: () -> Content
 
     var body: some View {
-        HStack(spacing: GaiaSpacing.md) {
+        HStack(spacing: 18) {
             content()
         }
-        .padding(.horizontal, GaiaSpacing.pillHorizontal)
+        .padding(.horizontal, 10)
         .frame(height: 48)
         .background(
             GaiaMaterialBackground(
