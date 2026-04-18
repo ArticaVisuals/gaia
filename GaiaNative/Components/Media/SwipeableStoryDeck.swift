@@ -231,8 +231,7 @@ private struct StoryLearningCard: View {
 
                 Text(page.body)
                     .font(.custom("Neue Haas Unica W1G", size: bodyFontSize))
-                    .tracking(0.4 * scale)
-                    .foregroundStyle(GaiaColor.blackishGrey500)
+                    .foregroundStyle(GaiaColor.inkBlack300)
                     .lineSpacing(StoryLearningCardTheme.bodyLineSpacing * scale)
                     .fixedSize(horizontal: false, vertical: true)
             }

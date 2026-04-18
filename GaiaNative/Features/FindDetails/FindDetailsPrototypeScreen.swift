@@ -58,7 +58,6 @@ struct FindDetailsPrototypeScreen: View {
     @State private var scrollOffset: CGFloat = 0
     @State private var showsExpandedMap = false
     @State private var showsLearnScreen = false
-    @State private var pendingStoryDeckID: String?
 
     private let mapDataService = MapDataService()
 
@@ -205,19 +204,12 @@ struct FindDetailsPrototypeScreen: View {
                 showsExpandedMap = false
             }
         }
-        .fullScreenCover(
-            isPresented: $showsLearnScreen,
-            onDismiss: presentPendingStoryDeck
-        ) {
+        .fullScreenCover(isPresented: $showsLearnScreen) {
             FindDetailsLearnScreen(
                 species: species,
                 observations: speciesObservations,
                 stories: contentStore.stories,
-                dismiss: { showsLearnScreen = false },
-                onOpenStory: { story in
-                    pendingStoryDeckID = story.id
-                    showsLearnScreen = false
-                }
+                dismiss: { showsLearnScreen = false }
             )
         }
     }
@@ -249,12 +241,6 @@ struct FindDetailsPrototypeScreen: View {
 
     private var screenshotContentBottomCompensation: CGFloat {
         max(0, -screenshotContentShift)
-    }
-
-    private func presentPendingStoryDeck() {
-        guard let pendingStoryDeckID else { return }
-        self.pendingStoryDeckID = nil
-        appState.openStoryDeck(pendingStoryDeckID, speciesID: species.id)
     }
 
     private func screenshotCollapseOffset(

@@ -104,10 +104,10 @@ struct FindDetailsLearnScreen: View {
     let observations: [Observation]
     let stories: [StoryCard]
     let dismiss: () -> Void
-    let onOpenStory: (StoryCard) -> Void
 
     @State private var selectedGalleryIndex: Int? = 0
     @State private var showsExpandedMap = false
+    @State private var selectedStory: StoryCard?
 
     private enum ScrollMarker: Hashable {
         case recentActivity
@@ -223,6 +223,12 @@ struct FindDetailsLearnScreen: View {
             LearnMapExpandedScreen(observations: observations) {
                 showsExpandedMap = false
             }
+        }
+        .fullScreenCover(item: $selectedStory) { story in
+            StoryDeckScreen(
+                initialStoryID: story.id,
+                onClose: { selectedStory = nil }
+            )
         }
     }
 
@@ -431,7 +437,7 @@ struct FindDetailsLearnScreen: View {
     private var storySection: some View {
         FindDetailsLearnSection(title: "Story") {
             StoryPreviewCard(story: featuredStory) {
-                onOpenStory(featuredStory)
+                selectedStory = featuredStory
             }
         }
     }

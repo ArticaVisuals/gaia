@@ -14,6 +14,7 @@ private enum StoryDeckLayout {
 // figma: https://www.figma.com/design/X0NcuRE0WKmsqR36cvlcij/Write-Test-Pro?node-id=22-1756
 struct StoryDeckScreen: View {
     let initialStoryID: String?
+    var onClose: (() -> Void)? = nil
 
     @EnvironmentObject private var appState: AppState
     @EnvironmentObject private var contentStore: ContentStore
@@ -76,7 +77,11 @@ struct StoryDeckScreen: View {
 
                 HStack {
                     ToolbarGlassButton(icon: .back, accessibilityLabel: "Back") {
-                        appState.closeStoryDeck()
+                        if let onClose {
+                            onClose()
+                        } else {
+                            appState.closeStoryDeck()
+                        }
                     }
                     Spacer()
                 }

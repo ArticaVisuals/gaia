@@ -13,6 +13,7 @@ struct ObserveCameraScreen: View {
     let onPhotoImport: () -> Void
     let onAudioSend: (URL) -> Void
 
+    @EnvironmentObject private var appState: AppState
     @StateObject private var cameraService = CameraService()
     @StateObject private var audioRecordingService = AudioRecordingService()
     @State private var selectedZoom: CGFloat = 1
@@ -36,7 +37,10 @@ struct ObserveCameraScreen: View {
                 cameraLayer
 
                 LinearGradient(
-                    colors: [Color.black.opacity(0.02), Color.black.opacity(0.02), Color.black.opacity(0.48)],
+                    stops: [
+                        .init(color: .clear, location: ObserveCameraLayout.viewfinderGradientStart),
+                        .init(color: GaiaColor.inkBlack900, location: 1)
+                    ],
                     startPoint: .top,
                     endPoint: .bottom
                 )
@@ -49,7 +53,7 @@ struct ObserveCameraScreen: View {
                 )
 
                 ObserveCameraMatchCard()
-                    .frame(width: min(330, viewportWidth - (sideInset * 2)))
+                    .frame(width: min(ObserveCameraLayout.matchCardWidth, viewportWidth - (sideInset * 2)))
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                     .padding(.top, proxy.safeAreaInsets.top + 82)
                     .allowsHitTesting(false)
@@ -100,8 +104,9 @@ struct ObserveCameraScreen: View {
             .ignoresSafeArea()
             .animation(GaiaMotion.softSpring, value: isAudioRecorderPresented)
         }
-        .task {
-            cameraService.start()
+        .onAppear(perform: syncCameraSessionState)
+        .onChange(of: appState.selectedSection) { _, _ in
+            syncCameraSessionState()
         }
         .onDisappear {
             cameraService.stop()
@@ -115,6 +120,15 @@ struct ObserveCameraScreen: View {
         .task(id: selectedPhotoItem) {
             await handlePhotoSelection()
         }
+    }
+
+    private func syncCameraSessionState() {
+        guard appState.selectedSection == .observe else {
+            cameraService.stop()
+            return
+        }
+
+        cameraService.start()
     }
 
     @ViewBuilder
@@ -233,33 +247,63 @@ struct ObserveCameraScreen: View {
     #endif
 }
 
+private enum ObserveCameraLayout {
+    static let viewfinderGradientStart: CGFloat = 0.55542
+    static let matchCardWidth: CGFloat = 329
+    static let matchCardHeight: CGFloat = 77
+    static let matchCardCornerRadius: CGFloat = 15.187
+    static let matchCardTopPadding: CGFloat = 20
+    static let matchCardHorizontalPadding: CGFloat = GaiaSpacing.md
+    static let matchCardTextSpacing: CGFloat = GaiaSpacing.sm
+    static let matchCardLabelTopInset: CGFloat = 12.06
+    static let matchCardLabelTrailingInset: CGFloat = 13
+    static let glassControlSize: CGFloat = 52
+    static let glassControlShadowRadius: CGFloat = 47.273
+    static let glassControlShadowYOffset: CGFloat = 9.455
+    static let shutterOuterSize: CGFloat = 85
+    static let shutterInnerSize: CGFloat = 73
+    static let shutterShadowRadius: CGFloat = 77.273
+    static let shutterShadowYOffset: CGFloat = 15.455
+    static let matchCardShadowRadius: CGFloat = 57.892
+    static let matchCardShadowYOffset: CGFloat = 11.578
+    static let glassLayerOpacity: Double = 0.5
+    static let glassShadowOpacity: Double = 0.12
+    static let selectedZoomTextColor = Color(red: 246 / 255, green: 210 / 255, blue: 20 / 255)
+}
+
 private struct ObserveCameraMatchCard: View {
     var body: some View {
-        HStack(alignment: .top, spacing: GaiaSpacing.md - 4) {
-            VStack(alignment: .leading, spacing: GaiaSpacing.xxs) {
+        ZStack(alignment: .topLeading) {
+            ObserveCameraGlassChrome(
+                cornerRadius: ObserveCameraLayout.matchCardCornerRadius,
+                shadowRadius: ObserveCameraLayout.matchCardShadowRadius,
+                shadowYOffset: ObserveCameraLayout.matchCardShadowYOffset
+            )
+
+            VStack(alignment: .leading, spacing: ObserveCameraLayout.matchCardTextSpacing) {
                 Text("Green Sea Turtle")
-                    .gaiaFont(.title1)
-                    .foregroundStyle(GaiaColor.textPrimary)
+                    .gaiaFont(.title2Medium)
+                    .foregroundStyle(GaiaColor.inkBlack900)
                     .lineLimit(2)
 
                 Text("Chelonia mydas")
-                    .gaiaFont(.caption)
+                    .gaiaFont(.footnote)
                     .foregroundStyle(GaiaColor.inkBlack300)
                     .lineLimit(1)
             }
-
-            Spacer(minLength: GaiaSpacing.md)
+            .padding(.top, ObserveCameraLayout.matchCardTopPadding)
+            .padding(.leading, ObserveCameraLayout.matchCardHorizontalPadding)
+            .padding(.trailing, 90)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
 
             Text("94% Match")
-                .gaiaFont(.caption)
+                .gaiaFont(.footnote)
                 .foregroundStyle(GaiaColor.inkBlack300)
+                .padding(.top, ObserveCameraLayout.matchCardLabelTopInset)
+                .padding(.trailing, ObserveCameraLayout.matchCardLabelTrailingInset)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
         }
-        .padding(.horizontal, GaiaSpacing.md)
-        .padding(.vertical, GaiaSpacing.sm + 2)
-        .background(
-            GaiaMaterialBackground(cornerRadius: GaiaRadius.lg, showsShadow: true)
-        )
-        .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous))
+        .frame(height: ObserveCameraLayout.matchCardHeight)
     }
 }
 
@@ -326,12 +370,31 @@ private struct ObserveCameraGlassIconButton<Label: View>: View {
     @ViewBuilder let label: () -> Label
 
     var body: some View {
-        GlassCircleButton(size: 52, action: {
+        Button(action: {
             HapticsService.selectionChanged()
             action()
         }) {
-            label()
+            ZStack {
+                ObserveCameraGlassChrome(
+                    cornerRadius: ObserveCameraLayout.glassControlSize / 2,
+                    shadowRadius: ObserveCameraLayout.glassControlShadowRadius,
+                    shadowYOffset: ObserveCameraLayout.glassControlShadowYOffset
+                )
+
+                label()
+                    .fixedSize()
+                    .frame(
+                        width: ObserveCameraLayout.glassControlSize,
+                        height: ObserveCameraLayout.glassControlSize
+                    )
+            }
+            .frame(
+                width: ObserveCameraLayout.glassControlSize,
+                height: ObserveCameraLayout.glassControlSize
+            )
+            .contentShape(Circle())
         }
+        .buttonStyle(GlassReactiveButtonStyle())
         .accessibilityLabel(accessibilityLabel)
     }
 }
@@ -374,6 +437,10 @@ private struct ObserveCameraZoomSelector: View {
                     Text(zoomLabel(for: option))
                         .gaiaFont(.callout)
                         .foregroundStyle(zoomTextColor(for: option))
+                        .shadow(
+                            color: selectedZoom == option ? .clear : Color.black.opacity(0.25),
+                            radius: selectedZoom == option ? 0 : 1.8
+                        )
                         .frame(width: pillSize, height: pillSize)
                         .background(
                             Capsule()
@@ -406,7 +473,7 @@ private struct ObserveCameraZoomSelector: View {
     }
 
     private func zoomTextColor(for option: CGFloat) -> Color {
-        selectedZoom == option ? Color(red: 246 / 255, green: 210 / 255, blue: 20 / 255) : GaiaColor.paperStrong
+        selectedZoom == option ? ObserveCameraLayout.selectedZoomTextColor : GaiaColor.paperStrong
     }
 
     private var zoomDragGesture: some Gesture {
@@ -437,7 +504,11 @@ private struct ObserveThumbnailButton: View {
     var body: some View {
         Button(action: action) {
             ZStack {
-                GaiaMaterialBackground(cornerRadius: 26, interactive: true)
+                ObserveCameraGlassChrome(
+                    cornerRadius: ObserveCameraLayout.glassControlSize / 2,
+                    shadowRadius: ObserveCameraLayout.glassControlShadowRadius,
+                    shadowYOffset: ObserveCameraLayout.glassControlShadowYOffset
+                )
 
                 if let thumbnailImage {
                     Image(uiImage: thumbnailImage)
@@ -453,7 +524,10 @@ private struct ObserveThumbnailButton: View {
                         .padding(1)
                 }
             }
-            .frame(width: 52, height: 52)
+            .frame(
+                width: ObserveCameraLayout.glassControlSize,
+                height: ObserveCameraLayout.glassControlSize
+            )
         }
         .buttonStyle(GlassReactiveButtonStyle())
         .accessibilityLabel("Choose photo from library")
@@ -468,15 +542,24 @@ private struct ObserveShutterButton: View {
     var body: some View {
         Button(action: action) {
             ZStack {
-                Circle()
-                    .fill(Color.white.opacity(isPressed ? 0.58 : 0.5))
-                    .frame(width: 85, height: 85)
-                    .shadow(color: Color.black.opacity(0.12), radius: 18, x: 0, y: 6)
+                ObserveCameraGlassChrome(
+                    cornerRadius: ObserveCameraLayout.shutterOuterSize / 2,
+                    shadowRadius: ObserveCameraLayout.shutterShadowRadius,
+                    shadowYOffset: ObserveCameraLayout.shutterShadowYOffset
+                )
+                    .frame(
+                        width: ObserveCameraLayout.shutterOuterSize,
+                        height: ObserveCameraLayout.shutterOuterSize
+                    )
                     .scaleEffect(isPressed ? 0.965 : 1)
 
                 Circle()
                     .fill(GaiaColor.paperStrong)
-                    .frame(width: 73, height: 73)
+                    .frame(
+                        width: ObserveCameraLayout.shutterInnerSize,
+                        height: ObserveCameraLayout.shutterInnerSize
+                    )
+                    .offset(y: 1)
                     .scaleEffect(isPressed ? 0.9 : 1)
             }
             .scaleEffect(isPressed ? 0.975 : 1)
@@ -491,6 +574,45 @@ private struct ObserveShutterButton: View {
                 }
         )
         .accessibilityLabel("Take photo")
+    }
+}
+
+private struct ObserveCameraGlassChrome: View {
+    let cornerRadius: CGFloat
+    let shadowRadius: CGFloat
+    let shadowYOffset: CGFloat
+
+    var body: some View {
+        let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+
+        ZStack {
+            shape
+                .fill(.clear)
+                .background(GaiaMaterial.toolbar, in: shape)
+
+            shape
+                .fill(.white)
+                .blendMode(.multiply)
+
+            shape
+                .fill(.white.opacity(0.65))
+
+            shape
+                .fill(GaiaColor.blackishGrey50)
+                .blendMode(.colorBurn)
+
+            shape
+                .fill(GaiaColor.blackishGrey50)
+                .blendMode(.darken)
+        }
+        .compositingGroup()
+        .opacity(ObserveCameraLayout.glassLayerOpacity)
+        .shadow(
+            color: Color.black.opacity(ObserveCameraLayout.glassShadowOpacity),
+            radius: shadowRadius,
+            x: 0,
+            y: shadowYOffset
+        )
     }
 }
 
