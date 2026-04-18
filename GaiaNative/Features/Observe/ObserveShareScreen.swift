@@ -1,4 +1,5 @@
-// figma: https://www.figma.com/design/X0NcuRE0WKmsqR36cvlcij/Write-Test-Pro?node-id=16-2529 (Log Celebration), 16-2537 (Log Share)
+// figma: https://www.figma.com/design/X0NcuRE0WKmsqR36cvlcij/Write-Test-Pro?node-id=48-1803&m=dev (Log Celebration)
+// figma: https://www.figma.com/design/X0NcuRE0WKmsqR36cvlcij/Write-Test-Pro?node-id=48-1811&m=dev (Log Share)
 import SwiftUI
 
 struct ObserveShareScreen: View {
@@ -126,13 +127,13 @@ private struct ObserveSharePager: View {
                 selectedIndex: selectedCardIndex,
                 count: cards.count
             )
-            .padding(.top, 9)
+            .padding(.top, GaiaSpacing.sm + (GaiaSpacing.xxs / 2))
 
-            HStack(spacing: 13) {
+            HStack(spacing: GaiaSpacing.buttonHorizontalLarge - (GaiaSpacing.xxs / 2)) {
                 ObserveShareActionButton(icon: .share) {
                     HapticsService.selectionChanged()
                 }
-                ObserveShareActionButton(systemSymbol: "arrow.down") {
+                ObserveShareActionButton(systemSymbol: "tray.and.arrow.down") {
                     onSave()
                 }
                 ObserveShareActionButton(systemSymbol: "ellipsis") {
@@ -227,9 +228,7 @@ private struct ObserveShareMetricCard: View {
                     GaiaIcon(kind: .binoculars, size: 16, tint: GaiaColor.oliveGreen500)
                         .frame(width: 16, height: 16)
                 } else if metric.usesLogbookIcon {
-                    Image(systemName: "book.closed")
-                        .font(.system(size: 13, weight: .medium))
-                        .foregroundStyle(GaiaColor.oliveGreen500)
+                    GaiaIcon(kind: .log(selected: false), size: 16, tint: GaiaColor.oliveGreen500)
                         .frame(width: 16, height: 16)
                 }
 
@@ -302,7 +301,7 @@ private struct ObserveShareActionButton: View {
                         .frame(width: 24, height: 24)
                 } else if let systemSymbol {
                     Image(systemName: systemSymbol)
-                        .font(.system(size: 20, weight: .medium))
+                        .gaiaFont(.titleSans)
                         .foregroundStyle(GaiaColor.paperWhite50)
                 }
             }
@@ -319,9 +318,7 @@ private struct ObserveCelebrationView: View {
     var body: some View {
         VStack(spacing: 0) {
             Text("Nice Find!")
-                .font(.custom("NewSpirit-Medium", size: 64))
-                .tracking(-0.92)
-                .lineSpacing(6.4)
+                .gaiaFont(.heroMedium)
                 .foregroundStyle(GaiaColor.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .center)
                 .multilineTextAlignment(.center)
@@ -353,8 +350,7 @@ private struct ObserveCelebrationView: View {
             .padding(.top, 32)
 
             Text("Every sighting adds clarity\nto the bigger picture.")
-                .font(.custom("NewSpirit-Regular", size: 20))
-                .lineSpacing(6)
+                .gaiaFont(.title3)
                 .foregroundStyle(GaiaColor.textPrimary)
                 .multilineTextAlignment(.center)
                 .padding(.top, 32)

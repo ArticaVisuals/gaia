@@ -598,26 +598,9 @@ struct ProfileImpactTab: View {
                     .foregroundStyle(GaiaColor.oliveGreen400)
             }
 
-            ZStack(alignment: .topTrailing) {
-                GaiaAssetImage(name: "gaia-profile-impact-map-preview", contentMode: .fill)
-                    .frame(height: 214)
-                    .frame(maxWidth: .infinity)
-                    .clipped()
-
-                GlassCircleButton(size: 40.001) {
-                    showsExpandedMap = true
-                } label: {
-                    GaiaIcon(kind: .expand, size: 26.667, tint: GaiaColor.inkBlack900)
-                }
-                .padding(11.222)
-                .accessibilityLabel("Expand map")
+            ProfileHeatmapCard {
+                showsExpandedMap = true
             }
-            .frame(maxWidth: .infinity)
-            .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
-                    .stroke(GaiaColor.border, lineWidth: 1)
-            )
         }
     }
 
@@ -1434,4 +1417,326 @@ private struct CategoryMedalBadge: Identifiable {
     let title: String
     let findsText: String
     let imageName: String
+}
+
+struct ProfileHeatmapCard: View {
+    let action: () -> Void
+
+    var body: some View {
+        GeometryReader { proxy in
+            let scale = proxy.size.width / ProfileHeatmapLayout.baseSize.width
+
+            ZStack(alignment: .topLeading) {
+                Color.clear
+
+                Image("gaia-profile-impact-map-preview")
+                    .resizable()
+                    .interpolation(.high)
+                    .frame(
+                        width: proxy.size.width * 1.0348,
+                        height: proxy.size.height * 1.1963
+                    )
+                    .offset(
+                        x: proxy.size.width * -0.0183,
+                        y: proxy.size.height * -0.0981
+                    )
+                    .accessibilityHidden(true)
+
+                ForEach(ProfileHeatmapLayout.largePins) { pin in
+                    ProfileHeatmapPinBubble(
+                        diameter: pin.size * scale,
+                        strokeWidth: nil,
+                        shadows: ProfileHeatmapLayout.largeShadows.scaled(by: scale)
+                    )
+                    .position(
+                        x: proxy.size.width * (pin.leftPercent / 100) + (pin.size * scale * 0.5),
+                        y: proxy.size.height * (pin.topPercent / 100) + (pin.size * scale * 0.5)
+                    )
+                }
+
+                ForEach(ProfileHeatmapLayout.smallPins) { pin in
+                    ProfileHeatmapPinBubble(
+                        diameter: pin.size * scale,
+                        strokeWidth: ProfileHeatmapLayout.smallPinStrokeWidth * scale,
+                        shadows: ProfileHeatmapLayout.smallShadows.scaled(by: scale)
+                    )
+                    .position(
+                        x: proxy.size.width * (pin.leftPercent / 100) + (pin.size * scale * 0.5),
+                        y: proxy.size.height * (pin.topPercent / 100) + (pin.size * scale * 0.5)
+                    )
+                }
+
+                ForEach(ProfileHeatmapLayout.pinPairs) { pair in
+                    ProfileHeatmapPinBubble(
+                        diameter: pair.backDiameter * scale,
+                        strokeWidth: ProfileHeatmapLayout.smallPinStrokeWidth * scale,
+                        shadows: ProfileHeatmapLayout.smallShadows.scaled(by: scale)
+                    )
+                    .position(
+                        x: proxy.size.width * (pair.leftPercent / 100) + ((pair.backOffset.width + (pair.backDiameter * 0.5)) * scale),
+                        y: proxy.size.height * (pair.topPercent / 100) + ((pair.backOffset.height + (pair.backDiameter * 0.5)) * scale)
+                    )
+
+                    ProfileHeatmapPinBubble(
+                        diameter: pair.frontDiameter * scale,
+                        strokeWidth: ProfileHeatmapLayout.smallPinStrokeWidth * scale,
+                        shadows: []
+                    )
+                    .position(
+                        x: proxy.size.width * (pair.leftPercent / 100) + (pair.frontDiameter * scale * 0.5),
+                        y: proxy.size.height * (pair.topPercent / 100) + (pair.frontDiameter * scale * 0.5)
+                    )
+                }
+
+                ProfileHeatmapPinBubble(
+                    diameter: ProfileHeatmapLayout.selectedPin.diameter * scale,
+                    strokeWidth: ProfileHeatmapLayout.selectedPinStrokeWidth * scale,
+                    shadows: []
+                )
+                .position(
+                    x: (ProfileHeatmapLayout.selectedPin.origin.x + (ProfileHeatmapLayout.selectedPin.diameter * 0.5)) * scale,
+                    y: (ProfileHeatmapLayout.selectedPin.origin.y + (ProfileHeatmapLayout.selectedPin.diameter * 0.5)) * scale
+                )
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(GaiaColor.paperWhite50)
+            .overlay(alignment: .topTrailing) {
+                GlassCircleButton(size: ProfileHeatmapLayout.buttonSize * scale, action: action) {
+                    ProfileHeatmapExpandIcon(size: ProfileHeatmapLayout.iconSize * scale)
+                }
+                .padding(ProfileHeatmapLayout.buttonPadding * scale)
+                .accessibilityLabel("Expand map")
+            }
+        }
+        .aspectRatio(ProfileHeatmapLayout.baseSize.width / ProfileHeatmapLayout.baseSize.height, contentMode: .fit)
+        .frame(maxWidth: .infinity)
+        .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
+                .stroke(GaiaColor.border, lineWidth: 1)
+        )
+    }
+}
+
+private struct ProfileHeatmapExpandIcon: View {
+    let size: CGFloat
+
+    var body: some View {
+        GeometryReader { proxy in
+            let scale = proxy.size.width / ProfileHeatmapLayout.iconSize
+            let slotSide = proxy.size.width * 0.6326
+            let slotInset = proxy.size.width * 0.3674
+
+            ZStack {
+                Image("gaia-profile-impact-expand-a-24")
+                    .resizable()
+                    .renderingMode(.original)
+                    .interpolation(.high)
+                    .frame(
+                        width: ProfileHeatmapLayout.expandVectorSize.width * scale,
+                        height: ProfileHeatmapLayout.expandVectorSize.height * scale
+                    )
+                    .rotationEffect(.degrees(-135))
+                    .position(x: slotSide * 0.5, y: slotInset + (slotSide * 0.5))
+
+                Image("gaia-profile-impact-expand-b-24")
+                    .resizable()
+                    .renderingMode(.original)
+                    .interpolation(.high)
+                    .frame(
+                        width: ProfileHeatmapLayout.expandVectorSize.width * scale,
+                        height: ProfileHeatmapLayout.expandVectorSize.height * scale
+                    )
+                    .rotationEffect(.degrees(45))
+                    .position(x: slotInset + (slotSide * 0.5), y: slotSide * 0.5)
+            }
+        }
+        .frame(width: size, height: size)
+        .accessibilityHidden(true)
+    }
+}
+
+private struct ProfileHeatmapPinBubble: View {
+    let diameter: CGFloat
+    let strokeWidth: CGFloat?
+    let shadows: [ProfileHeatmapShadow]
+
+    var body: some View {
+        shadows.reduce(AnyView(baseCircle)) { partial, shadow in
+            AnyView(
+                partial.shadow(
+                    color: shadow.color,
+                    radius: shadow.blur,
+                    x: shadow.x,
+                    y: shadow.y
+                )
+            )
+        }
+        .frame(width: diameter, height: diameter)
+        .accessibilityHidden(true)
+    }
+
+    private var baseCircle: some View {
+        Circle()
+            .fill(ProfileHeatmapLayout.pinGradient)
+            .overlay {
+                if let strokeWidth {
+                    Circle()
+                        .stroke(Color.white.opacity(0.5), lineWidth: strokeWidth)
+                }
+            }
+    }
+}
+
+private struct ProfileHeatmapPinPlacement: Identifiable {
+    let id: String
+    let topPercent: CGFloat
+    let leftPercent: CGFloat
+    let size: CGFloat
+}
+
+private struct ProfileHeatmapPinPairPlacement: Identifiable {
+    let id: String
+    let topPercent: CGFloat
+    let leftPercent: CGFloat
+    let frontDiameter: CGFloat
+    let backDiameter: CGFloat
+    let backOffset: CGSize
+}
+
+private struct ProfileHeatmapAbsolutePinPlacement {
+    let origin: CGPoint
+    let diameter: CGFloat
+}
+
+private struct ProfileHeatmapShadow {
+    let x: CGFloat
+    let y: CGFloat
+    let blur: CGFloat
+    let color: Color
+}
+
+private extension Array where Element == ProfileHeatmapShadow {
+    func scaled(by scale: CGFloat) -> [ProfileHeatmapShadow] {
+        map {
+            ProfileHeatmapShadow(
+                x: $0.x * scale,
+                y: $0.y * scale,
+                blur: $0.blur * scale,
+                color: $0.color
+            )
+        }
+    }
+}
+
+private enum ProfileHeatmapLayout {
+    static let baseSize = CGSize(width: 370, height: 214.00001525878906)
+    static let buttonSize: CGFloat = 40.001
+    static let buttonPadding: CGFloat = 11.222
+    static let iconSize: CGFloat = 26.667
+    static let expandVectorSize = CGSize(width: 11.7018, height: 12.1555)
+    static let smallPinStrokeWidth: CGFloat = 0.49277
+    static let selectedPinStrokeWidth: CGFloat = 0.492755
+    static let selectedPin = ProfileHeatmapAbsolutePinPlacement(
+        origin: CGPoint(x: 71, y: 61),
+        diameter: 12.2137
+    )
+
+    static let pinGradient = LinearGradient(
+        colors: [
+            Color(.sRGB, red: 123.0 / 255.0, green: 179.0 / 255.0, blue: 105.0 / 255.0),
+            Color(.sRGB, red: 110.0 / 255.0, green: 145.0 / 255.0, blue: 82.0 / 255.0)
+        ],
+        startPoint: .top,
+        endPoint: .bottom
+    )
+
+    static let largeShadows: [ProfileHeatmapShadow] = [
+        .init(x: 8.354, y: 17.672, blur: 5.462, color: Color(.sRGB, red: 116.0 / 255.0, green: 161.0 / 255.0, blue: 93.0 / 255.0, opacity: 0.01)),
+        .init(x: 5.462, y: 11.246, blur: 5.141, color: Color(.sRGB, red: 116.0 / 255.0, green: 161.0 / 255.0, blue: 93.0 / 255.0, opacity: 0.08)),
+        .init(x: 3.213, y: 6.426, blur: 4.177, color: Color(.sRGB, red: 116.0 / 255.0, green: 161.0 / 255.0, blue: 93.0 / 255.0, opacity: 0.28)),
+        .init(x: 1.285, y: 2.892, blur: 3.213, color: Color(.sRGB, red: 116.0 / 255.0, green: 161.0 / 255.0, blue: 93.0 / 255.0, opacity: 0.48)),
+        .init(x: 0.321, y: 0.643, blur: 1.607, color: Color(.sRGB, red: 116.0 / 255.0, green: 161.0 / 255.0, blue: 93.0 / 255.0, opacity: 0.55))
+    ]
+
+    static let smallShadows: [ProfileHeatmapShadow] = [
+        .init(x: 4.962, y: 10.497, blur: 3.245, color: Color(.sRGB, red: 116.0 / 255.0, green: 161.0 / 255.0, blue: 93.0 / 255.0, opacity: 0.01)),
+        .init(x: 3.245, y: 6.68, blur: 3.054, color: Color(.sRGB, red: 116.0 / 255.0, green: 161.0 / 255.0, blue: 93.0 / 255.0, opacity: 0.08)),
+        .init(x: 1.909, y: 3.817, blur: 2.481, color: Color(.sRGB, red: 116.0 / 255.0, green: 161.0 / 255.0, blue: 93.0 / 255.0, opacity: 0.28)),
+        .init(x: 0.763, y: 1.718, blur: 1.909, color: Color(.sRGB, red: 116.0 / 255.0, green: 161.0 / 255.0, blue: 93.0 / 255.0, opacity: 0.48)),
+        .init(x: 0.191, y: 0.382, blur: 0.954, color: Color(.sRGB, red: 116.0 / 255.0, green: 161.0 / 255.0, blue: 93.0 / 255.0, opacity: 0.55))
+    ]
+
+    static let largePins: [ProfileHeatmapPinPlacement] = [
+        .init(id: "86016", topPercent: 56.44, leftPercent: 59.37, size: 22.001),
+        .init(id: "86018", topPercent: 47.56, leftPercent: 57.74, size: 22.001),
+        .init(id: "86020", topPercent: 48.97, leftPercent: 63.69, size: 22.001),
+        .init(id: "86022", topPercent: 35.41, leftPercent: 64.23, size: 22.001)
+    ]
+
+    static let smallPins: [ProfileHeatmapPinPlacement] = [
+        .init(id: "86024", topPercent: 20.92, leftPercent: 35.43, size: 13.068),
+        .init(id: "86026", topPercent: 25.05, leftPercent: 33.13, size: 13.068),
+        .init(id: "86028", topPercent: 25.05, leftPercent: 30.24, size: 13.068),
+        .init(id: "86030", topPercent: 24.05, leftPercent: 27.64, size: 13.068),
+        .init(id: "86032", topPercent: 30.04, leftPercent: 27.35, size: 13.068),
+        .init(id: "86034", topPercent: 33.54, leftPercent: 24.46, size: 13.068),
+        .init(id: "86036", topPercent: 38.54, leftPercent: 30.53, size: 13.068),
+        .init(id: "86038", topPercent: 25.28, leftPercent: 38.45, size: 13.068),
+        .init(id: "86040", topPercent: 29.54, leftPercent: 40.36, size: 13.068),
+        .init(id: "86042", topPercent: 29.65, leftPercent: 35.93, size: 13.068),
+        .init(id: "86044", topPercent: 31.54, leftPercent: 35.93, size: 13.068),
+        .init(id: "86046", topPercent: 32.13, leftPercent: 31.89, size: 13.068),
+        .init(id: "86048", topPercent: 26.55, leftPercent: 24.17, size: 13.068),
+        .init(id: "86050", topPercent: 24.55, leftPercent: 20.41, size: 13.068),
+        .init(id: "86052", topPercent: 35.04, leftPercent: 27.35, size: 13.068),
+        .init(id: "86054", topPercent: 28.63, leftPercent: 28.71, size: 13.068),
+        .init(id: "86056", topPercent: 32.63, leftPercent: 34.49, size: 13.068),
+        .init(id: "86058", topPercent: 32.63, leftPercent: 38.24, size: 13.068),
+        .init(id: "86066", topPercent: 37.41, leftPercent: 38.81, size: 13.068),
+        .init(id: "86068", topPercent: 41.54, leftPercent: 36.51, size: 13.068),
+        .init(id: "86070", topPercent: 41.77, leftPercent: 41.83, size: 13.068),
+        .init(id: "86072", topPercent: 46.03, leftPercent: 43.74, size: 13.068),
+        .init(id: "86074", topPercent: 46.13, leftPercent: 39.31, size: 13.068),
+        .init(id: "86076", topPercent: 48.62, leftPercent: 35.27, size: 13.068),
+        .init(id: "86078", topPercent: 49.12, leftPercent: 37.87, size: 13.068),
+        .init(id: "86080", topPercent: 49.12, leftPercent: 41.62, size: 13.068),
+        .init(id: "86082", topPercent: 58.35, leftPercent: 43.85, size: 13.068),
+        .init(id: "86084", topPercent: 60.09, leftPercent: 47.38, size: 13.068),
+        .init(id: "86086", topPercent: 63.58, leftPercent: 45.87, size: 13.068),
+        .init(id: "86088", topPercent: 63.58, leftPercent: 49.4, size: 13.068),
+        .init(id: "86090", topPercent: 65.33, leftPercent: 47.38, size: 13.068),
+        .init(id: "86092", topPercent: 66.2, leftPercent: 51.42, size: 13.068),
+        .init(id: "86094", topPercent: 68.82, leftPercent: 54.95, size: 13.068),
+        .init(id: "86096", topPercent: 70.56, leftPercent: 49.4, size: 13.068),
+        .init(id: "86098", topPercent: 74.05, leftPercent: 52.93, size: 13.068),
+        .init(id: "86100", topPercent: 76.67, leftPercent: 54.95, size: 13.068),
+        .init(id: "86102", topPercent: 78.41, leftPercent: 51.93, size: 13.068),
+        .init(id: "86104", topPercent: 81.03, leftPercent: 56.97, size: 13.068),
+        .init(id: "86106", topPercent: 82.78, leftPercent: 54.45, size: 13.068),
+        .init(id: "86108", topPercent: 82.78, leftPercent: 58.99, size: 13.068),
+        .init(id: "86110", topPercent: 86.01, leftPercent: 59.05, size: 13.068),
+        .init(id: "86112", topPercent: 90.0, leftPercent: 53.76, size: 13.068),
+        .init(id: "86115", topPercent: 32.98, leftPercent: 45.53, size: 13.068),
+        .init(id: "86117", topPercent: 47.0, leftPercent: 50.94, size: 13.068)
+    ]
+
+    static let pinPairs: [ProfileHeatmapPinPairPlacement] = [
+        .init(
+            id: "86059",
+            topPercent: 36.63,
+            leftPercent: 35.93,
+            frontDiameter: 13.061,
+            backDiameter: 13.068,
+            backOffset: CGSize(width: 12.5, height: 35.28)
+        ),
+        .init(
+            id: "86062",
+            topPercent: 36.63,
+            leftPercent: 40.47,
+            frontDiameter: 13.061,
+            backDiameter: 13.068,
+            backOffset: CGSize(width: 12.5, height: 35.28)
+        )
+    ]
 }

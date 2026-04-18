@@ -1006,29 +1006,9 @@ private struct MayaProfileDetailScreen: View {
                     .foregroundStyle(GaiaColor.textSecondary)
             }
 
-            VStack(spacing: 0) {
-                ZStack(alignment: .topTrailing) {
-                    GaiaAssetImage(name: "gaia-profile-impact-map-preview", contentMode: .fill)
-                        .frame(height: 214)
-                        .frame(maxWidth: .infinity)
-                        .clipped()
-
-                    GlassCircleButton(size: 44) {
-                        showsExpandedMap = true
-                    } label: {
-                        GaiaIcon(kind: .expand, size: 24, tint: GaiaColor.inkBlack900)
-                    }
-                    .padding(GaiaSpacing.md)
-                    .accessibilityLabel("Expand map")
-                }
+            ProfileHeatmapCard {
+                showsExpandedMap = true
             }
-            .frame(maxWidth: .infinity)
-            .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
-                    .stroke(GaiaColor.border, lineWidth: 0.5)
-            )
-            .shadow(color: GaiaShadow.mdColor, radius: GaiaShadow.mdRadius, x: 0, y: GaiaShadow.mdYOffset)
         }
         .padding(.horizontal, GaiaSpacing.md)
     }

@@ -12,6 +12,7 @@ enum AssetCatalog {
         "story-keystone-page-image": "assets/find-details/hero-coast-live-oak.png",
         "story-keystone-page-figma": "assets/find-details/learn-v2/story-ecosystem-figma.png",
         "learn-map-fallback": "assets/find-details/learn-v2/map-fallback.png",
+        "learn-map-profile-heatmap-figma": "assets/find-details/learn-v2/map-profile-heatmap-figma.png",
         "find-map-figma-base": "assets/find-details/find-tab-final/map-preview-figma-base.png",
         "find-map-figma-overlay": "assets/find-details/find-tab-final/map-preview-figma-overlay.png",
         "find-map-figma-pin": "assets/find-details/find-tab-final/map-preview-figma-pin.png",

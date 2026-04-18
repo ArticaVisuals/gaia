@@ -1,54 +1,88 @@
-// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=815-17733
+// figma: https://www.figma.com/design/X0NcuRE0WKmsqR36cvlcij/Write-Test-Pro?node-id=22-1646&m=dev
 import SwiftUI
+
+private enum StoryPreviewCardLayout {
+    static let imageAspectRatio: CGFloat = 2912.0 / 1632.0
+    static let imageHeightScale: CGFloat = 1.2022
+    static let imageVerticalOffsetRatio: CGFloat = 0.134
+    static let contentPadding: CGFloat = GaiaSpacing.md
+    static let sectionSpacing: CGFloat = GaiaSpacing.md
+    static let headerSpacing: CGFloat = GaiaSpacing.cardInset
+    static let titleMaxWidth: CGFloat = 257
+    static let titleHeight: CGFloat = 56
+    static let summaryMaxWidth: CGFloat = 252
+    static let summaryHeight: CGFloat = 53
+    static let arrowSize: CGFloat = GaiaSpacing.iconXl
+    static let arrowVerticalOffset: CGFloat = -21.36
+    static let borderWidth: CGFloat = 0.5
+}
 
 struct StoryPreviewCard: View {
     let story: StoryCard
     var action: () -> Void = {}
 
+    private var cardShape: RoundedRectangle {
+        RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous)
+    }
+
     var body: some View {
         Button(action: action) {
             VStack(spacing: 0) {
                 storyImage
-                    .aspectRatio(2912.0 / 1632.0, contentMode: .fit)
+                    .aspectRatio(StoryPreviewCardLayout.imageAspectRatio, contentMode: .fit)
                     .clipped()
 
-                VStack(alignment: .leading, spacing: 16) {
-                    VStack(alignment: .leading, spacing: 12) {
+                VStack(alignment: .leading, spacing: StoryPreviewCardLayout.sectionSpacing) {
+                    VStack(alignment: .leading, spacing: StoryPreviewCardLayout.headerSpacing) {
                         Text(story.eyebrow)
                             .gaiaFont(.caption)
                             .foregroundStyle(GaiaColor.paperWhite50)
                             .textCase(.uppercase)
 
-                        HStack(alignment: .top, spacing: 12) {
+                        ZStack(alignment: .topTrailing) {
                             Text(story.title)
                                 .gaiaFont(.displayMedium)
                                 .foregroundStyle(GaiaColor.paperWhite50)
-                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .frame(maxWidth: StoryPreviewCardLayout.titleMaxWidth, alignment: .leading)
                                 .fixedSize(horizontal: false, vertical: true)
+                                .frame(height: StoryPreviewCardLayout.titleHeight, alignment: .topLeading)
+                                .clipped()
 
                             storyArrow
-                                .padding(.top, -4)
+                                .offset(y: StoryPreviewCardLayout.arrowVerticalOffset)
                         }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
 
                     Text(story.summary)
                         .gaiaFont(.caption2)
-                        .foregroundStyle(GaiaColor.paperWhite100)
-                        .frame(maxWidth: 252, alignment: .leading)
+                        .foregroundStyle(GaiaColor.paperWhite50)
+                        .frame(maxWidth: StoryPreviewCardLayout.summaryMaxWidth, alignment: .leading)
                         .fixedSize(horizontal: false, vertical: true)
+                        .frame(height: StoryPreviewCardLayout.summaryHeight, alignment: .topLeading)
+                        .clipped()
                 }
-                .padding(GaiaSpacing.md)
+                .padding(StoryPreviewCardLayout.contentPadding)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(GaiaColor.broccoliBrown400)
+                .background(storyContentBackground)
             }
-            .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous)
-                    .stroke(Color.black.opacity(0.1), lineWidth: 0.5)
-            )
-            .shadow(color: GaiaShadow.smallColor, radius: GaiaShadow.smallRadius, x: 0, y: GaiaShadow.smallYOffset)
+            .clipShape(cardShape)
+            .overlay {
+                cardShape
+                    .strokeBorder(Color.black.opacity(0.1), lineWidth: StoryPreviewCardLayout.borderWidth)
+            }
         }
         .buttonStyle(GaiaPressableCardStyle())
+    }
+
+    private var storyContentBackground: some View {
+        GaiaColor.broccoliBrown400
+            .shadow(
+                color: GaiaShadow.smallColor,
+                radius: GaiaShadow.smallRadius,
+                x: 0,
+                y: GaiaShadow.smallYOffset
+            )
     }
 
     private var storyImage: some View {
@@ -57,9 +91,9 @@ struct StoryPreviewCard: View {
                 GaiaAssetImage(name: story.imageAssetName, contentMode: .fill)
                     .frame(
                         width: proxy.size.width,
-                        height: proxy.size.height * 1.20
+                        height: proxy.size.height * StoryPreviewCardLayout.imageHeightScale
                     )
-                    .offset(y: -(proxy.size.height * 0.13))
+                    .offset(y: -(proxy.size.height * StoryPreviewCardLayout.imageVerticalOffsetRatio))
 
                 LinearGradient(
                     stops: [
@@ -79,12 +113,13 @@ struct StoryPreviewCard: View {
     private var storyArrow: some View {
         ZStack {
             GaiaAssetImage(name: "learn-story-arrow-circle", contentMode: .fit)
-                .frame(width: 40, height: 40)
+                .frame(width: StoryPreviewCardLayout.arrowSize, height: StoryPreviewCardLayout.arrowSize)
 
             GaiaAssetImage(name: "learn-story-arrow", contentMode: .fit)
                 .frame(width: 15.6, height: 20.1)
                 .rotationEffect(.degrees(90))
         }
-        .frame(width: 40, height: 40)
+        .frame(width: StoryPreviewCardLayout.arrowSize, height: StoryPreviewCardLayout.arrowSize)
+        .accessibilityHidden(true)
     }
 }

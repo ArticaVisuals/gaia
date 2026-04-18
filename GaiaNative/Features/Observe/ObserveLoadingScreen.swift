@@ -1,4 +1,4 @@
-// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=1950-268578 (Loading)
+// figma: https://www.figma.com/design/X0NcuRE0WKmsqR36cvlcij/Write-Test-Pro?node-id=48-1722&m=dev (Loading)
 import SwiftUI
 
 private enum ObserveLoadingLayout {

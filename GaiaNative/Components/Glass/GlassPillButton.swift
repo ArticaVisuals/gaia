@@ -3,10 +3,11 @@ import SwiftUI
 
 struct GlassPillButton<Content: View>: View {
     var showsShadow: Bool = true
+    var spacing: CGFloat = GaiaSpacing.md
     @ViewBuilder let content: () -> Content
 
     var body: some View {
-        HStack(spacing: GaiaSpacing.md) {
+        HStack(spacing: spacing) {
             content()
         }
         .padding(.horizontal, GaiaSpacing.pillHorizontal)

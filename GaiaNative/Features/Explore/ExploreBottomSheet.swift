@@ -1,5 +1,5 @@
-// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=1912-265748 (Map Half Fold)
-// view mode toggle: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=1711-179472
+// figma: https://www.figma.com/design/X0NcuRE0WKmsqR36cvlcij/Write-Test-Pro?node-id=39-1444 (Main Content)
+// view mode toggle: https://www.figma.com/design/X0NcuRE0WKmsqR36cvlcij/Write-Test-Pro?node-id=39-1462
 import SwiftUI
 
 private enum ExploreBottomSheetLayout {
@@ -54,6 +54,7 @@ struct ExploreBottomSheet: View {
     let onSelectFind: (Species) -> Void
     let onSelectProject: (ProjectSelection) -> Void
     var allowsScroll: Bool = false
+    var collapseProgress: CGFloat = 1
     var showsSurface: Bool = true
     var onPullDownCollapse: (() -> Void)? = nil
 
@@ -75,101 +76,117 @@ struct ExploreBottomSheet: View {
             style: .continuous
         )
 
-        let content = ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading, spacing: 0) {
-                GeometryReader { proxy in
+        let visualScrollResetOffset = max(0, -scrollTopOffset) * collapseProgress
+        let freezeScrollTracking = collapseProgress > 0.01
+
+        let content = ScrollViewReader { scrollProxy in
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 0) {
                     Color.clear
-                        .preference(
-                            key: ExploreSheetScrollTopPreferenceKey.self,
-                            value: proxy.frame(in: .named("ExploreBottomSheetScroll")).minY
-                        )
-                }
-                .frame(height: 0)
+                        .frame(height: 0)
+                        .id(ExploreBottomSheetScrollAnchor.top)
 
-                Capsule()
-                    .fill(ExploreBottomSheetLayout.dragIndicatorColor)
-                    .frame(
-                        width: ExploreBottomSheetLayout.dragIndicatorWidth,
-                        height: ExploreBottomSheetLayout.dragIndicatorHeight
-                    )
-                    .frame(maxWidth: .infinity)
-                    .padding(.top, ExploreBottomSheetLayout.dragIndicatorTopPadding)
-                    .padding(.bottom, ExploreBottomSheetLayout.dragIndicatorBottomPadding)
-
-                VStack(alignment: .leading, spacing: ExploreBottomSheetLayout.contentSectionSpacing) {
-                    VStack(alignment: .leading, spacing: ExploreBottomSheetLayout.nearbySectionSpacing) {
-                        Text("Nearby")
-                            .gaiaFont(.displayMedium)
-                            .foregroundStyle(GaiaColor.oliveGreen400)
-
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: ExploreBottomSheetLayout.filterChipSpacing) {
-                                ForEach(ExploreSheetFilter.allCases) { filter in
-                                    ExploreSheetFilterChip(
-                                        filter: filter,
-                                        isActive: filter == activeFilter
-                                    ) {
-                                        activeFilter = filter
-                                    }
-                                }
-                            }
-                        }
-                        .scrollClipDisabled()
+                    GeometryReader { proxy in
+                        Color.clear
+                            .preference(
+                                key: ExploreSheetScrollTopPreferenceKey.self,
+                                value: proxy.frame(in: .named("ExploreBottomSheetScroll")).minY
+                            )
                     }
+                    .frame(height: 0)
+
+                    Capsule()
+                        .fill(ExploreBottomSheetLayout.dragIndicatorColor)
+                        .frame(
+                            width: ExploreBottomSheetLayout.dragIndicatorWidth,
+                            height: ExploreBottomSheetLayout.dragIndicatorHeight
+                        )
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, ExploreBottomSheetLayout.dragIndicatorTopPadding)
+                        .padding(.bottom, ExploreBottomSheetLayout.dragIndicatorBottomPadding)
 
                     VStack(alignment: .leading, spacing: ExploreBottomSheetLayout.contentSectionSpacing) {
-                        VStack(alignment: .leading, spacing: ExploreBottomSheetLayout.projectsSectionSpacing) {
-                            ExploreSheetSectionHeader(title: "Projects", trailingText: nil)
+                        VStack(alignment: .leading, spacing: ExploreBottomSheetLayout.nearbySectionSpacing) {
+                            Text("Nearby")
+                                .gaiaFont(.displayMedium)
+                                .foregroundStyle(GaiaColor.oliveGreen400)
 
-                            HStack(spacing: ExploreBottomSheetLayout.projectCardSpacing) {
-                                ForEach(projects.prefix(2)) { project in
-                                    ExploreSheetProjectCard(project: project) {
-                                        onSelectProject(project.detailSelection)
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: ExploreBottomSheetLayout.filterChipSpacing) {
+                                    ForEach(ExploreSheetFilter.allCases) { filter in
+                                        ExploreSheetFilterChip(
+                                            filter: filter,
+                                            isActive: filter == activeFilter
+                                        ) {
+                                            activeFilter = filter
+                                        }
                                     }
                                 }
                             }
-
-                            HStack {
-                                Spacer()
-                                Text("View all")
-                                    .gaiaFont(.caption2)
-                                    .foregroundStyle(GaiaColor.textSecondary)
-                            }
+                            .scrollClipDisabled()
                         }
 
-                        VStack(alignment: .leading, spacing: ExploreBottomSheetLayout.findsSectionSpacing) {
-                            ExploreSheetSectionHeader(title: "Finds", trailingText: nil)
+                        VStack(alignment: .leading, spacing: ExploreBottomSheetLayout.contentSectionSpacing) {
+                            VStack(alignment: .leading, spacing: ExploreBottomSheetLayout.projectsSectionSpacing) {
+                                ExploreSheetSectionHeader(title: "Projects", trailingText: nil)
 
-                            ExploreSheetViewModeControl(viewMode: $viewMode)
-
-                            if viewMode == .grid {
-                                ExploreSheetFindGrid(finds: finds) { _ in
-                                    selectPrimarySpecies()
+                                HStack(spacing: ExploreBottomSheetLayout.projectCardSpacing) {
+                                    ForEach(projects.prefix(2)) { project in
+                                        ExploreSheetProjectCard(project: project) {
+                                            onSelectProject(project.detailSelection)
+                                        }
+                                    }
                                 }
-                            } else {
-                                VStack(spacing: ExploreBottomSheetLayout.findCardSpacing) {
-                                    ForEach(finds) { find in
-                                        ExploreSheetFindListRow(find: find) {
-                                            selectPrimarySpecies()
+
+                                HStack {
+                                    Spacer()
+                                    Text("View all")
+                                        .gaiaFont(.caption2)
+                                        .foregroundStyle(GaiaColor.textSecondary)
+                                }
+                            }
+
+                            VStack(alignment: .leading, spacing: ExploreBottomSheetLayout.findsSectionSpacing) {
+                                ExploreSheetSectionHeader(title: "Finds", trailingText: nil)
+
+                                ExploreSheetViewModeControl(viewMode: $viewMode)
+
+                                if viewMode == .grid {
+                                    ExploreSheetFindGrid(finds: finds) { _ in
+                                        selectPrimarySpecies()
+                                    }
+                                } else {
+                                    VStack(spacing: ExploreBottomSheetLayout.findCardSpacing) {
+                                        ForEach(finds) { find in
+                                            ExploreSheetFindListRow(find: find) {
+                                                selectPrimarySpecies()
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
                     }
+                    .padding(.top, ExploreBottomSheetLayout.contentTopPadding)
+                    .padding(.horizontal, ExploreBottomSheetLayout.contentHorizontalInset)
                 }
-                .padding(.top, ExploreBottomSheetLayout.contentTopPadding)
-                .padding(.horizontal, ExploreBottomSheetLayout.contentHorizontalInset)
+                .padding(.bottom, ExploreBottomSheetLayout.bottomContentInset)
+                .frame(maxWidth: .infinity, alignment: .topLeading)
+                .offset(y: visualScrollResetOffset)
             }
-            .padding(.bottom, ExploreBottomSheetLayout.bottomContentInset)
-            .frame(maxWidth: .infinity, alignment: .topLeading)
+            .coordinateSpace(name: "ExploreBottomSheetScroll")
+            .scrollDisabled(!allowsScroll)
+            .onPreferenceChange(ExploreSheetScrollTopPreferenceKey.self) { newValue in
+                if !freezeScrollTracking || abs(newValue) <= 2 {
+                    scrollTopOffset = newValue
+                }
+            }
+            .onChange(of: allowsScroll) { oldValue, newValue in
+                guard oldValue, !newValue else { return }
+                resetScrollPosition(using: scrollProxy)
+            }
+            .simultaneousGesture(contentCollapseGesture)
         }
-        .coordinateSpace(name: "ExploreBottomSheetScroll")
-        .scrollDisabled(!allowsScroll)
-        .onPreferenceChange(ExploreSheetScrollTopPreferenceKey.self) { newValue in
-            scrollTopOffset = newValue
-        }
-        .simultaneousGesture(contentCollapseGesture)
 
         if showsSurface {
             content
@@ -177,10 +194,10 @@ struct ExploreBottomSheet: View {
                 .background(sheetShape.fill(GaiaColor.surfaceSheet))
                 .overlay(
                     sheetShape
-                        .stroke(GaiaColor.borderStrong, lineWidth: 0.5)
+                        .stroke(GaiaColor.oliveGreen100, lineWidth: 0.5)
                 )
                 .clipShape(sheetShape)
-                .shadow(color: GaiaShadow.mediumColor, radius: 24, x: 0, y: -4)
+                .shadow(color: GaiaShadow.softColor, radius: 20, x: 0, y: 0)
         } else {
             content
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
@@ -190,6 +207,17 @@ struct ExploreBottomSheet: View {
 
     private func selectPrimarySpecies() {
         onSelectFind(species.first ?? PreviewSpecies.coastLiveOak)
+    }
+
+    private func resetScrollPosition(using scrollProxy: ScrollViewProxy) {
+        var transaction = Transaction()
+        transaction.disablesAnimations = true
+
+        withTransaction(transaction) {
+            scrollProxy.scrollTo(ExploreBottomSheetScrollAnchor.top, anchor: .top)
+        }
+
+        scrollTopOffset = 0
     }
 
     private var contentCollapseGesture: some Gesture {
@@ -213,6 +241,10 @@ struct ExploreBottomSheet: View {
 
         return predictedVerticalTravel > 150 || extraMomentum > 70
     }
+}
+
+private enum ExploreBottomSheetScrollAnchor {
+    static let top = "ExploreBottomSheetTop"
 }
 
 private struct ExploreSheetScrollTopPreferenceKey: PreferenceKey {

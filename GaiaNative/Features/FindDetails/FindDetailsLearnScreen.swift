@@ -1,39 +1,86 @@
 import SwiftUI
 import UIKit
 
-// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=1377-99765
+// figma: https://www.figma.com/design/X0NcuRE0WKmsqR36cvlcij/Write-Test-Pro?node-id=22-1599&m=dev
 
 private enum FindDetailsLearnLayout {
     static let horizontalInset: CGFloat = GaiaSpacing.md
     static let sectionSpacing: CGFloat = GaiaSpacing.xl
+    static let sectionTitleSpacing: CGFloat = GaiaSpacing.cardInset
     static let introSpacing: CGFloat = GaiaSpacing.cardContentInsetWide
     static let contentTopPadding: CGFloat = 59
     static let summaryWidth: CGFloat = 326
-    static let summaryTextColor = Color(red: 171 / 255, green: 167 / 255, blue: 149 / 255)
-    static let statsCardWidth: CGFloat = 118
-    static let statsCardHeight: CGFloat = 100
+    static let summaryTextColor = GaiaColor.paperWhite600
+    static let statsCardWidth: CGFloat = 117.961
+    static let statsCardHeight: CGFloat = 101.083
+    static let statsCardCornerRadius: CGFloat = 16.116
+    static let statsCardBorderWidth: CGFloat = 1.007
+    static let statsCardInset: CGFloat = 12.087
+    static let statsCardContentGap: CGFloat = 12.087
+    static let statsContentHeight: CGFloat = 55.821
+    static let statsCategoryIconWidth: CGFloat = 53.711
+    static let statsCategoryIconHeight: CGFloat = 53.721
+    static let statsStatusWidth: CGFloat = 54.394
+    static let statsStatusHeight: CGFloat = 55.224
+    static let statsStatusStrokeWidth: CGFloat = 3.288
     static let statsGap: CGFloat = GaiaSpacing.sm
     static let galleryHeight: CGFloat = 240
     static let galleryCornerRadius: CGFloat = 16.371
     static let galleryBorderWidth: CGFloat = 0.83
     static let galleryItemSpacing: CGFloat = GaiaSpacing.sm
+    static let gallerySectionSpacing: CGFloat = GaiaSpacing.cardInset
+    static let galleryPageControlHorizontalPadding: CGFloat = GaiaSpacing.lg
+    static let galleryPageControlCornerRadius: CGFloat = 50
     static let galleryLandscapeWidth: CGFloat = 370
     static let gallerySquareWidth: CGFloat = 239.918
     static let galleryAlternateLandscapeWidth: CGFloat = 389.867
     static let pageDotSize: CGFloat = GaiaSpacing.sm
     static let mapHeight: CGFloat = 214
     static let mapCornerRadius: CGFloat = 16
+    static let mapExpandInset: CGFloat = 11.222
+    static let mapExpandBadgeSize: CGFloat = 40.001
+    static let mapExpandIconSize: CGFloat = 26.667
     static let listCardCornerRadius: CGFloat = 16
     static let listCardHeight: CGFloat = 112.556
     static let listImageSize: CGFloat = 88.556
     static let listImageCornerRadius: CGFloat = GaiaRadius.thumbnail
-    static let leaderboardRowHeight: CGFloat = 52.368
-    static let highlightedLeaderboardRowHeight: CGFloat = 56
+    static let listContentGap: CGFloat = GaiaSpacing.gapLg
+    static let listTextSpacing: CGFloat = GaiaSpacing.cardInset
+    static let listTextColumnWidth: CGFloat = 202.924
+    static let listCardBorderWidth: CGFloat = 1
+    static let recentActivityHeaderSpacing: CGFloat = GaiaSpacing.gapLg
+    static let recentActivityFooterTopPadding: CGFloat = GaiaSpacing.gapLg
+    static let leaderboardShellCornerRadius: CGFloat = GaiaRadius.lg
+    static let leaderboardShellBorderWidth: CGFloat = 1
+    static let leaderboardInnerCornerRadius: CGFloat = 15.044
+    static let leaderboardInnerBorderWidth: CGFloat = 0.94
+    static let leaderboardRowHeight: CGFloat = 56
+    static let leaderboardRowOverlap: CGFloat = 0.901
     static let leaderboardRankBadgeSize: CGFloat = 20.09
     static let leaderboardAvatarSize: CGFloat = 28.842
     static let highlightedLeaderboardAvatarSize: CGFloat = 30.843
-    static let footerTopPadding: CGFloat = GaiaSpacing.sm
+    static let leaderboardDefaultHorizontalInset: CGFloat = GaiaSpacing.md
+    static let leaderboardHighlightedHorizontalInset: CGFloat = 15.422
+    static let leaderboardHighlightedVerticalInset: CGFloat = 11.566
+    static let leaderboardDefaultRankGap: CGFloat = 14.421
+    static let leaderboardHighlightedRankGap: CGFloat = 15.422
+    static let leaderboardDefaultProfileGap: CGFloat = 7.211
+    static let leaderboardHighlightedProfileGap: CGFloat = 7.711
+    static let leaderboardDefaultPointsGap: CGFloat = 3.605
+    static let leaderboardHighlightedPointsGap: CGFloat = 3.855
+    static let leaderboardRankStrokeWidth: CGFloat = 0.423
+    static let leaderboardDefaultAvatarBorderWidth: CGFloat = 0.3
+    static let leaderboardHighlightedAvatarBorderWidth: CGFloat = 0.321
+    static let leaderboardDefaultRankTracking: CGFloat = -0.1672
+    static let leaderboardHighlightedRankTracking: CGFloat = -1.0258
+    static let leaderboardHighlightedPointsTracking: CGFloat = -0.2988
+    static let leaderboardViewAllTopPadding: CGFloat = GaiaSpacing.cardInset
     static let footerBottomPadding: CGFloat = GaiaSpacing.xxl
+    static let projectCardSpacing: CGFloat = GaiaSpacing.lg
+    static let projectCardContentSpacing: CGFloat = GaiaSpacing.md
+    static let projectCardTitleSpacing: CGFloat = GaiaSpacing.gapMd
+    static let projectCardSummaryWidth: CGFloat = 236
+    static let projectCardButtonMinHeight: CGFloat = 50
 }
 
 private struct FindDetailsLearnRecentItem: Identifiable {
@@ -195,7 +242,7 @@ struct FindDetailsLearnScreen: View {
                         .fill(GaiaColor.oliveGreen300)
                         .overlay(
                             Capsule(style: .continuous)
-                                .stroke(GaiaColor.oliveGreen200, lineWidth: 1)
+                                .stroke(GaiaColor.borderStrong, lineWidth: 1)
                         )
                 )
 
@@ -217,31 +264,41 @@ struct FindDetailsLearnScreen: View {
     private var statsSection: some View {
         HStack(spacing: FindDetailsLearnLayout.statsGap) {
             FindDetailsLearnStatCard(label: "Category") {
-                GaiaCategoryBadgeIcon()
+                GaiaCategoryBadgeIcon(
+                    width: FindDetailsLearnLayout.statsCategoryIconWidth,
+                    height: FindDetailsLearnLayout.statsCategoryIconHeight
+                )
             }
 
             FindDetailsLearnStatCard(label: "Status") {
                 ZStack {
                     Circle()
-                        .stroke(GaiaColor.paperWhite50, lineWidth: 3.265)
+                        .stroke(
+                            GaiaColor.paperWhite50,
+                            lineWidth: FindDetailsLearnLayout.statsStatusStrokeWidth
+                        )
                     Text(species.status)
                         .font(GaiaTypography.learnStatStatus)
                         .foregroundStyle(GaiaColor.paperWhite50)
                 }
-                .frame(width: 54.412, height: 54.412)
+                .frame(
+                    width: FindDetailsLearnLayout.statsStatusWidth,
+                    height: FindDetailsLearnLayout.statsStatusHeight
+                )
             }
 
             FindDetailsLearnStatCard(label: "Finds") {
                 Text(species.findCountLabel)
                     .gaiaFont(.statValue)
                     .foregroundStyle(GaiaColor.paperWhite50)
+                    .frame(height: FindDetailsLearnLayout.statsContentHeight)
             }
         }
         .padding(.horizontal, FindDetailsLearnLayout.horizontalInset)
     }
 
     private var gallerySection: some View {
-        VStack(spacing: GaiaSpacing.sm) {
+        VStack(spacing: FindDetailsLearnLayout.gallerySectionSpacing) {
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: FindDetailsLearnLayout.galleryItemSpacing) {
                     ForEach(galleryCards) { card in
@@ -260,9 +317,7 @@ struct FindDetailsLearnScreen: View {
             HStack(spacing: GaiaSpacing.sm) {
                 ForEach(galleryCards) { card in
                     Button {
-                        withAnimation(GaiaMotion.spring) {
-                            selectedGalleryIndex = card.id
-                        }
+                        selectGalleryCard(card.id)
                     } label: {
                         Circle()
                             .fill(card.id == currentGalleryIndex ? GaiaColor.olive : GaiaColor.oliveGreen200)
@@ -273,6 +328,27 @@ struct FindDetailsLearnScreen: View {
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel("Show gallery image \(card.id + 1)")
+                }
+            }
+            .padding(.horizontal, FindDetailsLearnLayout.galleryPageControlHorizontalPadding)
+            .background(
+                GaiaMaterialBackground(
+                    cornerRadius: FindDetailsLearnLayout.galleryPageControlCornerRadius,
+                    interactive: false,
+                    showsShadow: false
+                )
+            )
+            .accessibilityElement()
+            .accessibilityLabel("Photo gallery")
+            .accessibilityValue("Page \(currentGalleryIndex + 1) of \(galleryCards.count)")
+            .accessibilityAdjustableAction { direction in
+                switch direction {
+                case .increment:
+                    selectGalleryCard(min(currentGalleryIndex + 1, galleryCards.count - 1))
+                case .decrement:
+                    selectGalleryCard(max(currentGalleryIndex - 1, 0))
+                @unknown default:
+                    break
                 }
             }
         }
@@ -297,6 +373,12 @@ struct FindDetailsLearnScreen: View {
             )
     }
 
+    private func selectGalleryCard(_ id: Int) {
+        withAnimation(GaiaMotion.spring) {
+            selectedGalleryIndex = id
+        }
+    }
+
     private var foundInSection: some View {
         FindDetailsLearnSection(title: "Found in") {
             Button {
@@ -312,8 +394,8 @@ struct FindDetailsLearnScreen: View {
                         )
                     )
                     .overlay(alignment: .topTrailing) {
-                        ExpandMapButton(action: { showsExpandedMap = true })
-                            .padding(GaiaSpacing.sm)
+                        FindDetailsLearnMapExpandBadge()
+                            .padding(FindDetailsLearnLayout.mapExpandInset)
                     }
                     .overlay(
                         RoundedRectangle(
@@ -324,18 +406,24 @@ struct FindDetailsLearnScreen: View {
                     )
             }
             .buttonStyle(.plain)
+            .accessibilityHint("Opens the expanded map")
         }
     }
 
     private var recentActivitySection: some View {
-        FindDetailsLearnSection(title: "Recent Activity") {
-            VStack(spacing: GaiaSpacing.cardInset) {
-                ForEach(recentActivityItems) { item in
-                    FindDetailsLearnRecentActivityCard(item: item)
+        FindDetailsLearnSection(
+            title: "Recent Activity",
+            contentSpacing: FindDetailsLearnLayout.recentActivityHeaderSpacing
+        ) {
+            VStack(spacing: 0) {
+                VStack(spacing: GaiaSpacing.cardInset) {
+                    ForEach(recentActivityItems) { item in
+                        FindDetailsLearnRecentActivityCard(item: item)
+                    }
                 }
 
                 FindDetailsLearnTrailingLink(title: "View all")
-                    .padding(.top, FindDetailsLearnLayout.footerTopPadding)
+                    .padding(.top, FindDetailsLearnLayout.recentActivityFooterTopPadding)
             }
         }
     }
@@ -350,30 +438,37 @@ struct FindDetailsLearnScreen: View {
 
     private var topObserversSection: some View {
         FindDetailsLearnSection(title: "Top Observers") {
-            VStack(spacing: GaiaSpacing.cardInset) {
+            VStack(spacing: 0) {
                 FindDetailsLeaderboardCard(entries: leaderboardEntries)
 
                 FindDetailsLearnTrailingLink(title: "View all")
-                    .padding(.top, FindDetailsLearnLayout.footerTopPadding)
+                    .padding(.top, FindDetailsLearnLayout.leaderboardViewAllTopPadding)
             }
         }
     }
 
     private var projectSection: some View {
-        VStack(alignment: .leading, spacing: GaiaSpacing.cardInset) {
-            Text("CITIZEN SCIENCE PROJECT")
-                .gaiaFont(.caption)
-                .foregroundStyle(GaiaColor.paperWhite50)
-                .textCase(.uppercase)
+        VStack(alignment: .leading, spacing: FindDetailsLearnLayout.projectCardSpacing) {
+            VStack(alignment: .leading, spacing: FindDetailsLearnLayout.projectCardContentSpacing) {
+                VStack(alignment: .leading, spacing: FindDetailsLearnLayout.projectCardTitleSpacing) {
+                    Text("CITIZEN SCIENCE PROJECT")
+                        .gaiaFont(.caption)
+                        .foregroundStyle(GaiaColor.paperWhite50)
+                        .textCase(.uppercase)
 
-            VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
-                Text("Oak Woodland\nRecovery")
-                    .gaiaFont(.displayMedium)
-                    .foregroundStyle(GaiaColor.paperWhite50)
+                    Text("Oak Woodland Recovery")
+                        .gaiaFont(.displayMedium)
+                        .foregroundStyle(GaiaColor.paperWhite50)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
 
                 Text("Help monitor oak tree health across local California woodlands.")
                     .gaiaFont(.caption2)
                     .foregroundStyle(GaiaColor.paperWhite50)
+                    .frame(maxWidth: FindDetailsLearnLayout.projectCardSummaryWidth, alignment: .leading)
+                    .fixedSize(horizontal: false, vertical: true)
             }
 
             Button(action: {}) {
@@ -381,8 +476,8 @@ struct FindDetailsLearnScreen: View {
                     .gaiaFont(.body)
                     .foregroundStyle(GaiaColor.broccoliBrown500)
                     .frame(maxWidth: .infinity)
-                    .frame(height: 50)
-                    .background(GaiaColor.broccoliBrown50, in: Capsule())
+                    .frame(minHeight: FindDetailsLearnLayout.projectCardButtonMinHeight)
+                    .background(GaiaColor.paperWhite50, in: Capsule())
             }
             .buttonStyle(.plain)
         }
@@ -393,15 +488,15 @@ struct FindDetailsLearnScreen: View {
     }
 
     private var projectCardBackground: some View {
-        let shape = RoundedRectangle(cornerRadius: 15.549, style: .continuous)
+        let shape = RoundedRectangle(cornerRadius: GaiaRadius.card, style: .continuous)
 
         return shape
             .fill(GaiaColor.broccoliBrown400)
             .shadow(
-                color: Color(red: 128 / 255, green: 105 / 255, blue: 38 / 255).opacity(0.09),
-                radius: 19.996,
+                color: GaiaShadow.smallColor,
+                radius: GaiaShadow.smallRadius,
                 x: 0,
-                y: 4
+                y: GaiaShadow.smallYOffset
             )
     }
 
@@ -425,10 +520,21 @@ private extension View {
 
 private struct FindDetailsLearnSection<Content: View>: View {
     let title: String
+    let contentSpacing: CGFloat
     @ViewBuilder let content: () -> Content
 
+    init(
+        title: String,
+        contentSpacing: CGFloat = FindDetailsLearnLayout.sectionTitleSpacing,
+        @ViewBuilder content: @escaping () -> Content
+    ) {
+        self.title = title
+        self.contentSpacing = contentSpacing
+        self.content = content
+    }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: GaiaSpacing.cardInset) {
+        VStack(alignment: .leading, spacing: contentSpacing) {
             Text(title)
                 .gaiaFont(.titleSans)
                 .foregroundStyle(GaiaColor.inkBlack300)
@@ -446,22 +552,35 @@ private struct FindDetailsLearnStatCard<Content: View>: View {
     @ViewBuilder let content: () -> Content
 
     var body: some View {
-        VStack(spacing: GaiaSpacing.cardInset) {
+        VStack(spacing: FindDetailsLearnLayout.statsCardContentGap) {
             Text(label)
-                .gaiaFont(.caption)
+                .gaiaFont(.caption2)
                 .foregroundStyle(GaiaColor.paperWhite50)
 
             content()
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                .frame(
+                    maxWidth: .infinity,
+                    maxHeight: FindDetailsLearnLayout.statsContentHeight,
+                    alignment: .center
+                )
         }
-        .padding(GaiaSpacing.cardInset)
+        .padding(FindDetailsLearnLayout.statsCardInset)
         .frame(width: FindDetailsLearnLayout.statsCardWidth, height: FindDetailsLearnLayout.statsCardHeight)
         .background(
-            RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
+            RoundedRectangle(
+                cornerRadius: FindDetailsLearnLayout.statsCardCornerRadius,
+                style: .continuous
+            )
                 .fill(GaiaColor.oliveGreen300)
                 .overlay(
-                    RoundedRectangle(cornerRadius: GaiaRadius.md, style: .continuous)
-                        .stroke(GaiaColor.oliveGreen200, lineWidth: 1)
+                    RoundedRectangle(
+                        cornerRadius: FindDetailsLearnLayout.statsCardCornerRadius,
+                        style: .continuous
+                    )
+                        .stroke(
+                            Color.black.opacity(0.1),
+                            lineWidth: FindDetailsLearnLayout.statsCardBorderWidth
+                        )
                 )
         )
     }
@@ -471,7 +590,7 @@ private struct FindDetailsLearnRecentActivityCard: View {
     let item: FindDetailsLearnRecentItem
 
     var body: some View {
-        HStack(spacing: GaiaSpacing.cardInset) {
+        HStack(spacing: FindDetailsLearnLayout.listContentGap) {
             GaiaAssetImage(name: item.imageName, contentMode: .fill)
                 .frame(
                     width: FindDetailsLearnLayout.listImageSize,
@@ -483,75 +602,131 @@ private struct FindDetailsLearnRecentActivityCard: View {
                         style: .continuous
                     )
                 )
+                .accessibilityHidden(true)
 
-            VStack(alignment: .leading, spacing: GaiaSpacing.sm) {
+            VStack(alignment: .leading, spacing: FindDetailsLearnLayout.listTextSpacing) {
                 Text(item.dayLabel)
                     .gaiaFont(.footnote)
                     .foregroundStyle(GaiaColor.inkBlack300)
+                    .lineLimit(1)
 
                 Text(item.locationText)
                     .gaiaFont(.title1Medium)
                     .foregroundStyle(GaiaColor.olive)
+                    .multilineTextAlignment(.leading)
+                    .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(
+                width: FindDetailsLearnLayout.listTextColumnWidth,
+                height: FindDetailsLearnLayout.listImageSize,
+                alignment: .leading
+            )
         }
         .padding(GaiaSpacing.cardInset)
         .frame(maxWidth: .infinity, alignment: .leading)
         .frame(height: FindDetailsLearnLayout.listCardHeight, alignment: .leading)
         .background(
+            RoundedRectangle(
+                cornerRadius: FindDetailsLearnLayout.listCardCornerRadius,
+                style: .continuous
+            )
+            .fill(GaiaColor.paperWhite50)
+            .overlay(
                 RoundedRectangle(
                     cornerRadius: FindDetailsLearnLayout.listCardCornerRadius,
                     style: .continuous
                 )
-                    .fill(GaiaColor.paperWhite50)
-                    .overlay(
-                        RoundedRectangle(
-                            cornerRadius: FindDetailsLearnLayout.listCardCornerRadius,
-                            style: .continuous
-                        )
-                            .stroke(GaiaColor.border, lineWidth: 0.5)
-                    )
+                .stroke(
+                    GaiaColor.borderStrong,
+                    lineWidth: FindDetailsLearnLayout.listCardBorderWidth
+                )
             )
-        }
+        )
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityLabel)
+    }
+
+    private var accessibilityLabel: String {
+        "\(item.dayLabel), \(item.locationText.replacingOccurrences(of: "\n", with: ", "))"
+    }
 }
 
 private struct FindDetailsLeaderboardCard: View {
     let entries: [FindDetailsLeaderboardEntry]
 
     var body: some View {
-        VStack(spacing: 0) {
-            ForEach(Array(entries.enumerated()), id: \.element.id) { index, entry in
-                FindDetailsLeaderboardRow(
-                    entry: entry,
-                    showsDivider: index < entries.count - 1
-                )
+        RoundedRectangle(
+            cornerRadius: FindDetailsLearnLayout.leaderboardShellCornerRadius,
+            style: .continuous
+        )
+        .fill(GaiaColor.oliveGreen500)
+        .overlay {
+            VStack(spacing: -FindDetailsLearnLayout.leaderboardRowOverlap) {
+                ForEach(entries) { entry in
+                    FindDetailsLeaderboardRow(entry: entry)
+                }
             }
+            .background(GaiaColor.paperWhite50)
+            .clipShape(
+                RoundedRectangle(
+                    cornerRadius: FindDetailsLearnLayout.leaderboardInnerCornerRadius,
+                    style: .continuous
+                )
+            )
+            .overlay(
+                RoundedRectangle(
+                    cornerRadius: FindDetailsLearnLayout.leaderboardInnerCornerRadius,
+                    style: .continuous
+                )
+                    .stroke(
+                        GaiaColor.borderStrong,
+                        lineWidth: FindDetailsLearnLayout.leaderboardInnerBorderWidth
+                    )
+            )
         }
-        .clipShape(RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous))
+        .clipShape(
+            RoundedRectangle(
+                cornerRadius: FindDetailsLearnLayout.leaderboardShellCornerRadius,
+                style: .continuous
+            )
+        )
         .overlay(
-            RoundedRectangle(cornerRadius: GaiaRadius.lg, style: .continuous)
-                .stroke(GaiaColor.border, lineWidth: 0.763)
+            RoundedRectangle(
+                cornerRadius: FindDetailsLearnLayout.leaderboardShellCornerRadius,
+                style: .continuous
+            )
+                .stroke(
+                    GaiaColor.borderStrong,
+                    lineWidth: FindDetailsLearnLayout.leaderboardShellBorderWidth
+                )
         )
     }
 }
 
 private struct FindDetailsLeaderboardRow: View {
     let entry: FindDetailsLeaderboardEntry
-    let showsDivider: Bool
 
     var body: some View {
         HStack(spacing: GaiaSpacing.md) {
-            HStack(spacing: GaiaSpacing.md) {
+            HStack(spacing: entry.highlighted
+                ? FindDetailsLearnLayout.leaderboardHighlightedRankGap
+                : FindDetailsLearnLayout.leaderboardDefaultRankGap
+            ) {
                 rankBadge
 
-                HStack(spacing: entry.highlighted ? GaiaSpacing.sm : 7.481) {
+                HStack(spacing: entry.highlighted
+                    ? FindDetailsLearnLayout.leaderboardHighlightedProfileGap
+                    : FindDetailsLearnLayout.leaderboardDefaultProfileGap
+                ) {
                     GaiaProfileAvatar(
                         imageName: entry.avatarImageName,
                         size: entry.highlighted
                             ? FindDetailsLearnLayout.highlightedLeaderboardAvatarSize
                             : FindDetailsLearnLayout.leaderboardAvatarSize,
-                        borderWidth: entry.highlighted ? 0.333 : 0.312
+                        borderWidth: entry.highlighted
+                            ? FindDetailsLearnLayout.leaderboardHighlightedAvatarBorderWidth
+                            : FindDetailsLearnLayout.leaderboardDefaultAvatarBorderWidth
                     )
 
                     Text(entry.name)
@@ -562,9 +737,13 @@ private struct FindDetailsLeaderboardRow: View {
 
             Spacer(minLength: GaiaSpacing.md)
 
-            HStack(spacing: entry.highlighted ? GaiaSpacing.xs : 3.741) {
+            HStack(spacing: entry.highlighted
+                ? FindDetailsLearnLayout.leaderboardHighlightedPointsGap
+                : FindDetailsLearnLayout.leaderboardDefaultPointsGap
+            ) {
                 Text(entry.points)
-                    .gaiaFont(entry.highlighted ? .subheadline : .footnote)
+                    .font(entry.highlighted ? GaiaTypography.subheadline : GaiaTypography.footnote)
+                    .tracking(entry.highlighted ? FindDetailsLearnLayout.leaderboardHighlightedPointsTracking : 0)
                     .foregroundStyle(entry.highlighted ? GaiaColor.paperWhite50 : GaiaColor.oliveGreen300)
 
                 GaiaIcon(
@@ -576,22 +755,26 @@ private struct FindDetailsLeaderboardRow: View {
                 )
             }
         }
-        .padding(.horizontal, GaiaSpacing.md)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .frame(
-            height: entry.highlighted
-                ? FindDetailsLearnLayout.highlightedLeaderboardRowHeight
-                : FindDetailsLearnLayout.leaderboardRowHeight,
-            alignment: .leading
+        .padding(
+            .horizontal,
+            entry.highlighted
+                ? FindDetailsLearnLayout.leaderboardHighlightedHorizontalInset
+                : FindDetailsLearnLayout.leaderboardDefaultHorizontalInset
         )
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(height: FindDetailsLearnLayout.leaderboardRowHeight, alignment: .leading)
         .background(entry.highlighted ? GaiaColor.oliveGreen300 : GaiaColor.paperWhite50)
-        .overlay(alignment: .bottom) {
-            if showsDivider {
+        .overlay {
+            if !entry.highlighted {
                 Rectangle()
-                    .fill(GaiaColor.border)
-                    .frame(height: 0.5)
+                    .stroke(
+                        GaiaColor.borderStrong,
+                        lineWidth: FindDetailsLearnLayout.leaderboardInnerBorderWidth
+                    )
             }
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Rank \(entry.rank), \(entry.name), \(entry.points) finds")
     }
 
     private var rankBadge: some View {
@@ -600,7 +783,12 @@ private struct FindDetailsLeaderboardRow: View {
         let textColor = entry.highlighted ? GaiaColor.paperWhite50 : GaiaColor.olive
 
         return Text(entry.rank)
-            .gaiaFont(.caption2)
+            .font(GaiaTypography.caption2)
+            .tracking(
+                entry.highlighted
+                    ? FindDetailsLearnLayout.leaderboardHighlightedRankTracking
+                    : FindDetailsLearnLayout.leaderboardDefaultRankTracking
+            )
             .foregroundStyle(textColor)
             .frame(
                 width: FindDetailsLearnLayout.leaderboardRankBadgeSize,
@@ -611,9 +799,29 @@ private struct FindDetailsLeaderboardRow: View {
                     .fill(fillColor)
                     .overlay(
                         Circle()
-                            .stroke(strokeColor, lineWidth: 0.423)
+                            .stroke(
+                                strokeColor,
+                                lineWidth: FindDetailsLearnLayout.leaderboardRankStrokeWidth
+                            )
                     )
             )
+    }
+}
+
+private struct FindDetailsLearnMapExpandBadge: View {
+    var body: some View {
+        GaiaMaterialBackground(cornerRadius: GaiaRadius.full, interactive: false, showsShadow: true)
+            .overlay {
+                GaiaIcon(
+                    kind: .expand,
+                    size: FindDetailsLearnLayout.mapExpandIconSize
+                )
+            }
+            .frame(
+                width: FindDetailsLearnLayout.mapExpandBadgeSize,
+                height: FindDetailsLearnLayout.mapExpandBadgeSize
+            )
+            .accessibilityHidden(true)
     }
 }
 
@@ -621,13 +829,10 @@ private struct FindDetailsLearnTrailingLink: View {
     let title: String
 
     var body: some View {
-        HStack {
-            Spacer(minLength: 0)
-
-            Text(title)
-                .gaiaFont(.subheadline)
-                .foregroundStyle(GaiaColor.inkBlack300)
-        }
+        Text(title)
+            .gaiaFont(.subheadline)
+            .foregroundStyle(GaiaColor.inkBlack300)
+            .frame(maxWidth: .infinity, alignment: .trailing)
     }
 }
 

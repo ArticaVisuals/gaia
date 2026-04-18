@@ -101,8 +101,8 @@ enum GaiaTextStyle {
         case .footnote:         return (GaiaTypography.footnote,         -0.08, GaiaTypography.sansLineSpacing(size: 13, weight: .regular, targetLineHeight: 15.6))
         case .footnoteMedium:   return (GaiaTypography.footnoteMedium,   -0.08, GaiaTypography.sansLineSpacing(size: 13, weight: .medium, targetLineHeight: 15.6))
         case .pill:             return (GaiaTypography.footnote,         -0.08, GaiaTypography.sansLineSpacing(size: 13, weight: .regular, targetLineHeight: 13 * 1.2))
-        case .caption:          return (GaiaTypography.caption,           0.25, GaiaTypography.sansLineSpacing(size: 11, weight: .regular, targetLineHeight: 11 * 1.3))
-        case .captionMedium:    return (GaiaTypography.captionMedium,     0.25, GaiaTypography.sansLineSpacing(size: 11, weight: .medium, targetLineHeight: 11 * 1.3))
+        case .caption:          return (GaiaTypography.caption,           0,    GaiaTypography.sansLineSpacing(size: 11, weight: .regular, targetLineHeight: 11 * 1.3))
+        case .captionMedium:    return (GaiaTypography.captionMedium,     0,    GaiaTypography.sansLineSpacing(size: 11, weight: .medium, targetLineHeight: 11 * 1.3))
         case .caption2:         return (GaiaTypography.caption2,          0,    GaiaTypography.sansLineSpacing(size: 12, weight: .regular, targetLineHeight: 12 * 1.2))
         case .caption2Medium:   return (GaiaTypography.caption2Medium,    0,    GaiaTypography.sansLineSpacing(size: 12, weight: .medium, targetLineHeight: 12 * 1.2))
         case .micro:            return (GaiaTypography.micro,             0.25, 10 * 0.3)   // LH 1.3

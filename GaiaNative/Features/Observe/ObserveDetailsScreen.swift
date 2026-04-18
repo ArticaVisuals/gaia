@@ -1,4 +1,6 @@
-// figma: https://www.figma.com/design/X0NcuRE0WKmsqR36cvlcij/Write-Test-Pro?node-id=16-2465 (Log Details 1), 16-2491 (Log Details 2), 16-2502 (Log Details 3)
+// figma: https://www.figma.com/design/X0NcuRE0WKmsqR36cvlcij/Write-Test-Pro?node-id=48-1739&m=dev (Log Details 1)
+// figma: https://www.figma.com/design/X0NcuRE0WKmsqR36cvlcij/Write-Test-Pro?node-id=48-1765&m=dev (Log Details 2)
+// figma: https://www.figma.com/design/X0NcuRE0WKmsqR36cvlcij/Write-Test-Pro?node-id=48-1776&m=dev (Log Details 3)
 import SwiftUI
 
 private enum ObserveDetailsLayout {
@@ -31,7 +33,10 @@ struct ObserveDetailsScreen: View {
 
     var body: some View {
         GeometryReader { proxy in
-            let toolbarTopPadding = min(max(19, proxy.safeAreaInsets.top + 4), 51)
+            let toolbarTopPadding = min(
+                max(GaiaSpacing.md + GaiaSpacing.xs, proxy.safeAreaInsets.top + GaiaSpacing.xs),
+                GaiaSpacing.step56 - GaiaSpacing.iconGapTight
+            )
             let topBarHeight = toolbarTopPadding + ObserveDetailsLayout.toolbarButtonSize + GaiaSpacing.md
             let bottomSafeInset = windowSafeBottomInset > 0 ? windowSafeBottomInset : proxy.safeAreaInsets.bottom
             let bottomBarHeight = GaiaSpacing.md + ObserveDetailsLayout.actionButtonHeight + max(GaiaSpacing.md, bottomSafeInset)
@@ -88,7 +93,7 @@ struct ObserveDetailsScreen: View {
                     }
                     .frame(width: contentWidth, alignment: .leading)
                     .padding(.horizontal, GaiaSpacing.md)
-                    .padding(.top, 19)
+                    .padding(.top, GaiaSpacing.md + GaiaSpacing.xs - (GaiaSpacing.xxs / 2))
                     .padding(.bottom, GaiaSpacing.xl)
                 }
                 .scrollDismissesKeyboard(.interactively)
@@ -305,24 +310,22 @@ private struct ObserveCapturedPhotoCard: View {
                 ZStack {
                     Circle()
                         .fill(Color.black.opacity(0.1))
-                    Image(systemName: "xmark")
-                        .font(.system(size: 10, weight: .medium))
-                        .foregroundStyle(Color.white.opacity(0.95))
+                    GaiaIcon(kind: .close, size: 12, tint: Color.white.opacity(0.95))
                 }
                 .frame(width: 24, height: 24)
             }
             .buttonStyle(.plain)
-            .padding(7)
+            .padding(GaiaSpacing.sm - (GaiaSpacing.xxs / 2))
             .accessibilityLabel("Remove photo")
 
             if isHighlight {
                 Text("Highlight")
                     .gaiaFont(.caption)
                     .foregroundStyle(GaiaColor.paperWhite50)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 3)
+                    .padding(.horizontal, GaiaSpacing.pillHorizontal)
+                    .padding(.vertical, GaiaSpacing.xs - (GaiaSpacing.xxs / 2))
                     .background(Color.black.opacity(0.5), in: Capsule())
-                    .padding(10)
+                    .padding(GaiaSpacing.pillHorizontal)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
                     .allowsHitTesting(false)
             }
@@ -574,8 +577,8 @@ private struct ObserveNotesField: View {
             TextEditor(text: $text)
                 .gaiaFont(.subheadline)
                 .foregroundStyle(GaiaColor.textPrimary)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 6)
+                .padding(.horizontal, GaiaSpacing.sm)
+                .padding(.vertical, GaiaSpacing.sm - GaiaSpacing.xxs)
                 .scrollContentBackground(.hidden)
                 .background(Color.clear)
                 .focused($isFocused)
@@ -709,13 +712,13 @@ private struct ObserveSimpleMapRow: View {
 
 private struct ObserveGeoPrivacyRow: View {
     var body: some View {
-        HStack(spacing: GaiaSpacing.md - 4) {
-            HStack(spacing: GaiaSpacing.xs) {
-                Image(systemName: "globe")
-                    .font(.system(size: 14, weight: .regular))
-                    .foregroundStyle(GaiaColor.blackishGrey700)
-                    .frame(width: 24, height: 24)
-                Text("Geoprivacy")
+            HStack(spacing: GaiaSpacing.md - 4) {
+                HStack(spacing: GaiaSpacing.xs) {
+                    Image(systemName: "globe")
+                        .gaiaFont(.subheadline)
+                        .foregroundStyle(GaiaColor.blackishGrey700)
+                        .frame(width: 24, height: 24)
+                    Text("Geoprivacy")
                     .gaiaFont(.subheadline)
                     .foregroundStyle(GaiaColor.blackishGrey700)
             }
@@ -753,19 +756,7 @@ private struct ObserveMapRowDivider: View {
 
 private struct ObserveRowChevron: View {
     var body: some View {
-        Group {
-            if let chevron = AssetCatalog.image(named: "Icons/System/chevron-20.png") {
-                chevron
-                    .resizable()
-                    .renderingMode(.template)
-                    .foregroundStyle(GaiaColor.blackishGrey300)
-            } else {
-                Image(systemName: "chevron.right")
-                    .resizable()
-                    .scaledToFit()
-                    .foregroundStyle(GaiaColor.blackishGrey300)
-            }
-        }
+        GaiaAssetImage(name: "Icons/System/chevron-20.png", contentMode: .fit)
         .frame(width: 20, height: 20)
         .accessibilityHidden(true)
     }
@@ -812,7 +803,7 @@ private struct ObserveMetadataRow: View {
     var body: some View {
         HStack(spacing: GaiaSpacing.md - 4) {
             Circle()
-                .fill(Color(hex: 0xF3F0E6))
+                .fill(GaiaColor.paperWhite100)
                 .frame(width: 24, height: 24)
 
             Text(title)
@@ -899,31 +890,14 @@ private struct ObserveConditionHero: View {
         ZStack(alignment: .leading) {
             switch kind {
             case .biome:
-                LinearGradient(
-                    colors: [
-                        Color(hex: 0xE8DDC3),
-                        Color(hex: 0xA1B39A),
-                        Color(hex: 0x6C8264)
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                .overlay(
-                    RadialGradient(
-                        colors: [Color.white.opacity(0.35), .clear],
-                        center: .topLeading,
-                        startRadius: 10,
-                        endRadius: 80
-                    )
+                GaiaAssetImage(
+                    name: "assets/observe/details-condition-biome.png",
+                    contentMode: .fill
                 )
             case .weather:
-                LinearGradient(
-                    colors: [
-                        Color(hex: 0x245A8C),
-                        Color(hex: 0x5D84B0)
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
+                GaiaAssetImage(
+                    name: "assets/observe/details-condition-weather.png",
+                    contentMode: .fill
                 )
 
                 VStack {
@@ -964,17 +938,5 @@ private struct ObserveMapExpandedScreen: View {
                 .padding(.leading, GaiaSpacing.md)
                 .safeAreaPadding(.top, 8)
         }
-    }
-}
-
-private extension Color {
-    init(hex: UInt) {
-        self.init(
-            .sRGB,
-            red: Double((hex >> 16) & 0xFF) / 255,
-            green: Double((hex >> 8) & 0xFF) / 255,
-            blue: Double(hex & 0xFF) / 255,
-            opacity: 1
-        )
     }
 }

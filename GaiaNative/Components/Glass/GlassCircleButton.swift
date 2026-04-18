@@ -15,17 +15,20 @@ struct GlassReactiveButtonStyle: ButtonStyle {
 struct GlassCircleButton<Label: View>: View {
     let size: CGFloat
     let showsShadow: Bool
+    let surfaceStyle: GaiaGlassSurfaceStyle
     let action: () -> Void
     @ViewBuilder let label: () -> Label
 
     init(
         size: CGFloat = 48,
         showsShadow: Bool = true,
+        surfaceStyle: GaiaGlassSurfaceStyle = .standard,
         action: @escaping () -> Void,
         @ViewBuilder label: @escaping () -> Label
     ) {
         self.size = size
         self.showsShadow = showsShadow
+        self.surfaceStyle = surfaceStyle
         self.action = action
         self.label = label
     }
@@ -36,7 +39,8 @@ struct GlassCircleButton<Label: View>: View {
                 GaiaMaterialBackground(
                     cornerRadius: size / 2,
                     interactive: true,
-                    showsShadow: showsShadow
+                    showsShadow: showsShadow,
+                    surfaceStyle: surfaceStyle
                 )
 
                 label()
@@ -45,7 +49,6 @@ struct GlassCircleButton<Label: View>: View {
             }
             .frame(width: size, height: size)
             .contentShape(Circle())
-            .clipShape(Circle())
         }
         .buttonStyle(GlassReactiveButtonStyle())
     }

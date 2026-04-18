@@ -103,7 +103,7 @@ private struct ProfileLogStandaloneHeader: View {
     @Binding var viewMode: ProfileLogViewMode
 
     var body: some View {
-        VStack(spacing: GaiaSpacing.md) {
+        VStack(spacing: GaiaSpacing.sm) {
             HStack {
                 ProfileLogTopActionButton(accessibilityLabel: "Search log") {
                     GaiaIcon(kind: .search, size: 20, tint: GaiaColor.brandPrimary)
@@ -122,25 +122,24 @@ private struct ProfileLogStandaloneHeader: View {
                         .frame(width: 20, height: 20)
                 }
             }
-            .frame(height: 40)
+            .frame(height: 48)
             .padding(.horizontal, GaiaSpacing.md)
             .padding(.top, GaiaSpacing.sm)
 
             ProfileLogViewToggle(selection: $viewMode)
         }
-        .padding(.bottom, GaiaSpacing.lg)
+        .padding(.bottom, GaiaSpacing.md)
         .overlay(alignment: .bottom) {
             Rectangle()
                 .fill(GaiaColor.border)
                 .frame(height: 0.5)
         }
-        .shadow(color: GaiaColor.broccoliBrown500.opacity(0.16), radius: 20, x: 0, y: 4)
     }
 }
 
 private struct ProfileLogTopActionButton<Label: View>: View {
     let accessibilityLabel: String
-    var size: CGFloat = 40
+    var size: CGFloat = 44
     @ViewBuilder let label: () -> Label
 
     var body: some View {
@@ -149,7 +148,7 @@ private struct ProfileLogTopActionButton<Label: View>: View {
                 .frame(width: size, height: size)
                 .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(GlassReactiveButtonStyle())
         .accessibilityLabel(accessibilityLabel)
     }
 }
@@ -198,9 +197,19 @@ private func profileLogFilteredSections(content: ProfileLogContent, query: Strin
     let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
     guard !trimmed.isEmpty else { return content.listSections }
 
-    let needle = trimmed.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: .current)
+    let needle = trimmed.lowercased()
     return content.listSections.compactMap { section in
-        let entries = section.entries.filter { profileLogMatches(entry: $0, needle: needle) }
+        let entries = section.entries.filter { entry in
+            [
+                entry.commonName,
+                entry.scientificName,
+                entry.metaLabel,
+                entry.statusLabel
+            ]
+            .joined(separator: " ")
+            .lowercased()
+            .contains(needle)
+        }
 
         guard !entries.isEmpty else { return nil }
         return ProfileLogSection(
@@ -216,25 +225,10 @@ private func profileLogFilteredGridItems(content: ProfileLogContent, query: Stri
     let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
     guard !trimmed.isEmpty else { return content.gridItems }
 
-    let needle = trimmed.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: .current)
-    return content.gridItems.filter { profileLogMatches(gridItem: $0, needle: needle) }
-}
-
-private func profileLogMatches(entry: ProfileLogEntry, needle: String) -> Bool {
-    profileLogNormalized(entry.commonName).contains(needle) ||
-        profileLogNormalized(entry.scientificName).contains(needle) ||
-        profileLogNormalized(entry.metaLabel).contains(needle) ||
-        profileLogNormalized(entry.statusLabel).contains(needle)
-}
-
-private func profileLogMatches(gridItem: ProfileLogGridItem, needle: String) -> Bool {
-    profileLogNormalized(gridItem.title).contains(needle)
-}
-
-private func profileLogNormalized(_ text: String) -> String {
-    text
-        .replacingOccurrences(of: "\n", with: " ")
-        .folding(options: [.caseInsensitive, .diacriticInsensitive], locale: .current)
+    let needle = trimmed.lowercased()
+    return content.gridItems.filter {
+        $0.title.replacingOccurrences(of: "\n", with: " ").lowercased().contains(needle)
+    }
 }
 
 private struct ProfileLogSearchBar: View {
@@ -264,7 +258,7 @@ private struct ProfileLogSearchBar: View {
         }
         .padding(.horizontal, GaiaSpacing.sm)
         .frame(height: 40)
-        .background(GaiaMaterialBackground(cornerRadius: GaiaRadius.full, interactive: true))
+        .background(GaiaMaterialBackground(cornerRadius: GaiaRadius.full))
         .clipShape(Capsule())
         .contentShape(Capsule())
         .shadow(color: GaiaShadow.navColor.opacity(0.28), radius: 16, x: 0, y: 6)
@@ -276,6 +270,7 @@ private struct ProfileLogSearchBar: View {
 
 private struct ProfileLogViewToggle: View {
     @Binding var selection: ProfileLogViewMode
+    @State private var dragOffset: CGFloat?
 
     private let buttonSize: CGFloat = 40
     private let gap: CGFloat = 4
@@ -286,19 +281,25 @@ private struct ProfileLogViewToggle: View {
     private var modes: [ProfileLogViewMode] { ProfileLogViewMode.allCases }
 
     var body: some View {
-        HStack(spacing: gap) {
-            ForEach(modes) { mode in
-                Button { select(mode) } label: {
-                    icon(for: mode, selected: selection == mode)
-                        .frame(width: 22, height: 22)
-                        .frame(width: buttonSize, height: buttonSize)
-                        .background(
-                            RoundedRectangle(cornerRadius: buttonRadius, style: .continuous)
-                                .fill(selection == mode ? GaiaColor.oliveGreen500 : Color.clear)
-                        )
-                        .contentShape(Rectangle())
+        let selectedIdx = modes.firstIndex(of: selection) ?? 0
+        let indicatorX = dragOffset ?? (CGFloat(selectedIdx) * step)
+
+        ZStack(alignment: .leading) {
+            RoundedRectangle(cornerRadius: buttonRadius, style: .continuous)
+                .fill(GaiaColor.brandPrimary)
+                .frame(width: buttonSize, height: buttonSize)
+                .offset(x: indicatorX)
+
+            HStack(spacing: gap) {
+                ForEach(modes) { mode in
+                    Button { select(mode) } label: {
+                        icon(for: mode, selected: selection == mode)
+                            .frame(width: 22, height: 22)
+                            .frame(width: buttonSize, height: buttonSize)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(GlassReactiveButtonStyle())
                 }
-                .buttonStyle(.plain)
             }
         }
         .padding(pad)
@@ -308,7 +309,12 @@ private struct ProfileLogViewToggle: View {
         )
         .contentShape(Rectangle())
         .highPriorityGesture(modeDragGesture)
-        .animation(GaiaMotion.spring, value: selection)
+        .animation(
+            dragOffset == nil
+                ? GaiaMotion.spring
+                : .interactiveSpring(response: 0.18, dampingFraction: 0.86),
+            value: indicatorX
+        )
     }
 
     private func select(_ mode: ProfileLogViewMode) {
@@ -323,6 +329,8 @@ private struct ProfileLogViewToggle: View {
         DragGesture(minimumDistance: 4, coordinateSpace: .local)
             .onChanged { value in
                 let x = value.location.x - pad
+                dragOffset = max(0, min(x - buttonSize / 2, step * CGFloat(modes.count - 1)))
+
                 let idx = min(max(Int(x / step), 0), modes.count - 1)
                 let mode = modes[idx]
                 if selection != mode {
@@ -330,11 +338,14 @@ private struct ProfileLogViewToggle: View {
                     selection = mode
                 }
             }
+            .onEnded { _ in
+                dragOffset = nil
+            }
     }
 
     @ViewBuilder
     private func icon(for mode: ProfileLogViewMode, selected: Bool) -> some View {
-        let tint = selected ? GaiaColor.paperWhite50 : GaiaColor.oliveGreen500
+        let tint = selected ? GaiaColor.paperWhite50 : GaiaColor.brandPrimary
         switch mode {
         case .grid:
             ProfileLogGlyphImage(path: "Icons/System/grid-32.png", tint: tint)
@@ -349,11 +360,16 @@ private struct ProfileLogViewToggle: View {
 private struct ProfileLogFilterButton: View {
     var body: some View {
         Button(action: {}) {
-            ProfileLogGlyphImage(path: "Icons/System/filter-32.png", tint: GaiaColor.brandPrimary)
-                .frame(width: 20, height: 20)
-                .frame(width: 40, height: 40)
+            RoundedRectangle(cornerRadius: GaiaRadius.sm, style: .continuous)
+                .fill(GaiaColor.brandPrimary)
+                .frame(width: 44, height: 44)
+                .overlay {
+                    ProfileLogGlyphImage(path: "Icons/System/filter-32.png", tint: GaiaColor.paperWhite50)
+                        .frame(width: 20, height: 20)
+                }
         }
-        .buttonStyle(.plain)
+        .buttonStyle(GlassReactiveButtonStyle())
+        .shadow(color: GaiaShadow.navColor.opacity(0.18), radius: 12, x: 0, y: 4)
     }
 }
 
@@ -380,18 +396,19 @@ private struct ProfileLogDayBar: View {
     var body: some View {
         HStack(alignment: .lastTextBaseline, spacing: 10) {
             Text(title)
-                .gaiaFont(.footnoteMedium)
-                .foregroundStyle(GaiaColor.inkBlack500)
+                .gaiaFont(.title1Medium)
+                .foregroundStyle(GaiaColor.inkBlack300)
 
             Text(countLabel)
                 .gaiaFont(.caption2)
-                .foregroundStyle(GaiaColor.blackishGrey200)
+                .foregroundStyle(GaiaColor.brandPrimary)
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 4)
+        .padding(.horizontal, GaiaSpacing.md)
+        .padding(.top, GaiaSpacing.lg)
+        .padding(.bottom, GaiaSpacing.md)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .frame(height: 33, alignment: .center)
-        .background(GaiaColor.broccoliBrown100)
+        .frame(height: 68, alignment: .bottomLeading)
+        .background(GaiaColor.paperWhite50)
         .overlay(alignment: .top) {
             Rectangle()
                 .fill(GaiaColor.border)
@@ -444,8 +461,8 @@ private struct ProfileLogRow: View {
                 .padding(.top, GaiaSpacing.xxs / 2)
         }
         .padding(.horizontal, GaiaSpacing.md)
-        .padding(.vertical, 14)
-        .frame(maxWidth: .infinity, minHeight: 104, maxHeight: 104, alignment: .leading)
+        .padding(.vertical, GaiaSpacing.buttonHorizontalLarge)
+        .frame(maxWidth: .infinity, minHeight: 104, alignment: .leading)
         .background(GaiaColor.paperWhite50)
         .overlay(alignment: .top) {
             Rectangle()
@@ -555,7 +572,7 @@ private enum ProfileLogStatusAppearance {
 private struct ProfileLogGrid: View {
     let items: [ProfileLogGridItem]
 
-    private let columns = Array(repeating: GridItem(.flexible(minimum: 0, maximum: .infinity), spacing: 8), count: 2)
+    private let columns = Array(repeating: GridItem(.flexible(), spacing: 8), count: 3)
 
     var body: some View {
         LazyVGrid(columns: columns, spacing: 8) {
@@ -569,17 +586,7 @@ private struct ProfileLogGrid: View {
 private struct ProfileLogGridCard: View {
     let item: ProfileLogGridItem
 
-    private enum Layout {
-        static let cardRadius: CGFloat = 12.203
-        static let blurRadius: CGFloat = 5.263
-        static let titleHorizontalInset: CGFloat = 13
-        static let titleBottomInset: CGFloat = 15
-        static let cardHeight: CGFloat = 180
-    }
-
-    private var displayTitle: String {
-        item.title.replacingOccurrences(of: "\\n", with: "\n")
-    }
+    private let cardRadius: CGFloat = GaiaRadius.md
 
     var body: some View {
         GeometryReader { proxy in
@@ -591,7 +598,7 @@ private struct ProfileLogGridCard: View {
                 ProfileLogMedia(source: item.imageSource)
                     .frame(width: proxy.size.width, height: proxy.size.height)
                     .clipped()
-                    .blur(radius: Layout.blurRadius)
+                    .blur(radius: 3.7)
                     .mask(
                         LinearGradient(
                             stops: [
@@ -614,26 +621,26 @@ private struct ProfileLogGridCard: View {
                     endPoint: .bottom
                 )
 
-                Text(displayTitle)
-                    .gaiaFont(.titleSans)
+                Text(item.title)
+                    .gaiaFont(.bodySerif)
                     .foregroundStyle(GaiaColor.paperWhite50)
                     .multilineTextAlignment(.leading)
                     .lineLimit(2)
                     .truncationMode(.tail)
-                    .padding(.horizontal, Layout.titleHorizontalInset)
-                    .padding(.bottom, Layout.titleBottomInset)
+                    .padding(.horizontal, GaiaSpacing.pillHorizontal - (GaiaSpacing.xxs / 2))
+                    .padding(.bottom, GaiaSpacing.sm)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
             }
         }
-        .frame(height: Layout.cardHeight)
+        .aspectRatio(1, contentMode: .fit)
         .background(GaiaColor.surfaceCard)
-        .clipShape(RoundedRectangle(cornerRadius: Layout.cardRadius, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: cardRadius, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: Layout.cardRadius, style: .continuous)
-                .stroke(GaiaColor.blackishGrey200, lineWidth: 0.763)
+            RoundedRectangle(cornerRadius: cardRadius, style: .continuous)
+                .stroke(GaiaColor.border, lineWidth: 0.5)
         )
-        .shadow(color: GaiaColor.broccoliBrown500.opacity(0.09), radius: 12, x: 0, y: 6)
-        .contentShape(RoundedRectangle(cornerRadius: Layout.cardRadius, style: .continuous))
+        .shadow(color: GaiaShadow.smallColor, radius: 10, x: 0, y: 4)
+        .contentShape(RoundedRectangle(cornerRadius: cardRadius, style: .continuous))
     }
 }
 

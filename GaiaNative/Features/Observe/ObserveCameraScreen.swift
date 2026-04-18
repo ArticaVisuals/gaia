@@ -1,4 +1,4 @@
-// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=1950-268596 (Camera)
+// figma: https://www.figma.com/design/X0NcuRE0WKmsqR36cvlcij/Write-Test-Pro?node-id=48-1688&m=dev (Camera)
 import SwiftUI
 import AVFoundation
 #if os(iOS)

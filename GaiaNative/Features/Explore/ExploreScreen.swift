@@ -1,4 +1,4 @@
-// figma: https://www.figma.com/design/4e4G3tnSR7AdPbf0jAYPP1/Gaia?node-id=1711-187852 (Map Folded), 289-2158 (Map Panel Closed)
+// figma: https://www.figma.com/design/X0NcuRE0WKmsqR36cvlcij/Write-Test-Pro?node-id=39-1442 (Map Full Fold)
 import SwiftUI
 
 struct ExploreScreen: View {
@@ -14,7 +14,8 @@ struct ExploreScreen: View {
             let viewportHeight = max(proxy.size.height, UIScreen.main.bounds.height)
             let horizontalInset: CGFloat = 16
             let searchBarWidth = max(0, viewportWidth - (horizontalInset * 2))
-            let searchBarTopInset = proxy.safeAreaInsets.top
+            let searchBarTopInset: CGFloat = 40
+            let sheetTopInset = proxy.safeAreaInsets.top
 
             ExploreMapView(
                 observations: contentStore.observations,
@@ -29,7 +30,7 @@ struct ExploreScreen: View {
                 ExploreDraggableSheet(
                     species: contentStore.species,
                     nearbyFindCount: max(12, contentStore.observations.count),
-                    topInset: searchBarTopInset,
+                    topInset: sheetTopInset,
                     onSelectFind: { species in
                         appState.openFindDetails(speciesID: species.id)
                     },
@@ -184,6 +185,8 @@ private struct ExploreDraggableSheet: View {
             let collapsedCardHeight: CGFloat = 190
             let visibleSheetHeight = collapsedCardHeight + (expandedSheetHeight - collapsedCardHeight) * contentReveal
             let activeDragHeight = detent == .full ? 112 : visibleSheetHeight
+            let fullCollapseRange = max(1, metrics.midOffset - metrics.fullOffset)
+            let scrollResetProgress = max(0, min(1, (liveOffset - metrics.fullOffset) / fullCollapseRange))
 
             locateButton(topPosition: topPosition, metrics: metrics)
                 .position(
@@ -203,6 +206,7 @@ private struct ExploreDraggableSheet: View {
                     onSelectFind: onSelectFind,
                     onSelectProject: onSelectProject,
                     allowsScroll: detent == .full,
+                    collapseProgress: scrollResetProgress,
                     showsSurface: false,
                     onPullDownCollapse: {
                         requestContentCollapse()
@@ -440,10 +444,10 @@ private struct ExploreSheetSurface: View {
                     topTrailing: topCorner
                 ),
                 style: .continuous
-            )
-            .stroke(GaiaColor.borderStrong, lineWidth: 0.5)
+                )
+            .stroke(GaiaColor.oliveGreen100, lineWidth: 0.5)
         )
-        .shadow(color: GaiaShadow.mediumColor, radius: 24, x: 0, y: -4)
+        .shadow(color: GaiaShadow.softColor, radius: 20, x: 0, y: 0)
     }
 }
 

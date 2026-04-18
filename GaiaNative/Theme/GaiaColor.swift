@@ -147,6 +147,8 @@ enum GaiaColor {
     static let brandAccent = asparagusGreen500
     static let splashBackground = Color(hex: 0x69785C)
     static let surfaceControlSubtle = textDisabled.opacity(0.20)
+    static let toolbarGlassBurn = Color(hex: 0xDDDDDD)
+    static let toolbarGlassDarken = Color(hex: 0xF7F7F7)
     static let interactiveHover = oliveGreen600
     static let interactiveDisabled = oliveGreen200
     static let statusNeedsId = vermillion500
