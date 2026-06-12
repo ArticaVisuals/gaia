@@ -4,7 +4,7 @@ import { WebView } from 'react-native-webview';
 
 export default function App() {
   const gaiaUrl = process.env.EXPO_PUBLIC_GAIA_URL?.trim() ?? '';
-  const gaiaLabel = process.env.EXPO_PUBLIC_GAIA_LABEL?.trim() ?? 'Gaia';
+  const gaiaLabel = process.env.EXPO_PUBLIC_GAIA_LABEL?.trim() || '';
 
   if (!gaiaUrl) {
     return (
@@ -42,15 +42,17 @@ export default function App() {
         renderLoading={() => (
           <View style={styles.loadingState}>
             <ActivityIndicator size="small" color="#67765b" />
-            <Text style={styles.loadingText}>Loading {gaiaLabel} preview…</Text>
+            <Text style={styles.loadingText}>Loading {gaiaLabel || 'Gaia'} preview…</Text>
           </View>
         )}
       />
-      <View pointerEvents="box-none" style={styles.badgeWrap}>
-        <Pressable style={styles.badge}>
-          <Text style={styles.badgeLabel}>{gaiaLabel}</Text>
-        </Pressable>
-      </View>
+      {gaiaLabel !== '' && (
+        <View pointerEvents="box-none" style={styles.badgeWrap}>
+          <Pressable style={styles.badge}>
+            <Text style={styles.badgeLabel}>{gaiaLabel}</Text>
+          </Pressable>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
