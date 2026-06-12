@@ -172,13 +172,32 @@ html, body {
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
   overflow: hidden;
+  position: relative;
 }
 .card-img-wrap img {
-  width: 100%; height: 100%;
-  object-fit: cover;
+  position: absolute;
+  max-width: none;
   display: block;
   pointer-events: none;
   -webkit-user-drag: none;
+}
+.card-image--ecosystem {
+  width: 105.7%;
+  height: auto;
+  left: -0.6%;
+  top: 0.1%;
+}
+.card-image--acorn {
+  width: 100%;
+  height: 123.89%;
+  left: 0;
+  top: -23.9%;
+}
+.card-image--squirrel {
+  width: 100%;
+  height: 123.89%;
+  left: 0;
+  top: -0.42%;
 }
 
 .card-body {
@@ -217,55 +236,6 @@ html, body {
   flex-shrink: 0;
 }
 .dot.active { background: var(--olive); }
-
-/* ── DONE STATE ────────────────────────────────────────────── */
-#done-screen {
-  display: none;
-  position: absolute;
-  inset: 0;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  text-align: center;
-  padding: 40px;
-  opacity: 0;
-}
-#done-screen.visible {
-  display: flex;
-  animation: done-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
-}
-@keyframes done-in {
-  from { opacity: 0; transform: translateY(10px) scale(0.98); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-.done-title {
-  font-family: var(--font-serif);
-  font-size: 34px;
-  font-weight: 500;
-  line-height: 0.97;
-  letter-spacing: -0.5px;
-  color: var(--olive);
-}
-.done-sub {
-  font-family: var(--font-sans);
-  font-size: 15px;
-  line-height: 1.4;
-  color: #7d7981;
-}
-.restart-btn {
-  margin-top: 8px;
-  background: var(--olive);
-  color: var(--paper-50);
-  font-family: var(--font-sans);
-  font-size: 15px;
-  letter-spacing: 0.3px;
-  padding: 14px 32px;
-  border-radius: 250px;
-  border: none;
-  cursor: pointer;
-}
 </style>
 </head>
 <body>
@@ -276,11 +246,6 @@ html, body {
     <h1 class="story-title">The Story of<br>a <em>Keystone</em></h1>
 
     <div id="deck">
-      <div id="done-screen">
-        <h2 class="done-title">You've read<br>every card.</h2>
-        <p class="done-sub">The Coast Live Oak thanks you.</p>
-        <button class="restart-btn" onclick="restart()">Read Again</button>
-      </div>
     </div>
 
     <div id="progress"></div>
@@ -295,27 +260,25 @@ html, body {
 </div>
 
 <script>
-/* ── Card Data — GaiaNative/Content/stories.json ────────────── */
+/* ── Card Data — Figma node 1346:81158 ──────────────────────── */
 const CARDS = [
   {
     title: 'An Ecosystem\nLives Here.',
     body:  'Over 270 species of birds, mammals, and insects depend on the Coast Live Oak for food and shelter. From acorn woodpeckers storing their harvest in its bark to the California oak moth whose caterpillars feed exclusively on its leaves.',
     img:   'assets/find-details/learn-v2/story-ecosystem-figma-card.jpg',
+    imageClass: 'card-image--ecosystem',
   },
   {
     title: '5000 Years\nOn the Table.',
     body:  'At least twelve distinct Native American cultures, including the Chumash, Ohlone, and Cahuilla, relied on Coast Live Oak acorns as a dietary staple. Ground into flour, leached of tannis, and cooked into bread or mush.',
     img:   'assets/find-details/learn-v2/story-acorn-table-card.jpg',
+    imageClass: 'card-image--acorn',
   },
   {
-    title: 'A Disease\nSpreads Fast.',
-    body:  'Sudden Oak Death, caused by Phytophthora ramorum, has killed millions of tanoaks and Coast Live Oaks. It spreads through wind-blown rain, infected soil, and nursery plants — often outpacing detection and removal efforts.',
-    img:   'assets/find-details/learn-v2/story-ecosystem-figma-card.jpg',
-  },
-  {
-    title: 'Deep Roots,\nLong Memory.',
-    body:  'A mature Coast Live Oak can live over 250 years and extend roots 30 meters in every direction. Its deep taproot accesses groundwater during California\'s long summer droughts, making it remarkably resilient.',
-    img:   'assets/find-details/learn-v2/story-tree-card.jpg',
+    title: 'Planted by\nForgetful Squirrels.',
+    body:  'Coast Live Oak acorns are too heavy to travel by wind, so the tree often gets help from animals. Squirrels bury acorns as future snacks, but the ones they forget can sprout into new oaks.',
+    img:   'assets/find-details/learn-v2/story-squirrel-card.jpg',
+    imageClass: 'card-image--squirrel',
   },
 ];
 
@@ -367,20 +330,12 @@ function buildDeck() {
   const deck = document.getElementById('deck');
   deck.querySelectorAll('.card-slot').forEach(el => el.remove());
 
-  if (activeIdx >= CARDS.length) {
-    document.getElementById('done-screen').classList.add('visible');
-    updateDots();
-    return;
-  }
-  document.getElementById('done-screen').classList.remove('visible');
-
   // Render back → mid → front (front painted last)
   const ORDER  = ['back', 'mid', 'front'];
   const OFFSET = { front: 0, mid: 1, back: 2 };
 
   ORDER.forEach(pos => {
-    const cardIdx = activeIdx + OFFSET[pos];
-    if (cardIdx >= CARDS.length) return;
+    const cardIdx = (activeIdx + OFFSET[pos]) % CARDS.length;
 
     const card = CARDS[cardIdx];
     const slot = document.createElement('div');
@@ -393,7 +348,7 @@ function buildDeck() {
       <div class="learning-card">
         <h2 class="card-title">${card.title.replace('\n', '<br>')}</h2>
         <div class="card-img-wrap">
-          <img src="${card.img}" alt="" draggable="false">
+          <img class="${card.imageClass}" src="${card.img}" alt="" draggable="false">
         </div>
         <p class="card-body">${card.body}</p>
       </div>
@@ -418,9 +373,10 @@ function buildDeck() {
 
 /* ── Progress Dots ──────────────────────────────────────────── */
 function updateDots() {
+  const activeDot = activeIdx % CARDS.length;
   document.getElementById('progress').innerHTML =
     CARDS.map((_, i) =>
-      `<div class="dot${i === activeIdx ? ' active' : ''}"></div>`
+      `<div class="dot${i === activeDot ? ' active' : ''}"></div>`
     ).join('');
 }
 
@@ -599,12 +555,6 @@ function snapBack() {
       blurEl.style.opacity    = '1';
     }
   });
-}
-
-/* ── Restart ────────────────────────────────────────────────── */
-function restart() {
-  activeIdx = 0;
-  buildDeck();
 }
 
 /* ── Init ───────────────────────────────────────────────────── */
