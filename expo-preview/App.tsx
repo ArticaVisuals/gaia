@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { ActivityIndicator, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 
 export default function App() {
@@ -8,8 +8,8 @@ export default function App() {
 
   if (!gaiaUrl) {
     return (
-      <SafeAreaView style={styles.shell}>
-        <StatusBar hidden />
+      <View style={styles.shell}>
+        <StatusBar hidden translucent backgroundColor="transparent" />
         <View style={styles.emptyState}>
           <Text style={styles.eyebrow}>Expo Go Setup</Text>
           <Text style={styles.title}>Add your stable Vercel URL</Text>
@@ -22,22 +22,26 @@ export default function App() {
           </View>
           <Text style={styles.hint}>The README in this folder walks through the full mobile-preview flow.</Text>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.shell}>
-      <StatusBar hidden />
+    <View style={styles.shell}>
+      <StatusBar hidden translucent backgroundColor="transparent" />
       <WebView
         source={{ uri: gaiaUrl }}
         style={styles.webview}
+        containerStyle={styles.webviewContainer}
         originWhitelist={['*']}
         sharedCookiesEnabled
         setSupportMultipleWindows={false}
         allowsBackForwardNavigationGestures
         pullToRefreshEnabled
         bounces={false}
+        automaticallyAdjustContentInsets={false}
+        contentInsetAdjustmentBehavior="never"
+        contentInset={{ top: 0, right: 0, bottom: 0, left: 0 }}
         startInLoadingState
         renderLoading={() => (
           <View style={styles.loadingState}>
@@ -53,12 +57,16 @@ export default function App() {
           </Pressable>
         </View>
       )}
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   shell: {
+    flex: 1,
+    backgroundColor: '#fefdf9',
+  },
+  webviewContainer: {
     flex: 1,
     backgroundColor: '#fefdf9',
   },

@@ -163,6 +163,12 @@ html, body {
   text-box: trim-both cap alphabetic;
   flex-shrink: 0;
 }
+.card-title--squirrel {
+  font-size: 31.5px;
+}
+.title-nowrap {
+  white-space: nowrap;
+}
 
 .card-img-wrap {
   margin-top: var(--space-8);
@@ -276,6 +282,8 @@ const CARDS = [
   },
   {
     title: 'Planted by\nForgetful Squirrels.',
+    titleHtml: 'Planted by<br><span class="title-nowrap">Forgetful Squirrels.</span>',
+    titleClass: 'card-title--squirrel',
     body:  'Coast Live Oak acorns are too heavy to travel by wind, so the tree often gets help from animals. Squirrels bury acorns as future snacks, but the ones they forget can sprout into new oaks.',
     img:   'assets/find-details/learn-v2/story-squirrel-card.jpg',
     imageClass: 'card-image--squirrel',
@@ -302,6 +310,7 @@ const DRAG_MIN    = 4;    // px before the card starts following
 const THROW_DIST  = 75;   // px to trigger throw
 const THROW_VEL   = 0.3;  // px/ms to trigger throw by velocity
 const THROW_MS    = 360;
+const BACK_FADE_MS = Math.round(THROW_MS * 0.75);
 
 /* ── Stage Scaling ──────────────────────────────────────────── */
 function fitStage() {
@@ -326,13 +335,15 @@ function getSlot(pos) {
 }
 
 /* ── Build Deck ─────────────────────────────────────────────── */
-function buildDeck() {
+function buildDeck({ fadeBackIn = false } = {}) {
   const deck = document.getElementById('deck');
   deck.querySelectorAll('.card-slot').forEach(el => el.remove());
 
   // Render back → mid → front (front painted last)
   const ORDER  = ['back', 'mid', 'front'];
   const OFFSET = { front: 0, mid: 1, back: 2 };
+
+  let fadedBack = null;
 
   ORDER.forEach(pos => {
     const cardIdx = (activeIdx + OFFSET[pos]) % CARDS.length;
@@ -343,10 +354,14 @@ function buildDeck() {
     slot.dataset.pos = pos;
     slot.style.zIndex    = pos === 'front' ? 3 : pos === 'mid' ? 2 : 1;
     slot.style.transform = posTransform(pos);
+    if (fadeBackIn && pos === 'back') {
+      slot.style.opacity = '0';
+      fadedBack = slot;
+    }
 
     slot.innerHTML = `
       <div class="learning-card">
-        <h2 class="card-title">${card.title.replace('\n', '<br>')}</h2>
+        <h2 class="card-title ${card.titleClass || ''}">${card.titleHtml || card.title.replace('\n', '<br>')}</h2>
         <div class="card-img-wrap">
           <img class="${card.imageClass}" src="${card.img}" alt="" draggable="false">
         </div>
@@ -364,6 +379,15 @@ function buildDeck() {
 
     deck.appendChild(slot);
   });
+
+  if (fadedBack) {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        fadedBack.style.transition = `opacity ${BACK_FADE_MS}ms ease`;
+        fadedBack.style.opacity = '1';
+      });
+    });
+  }
 
   const front = getSlot('front');
   if (front) front.addEventListener('pointerdown', onDown, { passive: false });
@@ -532,7 +556,7 @@ function throwCard(dx, dy, vx, vy) {
     if (advanced) return;
     advanced = true;
     activeIdx++;
-    buildDeck();
+    buildDeck({ fadeBackIn: true });
   };
   front.addEventListener('transitionend', advance, { once: true });
   setTimeout(advance, THROW_MS + 60);

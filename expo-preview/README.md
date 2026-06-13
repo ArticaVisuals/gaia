@@ -1,6 +1,6 @@
 # Gaia Expo Preview
 
-This Expo app is a thin mobile wrapper around the Gaia web prototype. It loads the stable Vercel URL `https://gaia-neon.vercel.app/` in a full-screen `WebView` so you can review the latest deployed experience in Expo Go without browser tabs or mobile browser chrome getting in the way.
+This Expo app is a thin mobile wrapper around the Gaia web prototype. It loads the stable Vercel URL `https://gaia-neon.vercel.app/story-cards.html` in a full-screen `WebView` so you can review the latest deployed story-card experience in Expo Go without browser tabs or mobile browser chrome getting in the way.
 
 ## What updates automatically
 
@@ -13,7 +13,7 @@ This Expo app is a thin mobile wrapper around the Gaia web prototype. It loads t
 1. Open a terminal in this folder:
 
    ```bash
-   cd "/Users/micahhoang/My Drive/CD5 VXD/Gaia-Prototype/expo-preview"
+   cd "/Users/micahhoang/My Drive/CD5 VXD/Prototype/expo-preview"
    ```
 
 2. Copy the env template:
@@ -25,17 +25,17 @@ This Expo app is a thin mobile wrapper around the Gaia web prototype. It loads t
 3. Edit `.env` and set:
 
    ```bash
-   EXPO_PUBLIC_GAIA_URL=https://gaia-neon.vercel.app/
-   EXPO_PUBLIC_GAIA_LABEL=Production
+   EXPO_PUBLIC_GAIA_URL=https://gaia-neon.vercel.app/story-cards.html
+   EXPO_PUBLIC_GAIA_LABEL=
    ```
 
 4. Start Expo:
 
    ```bash
-   npm run start:tunnel
+   npx expo start --tunnel --clear
    ```
 
-   Use `start:tunnel` when phone and laptop networking is finicky. On a clean local network, `npm start` or `npm run start:lan` is also fine.
+   Use tunnel mode when phone and laptop networking is finicky. On a clean local network, `npm start` or `npm run start:lan` is also fine.
 
 5. Open Expo Go on your phone and scan the QR code.
 
@@ -44,7 +44,7 @@ This Expo app is a thin mobile wrapper around the Gaia web prototype. It loads t
 - Production preview: use your main production domain.
 - Branch preview: use a stable branch URL if you want the app to follow the latest deploy from a branch.
 
-Suggested labels:
+Leave `EXPO_PUBLIC_GAIA_LABEL` empty for a clean recording with no overlay badge. If you do want a badge later, suggested labels are:
 
 - `Production`
 - `Main Branch`
@@ -66,5 +66,6 @@ Suggested labels:
 
 - Blank screen: confirm `EXPO_PUBLIC_GAIA_URL` is reachable in your phone browser.
 - Old version still showing: pull to refresh inside the app, then fully reload the Expo session if needed.
-- QR code connection issues: use `npm run start:tunnel`.
+- QR code connection issues: use `npx expo start --tunnel --clear`.
 - Dependency mismatch: run `npx expo install --fix`.
+- Expo Go says the project requires a newer app: the wrapper is pinned to Expo SDK 54 because the App Store version of Expo Go is the compatible physical-iPhone path during Expo's SDK 55/56 transition.
